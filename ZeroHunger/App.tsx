@@ -5,13 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import Homescreen from './screens/Homescreen';
 
-function HomeScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
-  );
-}
+
 function DetailsScreen() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -27,9 +21,9 @@ function App() {
     
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
-        
+
         <Stack.Screen options ={{ headerShown: false}} name = "Login" component={LoginScreen} />
-        <Stack.Screen name = "Home" component={HomeScreen} />
+        <Stack.Screen name = "Home" component={Homescreen} />
 
       </Stack.Navigator>
     </NavigationContainer>
