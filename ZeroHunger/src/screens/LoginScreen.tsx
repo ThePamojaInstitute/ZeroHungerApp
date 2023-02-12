@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React, {useState, useEffect} from 'react';
-import {app, auth} from "../firebaseconfig"
+import {app, auth} from "../utilities/firebaseconfig"
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged} from "firebase/auth"
 import { Logs } from 'expo';
 import { useNavigation } from '@react-navigation/core';
