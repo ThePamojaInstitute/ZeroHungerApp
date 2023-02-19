@@ -2,9 +2,9 @@
 from django.contrib import admin
 from django.urls import path
 
-from .views import TestView
+from .views import SettingsView
 
 urlpatterns = [
-    path('test', TestView.as_view()),
+    path('settings', SettingsView.as_view()),
 ]
 
