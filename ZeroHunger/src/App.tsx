@@ -7,7 +7,7 @@ import LoginScreen from './screens/LoginScreen';
 import Homescreen from './screens/Homescreen';
 import PrivateRoute from "./utilities/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
-
+import { Context, Provider } from "./context/globalContext"
 
 function DetailsScreen() {
   return (
@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator();
 function App() {
   return (
     
-    
+    <Provider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
 
@@ -31,6 +31,7 @@ function App() {
 
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
     
   
   );

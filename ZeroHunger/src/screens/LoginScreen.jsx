@@ -5,7 +5,7 @@ import { Context } from "../context/globalContext.js"
 
 function Landing(props){
 
-  const globalContext = useContext(Context)
+  const globalContext = useContext(Context);
   const { isLoggedIn, appSettings } = globalContext;
 
   return(

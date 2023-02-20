@@ -33,5 +33,3 @@ class SettingsView(APIView):
         else:
             return Response(status = 200)
         
-
-
