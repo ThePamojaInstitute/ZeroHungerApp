@@ -203,6 +203,9 @@ dependencies {
         implementation("com.facebook.fresco:imagepipeline-okhttp3:${frescoVersion}")
     }
 
+    google();
+    mavenCentral();
+    maven();
     if (isGifEnabled) {
         // For animated gif support
         implementation("com.facebook.fresco:animated-gif:${frescoVersion}")
