@@ -188,6 +188,13 @@ android {
     }
 }
 
+repositories
+{
+    google();
+    mavenCentral();
+   // maven();
+}
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
@@ -203,9 +210,7 @@ dependencies {
         implementation("com.facebook.fresco:imagepipeline-okhttp3:${frescoVersion}")
     }
 
-    google();
-    mavenCentral();
-    maven();
+  
     if (isGifEnabled) {
         // For animated gif support
         implementation("com.facebook.fresco:animated-gif:${frescoVersion}")

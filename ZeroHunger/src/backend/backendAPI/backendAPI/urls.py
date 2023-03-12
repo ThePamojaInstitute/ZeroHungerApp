@@ -17,8 +17,10 @@ from django.contrib import admin
 from django.urls import path
 
 
-from .views import TestView
+from .views import TestView, UserView
 
 urlpatterns = [
-    path('api/test', TestView.as_view())
+    path('api/test', TestView.as_view()),
+    path('api/create-user', UserView.as_view()),
+    path('api/get-user', UserView.as_view())
 ]

@@ -10,6 +10,11 @@
     ],
     "android": {
       "package": "com.noahg.zerohunger"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0d0ce611-8d76-45b2-9898-ca13b40a017a"
+      }
     }
   }
 }
