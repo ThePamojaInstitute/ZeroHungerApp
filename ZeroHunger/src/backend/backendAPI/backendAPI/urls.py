@@ -20,6 +20,7 @@ from django.urls import path
 from .views import TestView, UserView
 
 urlpatterns = [
+    path('admin/', admin.site.urls ), 
     path('api/test', TestView.as_view()),
     path('api/create-user', UserView.as_view()),
     path('api/get-user', UserView.as_view())
