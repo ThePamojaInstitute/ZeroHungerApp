@@ -22,6 +22,6 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1.0/user/', include('backendAPI.urls')) ,
+    path('api/v1.0/user/', include('backendAPI.urls')),
     path('api/v1.0/app/', include('appSettings.urls'))
 ]
