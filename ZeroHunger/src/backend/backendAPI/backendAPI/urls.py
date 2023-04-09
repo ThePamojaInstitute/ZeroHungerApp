@@ -20,14 +20,8 @@ from django.urls import path
 from .views import TestView, UserView
 
 urlpatterns = [
-<<<<<<< HEAD:ZeroHunger/src/backend/ZeroHunger/ZeroHunger/urls.py
-    path('admin/', admin.site.urls),
-    path('api/v1.0/user/', include('backendAPI.urls')),
-    path('api/v1.0/app/', include('appSettings.urls'))
-=======
     path('admin/', admin.site.urls ), 
     path('api/test', TestView.as_view()),
     path('api/create-user', UserView.as_view()),
     path('api/get-user', UserView.as_view())
->>>>>>> main:ZeroHunger/src/backend/backendAPI/backendAPI/urls.py
 ]
