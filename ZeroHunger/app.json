@@ -1,19 +1,35 @@
 {
   "expo": {
-    "name": "zerohunger",
-    "slug": "zerohunger",
+    "name": "ZeroHunger",
+    "slug": "ZeroHunger",
     "version": "1.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
     ],
+    "ios": {
+      "supportsTablet": true
+    },
     "android": {
-      "package": "com.noahg.zerohunger"
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.noahg.ZeroHunger"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "0d0ce611-8d76-45b2-9898-ca13b40a017a"
+        "projectId": "9a256bfa-fa6b-46dc-8bd0-b8952a213cd7"
       }
     }
   }
