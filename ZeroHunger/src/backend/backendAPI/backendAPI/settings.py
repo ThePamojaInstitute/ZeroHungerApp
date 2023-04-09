@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,12 +26,10 @@ SECRET_KEY = 'django-insecure-jn0r_)3f23%o30i_ac84w0@oa_=_&xqu$%mbv)&uwrz69ph)8y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-<<<<<<< HEAD:ZeroHunger/src/backend/ZeroHunger/ZeroHunger/settings.py
+
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost',
                  '10.0.0.238', 'http://127.0.0.1:8000/']
-=======
-ALLOWED_HOSTS = []
->>>>>>> main:ZeroHunger/src/backend/backendAPI/backendAPI/settings.py
+
 
 
 # Application definition
@@ -127,7 +126,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-<<<<<<< HEAD:ZeroHunger/src/backend/ZeroHunger/ZeroHunger/settings.py
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -146,5 +144,3 @@ JWT_AUTH = {
     # allow refreshing of tokens
     'JWT_ALLOW_REFRESH': True,
 }
-=======
->>>>>>> main:ZeroHunger/src/backend/backendAPI/backendAPI/settings.py
