@@ -1,15 +1,59 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 import * as React from 'react'
+import Feedscreen from './src/screens/FeedScreen';
+
+
 
 export default function App() {
+  
+
+  const [value, setValue] = React.useState("StartingVal")
+
+  
+
+  async function TestGET()
+  {
+    console.log("Testing GET")
+    let response = await fetch("http://127.0.0.1:8000/api/test", {method: 'GET'});
+    let data = await response.text()
+    setValue(data)
+    console.log(data)
+  }
+
+  async function TestPOST()
+  {
+    console.log("Testing GET")
+    let response = await fetch("http://127.0.0.1:8000/api/test", {method: 'POST'});
+    let data = await response.text()
+    setValue(data)
+    console.log(data)
+  }
+
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <Text>Basic API Test </Text>
       <StatusBar style="auto" />
+
+
+
+      <Button title= "Test GET" onPress={TestGET} />
+
+      <Button title= "Test POST" onPress={TestPOST} />
+
+      <Text> {value} </Text>
+     
+      
     </View>
+
+
   );
+
+
+
 }
+
 
 const styles = StyleSheet.create({
   container: {

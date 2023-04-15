@@ -6,8 +6,12 @@ from .serializers import UserSerializer
 
 class TestView(APIView):
     def get (self, request, format=None):
-        print("API Was Called!")
-        return Response("You Made It", status=201)
+        print("API Get")
+        return Response("Made it to get", status=201)
+    
+    def post(self, request, format=None):
+        print("API Post")
+        return Response("Made it to post", status=201)
     
 class UserView(APIView):
     def post(self, request, format=None):
