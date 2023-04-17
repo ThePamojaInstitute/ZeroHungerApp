@@ -17,11 +17,11 @@ from django.contrib import admin
 from django.urls import path
 
 
-from .views import TestView, UserView
+from .views import TestView, ModifyUsersView, AuthenticationView
 
 urlpatterns = [
     path('admin/', admin.site.urls ), 
     path('api/test', TestView.as_view()),
-    path('api/create-user', UserView.as_view()),
-    path('api/get-user', UserView.as_view())
+    path('api/modifyuser', ModifyUsersView.as_view()), #View docs to see how to call each function
+    path('api/log-in-out', AuthenticationView.as_view()) #View docs to see how to call this
 ]
