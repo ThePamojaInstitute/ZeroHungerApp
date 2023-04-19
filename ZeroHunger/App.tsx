@@ -30,6 +30,11 @@ export default function App() {
     console.log(data)
   }
 
+  async function TestDeleteUser() //Temporary test function to create a new user
+  {
+    
+  } 
+
 
   return (
     <View style={styles.container}>
