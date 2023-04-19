@@ -143,6 +143,9 @@ REST_FRAMEWORK = {
     ),
 }
 
+AUTH_USER_MODEL = "backendAPI.BasicUser"
+
+
 JWT_AUTH = {
     # how long the original token is valid for
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=3),
