@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 
 // export default function App() {
-const Loginscreen = () => {
+  export const Loginscreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.login}>Zero Hunger</Text>

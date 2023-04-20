@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import * as React from 'react'
 import Feedscreen from './src/screens/FeedScreen';
-
+import { Loginscreen } from './src/screens/Loginscreen';
 
 
 export default function App() {
@@ -49,7 +49,8 @@ export default function App() {
 
       <Text> {value} </Text>
      
-      
+      <Loginscreen />
+
     </View>
 
 
