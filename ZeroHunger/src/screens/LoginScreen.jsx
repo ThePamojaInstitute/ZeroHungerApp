@@ -9,7 +9,7 @@ const Loginscreen = () => {
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder="Username"
           placeholderTextColor="#000000"
         /> 
       </View> 
@@ -33,6 +33,8 @@ const Loginscreen = () => {
     </View> 
   );
 }
+
+export default LoginScreen
 
 const styles = StyleSheet.create({
   container: {
