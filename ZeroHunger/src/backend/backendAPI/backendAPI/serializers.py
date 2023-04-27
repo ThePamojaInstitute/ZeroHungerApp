@@ -18,5 +18,3 @@ class ResgistrationSerializer (serializers.ModelSerializer):
                        password=self.validated_data['password'])
         user.set_password(self.validated_data['password'])
         user.save()
-
-        
