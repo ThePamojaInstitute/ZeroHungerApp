@@ -1,15 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 
-<<<<<<< HEAD:ZeroHunger/src/screens/Loginscreen.tsx
-// export default function App() {
-  export const Loginscreen = () => {
-=======
-export const LoginScreen = () => {
->>>>>>> Login_Screen:ZeroHunger/src/screens/LoginScreen.jsx
+export const CreateAccountScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.login}>Zero Hunger</Text>
+      <Text style={styles.create}>Create Account</Text>
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
@@ -20,25 +15,35 @@ export const LoginScreen = () => {
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
+          placeholder="Email Address"
+          placeholderTextColor="#000000"
+          secureTextEntry={true}
+        /> 
+      </View> 
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.input}
           placeholder="Password"
           placeholderTextColor="#000000"
           secureTextEntry={true}
         /> 
       </View> 
-      <TouchableOpacity /*onPress={}*/>
-        <Text style={styles.forgotBtn}>Forgot password?</Text> 
-      </TouchableOpacity> 
-      <TouchableOpacity style={styles.loginBtn} /*onPress={}*/>
-        <Text style={styles.loginBtnText}>Login</Text> 
-      </TouchableOpacity> 
-      <TouchableOpacity style={styles.signUpBtn} /*onPress={}*/>
-        <Text style={styles.signUpBtnText}>Sign Up</Text>
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          placeholderTextColor="#000000"
+          secureTextEntry={true}
+        /> 
+      </View>
+      <TouchableOpacity style={styles.createBtn} /*onPress={}*/>
+        <Text style={styles.createBtnText}>Sign Up</Text>
       </TouchableOpacity>
     </View> 
   );
 }
 
-export default LoginScreen
+export default CreateAccountScreen
 
 const styles = StyleSheet.create({
   container: {
@@ -55,7 +60,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 5,
   },
-  login: {
+  create: {
     color: "#000000",
     height: 140,
     fontSize: 48
@@ -66,13 +71,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 15,
   },
-  forgotBtn: {
-    height: 16,
-    marginBottom: 30,
-    marginLeft: 150,
-    fontSize: 12,
-  },
-  loginBtn: {
+  createBtn: {
     title: "Login",
     width: "85%",
     borderRadius: 25,
@@ -81,7 +80,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#6A6A6A",
   },
-  loginBtnText: {
+  createBtnText: {
     color: "#FFFFFF",
     padding: 15,
     marginLeft: 10,
