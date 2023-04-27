@@ -1,12 +1,9 @@
 import React from "react";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 
-<<<<<<< HEAD:ZeroHunger/src/screens/Loginscreen.tsx
-// export default function App() {
-  export const Loginscreen = () => {
-=======
+
 export const LoginScreen = () => {
->>>>>>> Login_Screen:ZeroHunger/src/screens/LoginScreen.jsx
+
   return (
     <View style={styles.container}>
       <Text style={styles.login}>Zero Hunger</Text>
@@ -37,8 +34,8 @@ export const LoginScreen = () => {
     </View> 
   );
 }
-
 export default LoginScreen
+
 
 const styles = StyleSheet.create({
   container: {
