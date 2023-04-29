@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
+import { createUser, logInUser } from "../controllers/auth";
 
 
 export const LoginScreen = () => {
+
+  const [credentials, setCredentials] = useState({
+    'username': undefined,
+    'password': undefined
+  })
+
+  const handleLogin = () => {
+    logInUser(credentials)
+  }
+
+  const handleChange = (e, type: string) => {
+    setCredentials(prev => ({ ...prev, [type]: e.target.value }))
+  }
 
   return (
     <View style={styles.container}>
@@ -12,26 +26,28 @@ export const LoginScreen = () => {
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="#000000"
-        /> 
-      </View> 
+          onChange={e => handleChange(e, 'username')}
+        />
+      </View>
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="#000000"
           secureTextEntry={true}
-        /> 
-      </View> 
+          onChange={e => handleChange(e, 'password')}
+        />
+      </View>
       <TouchableOpacity /*onPress={}*/>
-        <Text style={styles.forgotBtn}>Forgot password?</Text> 
-      </TouchableOpacity> 
-      <TouchableOpacity style={styles.loginBtn} /*onPress={}*/>
-        <Text style={styles.loginBtnText}>Login</Text> 
-      </TouchableOpacity> 
+        <Text style={styles.forgotBtn}>Forgot password?</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+        <Text style={styles.loginBtnText}>Login</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.signUpBtn} /*onPress={}*/>
         <Text style={styles.signUpBtnText}>Sign Up</Text>
       </TouchableOpacity>
-    </View> 
+    </View>
   );
 }
 export default LoginScreen
@@ -94,9 +110,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#A9A9A9",
   },
   signUpBtnText: {
-      color: "#FFFFFF",
-      padding: 15,
-      marginLeft: 10,
-      fontSize: 15,
+    color: "#FFFFFF",
+    padding: 15,
+    marginLeft: 10,
+    fontSize: 15,
   }
 });
