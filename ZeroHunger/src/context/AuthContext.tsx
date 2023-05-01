@@ -16,7 +16,7 @@ const INITIAL_STATE = {
 
 export const AuthContext = createContext<IINITIAL_STATE>(INITIAL_STATE)
 
-const AuthReducer = (state: any, action: { type: string; payload: any }) => {
+const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
     switch (action.type) {
         case "LOGIN_START":
             return {
@@ -77,12 +77,12 @@ export const AuthContextProvider = ({ children }) => {
 
 
     useEffect(() => {
-        localStorage.setItem("user", JSON.stringify(state.user))
-    }, [state.user])
+        localStorage.setItem("user", JSON.stringify(state['user']))
+    }, [state['user']])
 
     return (
         <AuthContext.Provider value={
-            { user: state.user, loading: state.loading, error: state.error, dispatch }}>
+            { user: state['user'], loading: state['loading'], error: state['error'], dispatch }}>
             {children}
         </AuthContext.Provider>
     )
