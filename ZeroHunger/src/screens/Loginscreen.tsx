@@ -1,26 +1,43 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
-import { createUser, logInUser } from "../controllers/auth";
+import { logInUser } from "../controllers/auth";
+import { AuthContext } from "../context/AuthContext";
 
 
 export const LoginScreen = () => {
 
+  const { loading, dispatch } = useContext(AuthContext)
   const [credentials, setCredentials] = useState({
     'username': undefined,
     'password': undefined
   })
+  const [errMsg, setErrMsg] = useState("")
 
-  const handleLogin = () => {
-    logInUser(credentials)
+  const handleChange = (e: NativeSyntheticEvent<TextInputChangeEventData>, type: string) => {
+    setCredentials(prev => ({ ...prev, [type]: e.nativeEvent.text }))
   }
 
-  const handleChange = (e, type: string) => {
-    setCredentials(prev => ({ ...prev, [type]: e.target.value }))
+  const handleLogin = (e: GestureResponderEvent) => {
+    e.preventDefault()
+    dispatch({ type: "LOGIN_START", payload: null })
+    logInUser(credentials).then(res => {
+      if (res.msg === "success") {
+        dispatch({ type: "LOGIN_SUCCESS", payload: res.res })
+      } else if (res.msg === "failure") {
+        dispatch({ type: "LOGIN_FAILURE", payload: res.res })
+        setErrMsg("Invalid credentials")
+      } else {
+        dispatch({ type: "LOGIN_FAILURE", payload: res.res })
+        setErrMsg(res.msg)
+      }
+    })
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.login}>Zero Hunger</Text>
+      <Text>{loading && "Loading..."}</Text>
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
@@ -41,6 +58,7 @@ export const LoginScreen = () => {
       <TouchableOpacity /*onPress={}*/>
         <Text style={styles.forgotBtn}>Forgot password?</Text>
       </TouchableOpacity>
+      <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>
       <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
         <Text style={styles.loginBtnText}>Login</Text>
       </TouchableOpacity>

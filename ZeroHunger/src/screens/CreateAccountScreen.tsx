@@ -1,32 +1,45 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 import { createUser } from "../controllers/auth";
+import { AuthContext } from "../context/AuthContext";
 
 export const CreateAccountScreen = () => {
+  const { loading, dispatch } = useContext(AuthContext)
   const [credentials, setCredentials] = useState({
     'username': undefined,
     'email': undefined,
-    'password': undefined
+    'password': undefined,
+    'confPassword': undefined
   })
-
   const [confPass, setConfPass] = useState("")
+  const [errMsg, setErrMsg] = useState("")
 
-  const handleChange = (e, type: string) => {
-    if (type === "confPass") { setConfPass(e.target.value) }
-    else { setCredentials(prev => ({ ...prev, [type]: e.target.value })) }
+  const handleChange = (e: NativeSyntheticEvent<TextInputChangeEventData>, type: string) => {
+    if (type === "confPass") { setConfPass(e.nativeEvent.text) }
+    else { setCredentials(prev => ({ ...prev, [type]: e.nativeEvent.text })) }
   }
 
-  const handleSignUp = () => {
-    if (credentials.password === confPass) {
-      createUser(credentials)
-    } else {
-      console.log("Passwords do not match");
-    }
+  const handleSignUp = (e: GestureResponderEvent) => {
+    e.preventDefault()
+    dispatch({ type: "SIGNUP_START", payload: null })
+    createUser(credentials).then(res => {
+      if (res.msg === "success") {
+        dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
+      } else if (res.msg === "failure") {
+        setErrMsg("An error occurred")
+        dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
+      } else {
+        dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
+        setErrMsg(res.msg)
+      }
+    })
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.create}>Create Account</Text>
+      <Text>{loading && "Loading..."}</Text>
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
@@ -59,9 +72,10 @@ export const CreateAccountScreen = () => {
           placeholder="Confirm Password"
           placeholderTextColor="#000000"
           secureTextEntry={true}
-          onChange={e => handleChange(e, 'confPass')}
+          onChange={e => handleChange(e, 'confPassword')}
         />
       </View>
+      <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>
       <TouchableOpacity style={styles.createBtn} onPress={handleSignUp}>
         <Text style={styles.createBtnText}>Sign Up</Text>
       </TouchableOpacity>

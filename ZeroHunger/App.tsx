@@ -4,13 +4,16 @@ import * as React from 'react'
 import Feedscreen from './src/screens/FeedScreen';
 import LoginScreen from './src/screens/Loginscreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
+import { AuthContextProvider } from './src/context/AuthContext';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <LoginScreen />
-      <CreateAccountScreen />
-    </View>
+    <AuthContextProvider>
+      <View style={styles.container}>
+        <LoginScreen />
+        <CreateAccountScreen />
+      </View>
+    </AuthContextProvider>
   );
 }
 

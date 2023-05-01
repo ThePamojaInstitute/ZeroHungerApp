@@ -3,23 +3,28 @@ import { axiosInstance } from "../../config";
 
 export async function createUser(user: Object) {
     if (!user['username']) {
-        console.log("Please enter a username");
-        return
+        return { msg: "Please enter a username", res: null }
     } else if (user['username'].length > 50) {
-        console.log("Username length should be 50 characters or less");
-        return
+        return { msg: "Username length should be 50 characters or less", res: null }
     }
 
-    if (!user['email'].match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-        console.log("Please enter a valid email");
-        return
+    if (!user['email']) {
+        return { msg: "Please enter an email", res: null }
+    } else if (!user['email'].match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        return { msg: "Please enter a valid email", res: null }
+    }
+
+    if (!user['password']) {
+        return { msg: "Please enter a password", res: null }
+    } else if (user['password'] != user['confPassword']) {
+        return { msg: "The passwords you entered do not match", res: null }
     }
 
     try {
         const res = await axiosInstance.post("/createUser", user)
-        console.log(res);
+        return { msg: "success", res: res.data }
     } catch (error) {
-        console.log(error);
+        return { msg: "failure", res: error.response }
     }
 }
 
@@ -43,18 +48,16 @@ export async function modifyUser(user: Object) {
 
 export async function logInUser(user: Object) {
     if (!user["username"]) {
-        console.log("Please enter a username");
-        return
+        return { msg: "Please enter a username", res: null }
     } else if (!user["password"]) {
-        console.log("Please enter a password");
-        return
+        return { msg: "Please enter a password", res: null }
     }
 
     try {
         const res = await axiosInstance.post("/logIn", user)
-        console.log(res.data);
+        return { msg: "success", res: res.data }
     } catch (error) {
-        console.log(error);
+        return { msg: "failure", res: error.response }
     }
 }
 
