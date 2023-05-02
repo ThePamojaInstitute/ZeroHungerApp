@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 
+// export default function App() {
 export const LoginScreen = () => {
   return (
     <View style={styles.container}>
