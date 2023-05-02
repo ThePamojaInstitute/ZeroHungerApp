@@ -14,6 +14,7 @@ export const CreateAccountScreen = () => {
   })
   const [confPass, setConfPass] = useState("")
   const [errMsg, setErrMsg] = useState("")
+  const [updateMsg, setUpdateMsg] = useState("")
 
   const handleChange = (e: NativeSyntheticEvent<TextInputChangeEventData>, type: string) => {
     if (type === "confPass") { setConfPass(e.nativeEvent.text) }
@@ -26,6 +27,8 @@ export const CreateAccountScreen = () => {
     createUser(credentials).then(res => {
       if (res.msg === "success") {
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
+        setErrMsg("")
+        setUpdateMsg("Created!")
       } else if (res.msg === "failure") {
         setErrMsg("An error occurred")
         dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
@@ -76,6 +79,7 @@ export const CreateAccountScreen = () => {
         />
       </View>
       <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>
+      <Text style={{ color: "green" }}>{updateMsg && updateMsg}</Text>
       <TouchableOpacity style={styles.createBtn} onPress={handleSignUp}>
         <Text style={styles.createBtnText}>Sign Up</Text>
       </TouchableOpacity>

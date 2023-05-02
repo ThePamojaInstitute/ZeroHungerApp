@@ -13,6 +13,7 @@ export const LoginScreen = () => {
     'password': undefined
   })
   const [errMsg, setErrMsg] = useState("")
+  const [updateMsg, setUpdateMsg] = useState("")
 
   const handleChange = (e: NativeSyntheticEvent<TextInputChangeEventData>, type: string) => {
     setCredentials(prev => ({ ...prev, [type]: e.nativeEvent.text }))
@@ -23,7 +24,10 @@ export const LoginScreen = () => {
     dispatch({ type: "LOGIN_START", payload: null })
     logInUser(credentials).then(res => {
       if (res.msg === "success") {
+        console.log(res.res);
         dispatch({ type: "LOGIN_SUCCESS", payload: res.res })
+        setErrMsg("")
+        setUpdateMsg("Logged In!")
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
         setErrMsg("Invalid credentials")
@@ -59,6 +63,7 @@ export const LoginScreen = () => {
         <Text style={styles.forgotBtn}>Forgot password?</Text>
       </TouchableOpacity>
       <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>
+      <Text style={{ color: "green" }}>{updateMsg && updateMsg}</Text>
       <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
         <Text style={styles.loginBtnText}>Login</Text>
       </TouchableOpacity>
