@@ -46,7 +46,7 @@ export async function modifyUser(user: Object) {
     }
 }
 
-export async function logInUser(user: Object) {
+export async function logInUser(user) {
     if (!user["username"]) {
         return { msg: "Please enter a username", res: null }
     } else if (!user["password"]) {
@@ -54,7 +54,9 @@ export async function logInUser(user: Object) {
     }
 
     try {
+        
         const res = await axiosInstance.post("/logIn", user)
+        console.log(res);
         return { msg: "success", res: res.data }
     } catch (error) {
         return { msg: "failure", res: error.response }

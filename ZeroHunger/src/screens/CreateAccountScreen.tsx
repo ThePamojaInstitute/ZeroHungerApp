@@ -56,7 +56,7 @@ export const CreateAccountScreen = () => {
           style={styles.input}
           placeholder="Email Address"
           placeholderTextColor="#000000"
-          secureTextEntry={true}
+          secureTextEntry={false}
           onChange={e => handleChange(e, 'email')}
         />
       </View>
