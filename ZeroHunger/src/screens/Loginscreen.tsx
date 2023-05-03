@@ -1,80 +1,40 @@
-import React, { useContext, useState } from "react";
-import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
+import React from "react";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
-import { logInUser } from "../controllers/auth";
-import { AuthContext } from "../context/AuthContext";
 
-
+// export default function App() {
 export const LoginScreen = () => {
-
-  const { loading, dispatch } = useContext(AuthContext)
-  const [credentials, setCredentials] = useState({
-    'username': undefined,
-    'password': undefined
-  })
-  const [errMsg, setErrMsg] = useState("")
-  const [updateMsg, setUpdateMsg] = useState("")
-
-  const handleChange = (e: NativeSyntheticEvent<TextInputChangeEventData>, type: string) => {
-    setCredentials(prev => ({ ...prev, [type]: e.nativeEvent.text }))
-  }
-
-  const handleLogin = (e: GestureResponderEvent) => {
-    e.preventDefault()
-    dispatch({ type: "LOGIN_START", payload: null })
-    logInUser(credentials).then(res => {
-      if (res.msg === "success") {
-        console.log(res.res);
-        dispatch({ type: "LOGIN_SUCCESS", payload: res.res })
-        setErrMsg("")
-        setUpdateMsg("Logged In!")
-      } else if (res.msg === "failure") {
-        dispatch({ type: "LOGIN_FAILURE", payload: res.res })
-        setErrMsg("Invalid credentials")
-      } else {
-        dispatch({ type: "LOGIN_FAILURE", payload: res.res })
-        setErrMsg(res.msg)
-      }
-    })
-  }
-
   return (
     <View style={styles.container}>
       <Text style={styles.login}>Zero Hunger</Text>
-      <Text>{loading && "Loading..."}</Text>
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="#000000"
-          onChange={e => handleChange(e, 'username')}
-        />
-      </View>
+        /> 
+      </View> 
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="#000000"
           secureTextEntry={true}
-          onChange={e => handleChange(e, 'password')}
-        />
-      </View>
+        /> 
+      </View> 
       <TouchableOpacity /*onPress={}*/>
-        <Text style={styles.forgotBtn}>Forgot password?</Text>
-      </TouchableOpacity>
-      <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>
-      <Text style={{ color: "green" }}>{updateMsg && updateMsg}</Text>
-      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
-        <Text style={styles.loginBtnText}>Login</Text>
-      </TouchableOpacity>
+        <Text style={styles.forgotBtn}>Forgot password?</Text> 
+      </TouchableOpacity> 
+      <TouchableOpacity style={styles.loginBtn} /*onPress={}*/>
+        <Text style={styles.loginBtnText}>Login</Text> 
+      </TouchableOpacity> 
       <TouchableOpacity style={styles.signUpBtn} /*onPress={}*/>
         <Text style={styles.signUpBtnText}>Sign Up</Text>
       </TouchableOpacity>
-    </View>
+    </View> 
   );
 }
-export default LoginScreen
 
+export default LoginScreen
 
 const styles = StyleSheet.create({
   container: {
@@ -133,9 +93,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#A9A9A9",
   },
   signUpBtnText: {
-    color: "#FFFFFF",
-    padding: 15,
-    marginLeft: 10,
-    fontSize: 15,
+      color: "#FFFFFF",
+      padding: 15,
+      marginLeft: 10,
+      fontSize: 15,
   }
 });
