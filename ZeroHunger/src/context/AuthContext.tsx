@@ -1,7 +1,29 @@
 import { createContext, useEffect, useReducer, Dispatch } from "react"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+export const getToken = async () => {
+    try {
+        const token = await AsyncStorage.getItem('token')
+        return token
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const setToken = async (value: string) => {
+    try {
+        await AsyncStorage.setItem('token', value)
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 interface IINITIAL_STATE {
-    user: Object,
+    user: {
+        username: string,
+        email: string,
+        token: string
+    },
     loading: boolean,
     error: Object,
     dispatch: Dispatch<{ type: string, payload: any }>
@@ -75,10 +97,23 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE)
 
-    // TODO later!!!!
-    // useEffect(() => {
-    //     localStorage.setItem("user", JSON.stringify(state['user']))
-    // }, [state['user']])
+    const initializeTokenState = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token')
+            if (token !== null) {
+                state['user'['token']] = token
+            }
+            return token
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    initializeTokenState()
+
+    useEffect(() => {
+        setToken(state['user'['token']])
+    }, [state['user'['token']]])
 
     return (
         <AuthContext.Provider value={
