@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from django.contrib.auth.models import User
+from django.contrib.auth import logout
 
 from .managers import CustomUserManager
 from .serializers import ResgistrationSerializer, LoginSerializer
@@ -14,11 +15,8 @@ class createUser(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         else:
-            return Response("ERROR", status=401)
-    
-
-        CustomUserManager.create_user()
-        return Response({"You made it to POST in createUser"}, status= 202)
+            return Response("ERROR, serializer isn't valid", status=401)
+      
     
 class deleteUser(APIView):
     def post(self,request, format=None):
@@ -40,4 +38,11 @@ class logIn(APIView):
         
 class logOut(APIView):
     def post(self,request, format=None):
-        return Response({"You made it to POST in logOut"})
+        if request.user.is_authenticated():
+            logout(request)
+            return Response({"User logged out!", 200})
+        else:
+            return Response({"Invalid logout request, no authenticated user to log out", 401})
+
+
+       
