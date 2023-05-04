@@ -3,6 +3,7 @@ import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent }
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
+import { axiosInstance } from "../../config";
 
 
 export const LoginScreen = () => {
@@ -21,9 +22,11 @@ export const LoginScreen = () => {
   const handleLogin = (e: GestureResponderEvent) => {
     e.preventDefault()
     dispatch({ type: "LOGIN_START", payload: null })
-    logInUser(credentials).then(res => {
+    logInUser(credentials).then(async res => {
       if (res.msg === "success") {
-        dispatch({ type: "LOGIN_SUCCESS", payload: res.res })
+        await axiosInstance.post("/token/", credentials).then(resp => {
+          dispatch({ type: "LOGIN_SUCCESS", payload: { "username": res.res, "token": resp.data } })
+        })
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
         setErrMsg("Invalid credentials")

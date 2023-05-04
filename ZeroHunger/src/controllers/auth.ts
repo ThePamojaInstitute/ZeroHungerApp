@@ -54,7 +54,7 @@ export async function logInUser(user) {
     }
 
     try {
-        
+
         const res = await axiosInstance.post("/logIn", user)
         console.log(res);
         return { msg: "success", res: res.data }

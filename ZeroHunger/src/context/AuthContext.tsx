@@ -19,18 +19,18 @@ export const setToken = async (value: string) => {
 }
 
 interface IINITIAL_STATE {
-    user: {
-        username: string,
-        email: string,
-        token: string
-    },
+    username: string,
+    accessToken: string,
+    refreshToken: string,
     loading: boolean,
     error: Object,
     dispatch: Dispatch<{ type: string, payload: any }>
 }
 
 const INITIAL_STATE = {
-    user: null,
+    username: null,
+    accessToken: "notInitialized",
+    refreshToken: "notInitialized",
     loading: false,
     error: null,
     dispatch: () => { }
@@ -43,28 +43,34 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
         case "LOGIN_START":
             return {
                 ...state,
-                user: null,
+                username: null,
+                accessToken: "null",
+                refreshToken: "null",
                 loading: true,
                 error: null
             }
         case "LOGIN_SUCCESS":
             return {
                 ...state,
-                user: action.payload,
+                username: action.payload.username,
+                accessToken: action.payload.token['access'],
+                refreshToken: action.payload.token['refresh'],
                 loading: false,
                 error: null
             }
         case "LOGIN_FAILURE":
             return {
                 ...state,
-                user: null,
+                username: null,
+                accessToken: "null",
+                refreshToken: "null",
                 loading: false,
                 error: action.payload
             }
         case "LOGOUT":
             return {
                 ...state,
-                user: null,
+                username: null,
                 loading: false,
                 error: null
             }
@@ -100,8 +106,10 @@ export const AuthContextProvider = ({ children }) => {
     const initializeTokenState = async () => {
         try {
             const token = await AsyncStorage.getItem('token')
+            console.log("from initilize" + token);
+
             if (token !== null) {
-                state['user'['token']] = token
+                state['accessToken'] = token
             }
             return token
         } catch (error) {
@@ -109,15 +117,19 @@ export const AuthContextProvider = ({ children }) => {
         }
     }
 
-    initializeTokenState()
+    useEffect(() => {
+        initializeTokenState()
+    }, [])
 
     useEffect(() => {
-        setToken(state['user'['token']])
-    }, [state['user'['token']]])
+        if (state['accessToken'] !== "notInitialized") {
+            setToken(state['accessToken'])
+        }
+    }, [state['accessToken']])
 
     return (
         <AuthContext.Provider value={
-            { user: state['user'], loading: state['loading'], error: state['error'], dispatch }}>
+            { username: state['username'], accessToken: state['accessToken'], refreshToken: null, loading: state['loading'], error: state['error'], dispatch }}>
             {children}
         </AuthContext.Provider>
     )
