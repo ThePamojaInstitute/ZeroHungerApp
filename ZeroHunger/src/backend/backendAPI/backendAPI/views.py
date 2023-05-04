@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.mail import send_mail
 
 from .managers import CustomUserManager
 from .serializers import ResgistrationSerializer, LoginSerializer
@@ -15,6 +16,13 @@ class createUser(APIView):
         serializer = ResgistrationSerializer(data=request.data)
         if (serializer.is_valid()):
             serializer.save()
+            send_mail(
+            "Zero Hunger Project - New User",
+            "Welcome to the zero hunger project!",
+            "noahglassford@gmail.com",
+            ["noah@pamojainstitute.org"],
+             fail_silently=False,
+            )
             return Response(serializer.data, status=201)
         else:
             return Response("ERROR, serializer isn't valid", status=401)
