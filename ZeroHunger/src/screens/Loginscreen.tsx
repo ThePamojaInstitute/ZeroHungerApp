@@ -5,7 +5,7 @@ import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 
 
-export const LoginScreen = () => {
+export const LoginScreen = ({navigation}) => {
 
   const { loading, dispatch } = useContext(AuthContext)
   const [credentials, setCredentials] = useState({
@@ -62,7 +62,7 @@ export const LoginScreen = () => {
       <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
         <Text style={styles.loginBtnText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.signUpBtn} /*onPress={}*/>
+      <TouchableOpacity style={styles.signUpBtn} onPress={() => navigation.navigate("CreateAccountScreen")}>
         <Text style={styles.signUpBtnText}>Sign Up</Text>
       </TouchableOpacity>
     </View>
