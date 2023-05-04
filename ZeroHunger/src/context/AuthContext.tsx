@@ -147,7 +147,7 @@ export const AuthContextProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={
-            { username: state['username'], accessToken: state['accessToken'], refreshToken: null, loading: state['loading'], error: state['error'], dispatch }}>
+            { username: state['username'], accessToken: state['accessToken'], refreshToken: state['refreshToken'], loading: state['loading'], error: state['error'], dispatch }}>
             {children}
         </AuthContext.Provider>
     )

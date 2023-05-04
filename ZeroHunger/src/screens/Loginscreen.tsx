@@ -1,9 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { axiosInstance } from "../../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export const LoginScreen = () => {
@@ -26,6 +27,7 @@ export const LoginScreen = () => {
       if (res.msg === "success") {
         await axiosInstance.post("/token/", credentials).then(resp => {
           dispatch({ type: "LOGIN_SUCCESS", payload: { "username": res.res, "token": resp.data } })
+          console.log(axiosInstance.defaults.headers);
         })
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
@@ -36,6 +38,21 @@ export const LoginScreen = () => {
       }
     })
   }
+
+  // const logOut = () => {
+  //   (async () => {
+  //     console.log(axiosInstance.defaults.headers.common);
+  //     try {
+  //       const { data } = await axiosInstance.post('/logout', {
+  //         refresh_token: AsyncStorage.getItem('refresh_token')
+  //       }, { headers: { 'Content-Type': 'application/json' } });
+  //       AsyncStorage.clear()
+  //       axiosInstance.defaults.headers.common['Authorization'] = null;
+  //     } catch (e) {
+  //       console.log('logout not working', e)
+  //     }
+  //   })();
+  // }
 
   return (
     <View style={styles.container}>
