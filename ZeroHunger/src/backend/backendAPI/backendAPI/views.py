@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .managers import CustomUserManager
 from .serializers import ResgistrationSerializer, LoginSerializer
@@ -38,11 +40,14 @@ class logIn(APIView):
         
 class logOut(APIView):
     def post(self,request, format=None):
-        if request.user.is_authenticated():
-            logout(request)
-            return Response({"User logged out!", 200})
-        else:
-            return Response({"Invalid logout request, no authenticated user to log out", 401})
+        permission_classes = (IsAuthenticated)
+        try:
+               refresh_token = request.data["refresh_token"]
+               token = RefreshToken(refresh_token)
+               token.blacklist()
+               return Response(status=205)
+        except Exception as e:
+           return Response(status=400)
 
 
        

@@ -1,8 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
+import { axiosInstance } from "../../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export const LoginScreen = ({navigation}) => {
@@ -21,9 +23,12 @@ export const LoginScreen = ({navigation}) => {
   const handleLogin = (e: GestureResponderEvent) => {
     e.preventDefault()
     dispatch({ type: "LOGIN_START", payload: null })
-    logInUser(credentials).then(res => {
+    logInUser(credentials).then(async res => {
       if (res.msg === "success") {
-        dispatch({ type: "LOGIN_SUCCESS", payload: res.res })
+        await axiosInstance.post("/token/", credentials).then(resp => {
+          dispatch({ type: "LOGIN_SUCCESS", payload: { "username": res.res, "token": resp.data } })
+          console.log(axiosInstance.defaults.headers);
+        })
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
         setErrMsg("Invalid credentials")

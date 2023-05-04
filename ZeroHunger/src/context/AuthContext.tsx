@@ -1,36 +1,53 @@
 import { createContext, useEffect, useReducer, Dispatch } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const getToken = async () => {
-    try {
-        const token = await AsyncStorage.getItem('token')
-        return token
-    } catch (error) {
-        console.log(error);
+export const getToken = async (type: string) => {
+    if (type === "access") {
+        try {
+            const token = await AsyncStorage.getItem('access_token')
+            return token
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        try {
+            const token = await AsyncStorage.getItem('refresh_token')
+            return token
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 
-export const setToken = async (value: string) => {
-    try {
-        await AsyncStorage.setItem('token', value)
-    } catch (error) {
-        console.log(error);
+export const setToken = async (type: string, value: string) => {
+    if (type === "access") {
+        try {
+            await AsyncStorage.setItem('access_token', value)
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        try {
+            await AsyncStorage.setItem('refresh_token', value)
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 
 interface IINITIAL_STATE {
-    user: {
-        username: string,
-        email: string,
-        token: string
-    },
+    username: string,
+    accessToken: string,
+    refreshToken: string,
     loading: boolean,
     error: Object,
     dispatch: Dispatch<{ type: string, payload: any }>
 }
 
 const INITIAL_STATE = {
-    user: null,
+    username: null,
+    accessToken: "notInitialized",
+    refreshToken: "notInitialized",
     loading: false,
     error: null,
     dispatch: () => { }
@@ -43,28 +60,34 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
         case "LOGIN_START":
             return {
                 ...state,
-                user: null,
+                username: null,
+                accessToken: "null",
+                refreshToken: "null",
                 loading: true,
                 error: null
             }
         case "LOGIN_SUCCESS":
             return {
                 ...state,
-                user: action.payload,
+                username: action.payload.username,
+                accessToken: action.payload.token['access'],
+                refreshToken: action.payload.token['refresh'],
                 loading: false,
                 error: null
             }
         case "LOGIN_FAILURE":
             return {
                 ...state,
-                user: null,
+                username: null,
+                accessToken: "null",
+                refreshToken: "null",
                 loading: false,
                 error: action.payload
             }
         case "LOGOUT":
             return {
                 ...state,
-                user: null,
+                username: null,
                 loading: false,
                 error: null
             }
@@ -99,25 +122,32 @@ export const AuthContextProvider = ({ children }) => {
 
     const initializeTokenState = async () => {
         try {
-            const token = await AsyncStorage.getItem('token')
-            if (token !== null) {
-                state['user'['token']] = token
+            const accessToken = await AsyncStorage.getItem('access_token')
+            const refreshToken = await AsyncStorage.getItem('refresh_token')
+
+            if (accessToken !== null && refreshToken !== null) {
+                state['accessToken'] = accessToken
+                state['refreshToken'] = refreshToken
             }
-            return token
         } catch (error) {
             console.log(error);
         }
     }
 
-    initializeTokenState()
+    useEffect(() => {
+        initializeTokenState()
+    }, [])
 
     useEffect(() => {
-        setToken(state['user'['token']])
-    }, [state['user'['token']]])
+        if (state['accessToken'] !== "notInitialized") {
+            setToken("access", state['accessToken'])
+            setToken("refresh", state['refreshToken'])
+        }
+    }, [state['accessToken'] || state['refreshToken']])
 
     return (
         <AuthContext.Provider value={
-            { user: state['user'], loading: state['loading'], error: state['error'], dispatch }}>
+            { username: state['username'], accessToken: state['accessToken'], refreshToken: state['refreshToken'], loading: state['loading'], error: state['error'], dispatch }}>
             {children}
         </AuthContext.Provider>
     )
