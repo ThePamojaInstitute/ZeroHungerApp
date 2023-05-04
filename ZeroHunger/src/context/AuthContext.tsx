@@ -1,20 +1,37 @@
 import { createContext, useEffect, useReducer, Dispatch } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const getToken = async () => {
-    try {
-        const token = await AsyncStorage.getItem('token')
-        return token
-    } catch (error) {
-        console.log(error);
+export const getToken = async (type: string) => {
+    if (type === "access") {
+        try {
+            const token = await AsyncStorage.getItem('access_token')
+            return token
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        try {
+            const token = await AsyncStorage.getItem('refresh_token')
+            return token
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 
-export const setToken = async (value: string) => {
-    try {
-        await AsyncStorage.setItem('token', value)
-    } catch (error) {
-        console.log(error);
+export const setToken = async (type: string, value: string) => {
+    if (type === "access") {
+        try {
+            await AsyncStorage.setItem('access_token', value)
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        try {
+            await AsyncStorage.setItem('refresh_token', value)
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 
@@ -105,13 +122,13 @@ export const AuthContextProvider = ({ children }) => {
 
     const initializeTokenState = async () => {
         try {
-            const token = await AsyncStorage.getItem('token')
-            console.log("from initilize" + token);
+            const accessToken = await AsyncStorage.getItem('access_token')
+            const refreshToken = await AsyncStorage.getItem('refresh_token')
 
-            if (token !== null) {
-                state['accessToken'] = token
+            if (accessToken !== null && refreshToken !== null) {
+                state['accessToken'] = accessToken
+                state['refreshToken'] = refreshToken
             }
-            return token
         } catch (error) {
             console.log(error);
         }
@@ -123,9 +140,10 @@ export const AuthContextProvider = ({ children }) => {
 
     useEffect(() => {
         if (state['accessToken'] !== "notInitialized") {
-            setToken(state['accessToken'])
+            setToken("access", state['accessToken'])
+            setToken("refresh", state['refreshToken'])
         }
-    }, [state['accessToken']])
+    }, [state['accessToken'] || state['refreshToken']])
 
     return (
         <AuthContext.Provider value={
