@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "rea
 import { createUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 
-export const CreateAccountScreen = () => {
+export const CreateAccountScreen = ({navigation}) => {
   const { loading, dispatch } = useContext(AuthContext)
   const [credentials, setCredentials] = useState({
     'username': undefined,
