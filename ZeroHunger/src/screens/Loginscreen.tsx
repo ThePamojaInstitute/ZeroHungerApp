@@ -39,21 +39,6 @@ export const LoginScreen = () => {
     })
   }
 
-  // const logOut = () => {
-  //   (async () => {
-  //     console.log(axiosInstance.defaults.headers.common);
-  //     try {
-  //       const { data } = await axiosInstance.post('/logout', {
-  //         refresh_token: AsyncStorage.getItem('refresh_token')
-  //       }, { headers: { 'Content-Type': 'application/json' } });
-  //       AsyncStorage.clear()
-  //       axiosInstance.defaults.headers.common['Authorization'] = null;
-  //     } catch (e) {
-  //       console.log('logout not working', e)
-  //     }
-  //   })();
-  // }
-
   return (
     <View style={styles.container}>
       <Text style={styles.login}>Zero Hunger</Text>

@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { axiosInstance } from "../../config";
 
 
@@ -46,7 +47,7 @@ export async function modifyUser(user: Object) {
     }
 }
 
-export async function logInUser(user) {
+export async function logInUser(user: Object) {
     if (!user["username"]) {
         return { msg: "Please enter a username", res: null }
     } else if (!user["password"]) {
@@ -63,10 +64,14 @@ export async function logInUser(user) {
 }
 
 export async function logOutUser() {
+    console.log(axiosInstance.defaults.headers.common);
     try {
-        const res = await axiosInstance.post("/logOut")
-        console.log(res.data);
-    } catch (error) {
-        console.log(error);
+        const { data } = await axiosInstance.post('/logout', {
+            refresh_token: AsyncStorage.getItem('refresh_token')
+        }, { headers: { 'Content-Type': 'application/json' } });
+        AsyncStorage.clear()
+        axiosInstance.defaults.headers.common['Authorization'] = null;
+    } catch (e) {
+        console.log('logout not working', e)
     }
 }
