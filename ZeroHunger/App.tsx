@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import * as React from 'react'
 import Feedscreen from './src/screens/FeedScreen';
-import LoginScreen from './src/screens/LoginScreen';
+import LoginScreen from './src/screens/Loginscreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
 import { AuthContextProvider } from './src/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
@@ -23,17 +23,19 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen 
-          name="LoginScreen" 
-          component={LoginScreen}
-          options={{headerShown: false}}/>
-        <Stack.Screen 
-          name="CreateAccountScreen" //Placeholder to return to login screen
-          component={CreateAccountScreen}/>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthContextProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{ headerShown: false }} />
+          <Stack.Screen
+            name="CreateAccountScreen" //Placeholder to return to login screen
+            component={CreateAccountScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthContextProvider>
   )
 }
 
