@@ -133,7 +133,7 @@ export const AuthContextProvider = ({ children }) => {
             if (accessToken !== null && refreshToken !== null) {
                 state['accessToken'] = accessToken
                 state['refreshToken'] = refreshToken
-                state['user'] = JSON.stringify(jwt_decode(accessToken))
+                state['user'] = jwt_decode(accessToken)
             }
         } catch (error) {
             console.log(error);
@@ -147,7 +147,7 @@ export const AuthContextProvider = ({ children }) => {
         if (response.data) {
             state['refreshToken'] = response.data['refresh']
             state['accessToken'] = response.data['access']
-            state['user'] = JSON.stringify(jwt_decode(state['accessToken']))
+            state['user'] = jwt_decode(state['accessToken'])
 
             setToken("access", state['accessToken'])
             setToken("refresh", state['refreshToken'])
