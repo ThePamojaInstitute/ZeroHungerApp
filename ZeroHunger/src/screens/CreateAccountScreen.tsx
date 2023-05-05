@@ -1,11 +1,11 @@
 import React, { useContext, useState } from "react";
 import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
-import { createUser } from "../controllers/auth";
+import { createUser, logOutUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 
-export const CreateAccountScreen = ({navigation}) => {
-  const { loading, dispatch } = useContext(AuthContext)
+export const CreateAccountScreen = ({ navigation }) => {
+  const { user, loading, dispatch } = useContext(AuthContext)
   const [credentials, setCredentials] = useState({
     'username': undefined,
     'email': undefined,
@@ -39,8 +39,20 @@ export const CreateAccountScreen = ({navigation}) => {
     })
   }
 
+  const handleLogOut = (e: GestureResponderEvent) => {
+    logOutUser().then(() => {
+      dispatch({ type: "LOGOUT", payload: null })
+    })
+    navigation.navigate('LoginScreen')
+  }
+
   return (
     <View style={styles.container}>
+      {user && <Text>Hello {user['username']}</Text>}
+      {user &&
+        <TouchableOpacity style={styles.createBtn} onPress={handleLogOut}>
+          <Text style={styles.createBtnText}>Log Out</Text>
+        </TouchableOpacity>}
       <Text style={styles.create}>Create Account</Text>
       <Text>{loading && "Loading..."}</Text>
       <View style={styles.inputView}>

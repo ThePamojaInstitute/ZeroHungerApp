@@ -23,17 +23,19 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen 
-          name="LoginScreen" 
-          component={LoginScreen}
-          options={{headerShown: false}}/>
-        <Stack.Screen 
-          name="CreateAccountScreen" //Placeholder to return to login screen
-          component={CreateAccountScreen}/>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthContextProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{ headerShown: false }} />
+          <Stack.Screen
+            name="CreateAccountScreen" //Placeholder to return to login screen
+            component={CreateAccountScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthContextProvider>
   )
 }
 

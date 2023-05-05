@@ -1,5 +1,8 @@
 import { createContext, useEffect, useReducer, Dispatch } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import jwt_decode from "jwt-decode";
+import { axiosInstance } from "../../config";
+import { logOutUser } from "../controllers/auth";
 
 export const getToken = async (type: string) => {
     if (type === "access") {
@@ -36,7 +39,7 @@ export const setToken = async (type: string, value: string) => {
 }
 
 interface IINITIAL_STATE {
-    username: string,
+    user: string,
     accessToken: string,
     refreshToken: string,
     loading: boolean,
@@ -45,7 +48,7 @@ interface IINITIAL_STATE {
 }
 
 const INITIAL_STATE = {
-    username: null,
+    user: null,
     accessToken: "notInitialized",
     refreshToken: "notInitialized",
     loading: false,
@@ -60,16 +63,16 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
         case "LOGIN_START":
             return {
                 ...state,
-                username: null,
-                accessToken: "null",
-                refreshToken: "null",
+                user: null,
+                accessToken: null,
+                refreshToken: null,
                 loading: true,
                 error: null
             }
         case "LOGIN_SUCCESS":
             return {
                 ...state,
-                username: action.payload.username,
+                user: action.payload.user,
                 accessToken: action.payload.token['access'],
                 refreshToken: action.payload.token['refresh'],
                 loading: false,
@@ -78,16 +81,18 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
         case "LOGIN_FAILURE":
             return {
                 ...state,
-                username: null,
-                accessToken: "null",
-                refreshToken: "null",
+                user: null,
+                accessToken: null,
+                refreshToken: null,
                 loading: false,
                 error: action.payload
             }
         case "LOGOUT":
             return {
                 ...state,
-                username: null,
+                user: null,
+                accessToken: null,
+                refreshToken: null,
                 loading: false,
                 error: null
             }
@@ -128,9 +133,26 @@ export const AuthContextProvider = ({ children }) => {
             if (accessToken !== null && refreshToken !== null) {
                 state['accessToken'] = accessToken
                 state['refreshToken'] = refreshToken
+                state['user'] = jwt_decode(accessToken)
             }
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    const updateTokens = async () => {
+        const response = await axiosInstance.post('token/refresh/', {
+            refresh: state['refreshToken']
+        })
+        if (response.data) {
+            state['refreshToken'] = response.data['refresh']
+            state['accessToken'] = response.data['access']
+            state['user'] = jwt_decode(state['accessToken'])
+
+            setToken("access", state['accessToken'])
+            setToken("refresh", state['refreshToken'])
+        } else {
+            logOutUser()
         }
     }
 
@@ -145,9 +167,26 @@ export const AuthContextProvider = ({ children }) => {
         }
     }, [state['accessToken'] || state['refreshToken']])
 
+    useEffect(() => {
+
+        if (state['loading']) {
+            updateTokens()
+        }
+
+        const fourMinutes = 1000 * 60 * 4
+
+        const interval = setInterval(() => {
+            if (state['refreshToken']) {
+                updateTokens()
+            }
+        }, fourMinutes)
+        return () => clearInterval(interval)
+
+    }, [state['refreshToken'], state['accessToken'], state['loading']])
+
     return (
         <AuthContext.Provider value={
-            { username: state['username'], accessToken: state['accessToken'], refreshToken: state['refreshToken'], loading: state['loading'], error: state['error'], dispatch }}>
+            { user: state['user'], accessToken: state['accessToken'], refreshToken: state['refreshToken'], loading: state['loading'], error: state['error'], dispatch }}>
             {children}
         </AuthContext.Provider>
     )

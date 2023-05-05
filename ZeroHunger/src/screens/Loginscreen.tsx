@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
-import { logInUser } from "../controllers/auth";
+import { logInUser, logOutUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { axiosInstance } from "../../config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import jwt_decode from "jwt-decode";
 
 
-export const LoginScreen = ({navigation}) => {
+export const LoginScreen = ({ navigation }) => {
 
   const { loading, dispatch } = useContext(AuthContext)
   const [credentials, setCredentials] = useState({
@@ -26,9 +26,14 @@ export const LoginScreen = ({navigation}) => {
     logInUser(credentials).then(async res => {
       if (res.msg === "success") {
         await axiosInstance.post("/token/", credentials).then(resp => {
-          dispatch({ type: "LOGIN_SUCCESS", payload: { "username": res.res, "token": resp.data } })
-          console.log(axiosInstance.defaults.headers);
+          dispatch({
+            type: "LOGIN_SUCCESS", payload: {
+              "user": jwt_decode(resp.data['access']),
+              "token": resp.data
+            }
+          })
         })
+        navigation.navigate('CreateAccountScreen')
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
         setErrMsg("Invalid credentials")
