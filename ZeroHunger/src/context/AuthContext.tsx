@@ -1,5 +1,6 @@
 import { createContext, useEffect, useReducer, Dispatch } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import jwt_decode from "jwt-decode";
 
 export const getToken = async (type: string) => {
     if (type === "access") {
@@ -36,7 +37,7 @@ export const setToken = async (type: string, value: string) => {
 }
 
 interface IINITIAL_STATE {
-    username: string,
+    user: string,
     accessToken: string,
     refreshToken: string,
     loading: boolean,
@@ -45,7 +46,7 @@ interface IINITIAL_STATE {
 }
 
 const INITIAL_STATE = {
-    username: null,
+    user: null,
     accessToken: "notInitialized",
     refreshToken: "notInitialized",
     loading: false,
@@ -60,16 +61,16 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
         case "LOGIN_START":
             return {
                 ...state,
-                username: null,
-                accessToken: "null",
-                refreshToken: "null",
+                user: null,
+                accessToken: null,
+                refreshToken: null,
                 loading: true,
                 error: null
             }
         case "LOGIN_SUCCESS":
             return {
                 ...state,
-                username: action.payload.username,
+                user: action.payload.user,
                 accessToken: action.payload.token['access'],
                 refreshToken: action.payload.token['refresh'],
                 loading: false,
@@ -78,16 +79,18 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
         case "LOGIN_FAILURE":
             return {
                 ...state,
-                username: null,
-                accessToken: "null",
-                refreshToken: "null",
+                user: null,
+                accessToken: null,
+                refreshToken: null,
                 loading: false,
                 error: action.payload
             }
         case "LOGOUT":
             return {
                 ...state,
-                username: null,
+                user: null,
+                accessToken: null,
+                refreshToken: null,
                 loading: false,
                 error: null
             }
@@ -128,6 +131,8 @@ export const AuthContextProvider = ({ children }) => {
             if (accessToken !== null && refreshToken !== null) {
                 state['accessToken'] = accessToken
                 state['refreshToken'] = refreshToken
+                state['user'] = JSON.stringify(jwt_decode(accessToken))
+                console.log("the user is: " + state['user'])
             }
         } catch (error) {
             console.log(error);
@@ -147,7 +152,7 @@ export const AuthContextProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={
-            { username: state['username'], accessToken: state['accessToken'], refreshToken: state['refreshToken'], loading: state['loading'], error: state['error'], dispatch }}>
+            { user: state['user'], accessToken: state['accessToken'], refreshToken: state['refreshToken'], loading: state['loading'], error: state['error'], dispatch }}>
             {children}
         </AuthContext.Provider>
     )

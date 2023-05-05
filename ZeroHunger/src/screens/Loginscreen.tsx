@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "rea
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { axiosInstance } from "../../config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import jwt_decode from "jwt-decode";
 
 
 export const LoginScreen = () => {
@@ -26,8 +26,12 @@ export const LoginScreen = () => {
     logInUser(credentials).then(async res => {
       if (res.msg === "success") {
         await axiosInstance.post("/token/", credentials).then(resp => {
-          dispatch({ type: "LOGIN_SUCCESS", payload: { "username": res.res, "token": resp.data } })
-          console.log(axiosInstance.defaults.headers);
+          dispatch({
+            type: "LOGIN_SUCCESS", payload: {
+              "user": JSON.stringify(jwt_decode(resp.data['access'])),
+              "token": resp.data
+            }
+          })
         })
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })

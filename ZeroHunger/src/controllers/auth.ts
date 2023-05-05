@@ -57,6 +57,9 @@ export async function logInUser(user: Object) {
     try {
 
         const res = await axiosInstance.post("/logIn", user)
+        if (res.data == undefined) {
+            return { msg: "failure", res: res['response'] }
+        }
         return { msg: "success", res: res.data }
     } catch (error) {
         return { msg: "failure", res: error.response }
@@ -64,9 +67,8 @@ export async function logInUser(user: Object) {
 }
 
 export async function logOutUser() {
-    console.log(axiosInstance.defaults.headers.common);
     try {
-        const { data } = await axiosInstance.post('/logout', {
+        await axiosInstance.post('/logOut', {
             refresh_token: AsyncStorage.getItem('refresh_token')
         }, { headers: { 'Content-Type': 'application/json' } });
         AsyncStorage.clear()
