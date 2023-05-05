@@ -1,6 +1,8 @@
 import { createContext, useEffect, useReducer, Dispatch } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwt_decode from "jwt-decode";
+import { axiosInstance } from "../../config";
+import { logOutUser } from "../controllers/auth";
 
 export const getToken = async (type: string) => {
     if (type === "access") {
@@ -132,10 +134,25 @@ export const AuthContextProvider = ({ children }) => {
                 state['accessToken'] = accessToken
                 state['refreshToken'] = refreshToken
                 state['user'] = JSON.stringify(jwt_decode(accessToken))
-                console.log("the user is: " + state['user'])
             }
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    const updateTokens = async () => {
+        const response = await axiosInstance.post('token/refresh/', {
+            refresh: state['refreshToken']
+        })
+        if (response.data) {
+            state['refreshToken'] = response.data['refresh']
+            state['accessToken'] = response.data['access']
+            state['user'] = JSON.stringify(jwt_decode(state['accessToken']))
+
+            setToken("access", state['accessToken'])
+            setToken("refresh", state['refreshToken'])
+        } else {
+            logOutUser()
         }
     }
 
@@ -149,6 +166,23 @@ export const AuthContextProvider = ({ children }) => {
             setToken("refresh", state['refreshToken'])
         }
     }, [state['accessToken'] || state['refreshToken']])
+
+    useEffect(() => {
+
+        if (state['loading']) {
+            updateTokens()
+        }
+
+        const fourMinutes = 1000 * 60 * 4
+
+        const interval = setInterval(() => {
+            if (state['refreshToken']) {
+                updateTokens()
+            }
+        }, fourMinutes)
+        return () => clearInterval(interval)
+
+    }, [state['refreshToken'], state['accessToken'], state['loading']])
 
     return (
         <AuthContext.Provider value={
