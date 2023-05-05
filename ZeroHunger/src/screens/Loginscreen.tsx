@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
+import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent, Linking } from "react-native";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 import { logInUser, logOutUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
@@ -44,6 +44,19 @@ export const LoginScreen = ({ navigation }) => {
     })
   }
 
+  const handlePasswordRecovery = () =>
+  {
+    Linking.canOpenURL("http://127.0.0.1:8000/password-reset/").then(supported =>
+    {
+      if (supported) {
+        Linking.openURL("http://127.0.0.1:8000/password-reset/");
+      } else {
+        console.log("Cannot open URL: " + "http://127.0.0.1:8000/password-reset/");
+      }
+    }
+    )  //replace this with actual URL later
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.login}>Zero Hunger</Text>
@@ -65,7 +78,7 @@ export const LoginScreen = ({ navigation }) => {
           onChange={e => handleChange(e, 'password')}
         />
       </View>
-      <TouchableOpacity /*onPress={}*/>
+      <TouchableOpacity onPress={handlePasswordRecovery}>
         <Text style={styles.forgotBtn}>Forgot password?</Text>
       </TouchableOpacity>
       <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>

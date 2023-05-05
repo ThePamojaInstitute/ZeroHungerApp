@@ -182,7 +182,7 @@ SIMPLE_JWT = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend" #Testing email, does NOT send an actual email, writes log file to backendapi/sent_emails
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 #EMAIL_USE_TLS = False
 #EMAIL_PORT = 465
