@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer, Dispatch } from "react"
+import { createContext, useEffect, useReducer, Dispatch, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwt_decode from "jwt-decode";
 import { axiosInstance } from "../../config";
@@ -124,13 +124,14 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
 
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE)
+    const [firstLoad, setFirstLoad] = useState(true)
 
     const initializeTokenState = async () => {
         try {
             const accessToken = await AsyncStorage.getItem('access_token')
             const refreshToken = await AsyncStorage.getItem('refresh_token')
 
-            if (accessToken !== null && refreshToken !== null) {
+            if (accessToken && refreshToken) {
                 state['accessToken'] = accessToken
                 state['refreshToken'] = refreshToken
                 state['user'] = jwt_decode(accessToken)
@@ -141,6 +142,8 @@ export const AuthContextProvider = ({ children }) => {
     }
 
     const updateTokens = async () => {
+        console.log("im called");
+
         const response = await axiosInstance.post('token/refresh/', {
             refresh: state['refreshToken']
         })
@@ -154,6 +157,10 @@ export const AuthContextProvider = ({ children }) => {
         } else {
             logOutUser()
         }
+
+        if (firstLoad) {
+            setFirstLoad(false)
+        }
     }
 
     useEffect(() => {
@@ -165,11 +172,11 @@ export const AuthContextProvider = ({ children }) => {
             setToken("access", state['accessToken'])
             setToken("refresh", state['refreshToken'])
         }
-    }, [state['accessToken'] || state['refreshToken']])
+    }, [state['accessToken'], state['refreshToken']])
 
     useEffect(() => {
 
-        if (state['loading']) {
+        if (firstLoad) {
             updateTokens()
         }
 
@@ -182,12 +189,12 @@ export const AuthContextProvider = ({ children }) => {
         }, fourMinutes)
         return () => clearInterval(interval)
 
-    }, [state['refreshToken'], state['accessToken'], state['loading']])
+    }, [state['refreshToken'], state['accessToken'], firstLoad])
 
     return (
         <AuthContext.Provider value={
             { user: state['user'], accessToken: state['accessToken'], refreshToken: state['refreshToken'], loading: state['loading'], error: state['error'], dispatch }}>
-            {children}
+            {firstLoad ? null : children}
         </AuthContext.Provider>
     )
 }
