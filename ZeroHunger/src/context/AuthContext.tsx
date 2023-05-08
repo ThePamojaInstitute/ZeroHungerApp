@@ -4,24 +4,6 @@ import jwt_decode from "jwt-decode";
 import { axiosInstance } from "../../config";
 import { logOutUser } from "../controllers/auth";
 
-export const getToken = async (type: string) => {
-    if (type === "access") {
-        try {
-            const token = await AsyncStorage.getItem('access_token')
-            return token
-        } catch (error) {
-            console.log(error);
-        }
-    } else {
-        try {
-            const token = await AsyncStorage.getItem('refresh_token')
-            return token
-        } catch (error) {
-            console.log(error);
-        }
-    }
-}
-
 export const setToken = async (type: string, value: string) => {
     if (type === "access") {
         try {
@@ -128,13 +110,20 @@ export const AuthContextProvider = ({ children }) => {
 
     const initializeTokenState = async () => {
         try {
-            const accessToken = await AsyncStorage.getItem('access_token')
             const refreshToken = await AsyncStorage.getItem('refresh_token')
 
-            if (accessToken && refreshToken) {
-                state['accessToken'] = accessToken
-                state['refreshToken'] = refreshToken
-                state['user'] = jwt_decode(accessToken)
+            if (refreshToken) {
+                const response = await axiosInstance.post('token/refresh/', { refresh: refreshToken })
+                if (response.data) {
+                    state['refreshToken'] = response.data['refresh']
+                    state['accessToken'] = response.data['access']
+                    state['user'] = jwt_decode(state['accessToken'])
+
+                    setToken("access", state['accessToken'])
+                    setToken("refresh", state['refreshToken'])
+                } else {
+                    logOutUser()
+                }
             }
         } catch (error) {
             console.log(error);
@@ -142,30 +131,23 @@ export const AuthContextProvider = ({ children }) => {
     }
 
     const updateTokens = async () => {
-        console.log("im called");
-
-        const response = await axiosInstance.post('token/refresh/', {
-            refresh: state['refreshToken']
-        })
-        if (response.data) {
-            state['refreshToken'] = response.data['refresh']
-            state['accessToken'] = response.data['access']
-            state['user'] = jwt_decode(state['accessToken'])
-
-            setToken("access", state['accessToken'])
-            setToken("refresh", state['refreshToken'])
-        } else {
-            logOutUser()
-        }
-
         if (firstLoad) {
-            setFirstLoad(false)
+            initializeTokenState().then(() => { setFirstLoad(false) })
+        } else {
+            const response = await axiosInstance.post('token/refresh/', { refresh: state['refreshToken'] })
+
+            if (response.data) {
+                state['refreshToken'] = response.data['refresh']
+                state['accessToken'] = response.data['access']
+                state['user'] = jwt_decode(state['accessToken'])
+
+                setToken("access", state['accessToken'])
+                setToken("refresh", state['refreshToken'])
+            } else {
+                logOutUser()
+            }
         }
     }
-
-    useEffect(() => {
-        initializeTokenState()
-    }, [])
 
     useEffect(() => {
         if (state['accessToken'] !== "notInitialized") {
@@ -175,7 +157,6 @@ export const AuthContextProvider = ({ children }) => {
     }, [state['accessToken'], state['refreshToken']])
 
     useEffect(() => {
-
         if (firstLoad) {
             updateTokens()
         }

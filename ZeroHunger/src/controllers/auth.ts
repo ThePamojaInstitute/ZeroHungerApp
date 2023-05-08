@@ -68,11 +68,13 @@ export async function logInUser(user: Object) {
 
 export async function logOutUser() {
     try {
-        await axiosInstance.post('/logOut', {
-            refresh_token: AsyncStorage.getItem('refresh_token')
-        }, { headers: { 'Content-Type': 'application/json' } });
-        AsyncStorage.clear()
-        axiosInstance.defaults.headers.common['Authorization'] = null;
+        AsyncStorage.getItem('refresh_token').then(async res => {
+            await axiosInstance.post('/logOut', {
+                refresh_token: res
+            }, { headers: { 'Content-Type': 'application/json' } })
+        }).then(() => {
+            AsyncStorage.clear()
+        })
     } catch (e) {
         console.log('logout not working', e)
     }

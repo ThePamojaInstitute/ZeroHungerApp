@@ -8,8 +8,7 @@ import jwt_decode from "jwt-decode";
 
 
 export const LoginScreen = ({ navigation }) => {
-
-  const { loading, dispatch } = useContext(AuthContext)
+  const { user, loading, dispatch } = useContext(AuthContext)
   const [credentials, setCredentials] = useState({
     'username': undefined,
     'password': undefined
