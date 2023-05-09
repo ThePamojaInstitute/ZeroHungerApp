@@ -150,7 +150,7 @@ export const AuthContextProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        if (state['accessToken'] !== "notInitialized") {
+        if (state['accessToken'] !== "notInitialized" && state['accessToken']) {
             setToken("access", state['accessToken'])
             setToken("refresh", state['refreshToken'])
         }

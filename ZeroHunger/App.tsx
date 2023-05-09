@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import * as React from 'react'
 import Feedscreen from './src/screens/FeedScreen';
-import LoginScreen from './src/screens/Loginscreen';
+import LoginScreen from './src/screens/LoginScreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
 import { AuthContextProvider } from './src/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
