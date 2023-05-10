@@ -3,9 +3,12 @@ import { render, fireEvent, act } from '@testing-library/react-native';
 import React from "react";
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper')
+const mockNavigation = {
+    navigate: jest.fn(),
+};
 
 it('renders default elements', () => {
-    const { getAllByText, getAllByPlaceholderText } = render(<LoginScreen navigation={jest.fn()} />)
+    const { getAllByText, getAllByPlaceholderText } = render(<LoginScreen navigation={mockNavigation} />)
     expect(getAllByText("Login").length).toBe(1)
     getAllByPlaceholderText("Username")
     getAllByPlaceholderText("Password")
@@ -14,7 +17,7 @@ it('renders default elements', () => {
 describe('events on button press', () => {
 
     it('calls preventDefault', async () => {
-        const { getByTestId } = render(<LoginScreen navigation={jest.fn()} />)
+        const { getByTestId } = render(<LoginScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() };
         await act(() => {
             fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
@@ -24,7 +27,7 @@ describe('events on button press', () => {
     })
 
     it('shows error message when not entering username', async () => {
-        const { getByTestId, getByText, queryAllByText } = render(<LoginScreen navigation={jest.fn()} />)
+        const { getByTestId, getByText, queryAllByText } = render(<LoginScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() };
         await act(() => {
             fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
@@ -35,7 +38,7 @@ describe('events on button press', () => {
     })
 
     it('shows error message when entering username but not password', async () => {
-        const { getByTestId, getByText } = render(<LoginScreen navigation={jest.fn()} />)
+        const { getByTestId, getByText } = render(<LoginScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("LogIn.usernameInput")
 
@@ -49,7 +52,7 @@ describe('events on button press', () => {
     })
 
     it('shows no errors when entering both username and password', async () => {
-        const { getByTestId, queryAllByText } = render(<LoginScreen navigation={jest.fn()} />)
+        const { getByTestId, queryAllByText } = render(<LoginScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("LogIn.usernameInput")
         const passwordInput = getByTestId("LogIn.passwordInput")
@@ -70,9 +73,6 @@ describe('events on button press', () => {
 
 describe('testing navigation', () => {
     it('navigates to CreateAccount screen when pressing Sign Up button', () => {
-        const mockNavigation = {
-            navigate: jest.fn(),
-        };
         const { getByTestId } = render(<LoginScreen navigation={mockNavigation} />)
 
         const button = getByTestId("SignUp.Button")

@@ -17,6 +17,8 @@ export async function createUser(user: Object) {
 
     if (!user['password']) {
         return { msg: "Please enter a password", res: null }
+    } else if (!user['confPassword']) {
+        return { msg: "Please enter a confirmation password", res: null }
     } else if (user['password'] != user['confPassword']) {
         return { msg: "The passwords you entered do not match", res: null }
     }

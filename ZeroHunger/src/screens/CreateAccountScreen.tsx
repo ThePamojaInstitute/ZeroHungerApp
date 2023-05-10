@@ -26,6 +26,7 @@ export const CreateAccountScreen = ({ navigation }) => {
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
         setErrMsg("")
         setUpdateMsg("Created!")
+        navigation.navigate('LoginScreen')
       } else if (res.msg === "failure") {
         setErrMsg("An error occurred")
         dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
@@ -54,6 +55,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       <Text>{loading && "Loading..."}</Text>
       <View style={styles.inputView}>
         <TextInput
+          testID="SignUp.usernameInput"
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="#000000"
@@ -62,6 +64,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          testID="SignUp.emailInput"
           style={styles.input}
           placeholder="Email Address"
           placeholderTextColor="#000000"
@@ -71,6 +74,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          testID="SignUp.passwordInput"
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="#000000"
@@ -80,6 +84,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          testID="SignUp.confPasswordInput"
           style={styles.input}
           placeholder="Confirm Password"
           placeholderTextColor="#000000"
@@ -89,7 +94,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       </View>
       <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>
       <Text style={{ color: "green" }}>{updateMsg && updateMsg}</Text>
-      <TouchableOpacity style={styles.createBtn} onPress={handleSignUp}>
+      <TouchableOpacity testID="SignUp.Button" style={styles.createBtn} onPress={handleSignUp}>
         <Text style={styles.createBtnText}>Sign Up</Text>
       </TouchableOpacity>
     </View>
