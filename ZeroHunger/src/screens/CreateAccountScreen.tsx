@@ -6,25 +6,22 @@ import { AuthContext } from "../context/AuthContext";
 
 export const CreateAccountScreen = ({ navigation }) => {
   const { user, loading, dispatch } = useContext(AuthContext)
-  const [credentials, setCredentials] = useState({
-    'username': undefined,
-    'email': undefined,
-    'password': undefined,
-    'confPassword': undefined
-  })
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [confPass, setConfPass] = useState("")
   const [errMsg, setErrMsg] = useState("")
   const [updateMsg, setUpdateMsg] = useState("")
 
-  const handleChange = (e: NativeSyntheticEvent<TextInputChangeEventData>, type: string) => {
-    if (type === "confPass") { setConfPass(e.nativeEvent.text) }
-    else { setCredentials(prev => ({ ...prev, [type]: e.nativeEvent.text })) }
-  }
-
   const handleSignUp = (e: GestureResponderEvent) => {
     e.preventDefault()
     dispatch({ type: "SIGNUP_START", payload: null })
-    createUser(credentials).then(res => {
+    createUser({
+      "username": username,
+      "email": email,
+      "password": password,
+      "confPassword": confPass
+    }).then(res => {
       if (res.msg === "success") {
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
         setErrMsg("")
@@ -60,7 +57,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="#000000"
-          onChange={e => handleChange(e, 'username')}
+          onChangeText={setUsername}
         />
       </View>
       <View style={styles.inputView}>
@@ -69,7 +66,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           placeholder="Email Address"
           placeholderTextColor="#000000"
           secureTextEntry={false}
-          onChange={e => handleChange(e, 'email')}
+          onChangeText={setEmail}
         />
       </View>
       <View style={styles.inputView}>
@@ -78,7 +75,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           placeholder="Password"
           placeholderTextColor="#000000"
           secureTextEntry={true}
-          onChange={e => handleChange(e, 'password')}
+          onChangeText={setPassword}
         />
       </View>
       <View style={styles.inputView}>
@@ -87,7 +84,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           placeholder="Confirm Password"
           placeholderTextColor="#000000"
           secureTextEntry={true}
-          onChange={e => handleChange(e, 'confPassword')}
+          onChangeText={setConfPass}
         />
       </View>
       <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>

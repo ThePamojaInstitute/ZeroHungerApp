@@ -9,22 +9,16 @@ import jwt_decode from "jwt-decode";
 
 export const LoginScreen = ({ navigation }) => {
   const { user, loading, dispatch } = useContext(AuthContext)
-  const [credentials, setCredentials] = useState({
-    'username': undefined,
-    'password': undefined
-  })
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
   const [errMsg, setErrMsg] = useState("")
-
-  const handleChange = (e: NativeSyntheticEvent<TextInputChangeEventData>, type: string) => {
-    setCredentials(prev => ({ ...prev, [type]: e.nativeEvent.text }))
-  }
 
   const handleLogin = (e: GestureResponderEvent) => {
     e.preventDefault()
     dispatch({ type: "LOGIN_START", payload: null })
-    logInUser(credentials).then(async res => {
+    logInUser({ "username": username, "password": password }).then(async res => {
       if (res.msg === "success") {
-        await axiosInstance.post("/token/", credentials).then(resp => {
+        await axiosInstance.post("/token/", { "username": username, "password": password }).then(resp => {
           dispatch({
             type: "LOGIN_SUCCESS", payload: {
               "user": jwt_decode(resp.data['access']),
@@ -49,29 +43,33 @@ export const LoginScreen = ({ navigation }) => {
       <Text>{loading && "Loading..."}</Text>
       <View style={styles.inputView}>
         <TextInput
+          testID="LogIn.usernameInput"
+          value={username}
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="#000000"
-          onChange={e => handleChange(e, 'username')}
+          onChangeText={setUsername}
         />
       </View>
       <View style={styles.inputView}>
         <TextInput
+          testID="LogIn.passwordInput"
+          value={password}
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="#000000"
           secureTextEntry={true}
-          onChange={e => handleChange(e, 'password')}
+          onChangeText={setPassword}
         />
       </View>
       <TouchableOpacity /*onPress={}*/>
         <Text style={styles.forgotBtn}>Forgot password?</Text>
       </TouchableOpacity>
-      <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>
-      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+      <Text testID="errMsg" style={{ color: "red" }}>{errMsg && errMsg}</Text>
+      <TouchableOpacity testID="LogIn.Button" style={styles.loginBtn} onPress={handleLogin}>
         <Text style={styles.loginBtnText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.signUpBtn} onPress={() => navigation.navigate("CreateAccountScreen")}>
+      <TouchableOpacity testID="SignUp.Button" style={styles.signUpBtn} onPress={() => navigation.navigate("CreateAccountScreen")}>
         <Text style={styles.signUpBtnText}>Sign Up</Text>
       </TouchableOpacity>
     </View>
