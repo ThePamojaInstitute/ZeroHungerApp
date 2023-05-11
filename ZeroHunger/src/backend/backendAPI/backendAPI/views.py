@@ -42,7 +42,7 @@ class createUser(APIView):
             )
             return Response(serializer.data, status=201)
         else:
-            return Response("ERROR: " + serializer.errors, status=401)
+            return Response(serializer.errors, status=401)
       
     
 class deleteUser(APIView):
