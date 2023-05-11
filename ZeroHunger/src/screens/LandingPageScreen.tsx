@@ -4,6 +4,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList } from "react-native";
 import { AuthContext } from "../context/AuthContext";
+import { logOutUser } from "../controllers/auth";
 
 //Flatlist data
 const Item = ({ name }) => {
@@ -37,7 +38,7 @@ const renderItem = ({ item }) => (
 
 //Temporary landing page screen to test tokens
 export const LandingPageScreen = ({ navigation }) => {
-    const { user } = useContext(AuthContext)
+    const { user, dispatch } = useContext(AuthContext)
 
     useEffect(() => {
         if (!user) {
@@ -45,11 +46,22 @@ export const LandingPageScreen = ({ navigation }) => {
         }
     }, [])
 
+    const handleLogOut = (e: GestureResponderEvent) => {
+        logOutUser().then(() => {
+            dispatch({ type: "LOGOUT", payload: null })
+        }).then(() => { navigation.navigate('LoginScreen') })
+
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.landingPageText}>
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
+                {user &&
+                    <TouchableOpacity style={styles.logOutBtn} onPress={handleLogOut}>
+                        <Text style={styles.logOutBtnText}>Log Out</Text>
+                    </TouchableOpacity>}
             </View>
             <View style={styles.pressable}>
                 <Pressable
@@ -105,6 +117,21 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 50,
         fontWeight: 'bold',
+    },
+    logOutBtn: {
+        title: "Login",
+        width: "7%",
+        borderRadius: 25,
+        marginTop: 10,
+        height: 50,
+        alignItems: "center",
+        backgroundColor: "#6A6A6A",
+    },
+    logOutBtnText: {
+        color: "#FFFFFF",
+        padding: 15,
+        marginLeft: 10,
+        fontSize: 15,
     },
     pressable: {
         flexDirection: 'row',

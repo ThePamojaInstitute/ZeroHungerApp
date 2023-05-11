@@ -32,8 +32,7 @@ export const LoginScreen = ({ navigation }) => {
               "token": resp.data
             }
           })
-        })
-        navigation.navigate('LandingPageScreenTemp')
+        }).then(() => { navigation.navigate('LandingPageScreenTemp') })
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
         setErrMsg("Invalid credentials")

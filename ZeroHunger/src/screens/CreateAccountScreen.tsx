@@ -40,8 +40,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   const handleLogOut = (e: GestureResponderEvent) => {
     logOutUser().then(() => {
       dispatch({ type: "LOGOUT", payload: null })
-    })
-    navigation.navigate('LoginScreen')
+    }).then(() => { navigation.navigate('LoginScreen') })
   }
 
   return (
