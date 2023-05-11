@@ -1,15 +1,16 @@
 //TODO Track button presses (underline button or highlight)
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList } from "react-native";
+import { AuthContext } from "../context/AuthContext";
 
 //Flatlist data
-const Item = ({name}) => {
+const Item = ({ name }) => {
     return (
         <View style={styles.item}>
             <TouchableOpacity>
-                <Text style={{textAlign:'center'}}>{name}</Text>
+                <Text style={{ textAlign: 'center' }}>{name}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -17,45 +18,53 @@ const Item = ({name}) => {
 
 //Food categories placeholder
 const foods = [
-    {name: 'Food1'},
-    {name: 'Food2'},
-    {name: 'Food3'},
-    {name: 'Food4'},
-    {name: 'Food5'},
-    {name: 'Food6'},
-    {name: 'Food7'},
-    {name: 'Food8'},
-    {name: 'Food9'},
-    {name: 'Food10'},
+    { name: 'Food1' },
+    { name: 'Food2' },
+    { name: 'Food3' },
+    { name: 'Food4' },
+    { name: 'Food5' },
+    { name: 'Food6' },
+    { name: 'Food7' },
+    { name: 'Food8' },
+    { name: 'Food9' },
+    { name: 'Food10' },
 ]
 
 //Render flatlist items
-const renderItem = ({item}) => (
-    <Item name={item.name}/>
+const renderItem = ({ item }) => (
+    <Item name={item.name} />
 );
 
 //Temporary landing page screen to test tokens
-export const LandingPageScreen = ({navigation}) => {
+export const LandingPageScreen = ({ navigation }) => {
+    const { user } = useContext(AuthContext)
+
+    useEffect(() => {
+        if (!user) {
+            navigation.navigate('LoginScreen')
+        }
+    }, [])
+
     return (
         <View style={styles.container}>
             <View style={styles.landingPageText}>
                 <Text style={styles.text}>Temporary Landing Page</Text>
-                <Text>(Good Morning User)</Text> 
+                <Text>Good Morning {user ? user['username'] : "User"}</Text>
             </View>
             <View style={styles.pressable}>
                 <Pressable
-                    style={({pressed}) => [
+                    style={({ pressed }) => [
                         {
-                            backgroundColor : pressed ? '#F0F000' : '#FFFFFF',
+                            backgroundColor: pressed ? '#F0F000' : '#FFFFFF',
                         },
                         styles.pressableText,
                     ]}>
                     <Text style={styles.pressableText}>Requests</Text>
                 </Pressable>
                 <Pressable
-                    style={({pressed}) => [
+                    style={({ pressed }) => [
                         {
-                            backgroundColor : pressed ? '#F0F000' : '#FFFFFF',
+                            backgroundColor: pressed ? '#F0F000' : '#FFFFFF',
                             marginLeft: 40,
                         },
                         styles.pressableText,
@@ -64,7 +73,7 @@ export const LandingPageScreen = ({navigation}) => {
                 </Pressable>
             </View>
             <Text style={styles.categoryText}>Categories</Text>
-            <View style={{marginLeft:20}}>
+            <View style={{ marginLeft: 20 }}>
                 <FlatList
                     data={foods}
                     renderItem={renderItem}
@@ -111,8 +120,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginLeft: 25,
         fontSize: 15,
-        alignItems:'center',
-        justifyContent:'center',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     item: {
         backgroundColor: '#FFFFFF',

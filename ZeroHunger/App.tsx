@@ -49,16 +49,16 @@ export default function App() {
               )
             }}
           />
-          {/* <Stack.Screen
-          name="LoginScreen"
-          component={LoginScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="CreateAccountScreen" //Placeholder header to return to login screen
-          component={CreateAccountScreen}
+          <Stack.Screen
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CreateAccountScreen" //Placeholder header to return to login screen
+            component={CreateAccountScreen}
           // options={{headerShown: false}}
-        /> */}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthContextProvider>
