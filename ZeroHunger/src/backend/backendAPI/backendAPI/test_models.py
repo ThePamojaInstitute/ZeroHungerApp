@@ -4,6 +4,8 @@ from django.urls import reverse
 from datetime import datetime
 from .models import BoardPost, BasicUser
 
+#Run tests with "python manage.py test backendAPI.test_models"
+
 class TestModels(TestCase):
     # client = Client()
 
