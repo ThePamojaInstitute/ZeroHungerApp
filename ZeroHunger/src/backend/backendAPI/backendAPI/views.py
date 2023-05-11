@@ -30,7 +30,6 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 class createUser(APIView):
     def post(self, request, format=None): #POST a new user to the database\
-        
         serializer = ResgistrationSerializer(data=request.data)
         if (serializer.is_valid()):
             serializer.save()
@@ -43,7 +42,7 @@ class createUser(APIView):
             )
             return Response(serializer.data, status=201)
         else:
-            return Response("ERROR, serializer isn't valid", status=401)
+            return Response(serializer.errors, status=401)
       
     
 class deleteUser(APIView):

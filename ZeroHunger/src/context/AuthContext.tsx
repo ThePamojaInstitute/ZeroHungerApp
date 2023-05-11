@@ -1,26 +1,8 @@
-import { createContext, useEffect, useReducer, Dispatch } from "react"
+import { createContext, useEffect, useReducer, Dispatch, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwt_decode from "jwt-decode";
 import { axiosInstance } from "../../config";
 import { logOutUser } from "../controllers/auth";
-
-export const getToken = async (type: string) => {
-    if (type === "access") {
-        try {
-            const token = await AsyncStorage.getItem('access_token')
-            return token
-        } catch (error) {
-            console.log(error);
-        }
-    } else {
-        try {
-            const token = await AsyncStorage.getItem('refresh_token')
-            return token
-        } catch (error) {
-            console.log(error);
-        }
-    }
-}
 
 export const setToken = async (type: string, value: string) => {
     if (type === "access") {
@@ -124,16 +106,24 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
 
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE)
+    const [firstLoad, setFirstLoad] = useState(true)
 
     const initializeTokenState = async () => {
         try {
-            const accessToken = await AsyncStorage.getItem('access_token')
             const refreshToken = await AsyncStorage.getItem('refresh_token')
 
-            if (accessToken !== null && refreshToken !== null) {
-                state['accessToken'] = accessToken
-                state['refreshToken'] = refreshToken
-                state['user'] = jwt_decode(accessToken)
+            if (refreshToken) {
+                const response = await axiosInstance.post('token/refresh/', { refresh: refreshToken })
+                if (response.data) {
+                    state['refreshToken'] = response.data['refresh']
+                    state['accessToken'] = response.data['access']
+                    state['user'] = jwt_decode(state['accessToken'])
+
+                    setToken("access", state['accessToken'])
+                    setToken("refresh", state['refreshToken'])
+                } else {
+                    logOutUser()
+                }
             }
         } catch (error) {
             console.log(error);
@@ -141,35 +131,33 @@ export const AuthContextProvider = ({ children }) => {
     }
 
     const updateTokens = async () => {
-        const response = await axiosInstance.post('token/refresh/', {
-            refresh: state['refreshToken']
-        })
-        if (response.data) {
-            state['refreshToken'] = response.data['refresh']
-            state['accessToken'] = response.data['access']
-            state['user'] = jwt_decode(state['accessToken'])
-
-            setToken("access", state['accessToken'])
-            setToken("refresh", state['refreshToken'])
+        if (firstLoad) {
+            initializeTokenState().then(() => { setFirstLoad(false) })
         } else {
-            logOutUser()
+            const response = await axiosInstance.post('token/refresh/', { refresh: state['refreshToken'] })
+
+            if (response.data) {
+                state['refreshToken'] = response.data['refresh']
+                state['accessToken'] = response.data['access']
+                state['user'] = jwt_decode(state['accessToken'])
+
+                setToken("access", state['accessToken'])
+                setToken("refresh", state['refreshToken'])
+            } else {
+                logOutUser()
+            }
         }
     }
 
     useEffect(() => {
-        initializeTokenState()
-    }, [])
-
-    useEffect(() => {
-        if (state['accessToken'] !== "notInitialized") {
+        if (state['accessToken'] !== "notInitialized" && state['accessToken']) {
             setToken("access", state['accessToken'])
             setToken("refresh", state['refreshToken'])
         }
-    }, [state['accessToken'] || state['refreshToken']])
+    }, [state['accessToken'], state['refreshToken']])
 
     useEffect(() => {
-
-        if (state['loading']) {
+        if (firstLoad) {
             updateTokens()
         }
 
@@ -182,12 +170,12 @@ export const AuthContextProvider = ({ children }) => {
         }, fourMinutes)
         return () => clearInterval(interval)
 
-    }, [state['refreshToken'], state['accessToken'], state['loading']])
+    }, [state['refreshToken'], state['accessToken'], firstLoad])
 
     return (
         <AuthContext.Provider value={
             { user: state['user'], accessToken: state['accessToken'], refreshToken: state['refreshToken'], loading: state['loading'], error: state['error'], dispatch }}>
-            {children}
+            {firstLoad ? null : children}
         </AuthContext.Provider>
     )
 }

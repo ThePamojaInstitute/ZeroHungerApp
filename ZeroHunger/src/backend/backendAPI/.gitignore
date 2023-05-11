@@ -3,7 +3,7 @@
 *.log
 *.pot
 *.pyc
-__pycache__
+
 db.sqlite3
 media
 
@@ -63,6 +63,7 @@ parts/
 sdist/ 
 var/ 
 wheels/ 
+__pycache__/
 *.egg-info/ 
 .installed.cfg 
 *.egg 

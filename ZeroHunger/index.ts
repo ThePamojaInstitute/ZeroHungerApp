@@ -1,5 +1,4 @@
 import { registerRootComponent } from 'expo';
-import './interceptors/axios';
 
 import App from './App'
 

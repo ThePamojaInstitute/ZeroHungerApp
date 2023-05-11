@@ -5,8 +5,8 @@ import { axiosInstance } from "../../config";
 export async function createUser(user: Object) {
     if (!user['username']) {
         return { msg: "Please enter a username", res: null }
-    } else if (user['username'].length > 50) {
-        return { msg: "Username length should be 50 characters or less", res: null }
+    } else if (user['username'].length > 64) {
+        return { msg: "Username length should be 64 characters or less", res: null }
     }
 
     if (!user['email']) {
@@ -17,15 +17,21 @@ export async function createUser(user: Object) {
 
     if (!user['password']) {
         return { msg: "Please enter a password", res: null }
+    } else if (!user['confPassword']) {
+        return { msg: "Please enter a confirmation password", res: null }
     } else if (user['password'] != user['confPassword']) {
         return { msg: "The passwords you entered do not match", res: null }
+    } else if (user['password'].length < 4) {
+        return { msg: "Password length should be 4 characters or more", res: null }
+    } else if (user['password'].length > 64) {
+        return { msg: "Password length should be 64 characters or less", res: null }
     }
 
     try {
         const res = await axiosInstance.post("/createUser", user)
         return { msg: "success", res: res.data }
     } catch (error) {
-        return { msg: "failure", res: error.response }
+        return { msg: "failure", res: error.response.data }
     }
 }
 
@@ -68,11 +74,13 @@ export async function logInUser(user: Object) {
 
 export async function logOutUser() {
     try {
-        await axiosInstance.post('/logOut', {
-            refresh_token: AsyncStorage.getItem('refresh_token')
-        }, { headers: { 'Content-Type': 'application/json' } });
-        AsyncStorage.clear()
-        axiosInstance.defaults.headers.common['Authorization'] = null;
+        AsyncStorage.getItem('refresh_token').then(async res => {
+            await axiosInstance.post('/logOut', {
+                refresh_token: res
+            }, { headers: { 'Content-Type': 'application/json' } })
+        }).then(() => {
+            AsyncStorage.clear()
+        })
     } catch (e) {
         console.log('logout not working', e)
     }
