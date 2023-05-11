@@ -2,7 +2,6 @@ import LoginScreen from "../../src/screens/LoginScreen";
 import { render, fireEvent, act } from '@testing-library/react-native';
 import React from "react";
 
-jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper')
 const mockNavigation = {
     navigate: jest.fn(),
 };
