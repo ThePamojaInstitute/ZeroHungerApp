@@ -1,29 +1,32 @@
-import React, { useContext, useState } from "react";
-import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent, Linking } from "react-native";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
-import { logInUser } from "../controllers/auth";
+import { logInUser, logOutUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
+import { axiosInstance } from "../../config";
+import jwt_decode from "jwt-decode";
 
 
-export const LoginScreen = () => {
-
-  const { loading, dispatch } = useContext(AuthContext)
-  const [credentials, setCredentials] = useState({
-    'username': undefined,
-    'password': undefined
-  })
+export const LoginScreen = ({ navigation }) => {
+  const { user, loading, dispatch } = useContext(AuthContext)
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
   const [errMsg, setErrMsg] = useState("")
-
-  const handleChange = (e: NativeSyntheticEvent<TextInputChangeEventData>, type: string) => {
-    setCredentials(prev => ({ ...prev, [type]: e.nativeEvent.text }))
-  }
 
   const handleLogin = (e: GestureResponderEvent) => {
     e.preventDefault()
     dispatch({ type: "LOGIN_START", payload: null })
-    logInUser(credentials).then(res => {
+    logInUser({ "username": username, "password": password }).then(async res => {
       if (res.msg === "success") {
-        dispatch({ type: "LOGIN_SUCCESS", payload: res.res })
+        await axiosInstance.post("/token/", { "username": username, "password": password }).then(resp => {
+          dispatch({
+            type: "LOGIN_SUCCESS", payload: {
+              "user": jwt_decode(resp.data['access']),
+              "token": resp.data
+            }
+          })
+        })
+        navigation.navigate('CreateAccountScreen')
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
         setErrMsg("Invalid credentials")
@@ -34,35 +37,52 @@ export const LoginScreen = () => {
     })
   }
 
+  const handlePasswordRecovery = () =>
+  {
+    Linking.canOpenURL("http://127.0.0.1:8000/password-reset/").then(supported =>
+    {
+      if (supported) {
+        Linking.openURL("http://127.0.0.1:8000/password-reset/");
+      } else {
+        console.log("Cannot open URL: " + "http://127.0.0.1:8000/password-reset/");
+      }
+    }
+    )  //replace this with actual URL later
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.login}>Zero Hunger</Text>
       <Text>{loading && "Loading..."}</Text>
       <View style={styles.inputView}>
         <TextInput
+          testID="LogIn.usernameInput"
+          value={username}
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="#000000"
-          onChange={e => handleChange(e, 'username')}
+          onChangeText={setUsername}
         />
       </View>
       <View style={styles.inputView}>
         <TextInput
+          testID="LogIn.passwordInput"
+          value={password}
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="#000000"
           secureTextEntry={true}
-          onChange={e => handleChange(e, 'password')}
+          onChangeText={setPassword}
         />
       </View>
-      <TouchableOpacity /*onPress={}*/>
+      <TouchableOpacity onPress={handlePasswordRecovery}>
         <Text style={styles.forgotBtn}>Forgot password?</Text>
       </TouchableOpacity>
-      <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>
-      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+      <Text testID="errMsg" style={{ color: "red" }}>{errMsg && errMsg}</Text>
+      <TouchableOpacity testID="LogIn.Button" style={styles.loginBtn} onPress={handleLogin}>
         <Text style={styles.loginBtnText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.signUpBtn} /*onPress={}*/>
+      <TouchableOpacity testID="SignUp.Button" style={styles.signUpBtn} onPress={() => navigation.navigate("CreateAccountScreen")}>
         <Text style={styles.signUpBtnText}>Sign Up</Text>
       </TouchableOpacity>
     </View>

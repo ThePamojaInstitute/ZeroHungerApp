@@ -32,6 +32,6 @@ class LoginSerializer (serializers.ModelSerializer):
         password = self.validated_data['password']
         user = authenticate(username=username, password=password)
         if user is not None:
-            return Response("Logged In!", status=201)
+            return Response(user.__str__(), status=201)
         else:
             return Response("ERROR", status=401)
