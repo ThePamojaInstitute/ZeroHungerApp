@@ -3,10 +3,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from django.contrib.auth.models import User
+from django.contrib.auth import logout
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.core.mail import send_mail
 
 from .managers import CustomUserManager
 from .serializers import ResgistrationSerializer, LoginSerializer
@@ -32,13 +34,17 @@ class createUser(APIView):
         serializer = ResgistrationSerializer(data=request.data)
         if (serializer.is_valid()):
             serializer.save()
+            send_mail(
+            "Zero Hunger Project - New User",
+            "Welcome to the zero hunger project!",
+            "noahglassford@gmail.com",
+            ["noah@pamojainstitute.org"],
+             fail_silently=False,
+            )
             return Response(serializer.data, status=201)
         else:
-            return Response("ERROR", status=401)
-    
-
-        CustomUserManager.create_user()
-        return Response({"You made it to POST in createUser"}, status= 202)
+            return Response("ERROR, serializer isn't valid", status=401)
+      
     
 class deleteUser(APIView):
     def post(self,request, format=None):
@@ -68,3 +74,6 @@ class logOut(APIView):
                return Response(status=205)
         except Exception as e:
            return Response(status=400)
+
+
+       
