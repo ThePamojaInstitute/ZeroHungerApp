@@ -4,7 +4,7 @@ from django.urls import reverse
 from datetime import datetime
 from .models import BoardPost, BasicUser
 
-class TestViews(TestCase):
+class TestModels(TestCase):
     # client = Client()
 
     #Test board post model creation
