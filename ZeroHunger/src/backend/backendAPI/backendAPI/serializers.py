@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from .models import BasicUser
 
 class ResgistrationSerializer (serializers.ModelSerializer):
-    username = serializers.CharField(max_length=50)
-    email = serializers.EmailField()
+    username = serializers.CharField( validators=[UniqueValidator(queryset=BasicUser.objects.all(), message="Username is taken")] ,max_length=50)
+    email = serializers.EmailField( validators=[UniqueValidator(queryset=BasicUser.objects.all(),  message="There is already an account associated with this email")])
     password = serializers.CharField(max_length=50, write_only=True)
 
     class Meta: 
