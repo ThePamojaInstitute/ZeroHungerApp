@@ -22,6 +22,9 @@ from django.contrib.auth.views import ( #default django password reset views, pr
     PasswordResetCompleteView
 )
 
+from django.contrib.auth import views as auth_views
+
+
 
 from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
@@ -38,8 +41,27 @@ urlpatterns = [
     path('api/logOut', logOut.as_view()),
     path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-    path('password-reset/', PasswordResetView.as_view(), name='password-reset'),
-    path('password-reset/done/', PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('password-reset-complete/',PasswordResetCompleteView.as_view(), name='password_reset_complete')
+    path('password-reset/',
+         auth_views.PasswordResetView.as_view(
+             template_name='templates/password-reset/password_reset_form.html',
+             subject_template_name='templates/password-reset/password_reset_subject.txt',
+             email_template_name='templates/password-reset/password_reset_email.html',
+             # success_url='/login/'
+         ),
+         name='password_reset'),
+    path('password-reset/done/',
+         auth_views.PasswordResetDoneView.as_view(
+             template_name='templates/password-reset/password_reset_done.html'
+         ),
+         name='password_reset_done'),
+    path('password-reset-confirm/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView.as_view(
+             template_name='templates/password-reset/password_reset_confirm.html'
+         ),
+         name='password_reset_confirm'),
+    path('password-reset-complete/',
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name='templates/password-reset/password_reset_complete.html'
+         ),
+         name='password_reset_complete'),
 ]
