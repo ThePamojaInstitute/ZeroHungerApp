@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent, Linking } from "react-native";
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
-import { logInUser, logOutUser } from "../controllers/auth";
+import { GestureResponderEvent, Linking } from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { axiosInstance } from "../../config";
 import jwt_decode from "jwt-decode";
@@ -79,7 +79,7 @@ export const LoginScreen = ({ navigation }) => {
           onChangeText={setPassword}
         />
       </View>
-      <TouchableOpacity onPress={handlePasswordRecovery}>
+      <TouchableOpacity testID="passwordReset.Button" onPress={handlePasswordRecovery}>
         <Text style={styles.forgotBtn}>Forgot password?</Text>
       </TouchableOpacity>
       <Text testID="errMsg" style={{ color: "red" }}>{errMsg && errMsg}</Text>

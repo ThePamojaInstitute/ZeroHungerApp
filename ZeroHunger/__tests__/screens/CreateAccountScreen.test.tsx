@@ -1,6 +1,9 @@
+import React from "react";
 import CreateAccountScreen from '../../src/screens/CreateAccountScreen';
 import { render, fireEvent, act } from '@testing-library/react-native';
-import React from "react";
+import * as Utils from "../../src/controllers/auth";
+import { AuthContext } from "../../src/context/AuthContext";
+
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper')
 const mockNavigation = {
@@ -16,8 +19,7 @@ it('renders default elements', () => {
     getAllByPlaceholderText("Confirm Password")
 });
 
-describe('events on button press', () => {
-
+describe('events on Sign Up button press', () => {
     it('calls preventDefault', async () => {
         const { getByTestId } = render(<CreateAccountScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() };
@@ -186,5 +188,161 @@ describe('events on button press', () => {
         expect(queryAllByText("Password length should be 4 characters or more").length).toBe(0)
         expect(queryAllByText("Please enter a confirmation password").length).toBe(0)
         expect(queryAllByText("Password length should be 64 characters or less").length).toBe(0)
+    })
+
+    it('calls dispatch function to SIGNUP_START', async () => {
+        const mockDispatch = jest.fn()
+        const { getByTestId } = render(
+            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AuthContext.Provider>
+        )
+        const mockEvent = { preventDefault: jest.fn() }
+        const usernameInput = getByTestId("SignUp.usernameInput")
+        const emailInput = getByTestId("SignUp.emailInput")
+        const passwordInput = getByTestId("SignUp.passwordInput")
+        const confPasswordInput = getByTestId("SignUp.confPasswordInput")
+
+        fireEvent.changeText(usernameInput, 'username')
+        fireEvent.changeText(emailInput, 'email@email.com')
+        fireEvent.changeText(passwordInput, 'password')
+        fireEvent.changeText(confPasswordInput, 'password')
+
+        await act(() => {
+            fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
+        })
+
+        expect(mockDispatch).toBeCalled()
+        expect(mockDispatch).toHaveBeenNthCalledWith(1, { "payload": null, "type": "SIGNUP_START" })
+    })
+
+    it('calls createUser function', async () => {
+        const mockDispatch = jest.fn()
+        const { getByTestId } = render(
+            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AuthContext.Provider>
+        )
+        const mockEvent = { preventDefault: jest.fn() }
+        const usernameInput = getByTestId("SignUp.usernameInput")
+        const emailInput = getByTestId("SignUp.emailInput")
+        const passwordInput = getByTestId("SignUp.passwordInput")
+        const confPasswordInput = getByTestId("SignUp.confPasswordInput")
+
+        const spyCreateUser = jest.spyOn(Utils, 'createUser')
+
+        fireEvent.changeText(usernameInput, 'username')
+        fireEvent.changeText(emailInput, 'email@email.com')
+        fireEvent.changeText(passwordInput, 'password')
+        fireEvent.changeText(confPasswordInput, 'password')
+
+        await act(() => {
+            fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
+        })
+
+        expect(spyCreateUser).toBeCalled()
+        expect(spyCreateUser).toBeCalledWith({
+            "username": 'username',
+            "email": 'email@email.com',
+            "password": 'password',
+            "confPassword": 'password'
+        })
+    })
+})
+
+describe('createUser function', () => {
+    it('calls dispatch when the post requests resolves', async () => {
+        const mockDispatch = jest.fn()
+        const { getByTestId } = render(
+            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AuthContext.Provider>
+        )
+        const mockEvent = { preventDefault: jest.fn() }
+        const usernameInput = getByTestId("SignUp.usernameInput")
+        const emailInput = getByTestId("SignUp.emailInput")
+        const passwordInput = getByTestId("SignUp.passwordInput")
+        const confPasswordInput = getByTestId("SignUp.confPasswordInput")
+
+        const spyCreateUser = jest.spyOn(Utils, 'createUser').mockResolvedValue({ msg: "success", res: null })
+
+        fireEvent.changeText(usernameInput, 'username')
+        fireEvent.changeText(emailInput, 'email@email.com')
+        fireEvent.changeText(passwordInput, 'password')
+        fireEvent.changeText(confPasswordInput, 'password')
+
+        await act(() => {
+            fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
+        })
+
+        expect(spyCreateUser).toBeCalled()
+        expect(spyCreateUser).toBeCalledWith({
+            "username": 'username',
+            "email": 'email@email.com',
+            "password": 'password',
+            "confPassword": 'password'
+        })
+        expect(mockDispatch).toBeCalledTimes(2)
+        expect(mockDispatch).toHaveBeenNthCalledWith(2, { "payload": null, "type": "SIGNUP_SUCCESS" })
+    })
+
+    it('navigates the login screen when the post request resolves', async () => {
+        const mockDispatch = jest.fn()
+        const { getByTestId } = render(
+            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AuthContext.Provider>
+        )
+        const mockEvent = { preventDefault: jest.fn() }
+        const usernameInput = getByTestId("SignUp.usernameInput")
+        const emailInput = getByTestId("SignUp.emailInput")
+        const passwordInput = getByTestId("SignUp.passwordInput")
+        const confPasswordInput = getByTestId("SignUp.confPasswordInput")
+
+        const spyCreateUser = jest.spyOn(Utils, 'createUser').mockResolvedValue({ msg: "success", res: null })
+
+        fireEvent.changeText(usernameInput, 'username')
+        fireEvent.changeText(emailInput, 'email@email.com')
+        fireEvent.changeText(passwordInput, 'password')
+        fireEvent.changeText(confPasswordInput, 'password')
+
+        await act(() => {
+            fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
+        })
+
+        expect(spyCreateUser).toBeCalled()
+        expect(mockDispatch).toBeCalledTimes(2)
+        expect(mockDispatch).toHaveBeenNthCalledWith(2, { "payload": null, "type": "SIGNUP_SUCCESS" })
+        expect(mockNavigation.navigate).toBeCalledWith('LoginScreen')
+    })
+
+    it('calls dispatch with SIGNUP_FAILURE when the response login fails', async () => {
+        const mockDispatch = jest.fn()
+        const { getByTestId } = render(
+            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AuthContext.Provider>
+        )
+        const mockEvent = { preventDefault: jest.fn() }
+        const usernameInput = getByTestId("SignUp.usernameInput")
+        const emailInput = getByTestId("SignUp.emailInput")
+        const passwordInput = getByTestId("SignUp.passwordInput")
+        const confPasswordInput = getByTestId("SignUp.confPasswordInput")
+
+        const spyCreateUser = jest.spyOn(Utils, 'createUser').mockResolvedValue({ msg: "failure", res: null })
+
+        fireEvent.changeText(usernameInput, 'username')
+        fireEvent.changeText(emailInput, 'email@email.com')
+        fireEvent.changeText(passwordInput, 'password')
+        fireEvent.changeText(confPasswordInput, 'password')
+
+        await act(() => {
+            fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
+        })
+
+        expect(spyCreateUser).toBeCalled()
+        expect(mockDispatch).toBeCalledTimes(2)
+        expect(mockDispatch).toHaveBeenNthCalledWith(2, { "payload": null, "type": "SIGNUP_FAILURE" })
+        expect(mockNavigation.navigate).toBeCalledWith('LoginScreen')
     })
 })
