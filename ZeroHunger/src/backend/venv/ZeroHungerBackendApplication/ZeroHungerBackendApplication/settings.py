@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',   
-    'backendAPI',
+    'ZeroHungerBackendApplication',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
@@ -73,7 +73,7 @@ MIDDLEWARE = [
 
 
 
-ROOT_URLCONF = 'backendAPI.urls'
+ROOT_URLCONF = 'ZeroHungerBackendApplication.urls'
 
 TEMPLATES = [
     {
@@ -91,7 +91,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backendAPI.wsgi.application'
+WSGI_APPLICATION = 'ZeroHungerBackendApplication.wsgi.application'
 
 
 # Database
@@ -157,7 +157,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-AUTH_USER_MODEL = "backendAPI.BasicUser"
+AUTH_USER_MODEL = "ZeroHungerBackendApplication.BasicUser"
 
 
 SIMPLE_JWT = {
