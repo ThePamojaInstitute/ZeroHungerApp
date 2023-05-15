@@ -50,7 +50,6 @@ export const LandingPageScreen = ({ navigation }) => {
         logOutUser().then(() => {
             dispatch({ type: "LOGOUT", payload: null })
         }).then(() => { navigation.navigate('LoginScreen') })
-
     }
 
     return (
@@ -59,7 +58,7 @@ export const LandingPageScreen = ({ navigation }) => {
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
                 {user &&
-                    <TouchableOpacity style={styles.logOutBtn} onPress={handleLogOut}>
+                    <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
                         <Text style={styles.logOutBtnText}>Log Out</Text>
                     </TouchableOpacity>}
             </View>

@@ -21,7 +21,7 @@ export const setToken = async (type: string, value: string) => {
 }
 
 interface IINITIAL_STATE {
-    user: string,
+    user: Object,
     accessToken: string,
     refreshToken: string,
     loading: boolean,
