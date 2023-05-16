@@ -4,7 +4,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList } from "react-native";
 import { AuthContext } from "../context/AuthContext";
-import { logOutUser } from "../controllers/auth";
+import { deleteUser, logOutUser } from "../controllers/auth";
 
 //Flatlist data
 const Item = ({ name }) => {
@@ -38,7 +38,7 @@ const renderItem = ({ item }) => (
 
 //Temporary landing page screen to test tokens
 export const LandingPageScreen = ({ navigation }) => {
-    const { user, dispatch } = useContext(AuthContext)
+    const { user, accessToken, dispatch } = useContext(AuthContext)
 
     useEffect(() => {
         if (!user) {
@@ -52,6 +52,16 @@ export const LandingPageScreen = ({ navigation }) => {
         }).then(() => { navigation.navigate('LoginScreen') })
     }
 
+    const handleDeleteUser = () => {
+        deleteUser(user['user_id'], accessToken).then(() => {
+            logOutUser().then(() => {
+                dispatch({ type: "LOGOUT", payload: null })
+            })
+        }).then(() => {
+            navigation.navigate('LoginScreen')
+        })
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.landingPageText}>
@@ -60,6 +70,10 @@ export const LandingPageScreen = ({ navigation }) => {
                 {user &&
                     <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
                         <Text style={styles.logOutBtnText}>Log Out</Text>
+                    </TouchableOpacity>}
+                {user &&
+                    <TouchableOpacity testID="LogOut.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
+                        <Text style={styles.deleteBtnText}>Delete User</Text>
                     </TouchableOpacity>}
             </View>
             <View style={styles.pressable}>
@@ -127,6 +141,21 @@ const styles = StyleSheet.create({
         backgroundColor: "#6A6A6A",
     },
     logOutBtnText: {
+        color: "#FFFFFF",
+        padding: 15,
+        marginLeft: 10,
+        fontSize: 15,
+    },
+    deleteBtn: {
+        title: "Login",
+        width: "8%",
+        borderRadius: 25,
+        marginTop: 10,
+        height: 50,
+        alignItems: "center",
+        backgroundColor: "red",
+    },
+    deleteBtnText: {
         color: "#FFFFFF",
         padding: 15,
         marginLeft: 10,
