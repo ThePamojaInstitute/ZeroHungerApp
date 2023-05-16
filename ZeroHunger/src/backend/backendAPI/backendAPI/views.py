@@ -9,9 +9,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.core.mail import send_mail
+from django.conf import settings
 
+from .models import BasicUser
 from .managers import CustomUserManager
 from .serializers import ResgistrationSerializer, LoginSerializer
+import jwt
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -46,8 +49,19 @@ class createUser(APIView):
       
     
 class deleteUser(APIView):
-    def post(self,request, format=None):
-        return Response({"You made it to POST in deleteUser"})
+    def delete(self,request, format=None):
+        try:
+            decoded_token = jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response(status=401)
+
+        try:
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+            user.delete()
+
+            return Response({"User deleted"}, 200)
+        except:
+            return Response(status=204)
     
 class modifyUser(APIView):
     def post(self,request, format=None):
