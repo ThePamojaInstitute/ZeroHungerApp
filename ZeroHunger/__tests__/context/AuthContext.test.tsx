@@ -94,21 +94,21 @@ const TestComponent = () => {
 
 describe('Authentication States', () => {
     it('INITIAL_STATE', async () => {
-        let root: any;
+        let root: Object;
         await waitFor(() => {
             root = render(<AuthContextProvider>
                 <TestComponent />
             </AuthContextProvider>)
         })
 
-        root.getByText("no User")
-        root.getByText("false")
-        expect(root.queryAllByText("notInitialized").length).toBe(2)
-        expect(root.queryAllByText("error").length).toBe(0)
+        root['getByText']("no User")
+        root['getByText']("false")
+        expect(root['queryAllByText']("notInitialized").length).toBe(2)
+        expect(root['queryAllByText']("error").length).toBe(0)
     })
 
     it('LOGIN_START', async () => {
-        let root: any;
+        let root: Object;
         await waitFor(() => {
             root = render(<AuthContextProvider>
                 <TestComponent />
@@ -116,17 +116,17 @@ describe('Authentication States', () => {
         })
 
         await act(() => {
-            fireEvent.press(root.getByTestId("LogInStart.Button"))
+            fireEvent.press(root['getByTestId']("LogInStart.Button"))
         })
 
-        root.getByText("no User")
-        root.getByText("true")
-        expect(root.queryAllByText("notInitialized").length).toBe(0)
-        expect(root.queryAllByText("error").length).toBe(0)
+        root['getByText']("no User")
+        root['getByText']("true")
+        expect(root['queryAllByText']("notInitialized").length).toBe(0)
+        expect(root['queryAllByText']("error").length).toBe(0)
     })
 
     it('LOGIN_SUCCESS', async () => {
-        let root: any;
+        let root: Object;
         await waitFor(() => {
             root = render(<AuthContextProvider>
                 <TestComponent />
@@ -134,19 +134,19 @@ describe('Authentication States', () => {
         })
 
         await act(() => {
-            fireEvent.press(root.getByTestId("LogInSuccess.Button"))
+            fireEvent.press(root['getByTestId']("LogInSuccess.Button"))
         })
 
-        root.getByText("Hello ahmad")
-        root.getByText("access_token")
-        root.getByText("refresh_token")
-        root.getByText("false")
-        expect(root.queryAllByText("error").length).toBe(0)
-        expect(root.queryAllByText("notInitialized").length).toBe(0)
+        root['getByText']("Hello ahmad")
+        root['getByText']("access_token")
+        root['getByText']("refresh_token")
+        root['getByText']("false")
+        expect(root['queryAllByText']("error").length).toBe(0)
+        expect(root['queryAllByText']("notInitialized").length).toBe(0)
     })
 
     it('LOGIN_FAILURE', async () => {
-        let root: any;
+        let root: Object;
         await waitFor(() => {
             root = render(<AuthContextProvider>
                 <TestComponent />
@@ -154,16 +154,16 @@ describe('Authentication States', () => {
         })
 
         await act(() => {
-            fireEvent.press(root.getByTestId("LogInFailure.Button"))
+            fireEvent.press(root['getByTestId']("LogInFailure.Button"))
         })
 
-        root.getByText("error")
-        root.getByText("false")
-        expect(root.queryAllByText("notInitialized").length).toBe(0)
+        root['getByText']("error")
+        root['getByText']("false")
+        expect(root['queryAllByText']("notInitialized").length).toBe(0)
     })
 
     it('LOGOUT', async () => {
-        let root: any;
+        let root: Object;
         await waitFor(() => {
             root = render(<AuthContextProvider>
                 <TestComponent />
@@ -171,17 +171,17 @@ describe('Authentication States', () => {
         })
 
         await act(() => {
-            fireEvent.press(root.getByTestId("LogOut.Button"))
+            fireEvent.press(root['getByTestId']("LogOut.Button"))
         })
 
-        root.getByText("no User")
-        root.getByText("false")
-        expect(root.queryAllByText("error").length).toBe(0)
-        expect(root.queryAllByText("notInitialized").length).toBe(0)
+        root['getByText']("no User")
+        root['getByText']("false")
+        expect(root['queryAllByText']("error").length).toBe(0)
+        expect(root['queryAllByText']("notInitialized").length).toBe(0)
     })
 
     it('SIGNUP_START', async () => {
-        let root: any;
+        let root: Object;
         await waitFor(() => {
             root = render(<AuthContextProvider>
                 <TestComponent />
@@ -189,16 +189,16 @@ describe('Authentication States', () => {
         })
 
         await act(() => {
-            fireEvent.press(root.getByTestId("SignUpStart.Button"))
+            fireEvent.press(root['getByTestId']("SignUpStart.Button"))
         })
 
-        root.getByText("no User")
-        root.getByText("true")
-        expect(root.queryAllByText("error").length).toBe(0)
+        root['getByText']("no User")
+        root['getByText']("true")
+        expect(root['queryAllByText']("error").length).toBe(0)
     })
 
     it('SIGNUP_SUCCESS', async () => {
-        let root: any;
+        let root: Object;
         await waitFor(() => {
             root = render(<AuthContextProvider>
                 <TestComponent />
@@ -206,16 +206,16 @@ describe('Authentication States', () => {
         })
 
         await act(() => {
-            fireEvent.press(root.getByTestId("SignUpSuccess.Button"))
+            fireEvent.press(root['getByTestId']("SignUpSuccess.Button"))
         })
 
-        root.getByText("false")
-        root.getByText("no User")
-        expect(root.queryAllByText("error").length).toBe(0)
+        root['getByText']("false")
+        root['getByText']("no User")
+        expect(root['queryAllByText']("error").length).toBe(0)
     })
 
     it('SIGNUP_FAILURE', async () => {
-        let root: any;
+        let root: Object;
         await waitFor(() => {
             root = render(<AuthContextProvider>
                 <TestComponent />
@@ -223,12 +223,12 @@ describe('Authentication States', () => {
         })
 
         await act(() => {
-            fireEvent.press(root.getByTestId("SignUpFailure.Button"))
+            fireEvent.press(root['getByTestId']("SignUpFailure.Button"))
         })
 
-        root.getByText("error")
-        root.getByText("false")
-        root.getByText("no User")
+        root['getByText']("error")
+        root['getByText']("false")
+        root['getByText']("no User")
     })
 })
 
@@ -254,9 +254,8 @@ describe('setToken function', () => {
 
 describe('initializeTokenState function', () => {
     it('calls AsyncStorage.getItem for refresh_token', async () => {
-        let root: any;
         await waitFor(() => {
-            root = render(<AuthContextProvider>
+            render(<AuthContextProvider>
                 <TestComponent />
             </AuthContextProvider>)
         })
@@ -266,12 +265,11 @@ describe('initializeTokenState function', () => {
     })
 
     it('sets tokens when refresh post request resolves', async () => {
-        let root: any;
         AsyncStorage.setItem('refresh_token', "token")
         mockAxios.onPost('token/refresh/').reply(200, { refresh: 'refresh_token', access: 'access_token' })
 
         await waitFor(() => {
-            root = render(<AuthContextProvider>
+            render(<AuthContextProvider>
                 <TestComponent />
             </AuthContextProvider>)
         })
@@ -281,12 +279,11 @@ describe('initializeTokenState function', () => {
     })
 
     it('doesnt set tokens when refresh post request rejects', async () => {
-        let root: any;
         AsyncStorage.setItem('refresh_token', "token")
         mockAxios.onPost('token/refresh/').reply(401)
 
         await waitFor(() => {
-            root = render(<AuthContextProvider>
+            render(<AuthContextProvider>
                 <TestComponent />
             </AuthContextProvider>)
         })
@@ -297,13 +294,12 @@ describe('initializeTokenState function', () => {
     })
 
     it('logs user out when refresh token is expired', async () => {
-        let root: any;
         AsyncStorage.setItem('refresh_token', "token")
         mockAxios.onPost('token/refresh/').reply(200)
         const spyLogOutUser = jest.spyOn(Utils, 'logOutUser').mockResolvedValue()
 
         await waitFor(() => {
-            root = render(<AuthContextProvider>
+            render(<AuthContextProvider>
                 <TestComponent />
             </AuthContextProvider>)
         })
@@ -314,7 +310,7 @@ describe('initializeTokenState function', () => {
 
 describe('updating local storage', () => {
     it('updates the local storage when state of access or refresh tokens change', async () => {
-        let root: any;
+        let root: Object;
         await waitFor(() => {
             root = render(<AuthContextProvider>
                 <TestComponent />
@@ -322,7 +318,7 @@ describe('updating local storage', () => {
         })
 
         await act(() => {
-            fireEvent.press(root.getByTestId("LogInSuccess.Button"))
+            fireEvent.press(root['getByTestId']("LogInSuccess.Button"))
         })
 
         expect(AsyncStorage.setItem).toBeCalledTimes(2)
