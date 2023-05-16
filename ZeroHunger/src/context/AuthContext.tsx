@@ -26,7 +26,7 @@ interface IINITIAL_STATE {
     refreshToken: string,
     loading: boolean,
     error: Object,
-    dispatch: Dispatch<{ type: string, payload: any }>
+    dispatch: Dispatch<{ type: string, payload: Object }>
 }
 
 const INITIAL_STATE = {
@@ -40,7 +40,7 @@ const INITIAL_STATE = {
 
 export const AuthContext = createContext<IINITIAL_STATE>(INITIAL_STATE)
 
-const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
+const AuthReducer = (state: Object, action: { type: string; payload: Object }) => {
     switch (action.type) {
         case "LOGIN_START":
             return {
@@ -54,9 +54,9 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
         case "LOGIN_SUCCESS":
             return {
                 ...state,
-                user: action.payload.user,
-                accessToken: action.payload.token['access'],
-                refreshToken: action.payload.token['refresh'],
+                user: action.payload['user'],
+                accessToken: action.payload['token'].access,
+                refreshToken: action.payload['token'].refresh,
                 loading: false,
                 error: null
             }
