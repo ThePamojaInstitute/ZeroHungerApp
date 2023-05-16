@@ -35,10 +35,15 @@ export async function createUser(user: Object) {
     }
 }
 
-export async function deleteUser(userId: string) {
+export async function deleteUser(userId: string, token: string) {
     try {
-        const res = await axiosInstance.post("/deleteUser", userId)
-        console.log(res.data);
+        const res = await axiosInstance.delete("/deleteUser", {
+            headers: {
+                Authorization: `${token}`
+            },
+            data: { user_id: userId }
+        })
+        console.log(res);
     } catch (error) {
         console.log(error);
     }
