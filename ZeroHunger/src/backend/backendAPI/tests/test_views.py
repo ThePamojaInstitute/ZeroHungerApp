@@ -2,9 +2,9 @@ from django.test import TestCase
 from django.test import Client
 from django.urls import reverse
 from rest_framework.test import APIClient
-from .models import BasicUser
+from backendAPI.models import BasicUser
 
-#Run tests with "python manage.py test backendAPI/test_views"
+#Run tests with "python manage.py test backendAPI.test_views"
 
 class TestViews(TestCase):
     @classmethod

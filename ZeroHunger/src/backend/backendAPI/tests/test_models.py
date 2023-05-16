@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.test import Client
 from django.urls import reverse
 from datetime import datetime
-from .models import BoardPost, BasicUser
+from ..backendAPI.models import BoardPost, BasicUser
 
 #Run tests with "python manage.py test backendAPI.test_models"
 
