@@ -126,7 +126,7 @@ export const AuthContextProvider = ({ children }) => {
                 }
             }
         } catch (error) {
-            console.log(error);
+            console.log("Refresh token expired or non existing");
         }
     }
 
