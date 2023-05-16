@@ -53,3 +53,9 @@ class TestCasesCreateUser(TestCase):
                                     'password' : 'test'
                                     })
         self.assertEqual(response.status_code, 401)
+
+    #SQL injection test
+
+    #Profanity filter test
+
+    #Extremely long username/email/password test
