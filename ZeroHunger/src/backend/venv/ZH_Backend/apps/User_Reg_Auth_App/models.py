@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from .managers import CustomUserManager
 from .settings import AUTH_USER_MODEL
+from django.contrib.auth.models import PermissionsMixin
 
 class BoardPost(models.Model):
 
@@ -13,7 +14,7 @@ class BoardPost(models.Model):
     _postCaption = models.CharField(max_length=1000)
     #add image data here
 
-class BasicUser(AbstractBaseUser):
+class BasicUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True)
     USERNAME_FIELD = "username"
     email = models.CharField(max_length=128, unique = True )

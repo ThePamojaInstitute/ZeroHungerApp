@@ -27,7 +27,8 @@ from rest_framework_simplejwt import views as jwt_views
 from apps.User_Reg_Auth_App.views import createUser, deleteUser, modifyUser, logIn, logOut, MyTokenObtainPairView
 
 urlpatterns = [
-    path('admin/', admin.site.urls), path('api/createUser', createUser.as_view()),
+    path('admin/', admin.site.urls), 
+    path('api/createUser', createUser.as_view()),
     path('api/deleteUser', deleteUser.as_view()),
     path('api/modifyUser', modifyUser.as_view()),
     path('api/logIn', logIn.as_view()),

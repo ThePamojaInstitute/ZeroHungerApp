@@ -43,7 +43,7 @@ TEMPLATES = [
 SECRET_KEY = 'django-insecure-jn0r_)3f23%o30i_ac84w0@oa_=_&xqu$%mbv)&uwrz69ph)8y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost',
@@ -165,7 +165,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-AUTH_USER_MODEL = "ZeroHungerBackendApplication.BasicUser"
+AUTH_USER_MODEL = "User_Reg_Auth_App.BasicUser"
 
 
 SIMPLE_JWT = {

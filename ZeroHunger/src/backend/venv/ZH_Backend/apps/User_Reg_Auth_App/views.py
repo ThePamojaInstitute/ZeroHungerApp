@@ -33,13 +33,13 @@ class createUser(APIView):
         serializer = ResgistrationSerializer(data=request.data)
         if (serializer.is_valid()):
             serializer.save()
-            send_mail(
-            "Zero Hunger Project - New User",
-            "Welcome to the zero hunger project!",
-            "noahglassford@gmail.com",
-            ["noah@pamojainstitute.org"],
-             fail_silently=False,
-            )
+           # send_mail(
+            #"Zero Hunger Project - New User",
+            #"Welcome to the zero hunger project!",
+            #"noahglassford@gmail.com",
+            #["noah@pamojainstitute.org"],
+            # fail_silently=False,
+            #)
             return Response(serializer.data, status=201)
         else:
             return Response(serializer.errors, status=401)
