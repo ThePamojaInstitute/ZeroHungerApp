@@ -22,6 +22,8 @@ export const LoginScreen = ({ navigation }) => {
 
   const handleLogin = (e: GestureResponderEvent) => {
     e.preventDefault()
+    setUsername("")
+    setPassword("")
     dispatch({ type: "LOGIN_START", payload: null })
     logInUser({ "username": username, "password": password }).then(async res => {
       if (res.msg === "success") {
@@ -50,8 +52,7 @@ export const LoginScreen = ({ navigation }) => {
       } else {
         console.log("Cannot open URL: " + "http://127.0.0.1:8000/password-reset/");
       }
-    }
-    )  //replace this with actual URL later
+    })  //replace this with actual URL later
   }
 
   return (

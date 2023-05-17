@@ -5,6 +5,7 @@ import * as Utils from "../../src/controllers/auth";
 import { axiosInstance } from "../../config";
 import { AuthContext } from "../../src/context/AuthContext";
 import MockAdapter from "axios-mock-adapter"
+import { Linking } from "react-native";
 
 
 const mockAxios = new MockAdapter(axiosInstance)
@@ -238,5 +239,59 @@ describe('testing navigation', () => {
 })
 
 // TODO
-// describe('password recovery', () => {
-// })
+describe('password recovery', () => {
+    it('calls can canOpenURL when pressing on the button', () => {
+        const mockDispatch = jest.fn()
+        const { getByTestId } = render(
+            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
+                <LoginScreen navigation={mockNavigation} />
+            </AuthContext.Provider>
+        )
+
+        const spyCanOpenURL = jest.spyOn(Linking, 'canOpenURL')
+        const button = getByTestId("passwordReset.Button")
+        fireEvent.press(button)
+
+        expect(spyCanOpenURL).toBeCalledWith("http://127.0.0.1:8000/password-reset/")
+    })
+
+    it('opens url if supported', async () => {
+        jest.clearAllMocks()
+        const mockDispatch = jest.fn()
+        const { getByTestId } = render(
+            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
+                <LoginScreen navigation={mockNavigation} />
+            </AuthContext.Provider>
+        )
+
+        const spyCanOpenURL = jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(true)
+        const spyOpenURL = jest.spyOn(Linking, 'openURL')
+        const button = getByTestId("passwordReset.Button")
+        fireEvent.press(button)
+
+        expect(spyCanOpenURL).toBeCalledWith("http://127.0.0.1:8000/password-reset/")
+        await waitFor(() => {
+            expect(spyOpenURL).toBeCalledWith("http://127.0.0.1:8000/password-reset/")
+        })
+    })
+
+    it('doesnt open url if not supported', async () => {
+        jest.clearAllMocks()
+        const mockDispatch = jest.fn()
+        const { getByTestId } = render(
+            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
+                <LoginScreen navigation={mockNavigation} />
+            </AuthContext.Provider>
+        )
+
+        const spyCanOpenURL = jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(false)
+        const spyOpenURL = jest.spyOn(Linking, 'openURL')
+        const button = getByTestId("passwordReset.Button")
+        fireEvent.press(button)
+
+        expect(spyCanOpenURL).toBeCalledWith("http://127.0.0.1:8000/password-reset/")
+        await waitFor(() => {
+            expect(spyOpenURL).not.toBeCalled()
+        })
+    })
+})
