@@ -8,13 +8,21 @@ import MockAdapter from "axios-mock-adapter"
 import { Linking } from "react-native";
 
 
-const mockAxios = new MockAdapter(axiosInstance)
-
 jest.mock('jwt-decode', () => () => ({}))
-
 const mockNavigation = {
     navigate: jest.fn(),
 };
+const mockEvent = { preventDefault: jest.fn() };
+const mockDispatch = jest.fn()
+const mockAxios = new MockAdapter(axiosInstance)
+
+const spyLogInUser = jest.spyOn(Utils, 'logInUser')
+const spyCanOpenURL = jest.spyOn(Linking, 'canOpenURL')
+const spyOpenURL = jest.spyOn(Linking, 'openURL')
+
+afterEach(() => {
+    jest.clearAllMocks()
+})
 
 
 describe('on load', () => {
@@ -49,7 +57,7 @@ describe('on load', () => {
 describe('events on login button press', () => {
     it('calls preventDefault', async () => {
         const { getByTestId } = render(<LoginScreen navigation={mockNavigation} />)
-        const mockEvent = { preventDefault: jest.fn() };
+
         await act(() => {
             fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
         })
@@ -59,7 +67,6 @@ describe('events on login button press', () => {
 
     it('shows error message when not entering username', async () => {
         const { getByTestId, getByText, queryAllByText } = render(<LoginScreen navigation={mockNavigation} />)
-        const mockEvent = { preventDefault: jest.fn() };
         await act(() => {
             fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
         })
@@ -70,7 +77,6 @@ describe('events on login button press', () => {
 
     it('shows error message when entering username but not password', async () => {
         const { getByTestId, getByText } = render(<LoginScreen navigation={mockNavigation} />)
-        const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("LogIn.usernameInput")
 
         fireEvent.changeText(usernameInput, 'username')
@@ -84,10 +90,8 @@ describe('events on login button press', () => {
 
     it('shows no errors when entering both username and password', async () => {
         const { getByTestId, queryAllByText } = render(<LoginScreen navigation={mockNavigation} />)
-        const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("LogIn.usernameInput")
         const passwordInput = getByTestId("LogIn.passwordInput")
-
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(passwordInput, 'password')
@@ -100,19 +104,16 @@ describe('events on login button press', () => {
     })
 
     it('calls dispatch function to LOGIN_START', async () => {
-        const mockDispatch = jest.fn()
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
                 <LoginScreen navigation={mockNavigation} />
             </AuthContext.Provider>
         )
-        const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("LogIn.usernameInput")
         const passwordInput = getByTestId("LogIn.passwordInput")
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(passwordInput, 'password')
-
 
         await act(() => {
             fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
@@ -123,17 +124,15 @@ describe('events on login button press', () => {
     })
 
     it('calls logInUser function', async () => {
-        const mockDispatch = jest.fn()
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
                 <LoginScreen navigation={mockNavigation} />
             </AuthContext.Provider>
         )
-        const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("LogIn.usernameInput")
         const passwordInput = getByTestId("LogIn.passwordInput")
 
-        const spyLogInUser = jest.spyOn(Utils, 'logInUser').mockResolvedValue({ msg: "success", res: null })
+        spyLogInUser.mockResolvedValue({ msg: "success", res: null })
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(passwordInput, 'password')
@@ -149,17 +148,15 @@ describe('events on login button press', () => {
 
 describe('logInUser function', () => {
     it('calls dispatch when the post requests resolves', async () => {
-        const mockDispatch = jest.fn()
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
                 <LoginScreen navigation={mockNavigation} />
             </AuthContext.Provider>
         )
-        const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("LogIn.usernameInput")
         const passwordInput = getByTestId("LogIn.passwordInput")
 
-        const spyLogInUser = jest.spyOn(Utils, 'logInUser').mockResolvedValue({ msg: "success", res: null })
+        spyLogInUser.mockResolvedValue({ msg: "success", res: null })
         mockAxios.onPost('/token/').reply(200, { refresh: 'refresh_tokne', access: 'access_token' })
 
         fireEvent.changeText(usernameInput, 'username')
@@ -176,17 +173,15 @@ describe('logInUser function', () => {
     })
 
     it('navigates the landing page when the post request resolves', async () => {
-        const mockDispatch = jest.fn()
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
                 <LoginScreen navigation={mockNavigation} />
             </AuthContext.Provider>
         )
-        const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("LogIn.usernameInput")
         const passwordInput = getByTestId("LogIn.passwordInput")
 
-        const spyLogInUser = jest.spyOn(Utils, 'logInUser').mockResolvedValue({ msg: "success", res: null })
+        spyLogInUser.mockResolvedValue({ msg: "success", res: null })
         mockAxios.onPost('/token/').reply(200, { refresh: 'refresh_tokne', access: 'access_token' })
 
         fireEvent.changeText(usernameInput, 'username')
@@ -202,17 +197,15 @@ describe('logInUser function', () => {
     })
 
     it('calls dispatch with LOGIN_FAILURE when the response login fails', async () => {
-        const mockDispatch = jest.fn()
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
                 <LoginScreen navigation={mockNavigation} />
             </AuthContext.Provider>
         )
-        const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("LogIn.usernameInput")
         const passwordInput = getByTestId("LogIn.passwordInput")
 
-        const spyLogInUser = jest.spyOn(Utils, 'logInUser').mockResolvedValue({ msg: "failure", res: null })
+        spyLogInUser.mockResolvedValue({ msg: "failure", res: null })
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(passwordInput, 'password')
@@ -240,14 +233,12 @@ describe('testing navigation', () => {
 
 describe('password recovery', () => {
     it('calls canOpenURL when pressing on the button', () => {
-        const mockDispatch = jest.fn()
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
                 <LoginScreen navigation={mockNavigation} />
             </AuthContext.Provider>
         )
 
-        const spyCanOpenURL = jest.spyOn(Linking, 'canOpenURL')
         const button = getByTestId("passwordReset.Button")
         fireEvent.press(button)
 
@@ -255,16 +246,13 @@ describe('password recovery', () => {
     })
 
     it('opens url if supported', async () => {
-        jest.clearAllMocks()
-        const mockDispatch = jest.fn()
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
                 <LoginScreen navigation={mockNavigation} />
             </AuthContext.Provider>
         )
 
-        const spyCanOpenURL = jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(true)
-        const spyOpenURL = jest.spyOn(Linking, 'openURL')
+        spyCanOpenURL.mockResolvedValue(true)
         const button = getByTestId("passwordReset.Button")
         fireEvent.press(button)
 
@@ -275,16 +263,13 @@ describe('password recovery', () => {
     })
 
     it('doesnt open url if not supported', async () => {
-        jest.clearAllMocks()
-        const mockDispatch = jest.fn()
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
                 <LoginScreen navigation={mockNavigation} />
             </AuthContext.Provider>
         )
 
-        const spyCanOpenURL = jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(false)
-        const spyOpenURL = jest.spyOn(Linking, 'openURL')
+        spyCanOpenURL.mockResolvedValue(false)
         const button = getByTestId("passwordReset.Button")
         fireEvent.press(button)
 

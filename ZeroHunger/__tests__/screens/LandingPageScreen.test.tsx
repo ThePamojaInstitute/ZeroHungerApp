@@ -134,7 +134,6 @@ describe('logOutUser function', () => {
             </AuthContext.Provider>
         )
 
-        const spyLogOutUser = jest.spyOn(Utils, 'logOutUser')
         mockAxios.onPost('/logOut').reply(200, {})
 
         await act(() => {
@@ -152,7 +151,6 @@ describe('logOutUser function', () => {
             </AuthContext.Provider>
         )
 
-        const spyLogOutUser = jest.spyOn(Utils, 'logOutUser')
         mockAxios.onPost('/logOut').reply(200, {})
 
         await act(() => {
