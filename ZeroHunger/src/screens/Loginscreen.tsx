@@ -22,8 +22,6 @@ export const LoginScreen = ({ navigation }) => {
 
   const handleLogin = (e: GestureResponderEvent) => {
     e.preventDefault()
-    setUsername("")
-    setPassword("")
     dispatch({ type: "LOGIN_START", payload: null })
     logInUser({ "username": username, "password": password }).then(async res => {
       if (res.msg === "success") {
@@ -43,6 +41,8 @@ export const LoginScreen = ({ navigation }) => {
         setErrMsg(res.msg)
       }
     })
+    setUsername("")
+    setPassword("")
   }
 
   const handlePasswordRecovery = () => {
