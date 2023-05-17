@@ -238,9 +238,8 @@ describe('testing navigation', () => {
     })
 })
 
-// TODO
 describe('password recovery', () => {
-    it('calls can canOpenURL when pressing on the button', () => {
+    it('calls canOpenURL when pressing on the button', () => {
         const mockDispatch = jest.fn()
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
