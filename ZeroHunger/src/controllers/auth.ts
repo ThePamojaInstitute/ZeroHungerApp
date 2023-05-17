@@ -43,7 +43,11 @@ export async function deleteUser(userId: string, token: string) {
             },
             data: { user_id: userId }
         })
-        console.log(res);
+        if (res.status === 200) {
+            return "success"
+        } else {
+            return "An error occured"
+        }
     } catch (error) {
         console.log(error);
     }

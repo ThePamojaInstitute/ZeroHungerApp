@@ -53,12 +53,16 @@ export const LandingPageScreen = ({ navigation }) => {
     }
 
     const handleDeleteUser = () => {
-        deleteUser(user['user_id'], accessToken).then(() => {
-            logOutUser().then(() => {
-                dispatch({ type: "LOGOUT", payload: null })
-            })
-        }).then(() => {
-            navigation.navigate('LoginScreen')
+        deleteUser(user['user_id'], accessToken).then(res => {
+            if (res === "success") {
+                logOutUser().then(() => {
+                    dispatch({ type: "LOGOUT", payload: null })
+                    navigation.navigate('LoginScreen')
+                })
+            } else {
+                console.log(res);
+                // show error message to user
+            }
         })
     }
 
@@ -72,7 +76,7 @@ export const LandingPageScreen = ({ navigation }) => {
                         <Text style={styles.logOutBtnText}>Log Out</Text>
                     </TouchableOpacity>}
                 {user &&
-                    <TouchableOpacity testID="LogOut.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
+                    <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
                         <Text style={styles.deleteBtnText}>Delete User</Text>
                     </TouchableOpacity>}
             </View>
