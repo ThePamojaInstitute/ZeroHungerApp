@@ -21,12 +21,12 @@ export const setToken = async (type: string, value: string) => {
 }
 
 interface IINITIAL_STATE {
-    user: string,
+    user: Object,
     accessToken: string,
     refreshToken: string,
     loading: boolean,
     error: Object,
-    dispatch: Dispatch<{ type: string, payload: any }>
+    dispatch: Dispatch<{ type: string, payload: Object }>
 }
 
 const INITIAL_STATE = {
@@ -40,7 +40,7 @@ const INITIAL_STATE = {
 
 export const AuthContext = createContext<IINITIAL_STATE>(INITIAL_STATE)
 
-const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
+const AuthReducer = (state: Object, action: { type: string; payload: Object }) => {
     switch (action.type) {
         case "LOGIN_START":
             return {
@@ -54,9 +54,9 @@ const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
         case "LOGIN_SUCCESS":
             return {
                 ...state,
-                user: action.payload.user,
-                accessToken: action.payload.token['access'],
-                refreshToken: action.payload.token['refresh'],
+                user: action.payload['user'],
+                accessToken: action.payload['token'].access,
+                refreshToken: action.payload['token'].refresh,
                 loading: false,
                 error: null
             }
@@ -111,22 +111,28 @@ export const AuthContextProvider = ({ children }) => {
     const initializeTokenState = async () => {
         try {
             const refreshToken = await AsyncStorage.getItem('refresh_token')
+            console.log(refreshToken);
+
 
             if (refreshToken) {
                 const response = await axiosInstance.post('token/refresh/', { refresh: refreshToken })
+                console.log(response);
+
                 if (response.data) {
                     state['refreshToken'] = response.data['refresh']
                     state['accessToken'] = response.data['access']
                     state['user'] = jwt_decode(state['accessToken'])
 
                     setToken("access", state['accessToken'])
+                    console.log(state['refreshToken']);
+
                     setToken("refresh", state['refreshToken'])
                 } else {
                     logOutUser()
                 }
             }
         } catch (error) {
-            console.log(error);
+            console.log("Refresh token expired or non existing");
         }
     }
 
@@ -135,11 +141,15 @@ export const AuthContextProvider = ({ children }) => {
             initializeTokenState().then(() => { setFirstLoad(false) })
         } else {
             const response = await axiosInstance.post('token/refresh/', { refresh: state['refreshToken'] })
+            console.log(response);
+
 
             if (response.data) {
                 state['refreshToken'] = response.data['refresh']
                 state['accessToken'] = response.data['access']
                 state['user'] = jwt_decode(state['accessToken'])
+                console.log(state['refreshToken']);
+
 
                 setToken("access", state['accessToken'])
                 setToken("refresh", state['refreshToken'])
@@ -152,6 +162,8 @@ export const AuthContextProvider = ({ children }) => {
     useEffect(() => {
         if (state['accessToken'] !== "notInitialized" && state['accessToken']) {
             setToken("access", state['accessToken'])
+            console.log(state['refreshToken']);
+
             setToken("refresh", state['refreshToken'])
         }
     }, [state['accessToken'], state['refreshToken']])
