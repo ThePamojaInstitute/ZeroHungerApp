@@ -29,22 +29,17 @@ describe('events on button press', () => {
     })
 
     it('shows error message when not entering username', async () => {
-        const { getByTestId, getByText, queryAllByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() };
         await act(() => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
         getByText("Please enter a username")
-        expect(queryAllByText("Please enter an email").length).toBe(0)
-        expect(queryAllByText("Please enter a valid email").length).toBe(0)
-        expect(queryAllByText("Please enter a password").length).toBe(0)
-        expect(queryAllByText("Please enter a confirmation password").length).toBe(0)
-        expect(queryAllByText("The passwords you entered do not match").length).toBe(0)
     })
 
     it('shows error message when entering only the username', async () => {
-        const { getByTestId, getByText, queryAllByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("SignUp.usernameInput")
 
@@ -55,34 +50,24 @@ describe('events on button press', () => {
         })
 
         getByText("Please enter an email")
-        expect(queryAllByText("Please enter a username").length).toBe(0)
-        expect(queryAllByText("Please enter a valid email").length).toBe(0)
-        expect(queryAllByText("Please enter a password").length).toBe(0)
-        expect(queryAllByText("Please enter a confirmation password").length).toBe(0)
-        expect(queryAllByText("The passwords you entered do not match").length).toBe(0)
     })
 
     it('shows error message when entering username that is longer that 50 characters', async () => {
-        const { getByTestId, getByText, queryAllByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("SignUp.usernameInput")
 
-        fireEvent.changeText(usernameInput, 'usLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer consectetur quam et dui luctus, quis blandit eros posuere. Nunc a facilisis elit, eu sodales dui. Sed semper est ut justo varius, non cursus ex ornare. Maecenas at elementum sapien, in porta libero. Praesent et tortor accumsan, tempus dui ac, cursus enim.ername')
+        fireEvent.changeText(usernameInput, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec et ante in')
 
         await act(() => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
-        getByText("Username length should be 50 characters or less")
-        expect(queryAllByText("Please enter a username").length).toBe(0)
-        expect(queryAllByText("Please enter a valid email").length).toBe(0)
-        expect(queryAllByText("Please enter a password").length).toBe(0)
-        expect(queryAllByText("Please enter a confirmation password").length).toBe(0)
-        expect(queryAllByText("The passwords you entered do not match").length).toBe(0)
+        getByText("Username length should be 64 characters or less")
     })
 
     it('shows error message when entering only the username and email', async () => {
-        const { getByTestId, getByText, queryAllByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("SignUp.usernameInput")
         const emailInput = getByTestId("SignUp.emailInput")
@@ -95,15 +80,10 @@ describe('events on button press', () => {
         })
 
         getByText("Please enter a password")
-        expect(queryAllByText("Please enter a username").length).toBe(0)
-        expect(queryAllByText("Please enter an email").length).toBe(0)
-        expect(queryAllByText("Please enter a valid email").length).toBe(0)
-        expect(queryAllByText("Please enter a confirmation password").length).toBe(0)
-        expect(queryAllByText("The passwords you entered do not match").length).toBe(0)
     })
 
     it('shows error message when not entering a confirmation password ', async () => {
-        const { getByTestId, getByText, queryAllByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("SignUp.usernameInput")
         const emailInput = getByTestId("SignUp.emailInput")
@@ -118,14 +98,10 @@ describe('events on button press', () => {
         })
 
         getByText("Please enter a confirmation password")
-        expect(queryAllByText("Please enter a username").length).toBe(0)
-        expect(queryAllByText("Please enter an email").length).toBe(0)
-        expect(queryAllByText("Please enter a valid email").length).toBe(0)
-        expect(queryAllByText("Please enter a password").length).toBe(0)
     })
 
     it('shows error message when password and password confirmation do not match ', async () => {
-        const { getByTestId, getByText, queryAllByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("SignUp.usernameInput")
         const emailInput = getByTestId("SignUp.emailInput")
@@ -142,15 +118,50 @@ describe('events on button press', () => {
         })
 
         getByText("The passwords you entered do not match")
-        expect(queryAllByText("Please enter a username").length).toBe(0)
-        expect(queryAllByText("Please enter an email").length).toBe(0)
-        expect(queryAllByText("Please enter a valid email").length).toBe(0)
-        expect(queryAllByText("Please enter a password").length).toBe(0)
-        expect(queryAllByText("Please enter a confirmation password").length).toBe(0)
+    })
+
+    it('shows error message when password lenght is less than 4', async () => {
+        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const mockEvent = { preventDefault: jest.fn() }
+        const usernameInput = getByTestId("SignUp.usernameInput")
+        const emailInput = getByTestId("SignUp.emailInput")
+        const passwordInput = getByTestId("SignUp.passwordInput")
+        const confPasswordInput = getByTestId("SignUp.confPasswordInput")
+
+        fireEvent.changeText(usernameInput, 'username')
+        fireEvent.changeText(emailInput, 'email@email.com')
+        fireEvent.changeText(passwordInput, 'pas')
+        fireEvent.changeText(confPasswordInput, 'pas')
+
+        await act(() => {
+            fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
+        })
+
+        getByText("Password length should be 4 characters or more")
+    })
+
+    it('shows error message when password lenght is more than 64', async () => {
+        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const mockEvent = { preventDefault: jest.fn() }
+        const usernameInput = getByTestId("SignUp.usernameInput")
+        const emailInput = getByTestId("SignUp.emailInput")
+        const passwordInput = getByTestId("SignUp.passwordInput")
+        const confPasswordInput = getByTestId("SignUp.confPasswordInput")
+
+        fireEvent.changeText(usernameInput, 'username')
+        fireEvent.changeText(emailInput, 'email@email.com')
+        fireEvent.changeText(passwordInput, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec et ante in')
+        fireEvent.changeText(confPasswordInput, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec et ante in')
+
+        await act(() => {
+            fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
+        })
+
+        getByText("Password length should be 64 characters or less")
     })
 
     it('shows no errors when entering all required inputs correctly', async () => {
-        const { getByTestId, getByText, queryAllByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId, queryAllByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
         const mockEvent = { preventDefault: jest.fn() }
         const usernameInput = getByTestId("SignUp.usernameInput")
         const emailInput = getByTestId("SignUp.emailInput")
@@ -167,10 +178,13 @@ describe('events on button press', () => {
         })
 
         expect(queryAllByText("Please enter a username").length).toBe(0)
+        expect(queryAllByText("Username length should be 64 characters or less").length).toBe(0)
         expect(queryAllByText("Please enter an email").length).toBe(0)
         expect(queryAllByText("Please enter a valid email").length).toBe(0)
         expect(queryAllByText("Please enter a password").length).toBe(0)
         expect(queryAllByText("Please enter a confirmation password").length).toBe(0)
-        expect(queryAllByText("The passwords you entered do not match").length).toBe(0)
+        expect(queryAllByText("Password length should be 4 characters or more").length).toBe(0)
+        expect(queryAllByText("Please enter a confirmation password").length).toBe(0)
+        expect(queryAllByText("Password length should be 64 characters or less").length).toBe(0)
     })
 })

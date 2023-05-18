@@ -28,7 +28,7 @@ export const CreateAccountScreen = ({ navigation }) => {
         setUpdateMsg("Created!")
         navigation.navigate('LoginScreen')
       } else if (res.msg === "failure") {
-        setErrMsg("An error occurred")
+        setErrMsg(res.res[Object.keys(res.res)[0]] ? res.res[Object.keys(res.res)[0]] : "")
         dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
       } else {
         dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
@@ -40,8 +40,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   const handleLogOut = (e: GestureResponderEvent) => {
     logOutUser().then(() => {
       dispatch({ type: "LOGOUT", payload: null })
-    })
-    navigation.navigate('LoginScreen')
+    }).then(() => { navigation.navigate('LoginScreen') })
   }
 
   return (

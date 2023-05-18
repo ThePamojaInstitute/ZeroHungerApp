@@ -9,6 +9,13 @@ import jwt_decode from "jwt-decode";
 
 export const LoginScreen = ({ navigation }) => {
   const { user, loading, dispatch } = useContext(AuthContext)
+
+  useEffect(() => {
+    if (user) {
+      navigation.navigate('LandingPageScreenTemp')
+    }
+  }, [])
+
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [errMsg, setErrMsg] = useState("")
@@ -25,8 +32,7 @@ export const LoginScreen = ({ navigation }) => {
               "token": resp.data
             }
           })
-        })
-        navigation.navigate('CreateAccountScreen')
+        }).then(() => { navigation.navigate('LandingPageScreenTemp') })
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
         setErrMsg("Invalid credentials")
@@ -37,10 +43,8 @@ export const LoginScreen = ({ navigation }) => {
     })
   }
 
-  const handlePasswordRecovery = () =>
-  {
-    Linking.canOpenURL("http://127.0.0.1:8000/password-reset/").then(supported =>
-    {
+  const handlePasswordRecovery = () => {
+    Linking.canOpenURL("http://127.0.0.1:8000/password-reset/").then(supported => {
       if (supported) {
         Linking.openURL("http://127.0.0.1:8000/password-reset/");
       } else {
