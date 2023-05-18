@@ -14,7 +14,6 @@ from django.conf import settings
 from .models import BasicUser
 from .managers import CustomUserManager
 from .serializers import ResgistrationSerializer, LoginSerializer
-import jwt
 
 import jwt
 
@@ -81,7 +80,6 @@ class logIn(APIView):
         
 class logOut(APIView):
     def post(self,request, format=None):
-        permission_classes = (IsAuthenticated)
         try:
                refresh_token = request.data["refresh_token"]
                token = RefreshToken(refresh_token)
