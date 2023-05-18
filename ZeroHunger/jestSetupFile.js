@@ -6,5 +6,5 @@ jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper')
 
 global.console = {
     ...console,
-    log: jest.fn(),
+    log: jest.fn(), 
 };
