@@ -1,11 +1,11 @@
 import React, { useContext } from 'react'
-import { act, fireEvent, render, waitFor } from "@testing-library/react-native"
-import { AuthContext, AuthContextProvider, setToken } from "../../src/context/AuthContext"
 import { Text, View, TouchableOpacity } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage/jest/async-storage-mock'
-import MockAdapter from "axios-mock-adapter"
-import { axiosInstance } from '../../config'
+import { AuthContext, AuthContextProvider, setToken } from "../../src/context/AuthContext"
 import * as Utils from "../../src/controllers/auth";
+import { axiosInstance } from '../../config'
+import AsyncStorage from '@react-native-async-storage/async-storage/jest/async-storage-mock'
+import { act, fireEvent, render, waitFor } from "@testing-library/react-native"
+import MockAdapter from "axios-mock-adapter"
 
 
 jest.mock('jwt-decode', () => () => ({}))
@@ -58,6 +58,8 @@ const TestComponent = () => {
                 return
             case "SignUpFailure":
                 dispatch({ type: "SIGNUP_FAILURE", payload: "error" })
+                return
+            default:
                 return
         }
     }

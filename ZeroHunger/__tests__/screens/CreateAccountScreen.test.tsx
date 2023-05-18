@@ -1,9 +1,9 @@
 import React from "react";
 import CreateAccountScreen from '../../src/screens/CreateAccountScreen';
-import { render, fireEvent, act } from '@testing-library/react-native';
 import * as Utils from "../../src/controllers/auth";
 import { AuthContext } from "../../src/context/AuthContext";
 import { axiosInstance } from "../../config";
+import { render, fireEvent, act } from '@testing-library/react-native';
 import MockAdapter from "axios-mock-adapter"
 
 

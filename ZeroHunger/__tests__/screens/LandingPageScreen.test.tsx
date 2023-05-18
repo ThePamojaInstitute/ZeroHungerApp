@@ -1,11 +1,11 @@
-import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import React from "react";
+import LandingPageScreen from "../../src/screens/LandingPageScreen";
 import * as Utils from "../../src/controllers/auth";
 import { axiosInstance } from "../../config";
 import { AuthContext } from "../../src/context/AuthContext";
-import MockAdapter from "axios-mock-adapter"
-import LandingPageScreen from "../../src/screens/LandingPageScreen";
+import { render, fireEvent, act } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MockAdapter from "axios-mock-adapter"
 
 jest.mock('jwt-decode', () => () => ({}))
 const mockAxios = new MockAdapter(axiosInstance)

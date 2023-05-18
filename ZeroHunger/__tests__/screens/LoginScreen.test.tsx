@@ -1,11 +1,11 @@
-import LoginScreen from "../../src/screens/Loginscreen";
-import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import React from "react";
+import { Linking } from "react-native";
+import LoginScreen from "../../src/screens/Loginscreen";
 import * as Utils from "../../src/controllers/auth";
 import { axiosInstance } from "../../config";
 import { AuthContext } from "../../src/context/AuthContext";
+import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import MockAdapter from "axios-mock-adapter"
-import { Linking } from "react-native";
 
 
 jest.mock('jwt-decode', () => () => ({}))
