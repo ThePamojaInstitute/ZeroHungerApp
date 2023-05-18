@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { GestureResponderEvent } from "react-native";
+import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 import { createUser, logOutUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
@@ -11,6 +11,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   const [password, setPassword] = useState("")
   const [confPass, setConfPass] = useState("")
   const [errMsg, setErrMsg] = useState("")
+  const [updateMsg, setUpdateMsg] = useState("")
 
   const handleSignUp = (e: GestureResponderEvent) => {
     e.preventDefault()
@@ -24,10 +25,11 @@ export const CreateAccountScreen = ({ navigation }) => {
       if (res.msg === "success") {
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
         setErrMsg("")
+        setUpdateMsg("Created!")
         navigation.navigate('LoginScreen')
       } else if (res.msg === "failure") {
-        dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
         setErrMsg(res.res[Object.keys(res.res)[0]] ? res.res[Object.keys(res.res)[0]] : "")
+        dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
       } else {
         dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
         setErrMsg(res.msg)
@@ -90,6 +92,7 @@ export const CreateAccountScreen = ({ navigation }) => {
         />
       </View>
       <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>
+      <Text style={{ color: "green" }}>{updateMsg && updateMsg}</Text>
       <TouchableOpacity testID="SignUp.Button" style={styles.createBtn} onPress={handleSignUp}>
         <Text style={styles.createBtnText}>Sign Up</Text>
       </TouchableOpacity>

@@ -4,7 +4,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList } from "react-native";
 import { AuthContext } from "../context/AuthContext";
-import { deleteUser, logOutUser } from "../controllers/auth";
+import { logOutUser } from "../controllers/auth";
 
 //Flatlist data
 const Item = ({ name }) => {
@@ -38,7 +38,7 @@ const renderItem = ({ item }) => (
 
 //Temporary landing page screen to test tokens
 export const LandingPageScreen = ({ navigation }) => {
-    const { user, accessToken, dispatch } = useContext(AuthContext)
+    const { user, dispatch } = useContext(AuthContext)
 
     useEffect(() => {
         if (!user) {
@@ -50,20 +50,7 @@ export const LandingPageScreen = ({ navigation }) => {
         logOutUser().then(() => {
             dispatch({ type: "LOGOUT", payload: null })
         }).then(() => { navigation.navigate('LoginScreen') })
-    }
 
-    const handleDeleteUser = () => {
-        deleteUser(user['user_id'], accessToken).then(res => {
-            if (res === "success") {
-                logOutUser().then(() => {
-                    dispatch({ type: "LOGOUT", payload: null })
-                    navigation.navigate('LoginScreen')
-                })
-            } else {
-                console.log(res);
-                // show error message to user
-            }
-        })
     }
 
     return (
@@ -72,12 +59,8 @@ export const LandingPageScreen = ({ navigation }) => {
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
                 {user &&
-                    <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
+                    <TouchableOpacity style={styles.logOutBtn} onPress={handleLogOut}>
                         <Text style={styles.logOutBtnText}>Log Out</Text>
-                    </TouchableOpacity>}
-                {user &&
-                    <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
-                        <Text style={styles.deleteBtnText}>Delete User</Text>
                     </TouchableOpacity>}
             </View>
             <View style={styles.pressable}>
@@ -145,21 +128,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#6A6A6A",
     },
     logOutBtnText: {
-        color: "#FFFFFF",
-        padding: 15,
-        marginLeft: 10,
-        fontSize: 15,
-    },
-    deleteBtn: {
-        title: "Login",
-        width: "8%",
-        borderRadius: 25,
-        marginTop: 10,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "red",
-    },
-    deleteBtnText: {
         color: "#FFFFFF",
         padding: 15,
         marginLeft: 10,
