@@ -38,7 +38,7 @@ class createUser(APIView):
             #"Welcome to the zero hunger project!",
             #"noahglassford@gmail.com",
             #["noah@pamojainstitute.org"],
-            # fail_silently=False,
+            # fail_silently=False, 
             #)
             return Response(serializer.data, status=201)
         else:
