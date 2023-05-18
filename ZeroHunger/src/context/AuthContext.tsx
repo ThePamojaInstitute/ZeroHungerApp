@@ -21,12 +21,12 @@ export const setToken = async (type: string, value: string) => {
 }
 
 interface IINITIAL_STATE {
-    user: Object,
+    user: string,
     accessToken: string,
     refreshToken: string,
     loading: boolean,
     error: Object,
-    dispatch: Dispatch<{ type: string, payload: Object }>
+    dispatch: Dispatch<{ type: string, payload: any }>
 }
 
 const INITIAL_STATE = {
@@ -40,7 +40,7 @@ const INITIAL_STATE = {
 
 export const AuthContext = createContext<IINITIAL_STATE>(INITIAL_STATE)
 
-const AuthReducer = (state: Object, action: { type: string; payload: Object }) => {
+const AuthReducer = (state: Object, action: { type: string; payload: any }) => {
     switch (action.type) {
         case "LOGIN_START":
             return {
@@ -54,9 +54,9 @@ const AuthReducer = (state: Object, action: { type: string; payload: Object }) =
         case "LOGIN_SUCCESS":
             return {
                 ...state,
-                user: action.payload['user'],
-                accessToken: action.payload['token'].access,
-                refreshToken: action.payload['token'].refresh,
+                user: action.payload.user,
+                accessToken: action.payload.token['access'],
+                refreshToken: action.payload.token['refresh'],
                 loading: false,
                 error: null
             }
@@ -126,7 +126,7 @@ export const AuthContextProvider = ({ children }) => {
                 }
             }
         } catch (error) {
-            console.log("Refresh token expired or non existing");
+            console.log(error);
         }
     }
 
