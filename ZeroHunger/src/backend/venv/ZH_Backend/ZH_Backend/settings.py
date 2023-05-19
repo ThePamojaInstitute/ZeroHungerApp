@@ -40,13 +40,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.User_Reg_Auth_App',
-    'ZH_Backend',
     'corsheaders', 
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
+    'ZH_Backend',
+    'apps.User_Reg_Auth_App',
 ]
+
+LOGIN_EXEMPT_URLS = {
+  r'^password_change/$',
+  r'^password_change/done/',
+  r'^password_reset/done/',
+  r'^reset/<uidb64>/<token>/',
+  r'^reset/done/',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,7 +72,7 @@ ROOT_URLCONF = 'ZH_Backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '/templates/')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -183,3 +191,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # Media Files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'SentMail/')
