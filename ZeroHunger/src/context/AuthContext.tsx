@@ -111,12 +111,9 @@ export const AuthContextProvider = ({ children }) => {
     const initializeTokenState = async () => {
         try {
             const refreshToken = await AsyncStorage.getItem('refresh_token')
-            console.log(refreshToken);
-
 
             if (refreshToken) {
                 const response = await axiosInstance.post('token/refresh/', { refresh: refreshToken })
-                console.log(response);
 
                 if (response.data) {
                     state['refreshToken'] = response.data['refresh']
@@ -124,8 +121,6 @@ export const AuthContextProvider = ({ children }) => {
                     state['user'] = jwt_decode(state['accessToken'])
 
                     setToken("access", state['accessToken'])
-                    console.log(state['refreshToken']);
-
                     setToken("refresh", state['refreshToken'])
                 } else {
                     logOutUser()
@@ -141,15 +136,11 @@ export const AuthContextProvider = ({ children }) => {
             initializeTokenState().then(() => { setFirstLoad(false) })
         } else {
             const response = await axiosInstance.post('token/refresh/', { refresh: state['refreshToken'] })
-            console.log(response);
-
 
             if (response.data) {
                 state['refreshToken'] = response.data['refresh']
                 state['accessToken'] = response.data['access']
                 state['user'] = jwt_decode(state['accessToken'])
-                console.log(state['refreshToken']);
-
 
                 setToken("access", state['accessToken'])
                 setToken("refresh", state['refreshToken'])
@@ -162,8 +153,6 @@ export const AuthContextProvider = ({ children }) => {
     useEffect(() => {
         if (state['accessToken'] !== "notInitialized" && state['accessToken']) {
             setToken("access", state['accessToken'])
-            console.log(state['refreshToken']);
-
             setToken("refresh", state['refreshToken'])
         }
     }, [state['accessToken'], state['refreshToken']])
