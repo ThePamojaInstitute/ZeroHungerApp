@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Platform, ScrollView, FlatList, ImageBackground, TouchableHighlight, TextInput } from "react-native";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import ImagePicker from "../components/ImagePicker";
+import DatePicker from "../components/DatePicker"
 import FoodCategories from "../components/FoodCategories";
 import Quantity from "../components/Quantity";
 
@@ -26,6 +27,7 @@ export const RequestFormScreen = ({ navigation }) => {
                 <Text style={styles.descText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
             </View>
             <ImagePicker />
+            <DatePicker />
             <View>
                 <Text style={styles.titleText}>Food Category Type <Text style ={{color:'red'}}>*</Text></Text>
                 <Text style={styles.descText}>Please select all the food category type that applies</Text>
