@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { FlatList, ImageBackground, Platform, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ExpoImagePicker from 'expo-image-picker';
-import { useState } from "react";
 
 
 const ImagePicker = () => {
@@ -81,6 +81,7 @@ const ImagePicker = () => {
     )
 }
 
+export default ImagePicker
 
 const styles = StyleSheet.create({
     logOutBtn: {
@@ -111,5 +112,3 @@ const styles = StyleSheet.create({
         right: 0,
     }
 })
-
-export default ImagePicker
