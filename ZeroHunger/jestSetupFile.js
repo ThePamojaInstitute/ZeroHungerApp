@@ -9,3 +9,4 @@ global.console = {
     log: jest.fn(),
 };
 
+jest.mock('@expo/vector-icons/Ionicons', () => 'Icon')
