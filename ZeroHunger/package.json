@@ -9,7 +9,7 @@
     "test": "jest --watchAll"
   },
   "jest": {
-    "preset": "react-native",
+    "preset": "jest-expo",
     "setupFiles": [
       "./jestSetupFile.js"
     ],
@@ -28,10 +28,13 @@
     "expo": "^46.0.21",
     "expo-cli": "^4.3.0",
     "expo-image-picker": "~13.3.1",
+    "expo-modules-core": "^1.2.7",
     "expo-splash-screen": "~0.16.2",
     "expo-status-bar": "~1.4.2",
     "firebase": "^9.17.1",
     "install": "^0.13.0",
+    "jest": "^26.6.3",
+    "jest-expo": "^48.0.2",
     "jwt-decode": "^3.1.2",
     "npm": "^9.4.2",
     "react": "18.0.0",
