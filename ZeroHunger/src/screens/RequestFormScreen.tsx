@@ -1,12 +1,14 @@
-import React, { useContext, useState } from "react";
-import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, } from "react-native";
+import React, { useState } from "react";
+import { Platform, ScrollView, FlatList, ImageBackground, TouchableHighlight } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import ImagePicker from "../components/ImagePicker";
 
-export const RequestFormScreen = ({navigation}) => {
+export const RequestFormScreen = ({ navigation }) => {
+
     return (
-        <View>
-            
-        </View>
+        <ScrollView>
+            <ImagePicker />
+        </ScrollView>
     )
 }
 

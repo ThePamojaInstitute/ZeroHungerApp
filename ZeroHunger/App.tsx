@@ -9,6 +9,7 @@ import LandingPageScreen from './src/screens/LandingPageScreen';
 import { AuthContextProvider } from './src/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { RequestFormScreen } from './src/screens/RequestFormScreen';
 // import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 // export default function App() {
@@ -48,6 +49,11 @@ export default function App() {
                 </TouchableOpacity>
               )
             }}
+          />
+          <Stack.Screen
+            name="RequestFormScreen"
+            component={RequestFormScreen}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="LoginScreen"

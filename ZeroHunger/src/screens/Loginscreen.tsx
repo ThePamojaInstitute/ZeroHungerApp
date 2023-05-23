@@ -90,6 +90,9 @@ export const LoginScreen = ({ navigation }) => {
       <TouchableOpacity testID="SignUp.Button" style={styles.signUpBtn} onPress={() => navigation.navigate("CreateAccountScreen")}>
         <Text style={styles.signUpBtnText}>Sign Up</Text>
       </TouchableOpacity>
+      <TouchableOpacity testID="RequestFromNav.Button" style={styles.signUpBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
+        <Text style={styles.signUpBtnText}>Add a Request</Text>
+      </TouchableOpacity>
     </View>
   );
 }

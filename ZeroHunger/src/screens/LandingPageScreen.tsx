@@ -110,6 +110,9 @@ export const LandingPageScreen = ({ navigation }) => {
                     horizontal
                 />
             </View>
+            <TouchableOpacity testID="RequestFromNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
+                <Text style={styles.logOutBtn}>Add a Request</Text>
+            </TouchableOpacity>
             <Text style={styles.feed}>Feed Screen{"\n"}will go here</Text>
         </View>
     )
