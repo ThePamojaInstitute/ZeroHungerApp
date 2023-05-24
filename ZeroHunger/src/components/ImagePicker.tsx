@@ -11,6 +11,10 @@ const ImagePicker = () => {
     // Needs to be tested on ios
     // Also, do we want to access the camera?
     const pickImages = async () => {
+        if (images.length >= 5) {
+            setErrMsg("The limit is 5 images per post")
+            return
+        }
         setErrMsg("")
         let result = await ExpoImagePicker.launchImageLibraryAsync({
             mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
@@ -43,6 +47,8 @@ const ImagePicker = () => {
                         setErrMsg("The limit is 5 images per post")
                     }
                 }
+            } else if (Platform.OS === 'ios') {
+                // TODO
             }
         }
     };
@@ -66,14 +72,16 @@ const ImagePicker = () => {
         <View>
             {/* <Text>The limit is 5 images</Text> */}
             <Text testID="errMsg" style={{ color: "red" }}>{errMsg && errMsg}</Text>
-            <TouchableOpacity testID="AccessCameraRoll.Button" style={styles.logOutBtnText} onPress={pickImages}>
+            {/* <TouchableOpacity testID="AccessCameraRoll.Button" style={styles.logOutBtnText} onPress={pickImages}>
                 <Text style={styles.logOutBtn}>Access Camera Roll</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <Ionicons name="images-outline" size={50} testID="AccessCameraRoll.Button" onPress={pickImages} title="Access Camera Roll" />
             <View style={{ marginLeft: 20 }}>
                 <FlatList
                     data={images}
                     renderItem={renderItem}
                     horizontal
+                    style={styles.imgList}
                 />
             </View>
             {images.length == 0 && <Text>No Images</Text>}
@@ -106,6 +114,10 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         resizeMode: 'cover'
+    },
+    imgList: {
+        left: -40,
+        marginRight: -40
     },
     topRight: {
         position: 'absolute',

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { StyleSheet, Text, View, Platform } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { Button } from "@react-native-material/core";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 
 const DatePicker = () => {
@@ -11,11 +11,13 @@ const DatePicker = () => {
 
     const [date, setDate] = useState(minDate);
     const [show, setShow] = useState(false);
+    const [selected, setSelected] = useState(false)
 
     const handleChange = (event: DateTimePickerEvent, selectedDate: Date) => {
         const currentDate = selectedDate;
         setShow(false);
         setDate(currentDate);
+        setSelected(true)
     };
 
     // for iOS, add a button that closes the picker
@@ -25,8 +27,9 @@ const DatePicker = () => {
 
     return (
         <View>
-            <Button style={styles.logOutBtn} onPress={() => setShow(true)} title="Show date picker!" />
-            <Text>selected: {date.toLocaleDateString()}</Text>
+            {/* <Button style={styles.logOutBtn} onPress={() => setShow(true)} title="Show date picker!" /> */}
+            <Ionicons name="calendar-outline" size={50} onPress={() => setShow(true)} title="Show date picker!" />
+            <Text>{selected && `selected: ${date.toLocaleDateString()}`}</Text>
             {show && (
                 <DateTimePicker
                     testID="dateTimePicker"

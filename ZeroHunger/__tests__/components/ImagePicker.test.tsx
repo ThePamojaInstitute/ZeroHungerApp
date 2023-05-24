@@ -1,4 +1,4 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react-native"
+import { act, fireEvent, render } from "@testing-library/react-native"
 import ImagePicker from "../../src/components/ImagePicker"
 import * as ExpoImagePicker from 'expo-image-picker';
 import '@testing-library/jest-dom'
@@ -11,9 +11,9 @@ afterEach(() => {
 
 describe('onload', () => {
     it('renders correctly', () => {
-        const { getByText } = render(<ImagePicker />)
+        const { getByText, getByTestId } = render(<ImagePicker />)
 
-        getByText("Access Camera Roll")
+        getByTestId("AccessCameraRoll.Button")
         getByText("No Images")
     })
 })
