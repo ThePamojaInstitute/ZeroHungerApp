@@ -16,7 +16,7 @@ const DatePicker = () => {
     const handleChange = (event: DateTimePickerEvent, selectedDate: Date) => {
         const currentDate = selectedDate;
         setShow(false);
-        setDate(currentDate);
+        setDate(new Date(currentDate));
         setSelected(true)
     };
 
@@ -28,7 +28,7 @@ const DatePicker = () => {
     return (
         <View>
             {/* <Button style={styles.logOutBtn} onPress={() => setShow(true)} title="Show date picker!" /> */}
-            <Ionicons name="calendar-outline" size={50} onPress={() => setShow(true)} title="Show date picker!" />
+            <Ionicons name="calendar-outline" size={50} onPress={() => setShow(true)} title="Show date picker!" testID="ShowDatePicker.Button" />
             <Text>{selected && `selected: ${date.toLocaleDateString()}`}</Text>
             {show && (
                 <DateTimePicker
