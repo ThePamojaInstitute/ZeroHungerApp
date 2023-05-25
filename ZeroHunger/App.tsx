@@ -58,7 +58,10 @@ export default function App() {
               title: 'Make a Request',
               headerTitleAlign: 'center',
               headerRight: () => (
-                <Text style={{color:'blue', fontSize: 18,}}>Post</Text>
+                <TouchableOpacity>
+                  <Text style={{color:'blue', fontSize: 18,}}>Post</Text>
+                </TouchableOpacity>
+                
               )
             }}
           />
