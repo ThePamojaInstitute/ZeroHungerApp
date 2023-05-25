@@ -25,7 +25,7 @@ export const LoginScreen = ({ navigation }) => {
     dispatch({ type: "LOGIN_START", payload: null })
     logInUser({ "username": username, "password": password }).then(async res => {
       if (res.msg === "success") {
-        await axiosInstance.post("/token/", { "username": username, "password": password }).then(resp => {
+        await axiosInstance.post("users/token/", { "username": username, "password": password }).then(resp => {
           dispatch({
             type: "LOGIN_SUCCESS", payload: {
               "user": jwt_decode(resp.data['access']),

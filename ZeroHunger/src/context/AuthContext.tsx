@@ -113,7 +113,7 @@ export const AuthContextProvider = ({ children }) => {
             const refreshToken = await AsyncStorage.getItem('refresh_token')
 
             if (refreshToken) {
-                const response = await axiosInstance.post('token/refresh/', { refresh: refreshToken })
+                const response = await axiosInstance.post('users/token/refresh/', { refresh: refreshToken })
 
                 if (response.data) {
                     state['refreshToken'] = response.data['refresh']
@@ -135,7 +135,7 @@ export const AuthContextProvider = ({ children }) => {
         if (firstLoad) {
             initializeTokenState().then(() => { setFirstLoad(false) })
         } else {
-            const response = await axiosInstance.post('token/refresh/', { refresh: state['refreshToken'] })
+            const response = await axiosInstance.post('users/token/refresh/', { refresh: state['refreshToken'] })
 
             if (response.data) {
                 state['refreshToken'] = response.data['refresh']
