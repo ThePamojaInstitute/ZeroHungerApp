@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   loginBtn: {
-    title: "Login",
+    // title: "Login",
     width: "85%",
     borderRadius: 25,
     marginTop: 30,

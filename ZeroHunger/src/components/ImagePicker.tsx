@@ -24,32 +24,13 @@ const ImagePicker = () => {
             selectionLimit: 5 // only for ios 14+
         });
 
-        if (!result['cancelled']) {
-            if (Platform.OS === 'web') {
-                if (result['selected'].length + images.length > 5) {
-                    setErrMsg("The limit is 5 images per post")
-                }
-                result['selected'].slice(0, 5 - images.length).forEach((img: { uri: string; }) => {
-                    setImages(oldArr => [...oldArr, img.uri])
-                })
-            } else if (Platform.OS === 'android') {
-                if (result['selected']) {   // if more than 1 image picked
-                    if (result['selected'].length + images.length > 5) {
-                        setErrMsg("The limit is 5 images per post")
-                    }
-                    result['selected'].slice(0, 5 - images.length).forEach((img: { uri: string; }) => {
-                        setImages(oldArr => [...oldArr, img.uri])
-                    })
-                } else {    // if only 1 image picked
-                    if (images.length < 5) {
-                        setImages(oldArr => [...oldArr, result['uri']])
-                    } else {
-                        setErrMsg("The limit is 5 images per post")
-                    }
-                }
-            } else if (Platform.OS === 'ios') {
-                // TODO
+        if (!result['canceled']) {
+            if (result['assets'].length + images.length > 5) {
+                setErrMsg("The limit is 5 images per post")
             }
+            result['assets'].slice(0, 5 - images.length).forEach((img: { uri: string; }) => {
+                setImages(oldArr => [...oldArr, img.uri])
+            })
         }
     };
 
