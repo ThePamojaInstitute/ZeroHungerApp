@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
     'ZH_Backend',
-    'apps.User_Reg_Auth_App',
+    'apps.Users',
 ]
 
 LOGIN_EXEMPT_URLS = {
@@ -159,14 +159,14 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-AUTH_USER_MODEL = "User_Reg_Auth_App.BasicUser"
+AUTH_USER_MODEL = "Users.BasicUser"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'EST'
 
 USE_I18N = True
 
@@ -178,7 +178,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [ os.path.join(BASE_DIR,'static/user_reg_auth_app') ]
+STATICFILES_DIRS = [ os.path.join(BASE_DIR,'static/Users') ]
 #You will need to add all subfolders in here
 
 

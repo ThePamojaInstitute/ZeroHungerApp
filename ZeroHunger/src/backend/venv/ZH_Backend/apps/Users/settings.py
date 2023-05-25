@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
-    'apps.User_Reg_Auth_App',
+    'Users',
 ]
 
 LOGIN_EXEMPT_URLS = {
@@ -84,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'User_Reg_Auth_App.wsgi.application'
+WSGI_APPLICATION = 'Users.wsgi.application'
 
 
 # Database
@@ -165,7 +165,7 @@ AUTH_USER_MODEL = "BasicUser"
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'EST'
 
 USE_I18N = True
 
@@ -177,7 +177,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [ os.path.join(BASE_DIR,'static/user_reg_auth_app') ]
+STATICFILES_DIRS = [ os.path.join(BASE_DIR,'static/Users') ]
 #You will need to add all subfolders in here
 
 

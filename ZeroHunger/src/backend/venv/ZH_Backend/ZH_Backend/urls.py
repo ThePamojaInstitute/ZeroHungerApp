@@ -27,5 +27,5 @@ from rest_framework_simplejwt import views as jwt_views
 
 urlpatterns = [
     path('admin/', admin.site.urls), 
-    path('user_reg_auth_app/', include('apps.User_Reg_Auth_App.urls')),
+    path('users/', include('apps.Users.urls')),
 ]
