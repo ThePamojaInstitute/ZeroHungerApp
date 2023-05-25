@@ -3,7 +3,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.urls import reverse
 
 from .managers import CustomUserManager
-from .settings import AUTH_USER_MODEL
+# from .settings import AUTH_USER_MODEL
 from django.contrib.auth.models import PermissionsMixin
 
 class BoardPost(models.Model):
