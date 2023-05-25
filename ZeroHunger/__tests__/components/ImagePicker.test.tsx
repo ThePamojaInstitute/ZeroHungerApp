@@ -39,7 +39,7 @@ describe('pickImages function on web', () => {
     it('shows image when only one image is selected', async () => {
         const { getByTestId, queryAllByText } = render(<ImagePicker />)
 
-        spyLaunchCamera.mockResolvedValue({ cancelled: false, selected: [{ uri: 'image1' }] })
+        spyLaunchCamera.mockResolvedValue({ canceled: false, selected: [{ uri: 'image1' }] })
 
         await act(() => {
             fireEvent.press(getByTestId("AccessCameraRoll.Button"))
