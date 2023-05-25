@@ -22,23 +22,10 @@ from django.contrib.auth.views import ( #default django password reset views, pr
     PasswordResetCompleteView
 )
 from django.contrib.auth import views as auth_views
-from django.urls import path
+from django.urls import path, include
 from rest_framework_simplejwt import views as jwt_views
-from apps.User_Reg_Auth_App.views import createUser, deleteUser, modifyUser, logIn, logOut, MyTokenObtainPairView
 
 urlpatterns = [
     path('admin/', admin.site.urls), 
-    path('api/createUser', createUser.as_view()),
-    path('api/deleteUser', deleteUser.as_view()),
-    path('api/modifyUser', modifyUser.as_view()),
-    path('api/logIn', logIn.as_view()),
-    path('api/logOut', logOut.as_view()),
-    path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-      # Password reset links (ref: https://github.com/django/django/blob/master/django/contrib/auth/views.py)
-    path('reset_password', auth_views.PasswordResetView.as_view(template_name="password_reset/password_reset.html"), name="reset_password"),
-    path('reset_password_sent', auth_views.PasswordResetDoneView.as_view(template_name="password_reset/password_reset_done.html"), name="password_reset_done"),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="password_reset/password_reset_confirm.html"), name="password_reset_confirm"),
-    path('reset_password_complete', auth_views.PasswordResetCompleteView.as_view(template_name="password_reset/password_reset_complete.html"), name="password_reset_complete"),
-
+    path('user_reg_auth_app/', include('apps.User_Reg_Auth_App.urls')),
 ]
