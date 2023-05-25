@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, TextInput } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, TextInput, Pressable } from "react-native";
 import { useState } from "react";
 
 const Quantity = () => {
@@ -23,6 +23,21 @@ const Quantity = () => {
         }
     }
 
+    const Option = ({option}) => {
+        const [pressed, setPressed] = useState(false);
+        const onPress = () => {
+            setPressed(!pressed);
+        }
+
+        var btnStyle = { style: pressed ? styles.itemPressed : styles.item}
+
+        return (
+            <TouchableOpacity {...btnStyle} onPress={onPress}>
+                <Text style={[{color: pressed ? '#FFFFFF' : '#000000'}]}>{option}</Text>
+            </TouchableOpacity>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.button} onPress={onPressSub}>
@@ -38,6 +53,11 @@ const Quantity = () => {
             <TouchableOpacity style={styles.button} onPress={onPressAdd}>
                 <Text style={styles.buttonText}>+</Text>
             </TouchableOpacity>
+
+            {/* Temporary buttons for dropdown menu */}
+            <View style={{ padding: 20 }}/>
+            <Option option='Piece'/>
+            <Option option='Measurement'/>
         </View>
     )
 }
@@ -64,6 +84,22 @@ const styles = StyleSheet.create({
         padding: 10,
         marginLeft: 10,
         fontSize: 15,
+        width: 35,
     },
+    item: {
+        backgroundColor: '#FFFFFF',
+        padding: 10,
+        marginVertical: 15,
+        marginHorizontal: 4,
+        borderRadius: 10,
+    },
+    itemPressed: {
+        backgroundColor: '#000000',
+        padding: 10,
+        marginVertical: 15,
+        marginHorizontal: 4,
+        borderRadius: 4,
+    }
 })
+
 export default Quantity
