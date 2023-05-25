@@ -53,7 +53,14 @@ export default function App() {
           <Stack.Screen
             name="RequestFormScreen"
             component={RequestFormScreen}
-            options={{ headerShown: false }}
+            // options={{ headerShown: false }}
+            options={{
+              title: 'Make a Request',
+              headerTitleAlign: 'center',
+              headerRight: () => (
+                <Text style={{color:'blue', fontSize: 18,}}>Post</Text>
+              )
+            }}
           />
           <Stack.Screen
             name="LoginScreen"
