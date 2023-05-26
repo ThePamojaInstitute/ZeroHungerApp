@@ -4,7 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ExpoImagePicker from 'expo-image-picker';
 
 
-const ImagePicker = () => {
+const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<string>> }) => {
     const [images, setImages] = useState([])
     const [errMsg, setErrMsg] = useState("")
 

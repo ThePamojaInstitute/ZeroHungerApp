@@ -1,12 +1,49 @@
-import React from "react";
-import { ScrollView, TextInput } from "react-native";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import FoodCategories from "../components/FoodCategories";
 import Quantity from "../components/Quantity";
+import { createPost } from "../controllers/post";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import jwtDecode from "jwt-decode";
+import { AuthContext } from "../context/AuthContext";
 
 export const RequestFormScreen = ({ navigation }) => {
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            title: 'Make a Request',
+            headerTitleAlign: 'center',
+            headerRight: () => (
+                <TouchableOpacity>
+                    <Text onPress={handlePress} style={{ color: 'blue', fontSize: 18, }}>Post</Text>
+                </TouchableOpacity>
+            )
+        })
+    }, [navigation])
+
+    const { user } = useContext(AuthContext)
+
+    const [title, setTitle] = useState("")
+    const [images, setImages] = useState("https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600")
+    const [desc, setDesc] = useState("")
+
+    const handlePress = async () => {
+        if (!user) {
+            alert('You are not logged in!')
+            navigation.navigate('LoginScreen')
+            return
+        }
+
+        createPost({
+            title: title,
+            images: images,
+            postedBy: user['user_id'],
+            postedOn: new Date().getTime(),
+            description: desc,
+            isRequest: true
+        })
+    }
 
     return (
         <ScrollView style={styles.container}>
@@ -20,13 +57,14 @@ export const RequestFormScreen = ({ navigation }) => {
                     placeholder="Enter name of food offering"
                     placeholderTextColor="#000000"
                     style={styles.inputText}
+                    onChangeText={setTitle}
                 />
             </View>
             <View>
                 <Text style={styles.titleText}>Photo</Text>
                 <Text style={styles.descText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
             </View>
-            <ImagePicker />
+            <ImagePicker setImages={setImages} />
             <View>
                 <Text style={styles.titleText}>Food Category Type <Text style={{ color: 'red' }}>*</Text></Text>
                 <Text style={styles.descText}>Please select all the food category type that applies</Text>
@@ -53,6 +91,7 @@ export const RequestFormScreen = ({ navigation }) => {
                     placeholderTextColor="#000000"
                     style={styles.inputText}
                     multiline={true}
+                    onChangeText={setDesc}
                 />
             </View>
         </ScrollView>
