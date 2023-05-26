@@ -167,7 +167,7 @@ AUTH_USER_MODEL = "Users.BasicUser"
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'EST'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
