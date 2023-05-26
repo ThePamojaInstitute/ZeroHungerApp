@@ -15,7 +15,7 @@ from django.apps import apps as django_apps
 from datetime import timedelta 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -44,8 +44,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework',
-    'ZH_Backend',
-    'apps.Users',
+    'Users',
 ]
 
 LOGIN_EXEMPT_URLS = {
@@ -85,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ZH_Backend.wsgi.application'
+WSGI_APPLICATION = 'Users.wsgi.application'
 
 
 # Database
@@ -159,7 +158,7 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-AUTH_USER_MODEL = "Users.BasicUser"
+AUTH_USER_MODEL = "BasicUser"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

@@ -28,7 +28,7 @@ export async function createUser(user: Object) {
     }
 
     try {
-        const res = await axiosInstance.post("/createUser", user)
+        const res = await axiosInstance.post("users/createUser", user)
         return { msg: "success", res: res.data }
     } catch (error) {
         return { msg: "failure", res: error.response.data }
@@ -37,7 +37,7 @@ export async function createUser(user: Object) {
 
 export async function deleteUser(userId: string, token: string) {
     try {
-        const res = await axiosInstance.delete("/deleteUser", {
+        const res = await axiosInstance.delete("users/deleteUser", {
             headers: {
                 Authorization: `${token}`
             },
@@ -55,7 +55,7 @@ export async function deleteUser(userId: string, token: string) {
 
 export async function modifyUser(user: Object) {
     try {
-        const res = await axiosInstance.post("/modifyUser", user)
+        const res = await axiosInstance.post("users/modifyUser", user)
         console.log(res.data);
     } catch (error) {
         console.log(error);
@@ -71,7 +71,7 @@ export async function logInUser(user: Object) {
 
     try {
 
-        const res = await axiosInstance.post("/logIn", user)
+        const res = await axiosInstance.post("users/logIn", user)
         if (res.data == undefined) {
             return { msg: "failure", res: res['response'] }
         }
@@ -84,7 +84,7 @@ export async function logInUser(user: Object) {
 export async function logOutUser() {
     try {
         AsyncStorage.getItem('refresh_token').then(async res => {
-            await axiosInstance.post('/logOut', {
+            await axiosInstance.post('users/logOut', {
                 refresh_token: res
             }, { headers: { 'Content-Type': 'application/json' } })
         }).then(() => {

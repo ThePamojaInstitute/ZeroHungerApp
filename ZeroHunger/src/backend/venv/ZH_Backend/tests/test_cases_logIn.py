@@ -7,7 +7,7 @@ class TestCasesLogIn(TestCase):
     @classmethod
     def setUp(self):
         self.client = Client()
-        response = self.client.post('/api/createUser', 
+        response = self.client.post('/users/createUser', 
                                     {
                                     'username' : 'test',
                                     'email' : 'test@test.com',
@@ -18,7 +18,7 @@ class TestCasesLogIn(TestCase):
         pass
 
     def test_logIn_success(self):
-        response = self.client.post('/api/logIn',
+        response = self.client.post('/users/logIn',
                                     {
                                     'username' : 'test',
                                     'password' : 'test'
@@ -26,11 +26,11 @@ class TestCasesLogIn(TestCase):
         self.assertEqual(response.status_code, 201)
 
     def test_logIn_fail(self):
-        response = self.client.post('/api/logIn', {})
+        response = self.client.post('/users/logIn', {})
         self.assertEqual(response.status_code, 401)
 
     def test_wrong_username(self):
-        response = self.client.post('/api/logIn',
+        response = self.client.post('/users/logIn',
                                     {
                                     'username' : 'test_wrong',
                                     'password' : 'test'
@@ -38,7 +38,7 @@ class TestCasesLogIn(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_wrong_password(self):
-        response = self.client.post('/api/logIn',
+        response = self.client.post('/users/logIn',
                                     {
                                     'username' : 'test',
                                     'password' : 'test_wrong'
@@ -46,7 +46,7 @@ class TestCasesLogIn(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_no_username(self):
-        response = self.client.post('/api/logIn',
+        response = self.client.post('/users/logIn',
                                     {
                                     'username' : '',
                                     'password' : 'test'
@@ -54,7 +54,7 @@ class TestCasesLogIn(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_no_password(self):
-        response = self.client.post('/api/logIn',
+        response = self.client.post('/users/logIn',
                                     {
                                     'username' : 'test',
                                     'password' : ''
@@ -62,7 +62,7 @@ class TestCasesLogIn(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_logged_in_login(self):
-        response = self.client.post('/api/logIn',
+        response = self.client.post('/users/logIn',
                                     {
                                     'username' : 'test',
                                     'password' : 'test'
@@ -70,7 +70,7 @@ class TestCasesLogIn(TestCase):
         self.assertEqual(response.status_code, 201)
 
         #Attempt log in when user is already logged in
-        response = self.client.post('/api/logIn',
+        response = self.client.post('/users/logIn',
                                     {
                                     'username' : 'test',
                                     'password' : 'test'

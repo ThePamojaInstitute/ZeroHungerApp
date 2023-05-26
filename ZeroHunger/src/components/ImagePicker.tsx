@@ -1,15 +1,21 @@
+import { useState } from "react";
 import { FlatList, ImageBackground, Platform, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ExpoImagePicker from 'expo-image-picker';
-import { useState } from "react";
 
 
 const ImagePicker = () => {
-    const [images, setImages] = useState([]);
+    const [images, setImages] = useState([])
+    const [errMsg, setErrMsg] = useState("")
 
     // Needs to be tested on ios
     // Also, do we want to access the camera?
     const pickImages = async () => {
+        if (images.length >= 5) {
+            setErrMsg("The limit is 5 images per post")
+            return
+        }
+        setErrMsg("")
         let result = await ExpoImagePicker.launchImageLibraryAsync({
             mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
             aspect: [4, 3],
@@ -18,29 +24,26 @@ const ImagePicker = () => {
             selectionLimit: 5 // only for ios 14+
         });
 
-        if (!result['cancelled']) {
-            if (Platform.OS === 'web') {
-                result['selected'].slice(0, 5 - images.length).forEach((img: { uri: string; }) => {
-                    setImages(oldArr => [...oldArr, img.uri])
-                })
-            } else if (Platform.OS === 'android') {
-                if (result['selected']) {
-                    result['selected'].slice(0, 5 - images.length).forEach((img: { uri: string; }) => {
-                        setImages(oldArr => [...oldArr, img.uri])
-                    })
-                } else {
-                    if (images.length < 5) {
-                        setImages(oldArr => [...oldArr, result['uri']])
-                    }
-                }
+        if (!result['canceled']) {
+            if (result['assets'].length + images.length > 5) {
+                setErrMsg("The limit is 5 images per post")
             }
+            result['assets'].slice(0, 5 - images.length).forEach((img: { uri: string; }) => {
+                setImages(oldArr => [...oldArr, img.uri])
+            })
         }
     };
 
+    const deleteImg = (item: string) => {
+        setImages(images.filter((img: string) => img !== item))
+        setErrMsg("")
+    }
+
     const renderItem = ({ item }) => (
-        <ImageBackground source={{ uri: item }} style={styles.Img}>
+        <ImageBackground testID={item} source={{ uri: item }} style={styles.Img}>
             <TouchableHighlight
-                onPress={() => { setImages(images.filter((img: string) => img !== item)) }}>
+                testID={item + ".DeleteButton"}
+                onPress={() => deleteImg(item)}>
                 <Ionicons name="close-circle" size={32} color="black" style={styles.topRight} />
             </TouchableHighlight>
         </ImageBackground>
@@ -48,15 +51,18 @@ const ImagePicker = () => {
 
     return (
         <View>
-            <Text>The limit is 5 images</Text>
-            <TouchableOpacity testID="RequestFromNav.Button" style={styles.logOutBtnText} onPress={pickImages}>
+            {/* <Text>The limit is 5 images</Text> */}
+            <Text testID="errMsg" style={{ color: "red" }}>{errMsg && errMsg}</Text>
+            {/* <TouchableOpacity testID="AccessCameraRoll.Button" style={styles.logOutBtnText} onPress={pickImages}>
                 <Text style={styles.logOutBtn}>Access Camera Roll</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <Ionicons name="images-outline" size={50} testID="AccessCameraRoll.Button" onPress={pickImages} title="Access Camera Roll" />
             <View style={{ marginLeft: 20 }}>
                 <FlatList
                     data={images}
                     renderItem={renderItem}
                     horizontal
+                    style={styles.imgList}
                 />
             </View>
             {images.length == 0 && <Text>No Images</Text>}
@@ -64,7 +70,7 @@ const ImagePicker = () => {
     )
 }
 
-
+export default ImagePicker
 
 const styles = StyleSheet.create({
     logOutBtn: {
@@ -90,10 +96,12 @@ const styles = StyleSheet.create({
         height: 100,
         resizeMode: 'cover'
     },
+    imgList: {
+        left: -40,
+        marginRight: -40
+    },
     topRight: {
         position: 'absolute',
         right: 0,
     }
 })
-
-export default ImagePicker
