@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'ZH_Backend',
     'apps.Users',
+    'apps.Posts',
 ]
 
 LOGIN_EXEMPT_URLS = {
