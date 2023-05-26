@@ -52,6 +52,7 @@ export const RequestFormScreen = ({ navigation }) => {
                     placeholder="Enter Description"
                     placeholderTextColor="#000000"
                     style={styles.inputText}
+                    multiline={true}
                 />
             </View>
         </ScrollView>
@@ -69,6 +70,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         marginBottom: 5,
         marginTop: 10,
+        fontWeight: 'bold',
     },
     descText: {
         flex: 1,
