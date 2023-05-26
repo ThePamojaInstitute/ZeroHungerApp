@@ -24,11 +24,11 @@ const ImagePicker = () => {
             selectionLimit: 5 // only for ios 14+
         });
 
-        if (!result['canceled']) {
-            if (result['assets'].length + images.length > 5) {
+        if (!result.canceled && result.assets) {
+            if (result.assets.length + images.length > 5) {
                 setErrMsg("The limit is 5 images per post")
             }
-            result['assets'].slice(0, 5 - images.length).forEach((img: { uri: string; }) => {
+            result.assets.slice(0, 5 - images.length).forEach((img: { uri: string; }) => {
                 setImages(oldArr => [...oldArr, img.uri])
             })
         }

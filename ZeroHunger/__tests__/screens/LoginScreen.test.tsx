@@ -133,6 +133,7 @@ describe('events on login button press', () => {
         const passwordInput = getByTestId("LogIn.passwordInput")
 
         spyLogInUser.mockResolvedValue({ msg: "success", res: null })
+        mockAxios.onPost('/token/').reply(200, { 'access': "token" })
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(passwordInput, 'password')

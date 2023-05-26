@@ -58,6 +58,8 @@ export const LandingPageScreen = ({ navigation }) => {
                 logOutUser().then(() => {
                     dispatch({ type: "LOGOUT", payload: null })
                     navigation.navigate('LoginScreen')
+                }).catch(() => {
+                    console.log("log out error");
                 })
             } else {
                 console.log(res);
@@ -139,7 +141,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     logOutBtn: {
-        title: "Login",
         width: "7%",
         borderRadius: 25,
         marginTop: 10,

@@ -89,12 +89,6 @@ describe('onChange', () => {
         date.setMonth(date.getMonth() + 1);
         const selectedDate = new Date(date)
 
-        // expect(picker.props.value).toBe("asda")
-
-        // await act(() => {
-        //     fireEvent.changeText(picker, maxDate)
-        // })
-
         await act(() => {
             fireEvent(picker, 'onChange', {
                 nativeEvent: { timestamp: selectedDate.getTime() },
@@ -102,6 +96,5 @@ describe('onChange', () => {
         })
 
         getByText("selected: " + selectedDate.toLocaleDateString())
-        // expect(picker.props.value).toBe("asda")
     })
 })
