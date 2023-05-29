@@ -12,7 +12,7 @@ class TestCasesCreateUser(TestCase):
         pass
 
     def test_success(self):
-        response = self.client.post('/api/createUser', 
+        response = self.client.post('/users/createUser', 
                                     {
                                     'username' : 'test',
                                     'email' : 'test@test.com',
@@ -21,7 +21,7 @@ class TestCasesCreateUser(TestCase):
         self.assertEqual(response.status_code, 201)
 
     def test_no_username(self):
-        response = self.client.post('/api/createUser', 
+        response = self.client.post('/users/createUser', 
                                     {
                                     'username' : '',
                                     'email' : 'test@test.com',
@@ -30,7 +30,7 @@ class TestCasesCreateUser(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_no_email(self):
-        response = self.client.post('/api/createUser', 
+        response = self.client.post('/users/createUser', 
                                     {
                                     'username' : 'test',
                                     'email' : '',
@@ -39,7 +39,7 @@ class TestCasesCreateUser(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_no_password(self):
-        response = self.client.post('/api/createUser', 
+        response = self.client.post('/users/createUser', 
                                     {
                                     'username' : 'test',
                                     'email' : 'test@test.com',
@@ -48,7 +48,7 @@ class TestCasesCreateUser(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_malformed_email(self):
-        response = self.client.post('/api/createUser', 
+        response = self.client.post('/users/createUser', 
                                     {
                                     'username' : 'test',
                                     'email' : 'test.com',
@@ -57,7 +57,7 @@ class TestCasesCreateUser(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_username_with_spaces(self):
-        response = self.client.post('/api/createUser',
+        response = self.client.post('/users/createUser',
                                     {
                                     'username' : 'te s t',
                                     'email' : 'test@test.com',
@@ -66,7 +66,7 @@ class TestCasesCreateUser(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_email_with_spaces(self):
-        response = self.client.post('/api/createUser',
+        response = self.client.post('/users/createUser',
                                     {
                                     'username' : 'test',
                                     'email' : 't e s t @tes t.com',
@@ -75,7 +75,7 @@ class TestCasesCreateUser(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_password_with_spaces(self):
-        response = self.client.post('/api/createUser',
+        response = self.client.post('/users/createUser',
                                     {
                                     'username' : 'test',
                                     'email' : 'test@test.com',
@@ -85,7 +85,7 @@ class TestCasesCreateUser(TestCase):
 
     #Password is less than 8 characters test
     def test_short_password(self):
-        response = self.client.post('/api/createUser',
+        response = self.client.post('/users/createUser',
                                     {
                                     'username' : 'test',
                                     'email' : 'test@test.com',

@@ -3,16 +3,8 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.urls import reverse
 
 from .managers import CustomUserManager
-from .settings import AUTH_USER_MODEL
+# from .settings import AUTH_USER_MODEL
 from django.contrib.auth.models import PermissionsMixin
-
-class BoardPost(models.Model):
-
-    _productType = models.CharField(max_length=100)
-    _postedBy = models.IntegerField() #User ID
-    _postedOn = models.DateTimeField()
-    _postCaption = models.CharField(max_length=1000)
-    #add image data here
 
 class BasicUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True)

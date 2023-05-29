@@ -1,14 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent, Linking } from "react-native";
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
-import { logInUser, logOutUser } from "../controllers/auth";
+import { GestureResponderEvent, Linking } from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { axiosInstance } from "../../config";
 import jwt_decode from "jwt-decode";
+import { useAlert } from "../context/Alert";
+import { Button } from 'react-native-paper';
 
 
 export const LoginScreen = ({ navigation }) => {
   const { user, loading, dispatch } = useContext(AuthContext)
+  const { dispatch: alert } = useAlert()
 
   useEffect(() => {
     if (user) {
@@ -25,14 +28,17 @@ export const LoginScreen = ({ navigation }) => {
     dispatch({ type: "LOGIN_START", payload: null })
     logInUser({ "username": username, "password": password }).then(async res => {
       if (res.msg === "success") {
-        await axiosInstance.post("/token/", { "username": username, "password": password }).then(resp => {
+        await axiosInstance.post("users/token/", { "username": username, "password": password }).then(resp => {
           dispatch({
             type: "LOGIN_SUCCESS", payload: {
               "user": jwt_decode(resp.data['access']),
               "token": resp.data
             }
           })
-        }).then(() => { navigation.navigate('LandingPageScreenTemp') })
+        }).then(() => {
+          alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
+          navigation.navigate('LandingPageScreenTemp')
+        })
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
         setErrMsg("Invalid credentials")
@@ -41,17 +47,18 @@ export const LoginScreen = ({ navigation }) => {
         setErrMsg(res.msg)
       }
     })
+    setUsername("")
+    setPassword("")
   }
 
   const handlePasswordRecovery = () => {
-    Linking.canOpenURL("http://127.0.0.1:8000/password-reset/").then(supported => {
+    Linking.canOpenURL("http://127.0.0.1:8000/users/reset_password/").then(supported => {
       if (supported) {
-        Linking.openURL("http://127.0.0.1:8000/password-reset/");
+        Linking.openURL("http://127.0.0.1:8000/users/reset_password/");
       } else {
-        console.log("Cannot open URL: " + "http://127.0.0.1:8000/password-reset/");
+        console.log("Cannot open URL: " + "http://127.0.0.1:8000/users/password-reset/");
       }
-    }
-    )  //replace this with actual URL later
+    })  //replace this with actual URL later
   }
 
   return (
@@ -79,7 +86,7 @@ export const LoginScreen = ({ navigation }) => {
           onChangeText={setPassword}
         />
       </View>
-      <TouchableOpacity onPress={handlePasswordRecovery}>
+      <TouchableOpacity testID="passwordReset.Button" onPress={handlePasswordRecovery}>
         <Text style={styles.forgotBtn}>Forgot password?</Text>
       </TouchableOpacity>
       <Text testID="errMsg" style={{ color: "red" }}>{errMsg && errMsg}</Text>
@@ -89,6 +96,15 @@ export const LoginScreen = ({ navigation }) => {
       <TouchableOpacity testID="SignUp.Button" style={styles.signUpBtn} onPress={() => navigation.navigate("CreateAccountScreen")}>
         <Text style={styles.signUpBtnText}>Sign Up</Text>
       </TouchableOpacity>
+      <TouchableOpacity testID="RequestFromNav.Button" style={styles.signUpBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
+        <Text style={styles.signUpBtnText}>Add a Request</Text>
+      </TouchableOpacity>
+      <Button
+        onPress={() =>
+          alert!({ type: 'open', message: 'Sample', alertType: 'success' })
+        }>
+        Show Snackbar
+      </Button>
     </View>
   );
 }
@@ -128,7 +144,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   loginBtn: {
-    title: "Login",
+    // title: "Login",
     width: "85%",
     borderRadius: 25,
     marginTop: 30,
