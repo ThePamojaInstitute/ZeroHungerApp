@@ -5,6 +5,7 @@ import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent }
 import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { deleteUser, logOutUser } from "../controllers/auth";
+import { useAlert } from "../context/Alert";
 
 //Flatlist data
 const Item = ({ name }) => {
@@ -39,6 +40,7 @@ const renderItem = ({ item }) => (
 //Temporary landing page screen to test tokens
 export const LandingPageScreen = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext)
+    const { dispatch: alert } = useAlert()
 
     useEffect(() => {
         if (!user) {
@@ -49,7 +51,10 @@ export const LandingPageScreen = ({ navigation }) => {
     const handleLogOut = (e: GestureResponderEvent) => {
         logOutUser().then(() => {
             dispatch({ type: "LOGOUT", payload: null })
-        }).then(() => { navigation.navigate('LoginScreen') })
+        }).then(() => {
+            alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
+            navigation.navigate('LoginScreen')
+        })
     }
 
     const handleDeleteUser = () => {

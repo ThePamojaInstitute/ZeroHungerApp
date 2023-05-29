@@ -5,10 +5,13 @@ import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { axiosInstance } from "../../config";
 import jwt_decode from "jwt-decode";
+import { useAlert } from "../context/Alert";
+import { Button } from 'react-native-paper';
 
 
 export const LoginScreen = ({ navigation }) => {
   const { user, loading, dispatch } = useContext(AuthContext)
+  const { dispatch: alert } = useAlert()
 
   useEffect(() => {
     if (user) {
@@ -32,7 +35,10 @@ export const LoginScreen = ({ navigation }) => {
               "token": resp.data
             }
           })
-        }).then(() => { navigation.navigate('LandingPageScreenTemp') })
+        }).then(() => {
+          alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
+          navigation.navigate('LandingPageScreenTemp')
+        })
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
         setErrMsg("Invalid credentials")
@@ -93,6 +99,12 @@ export const LoginScreen = ({ navigation }) => {
       <TouchableOpacity testID="RequestFromNav.Button" style={styles.signUpBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
         <Text style={styles.signUpBtnText}>Add a Request</Text>
       </TouchableOpacity>
+      <Button
+        onPress={() =>
+          alert!({ type: 'open', message: 'Sample', alertType: 'success' })
+        }>
+        Show Snackbar
+      </Button>
     </View>
   );
 }

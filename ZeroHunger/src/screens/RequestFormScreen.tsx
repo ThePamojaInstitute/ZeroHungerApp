@@ -1,11 +1,12 @@
-import React, { useContext, useState } from "react";
-import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import FoodCategories from "../components/FoodCategories";
 import Quantity from "../components/Quantity";
 import { createPost } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
+import { useAlert } from "../context/Alert";
 
 export const RequestFormScreen = ({ navigation }) => {
     React.useLayoutEffect(() => {
@@ -21,17 +22,28 @@ export const RequestFormScreen = ({ navigation }) => {
     }, [navigation])
 
     const { user } = useContext(AuthContext)
+    const { dispatch: alert } = useAlert()
 
     const [title, setTitle] = useState("")
     const [images, setImages] = useState("https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600")
     const [desc, setDesc] = useState("")
 
-    const handlePress = async () => {
+    useEffect(() => {
+        console.log(title);
+
+    }, [title])
+
+    const handlePress = async (e: GestureResponderEvent) => {
+        e.preventDefault()
+        console.log(typeof title);
         if (!user || !user['user_id']) {
-            alert('You are not logged in!')
+            // alert('You are not logged in!')
+            alert!({ type: 'open', message: 'You are not logged in!', alertType: 'error' })
             navigation.navigate('LoginScreen')
             return
         }
+
+
 
         try {
             createPost({
@@ -44,17 +56,24 @@ export const RequestFormScreen = ({ navigation }) => {
             }).then(res => {
                 if (res.msg === "success") {
                     navigation.navigate('LandingPageScreenTemp')
+                } else if (res.msg === "failure") {
+                    alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
                 } else {
-                    alert('An error occured!')
+                    alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                    // alert('An error occured!')
                 }
             })
         } catch (error) {
-            alert('An error occured!')
+            alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+            // alert('An error occured!')
         }
     }
 
     return (
         <ScrollView style={styles.container}>
+            <TouchableOpacity>
+                <Text onPress={handlePress} style={{ color: 'blue', fontSize: 18, }}>Post</Text>
+            </TouchableOpacity>
             <View>
                 <Text style={styles.titleText}>Title <Text style={{ color: 'red' }}>*</Text></Text>
                 <Text style={styles.descText}>Create a descriptive title for the food you are offering</Text>
