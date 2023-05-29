@@ -1,12 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import FoodCategories from "../components/FoodCategories";
 import Quantity from "../components/Quantity";
 import { createPost } from "../controllers/post";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import jwtDecode from "jwt-decode";
 import { AuthContext } from "../context/AuthContext";
 
 export const RequestFormScreen = ({ navigation }) => {
@@ -29,7 +27,7 @@ export const RequestFormScreen = ({ navigation }) => {
     const [desc, setDesc] = useState("")
 
     const handlePress = async () => {
-        if (!user) {
+        if (!user || !user['user_id']) {
             alert('You are not logged in!')
             navigation.navigate('LoginScreen')
             return
@@ -41,7 +39,7 @@ export const RequestFormScreen = ({ navigation }) => {
             postedBy: user['user_id'],
             postedOn: new Date().getTime(),
             description: desc,
-            isRequest: true
+            postType: 'r'
         })
     }
 
