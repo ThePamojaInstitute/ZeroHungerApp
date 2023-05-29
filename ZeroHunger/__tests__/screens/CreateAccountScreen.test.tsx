@@ -176,6 +176,8 @@ describe('events on Sign Up button press', () => {
         fireEvent.changeText(passwordInput, 'password')
         fireEvent.changeText(confPasswordInput, 'password')
 
+        spyCreateUser.mockResolvedValue({ msg: "success", res: null })
+
         await act(() => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
@@ -202,6 +204,8 @@ describe('events on Sign Up button press', () => {
         const passwordInput = getByTestId("SignUp.passwordInput")
         const confPasswordInput = getByTestId("SignUp.confPasswordInput")
 
+        spyCreateUser.mockResolvedValue({ msg: "success", res: null })
+
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(emailInput, 'email@email.com')
         fireEvent.changeText(passwordInput, 'password')
@@ -225,6 +229,8 @@ describe('events on Sign Up button press', () => {
         const emailInput = getByTestId("SignUp.emailInput")
         const passwordInput = getByTestId("SignUp.passwordInput")
         const confPasswordInput = getByTestId("SignUp.confPasswordInput")
+
+        spyCreateUser.mockResolvedValue({ msg: "success", res: null })
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(emailInput, 'email@email.com')
@@ -318,7 +324,7 @@ describe('createUser function', () => {
         const passwordInput = getByTestId("SignUp.passwordInput")
         const confPasswordInput = getByTestId("SignUp.confPasswordInput")
 
-        spyCreateUser.mockResolvedValue({ msg: "failure", res: null })
+        spyCreateUser.mockResolvedValue({ msg: "failure", res: { "data": "data" } })
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(emailInput, 'email@email.com')
@@ -331,7 +337,7 @@ describe('createUser function', () => {
 
         expect(spyCreateUser).toBeCalled()
         expect(mockDispatch).toBeCalledTimes(2)
-        expect(mockDispatch).toHaveBeenNthCalledWith(2, { "payload": null, "type": "SIGNUP_FAILURE" })
+        expect(mockDispatch).toHaveBeenNthCalledWith(2, { "payload": { "data": "data" }, "type": "SIGNUP_FAILURE" })
         expect(mockNavigation.navigate).not.toBeCalledWith('LoginScreen')
     })
 })

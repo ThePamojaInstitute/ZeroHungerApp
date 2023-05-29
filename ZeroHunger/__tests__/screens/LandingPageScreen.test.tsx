@@ -3,7 +3,7 @@ import LandingPageScreen from "../../src/screens/LandingPageScreen";
 import * as Utils from "../../src/controllers/auth";
 import { axiosInstance } from "../../config";
 import { AuthContext } from "../../src/context/AuthContext";
-import { render, fireEvent, act } from '@testing-library/react-native';
+import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MockAdapter from "axios-mock-adapter"
 
@@ -20,6 +20,7 @@ const spyDeleteUser = jest.spyOn(Utils, 'deleteUser')
 afterEach(() => {
     jest.clearAllMocks();
     spyLogOutUser.mockReset()
+    mockAxios.resetHistory()
 })
 
 describe('onload', () => {
@@ -77,7 +78,7 @@ describe('handling log out', () => {
 
     it('calls logOutUser when button is pressed', async () => {
         const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: { username: "user" }, accessToken: "", refreshToken: "", loading: false, error: "", dispatch: null }}>
+            <AuthContext.Provider value={{ user: { username: "user" }, accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
                 <LandingPageScreen navigation={mockNavigation} />
             </AuthContext.Provider>
         )

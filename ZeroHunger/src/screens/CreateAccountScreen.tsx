@@ -3,9 +3,12 @@ import { GestureResponderEvent } from "react-native";
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
 import { createUser, logOutUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
+import { useAlert } from "../context/Alert";
 
 export const CreateAccountScreen = ({ navigation }) => {
   const { user, loading, dispatch } = useContext(AuthContext)
+  const { dispatch: alert } = useAlert()
+
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -24,6 +27,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       if (res.msg === "success") {
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
         setErrMsg("")
+        alert!({ type: 'open', message: 'Account created successfully!', alertType: 'success' })
         navigation.navigate('LoginScreen')
       } else if (res.msg === "failure") {
         dispatch({ type: "SIGNUP_FAILURE", payload: res.res })

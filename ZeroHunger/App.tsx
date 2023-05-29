@@ -10,6 +10,9 @@ import { AuthContextProvider } from './src/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { RequestFormScreen } from './src/screens/RequestFormScreen';
+import { AlertProvider } from './src/context/Alert';
+import SnackBar from './src/components/Snackbar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 // import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 // export default function App() {
@@ -29,45 +32,62 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <AuthContextProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="LandingPageScreenTemp"
-            component={LandingPageScreen}
-            options={{
-              title: "Zero Hunger",
-              headerTitleAlign: 'center',
-              headerLeft: () => (
-                <TouchableOpacity style={styles.buttonPlaceholder}>
-                  <Text>Profile Picture</Text>
-                </TouchableOpacity>
-              ),
-              headerRight: () => (
-                <TouchableOpacity style={styles.buttonPlaceholder}>
-                  <Text>Notif Icon</Text>
-                </TouchableOpacity>
-              )
-            }}
-          />
-          <Stack.Screen
-            name="RequestFormScreen"
-            component={RequestFormScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="LoginScreen"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="CreateAccountScreen" //Placeholder header to return to login screen
-            component={CreateAccountScreen}
-          // options={{headerShown: false}}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AuthContextProvider>
+    <SafeAreaProvider>
+      <AuthContextProvider>
+        <NavigationContainer>
+          <AlertProvider>
+            <>
+              <Stack.Navigator>
+                <Stack.Screen
+                  name="LandingPageScreenTemp"
+                  component={LandingPageScreen}
+                  options={{
+                    title: "Zero Hunger",
+                    headerTitleAlign: 'center',
+                    headerLeft: () => (
+                      <TouchableOpacity style={styles.buttonPlaceholder}>
+                        <Text>Profile Picture</Text>
+                      </TouchableOpacity>
+                    ),
+                    headerRight: () => (
+                      <TouchableOpacity style={styles.buttonPlaceholder}>
+                        <Text>Notif Icon</Text>
+                      </TouchableOpacity>
+                    )
+                  }}
+                />
+                <Stack.Screen
+                  name="RequestFormScreen"
+                  component={RequestFormScreen}
+                // options={{ headerShown: false }}
+                // options={{
+                //   title: 'Make a Request',
+                //   headerTitleAlign: 'center',
+                //   headerRight: () => (
+                //     <TouchableOpacity>
+                //       <Text style={{color:'blue', fontSize: 18,}}>Post</Text>
+                //     </TouchableOpacity>
+
+                //   )
+                // }}
+                />
+                <Stack.Screen
+                  name="LoginScreen"
+                  component={LoginScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="CreateAccountScreen" //Placeholder header to return to login screen
+                  component={CreateAccountScreen}
+                // options={{headerShown: false}}
+                />
+              </Stack.Navigator>
+              <SnackBar />
+            </>
+          </AlertProvider>
+        </NavigationContainer>
+      </AuthContextProvider>
+    </SafeAreaProvider>
   )
 }
 
