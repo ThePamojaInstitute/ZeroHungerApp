@@ -13,7 +13,7 @@ from django.conf import settings
 
 from .models import BasicUser
 from .managers import CustomUserManager
-from .serializers import ResgistrationSerializer, LoginSerializer
+from .serializers import RegistrationSerializer, LoginSerializer
 
 import jwt
 
@@ -34,7 +34,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 class createUser(APIView):
     def post(self, request, format=None): #POST a new user to the database\
-        serializer = ResgistrationSerializer(data=request.data)
+        serializer = RegistrationSerializer(data=request.data)
         if (serializer.is_valid()):
             serializer.save()
            # send_mail(
@@ -76,8 +76,7 @@ class logIn(APIView):
             return serializer.logIn()
         else:
             return Response({"Error logging in", 401})
-        
-        
+                
 class logOut(APIView):
     def post(self,request, format=None):
         try:
@@ -87,6 +86,3 @@ class logOut(APIView):
                return Response(status=205)
         except Exception as e:
            return Response(status=400)
-
-
-       
