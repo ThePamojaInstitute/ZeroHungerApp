@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
-import { GestureResponderEvent } from "react-native";
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, GestureResponderEvent } from "react-native";
 import { createUser, logOutUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
@@ -13,7 +12,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confPass, setConfPass] = useState("")
-  const [errMsg, setErrMsg] = useState("")
+  // const [errMsg, setErrMsg] = useState("")
 
   const handleSignUp = (e: GestureResponderEvent) => {
     e.preventDefault()
@@ -26,15 +25,21 @@ export const CreateAccountScreen = ({ navigation }) => {
     }).then(res => {
       if (res.msg === "success") {
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
-        setErrMsg("")
+        // setErrMsg("")
         alert!({ type: 'open', message: 'Account created successfully!', alertType: 'success' })
         navigation.navigate('LoginScreen')
       } else if (res.msg === "failure") {
         dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
-        setErrMsg(res.res[Object.keys(res.res)[0]] ? res.res[Object.keys(res.res)[0]] : "")
+        alert!({
+          type: 'open',
+          message: res.res[Object.keys(res.res)[0]] ? res.res[Object.keys(res.res)[0]] : "An error occurred",
+          alertType: 'error'
+        })
+        // setErrMsg(res.res[Object.keys(res.res)[0]] ? res.res[Object.keys(res.res)[0]] : "An error occurred")
       } else {
         dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
-        setErrMsg(res.msg)
+        alert!({ type: 'open', message: res.msg, alertType: 'error' })
+        // setErrMsg(res.msg)
       }
     })
   }
@@ -93,7 +98,6 @@ export const CreateAccountScreen = ({ navigation }) => {
           onChangeText={setConfPass}
         />
       </View>
-      <Text style={{ color: "red" }}>{errMsg && errMsg}</Text>
       <TouchableOpacity testID="SignUp.Button" style={styles.createBtn} onPress={handleSignUp}>
         <Text style={styles.createBtnText}>Sign Up</Text>
       </TouchableOpacity>

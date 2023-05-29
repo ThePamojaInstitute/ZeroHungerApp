@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { GestureResponderEvent, Linking } from "react-native";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, GestureResponderEvent, Linking } from "react-native";
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
-import { axiosInstance } from "../../config";
-import jwt_decode from "jwt-decode";
 import { useAlert } from "../context/Alert";
+import { axiosInstance } from "../../config";
 import { Button } from 'react-native-paper';
+import jwt_decode from "jwt-decode";
 
 
 export const LoginScreen = ({ navigation }) => {
@@ -21,7 +20,6 @@ export const LoginScreen = ({ navigation }) => {
 
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [errMsg, setErrMsg] = useState("")
 
   const handleLogin = (e: GestureResponderEvent) => {
     e.preventDefault()
@@ -36,19 +34,21 @@ export const LoginScreen = ({ navigation }) => {
             }
           })
         }).then(() => {
+          setUsername("")
+          setPassword("")
           alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
           navigation.navigate('LandingPageScreenTemp')
         })
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
-        setErrMsg("Invalid credentials")
+        alert!({ type: 'open', message: 'Invalid credentials', alertType: 'error' })
+        setUsername("")
+        setPassword("")
       } else {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
-        setErrMsg(res.msg)
+        alert!({ type: 'open', message: res.msg, alertType: 'error' })
       }
     })
-    setUsername("")
-    setPassword("")
   }
 
   const handlePasswordRecovery = () => {
@@ -89,7 +89,6 @@ export const LoginScreen = ({ navigation }) => {
       <TouchableOpacity testID="passwordReset.Button" onPress={handlePasswordRecovery}>
         <Text style={styles.forgotBtn}>Forgot password?</Text>
       </TouchableOpacity>
-      <Text testID="errMsg" style={{ color: "red" }}>{errMsg && errMsg}</Text>
       <TouchableOpacity testID="LogIn.Button" style={styles.loginBtn} onPress={handleLogin}>
         <Text style={styles.loginBtnText}>Login</Text>
       </TouchableOpacity>

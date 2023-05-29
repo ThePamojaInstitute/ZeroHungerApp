@@ -1,8 +1,5 @@
-//TODO Track button presses (underline button or highlight)
-
-import React, { useContext, useState, useEffect } from "react";
-import { NativeSyntheticEvent, TextInputChangeEventData, GestureResponderEvent } from "react-native";
-import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList } from "react-native";
+import React, { useContext, useEffect } from "react";
+import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList, GestureResponderEvent } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { deleteUser, logOutUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
@@ -54,6 +51,8 @@ export const LandingPageScreen = ({ navigation }) => {
         }).then(() => {
             alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
             navigation.navigate('LoginScreen')
+        }).catch(() => {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
         })
     }
 
@@ -62,13 +61,15 @@ export const LandingPageScreen = ({ navigation }) => {
             if (res === "success") {
                 logOutUser().then(() => {
                     dispatch({ type: "LOGOUT", payload: null })
+                    alert!({ type: 'open', message: 'Account deleted successfully!', alertType: 'success' })
                     navigation.navigate('LoginScreen')
                 }).catch(() => {
+                    alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
                     console.log("log out error");
                 })
             } else {
+                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
                 console.log(res);
-                // show error message to user
             }
         })
     }

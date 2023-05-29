@@ -1,21 +1,19 @@
 import { useState } from "react";
-import { FlatList, ImageBackground, Platform, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { FlatList, ImageBackground, StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { useAlert } from "../context/Alert";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ExpoImagePicker from 'expo-image-picker';
 
 
 const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<string>> }) => {
+    const { dispatch: alert } = useAlert()
     const [images, setImages] = useState([])
-    const [errMsg, setErrMsg] = useState("")
 
-    // Needs to be tested on ios
-    // Also, do we want to access the camera?
     const pickImages = async () => {
         if (images.length >= 5) {
-            setErrMsg("The limit is 5 images per post")
+            alert!({ type: 'open', message: 'The limit is 5 images per post', alertType: 'error' })
             return
         }
-        setErrMsg("")
         let result = await ExpoImagePicker.launchImageLibraryAsync({
             mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
             aspect: [4, 3],
@@ -26,7 +24,7 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
 
         if (!result.canceled && result.assets) {
             if (result.assets.length + images.length > 5) {
-                setErrMsg("The limit is 5 images per post")
+                alert!({ type: 'open', message: 'The limit is 5 images per post', alertType: 'error' })
             }
             result.assets.slice(0, 5 - images.length).forEach((img: { uri: string; }) => {
                 setImages(oldArr => [...oldArr, img.uri])
@@ -36,7 +34,6 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
 
     const deleteImg = (item: string) => {
         setImages(images.filter((img: string) => img !== item))
-        setErrMsg("")
     }
 
     const renderItem = ({ item }) => (
@@ -51,11 +48,6 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
 
     return (
         <View>
-            {/* <Text>The limit is 5 images</Text> */}
-            <Text testID="errMsg" style={{ color: "red" }}>{errMsg && errMsg}</Text>
-            {/* <TouchableOpacity testID="AccessCameraRoll.Button" style={styles.logOutBtnText} onPress={pickImages}>
-                <Text style={styles.logOutBtn}>Access Camera Roll</Text>
-            </TouchableOpacity> */}
             <Ionicons name="images-outline" size={50} testID="AccessCameraRoll.Button" onPress={pickImages} title="Access Camera Roll" />
             <View style={{ marginLeft: 20 }}>
                 <FlatList
