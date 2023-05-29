@@ -7,7 +7,7 @@ from .models import BoardPost
 class createPostSerializer (serializers.ModelSerializer):
     title = serializers.CharField(max_length=128)
     images = serializers.CharField(max_length=256)
-    postedOn = serializers.IntegerField()
+    postedOn = serializers.IntegerField(min_value = 1, max_value= 2147483647) #Prevents writing a time value that would break
     postedBy = serializers.IntegerField()
     description = serializers.CharField(max_length=1024)
     postType = serializers.CharField(max_length=1)

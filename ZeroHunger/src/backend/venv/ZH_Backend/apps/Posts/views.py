@@ -13,3 +13,8 @@ class createPost(APIView):
             return Response(serializer.data, status=201)
         else:
               return Response(serializer.errors, status=401)
+        
+class deletePost(APIView):
+     def post(self,request, format=JSONParser):
+          print("delete post test")
+          return Response("Reached delete post in API", status=201)
