@@ -12,15 +12,13 @@ export const createPost = async (obj: {
 }) => {
     console.log(obj);
     if (!obj.title) {
-        // alert('Please enter a title to your request')
         return { msg: "Please enter a title to your request", res: null }
     } else if (obj.title.length >= 100) {
-        // alert('Title should be at most 100 characters')
         return { msg: "Title should be at most 100 characters", res: null }
     }
 
     try {
-        const res = await axiosInstance.post('/posts/createPost')
+        const res = await axiosInstance.post('/posts/createPost', obj)
         if (res.status === 201) {
             return { msg: "success", res: res.data }
         } else {
@@ -28,7 +26,6 @@ export const createPost = async (obj: {
         }
     } catch (error) {
         console.log(error);
-        // alert('An error occured!')
         return { msg: "failure", res: error }
     }
 }
