@@ -9,17 +9,17 @@ import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 
 export const RequestFormScreen = ({ navigation }) => {
-    React.useLayoutEffect(() => {
-        navigation.setOptions({
-            title: 'Make a Request',
-            headerTitleAlign: 'center',
-            headerRight: () => (
-                <TouchableOpacity>
-                    <Text onPress={handlePress} style={{ color: 'blue', fontSize: 18, }}>Post</Text>
-                </TouchableOpacity>
-            )
-        })
-    }, [navigation])
+    // React.useLayoutEffect(() => {
+    //     navigation.setOptions({
+    //         title: 'Make a Request',
+    //         headerTitleAlign: 'center',
+    //         headerRight: () => (
+    //             <TouchableOpacity>
+    //                 <Text onPress={handlePress} style={{ color: 'blue', fontSize: 18, }}>Post</Text>
+    //             </TouchableOpacity>
+    //         )
+    //     })
+    // }, [navigation])
 
     const { user } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
@@ -37,35 +37,31 @@ export const RequestFormScreen = ({ navigation }) => {
         e.preventDefault()
         console.log(typeof title);
         if (!user || !user['user_id']) {
-            // alert('You are not logged in!')
             alert!({ type: 'open', message: 'You are not logged in!', alertType: 'error' })
             navigation.navigate('LoginScreen')
             return
         }
-
-
 
         try {
             createPost({
                 title: title,
                 images: images,
                 postedBy: user['user_id'],
-                postedOn: new Date().getTime(),
+                postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
                 description: desc,
                 postType: 'r'
             }).then(res => {
                 if (res.msg === "success") {
+                    alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
                     navigation.navigate('LandingPageScreenTemp')
                 } else if (res.msg === "failure") {
                     alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
                 } else {
                     alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
-                    // alert('An error occured!')
                 }
             })
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
-            // alert('An error occured!')
         }
     }
 
