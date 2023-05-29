@@ -2,6 +2,16 @@ import { act, fireEvent, render } from "@testing-library/react-native"
 import ImagePicker from "../../src/components/ImagePicker"
 import * as ExpoImagePicker from 'expo-image-picker';
 import '@testing-library/jest-dom'
+import { AlertContext, AlertContextFields, AlertContextType } from "../../src/context/Alert";
+import { mock } from "jest-mock-extended";
+
+const mockSetImages = jest.fn()
+const mockAlert = mock<AlertContextFields>()
+const mockAlertDispatch: React.Dispatch<any> = jest.fn()
+const mockAlertValue: AlertContextType = {
+    alert: mockAlert,
+    dispatch: mockAlertDispatch
+}
 
 const spyLaunchImageLibrary = jest.spyOn(ExpoImagePicker, 'launchImageLibraryAsync')
 
@@ -11,7 +21,11 @@ afterEach(() => {
 
 describe('onload', () => {
     it('renders correctly', () => {
-        const { getByText, getByTestId } = render(<ImagePicker />)
+        const { getByText, getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <ImagePicker setImages={mockSetImages} />
+            </AlertContext.Provider>
+        )
 
         getByTestId("AccessCameraRoll.Button")
         getByText("No Images")
@@ -20,7 +34,11 @@ describe('onload', () => {
 
 describe("Access Camera Roll button", () => {
     it('calls pickImages when pressed', async () => {
-        const { getByTestId } = render(<ImagePicker />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <ImagePicker setImages={mockSetImages} />
+            </AlertContext.Provider>
+        )
 
         await act(() => {
             fireEvent.press(getByTestId("AccessCameraRoll.Button"))
@@ -32,7 +50,11 @@ describe("Access Camera Roll button", () => {
 
 describe('pickImages function on web', () => {
     it('shows image when only one image is selected', async () => {
-        const { getByTestId, queryAllByText } = render(<ImagePicker />)
+        const { queryAllByText, getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <ImagePicker setImages={mockSetImages} />
+            </AlertContext.Provider>
+        )
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets: [
@@ -49,7 +71,11 @@ describe('pickImages function on web', () => {
     })
 
     it('shows images when more than one image is selected', async () => {
-        const { getByTestId, queryAllByText } = render(<ImagePicker />)
+        const { queryAllByText, getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <ImagePicker setImages={mockSetImages} />
+            </AlertContext.Provider>
+        )
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets:
@@ -69,7 +95,11 @@ describe('pickImages function on web', () => {
     })
 
     it('doesnt show limit message when 5 images are selected', async () => {
-        const { getByTestId, queryAllByText } = render(<ImagePicker />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <ImagePicker setImages={mockSetImages} />
+            </AlertContext.Provider>
+        )
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets: [
@@ -85,11 +115,15 @@ describe('pickImages function on web', () => {
             fireEvent.press(getByTestId("AccessCameraRoll.Button"))
         })
 
-        expect(queryAllByText("The limit is 5 images per post").length).toBe(0)
+        expect(mockAlertDispatch).not.toBeCalled()
     })
 
     it('shows limit message when more than 5 images are selected', async () => {
-        const { getByTestId, getByText } = render(<ImagePicker />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <ImagePicker setImages={mockSetImages} />
+            </AlertContext.Provider>
+        )
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets: [
@@ -106,11 +140,19 @@ describe('pickImages function on web', () => {
             fireEvent.press(getByTestId("AccessCameraRoll.Button"))
         })
 
-        getByText("The limit is 5 images per post")
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "error",
+            "message": "The limit is 5 images per post",
+            "type": "open"
+        })
     })
 
     it('shows only 5 images when more than 5 images are selected', async () => {
-        const { getByTestId, getByText, queryByTestId } = render(<ImagePicker />)
+        const { getByText, getByTestId, queryByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <ImagePicker setImages={mockSetImages} />
+            </AlertContext.Provider>
+        )
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets: [
@@ -127,17 +169,25 @@ describe('pickImages function on web', () => {
             fireEvent.press(getByTestId("AccessCameraRoll.Button"))
         })
 
-        getByText("The limit is 5 images per post")
         getByTestId('image1')
         getByTestId('image2')
         getByTestId('image3')
         getByTestId('image4')
         getByTestId('image5')
         expect(queryByTestId('image6')).not.toBeInTheDocument()
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "error",
+            "message": "The limit is 5 images per post",
+            "type": "open"
+        })
     })
 
     it('deletes an image when the delete button is pressed', async () => {
-        const { getByTestId, queryByTestId } = render(<ImagePicker />)
+        const { queryByTestId, getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <ImagePicker setImages={mockSetImages} />
+            </AlertContext.Provider>
+        )
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets: [

@@ -5,6 +5,8 @@ import { AuthContext } from "../../src/context/AuthContext";
 import { axiosInstance } from "../../config";
 import { render, fireEvent, act } from '@testing-library/react-native';
 import MockAdapter from "axios-mock-adapter"
+import { AlertContext, AlertContextFields, AlertContextType } from "../../src/context/Alert";
+import { mock } from "jest-mock-extended";
 
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper')
@@ -14,6 +16,12 @@ const mockNavigation = {
 const mockEvent = { preventDefault: jest.fn() };
 const mockDispatch = jest.fn()
 const mockAxios = new MockAdapter(axiosInstance)
+const mockAlert = mock<AlertContextFields>()
+const mockAlertDispatch: React.Dispatch<any> = jest.fn()
+const mockAlertValue: AlertContextType = {
+    alert: mockAlert,
+    dispatch: mockAlertDispatch
+}
 
 const spyCreateUser = jest.spyOn(Utils, 'createUser')
 
@@ -32,7 +40,11 @@ it('renders default elements', () => {
 
 describe('events on Sign Up button press', () => {
     it('calls preventDefault', async () => {
-        const { getByTestId } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AlertContext.Provider>
+        )
         await act(() => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
@@ -41,16 +53,28 @@ describe('events on Sign Up button press', () => {
     })
 
     it('shows error message when not entering username', async () => {
-        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AlertContext.Provider>
+        )
         await act(() => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
-        getByText("Please enter a username")
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "error",
+            "message": "Please enter a username",
+            "type": "open"
+        })
     })
 
     it('shows error message when entering only the username', async () => {
-        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AlertContext.Provider>
+        )
         const usernameInput = getByTestId("SignUp.usernameInput")
 
         fireEvent.changeText(usernameInput, 'username')
@@ -59,11 +83,19 @@ describe('events on Sign Up button press', () => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
-        getByText("Please enter an email")
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "error",
+            "message": "Please enter an email",
+            "type": "open"
+        })
     })
 
     it('shows error message when entering username that is longer that 50 characters', async () => {
-        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AlertContext.Provider>
+        )
         const usernameInput = getByTestId("SignUp.usernameInput")
 
         fireEvent.changeText(usernameInput, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec et ante in')
@@ -72,11 +104,19 @@ describe('events on Sign Up button press', () => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
-        getByText("Username length should be 64 characters or less")
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "error",
+            "message": "Username length should be 64 characters or less",
+            "type": "open"
+        })
     })
 
     it('shows error message when entering only the username and email', async () => {
-        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AlertContext.Provider>
+        )
         const usernameInput = getByTestId("SignUp.usernameInput")
         const emailInput = getByTestId("SignUp.emailInput")
 
@@ -87,11 +127,19 @@ describe('events on Sign Up button press', () => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
-        getByText("Please enter a password")
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "error",
+            "message": "Please enter a password",
+            "type": "open"
+        })
     })
 
     it('shows error message when not entering a confirmation password ', async () => {
-        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AlertContext.Provider>
+        )
         const usernameInput = getByTestId("SignUp.usernameInput")
         const emailInput = getByTestId("SignUp.emailInput")
         const passwordInput = getByTestId("SignUp.passwordInput")
@@ -104,11 +152,19 @@ describe('events on Sign Up button press', () => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
-        getByText("Please enter a confirmation password")
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "error",
+            "message": "Please enter a confirmation password",
+            "type": "open"
+        })
     })
 
     it('shows error message when password and password confirmation do not match ', async () => {
-        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AlertContext.Provider>
+        )
         const usernameInput = getByTestId("SignUp.usernameInput")
         const emailInput = getByTestId("SignUp.emailInput")
         const passwordInput = getByTestId("SignUp.passwordInput")
@@ -123,11 +179,19 @@ describe('events on Sign Up button press', () => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
-        getByText("The passwords you entered do not match")
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "error",
+            "message": "The passwords you entered do not match",
+            "type": "open"
+        })
     })
 
     it('shows error message when password lenght is less than 4', async () => {
-        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AlertContext.Provider>
+        )
         const usernameInput = getByTestId("SignUp.usernameInput")
         const emailInput = getByTestId("SignUp.emailInput")
         const passwordInput = getByTestId("SignUp.passwordInput")
@@ -142,11 +206,19 @@ describe('events on Sign Up button press', () => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
-        getByText("Password length should be 4 characters or more")
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "error",
+            "message": "Password length should be 4 characters or more",
+            "type": "open"
+        })
     })
 
     it('shows error message when password lenght is more than 64', async () => {
-        const { getByTestId, getByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AlertContext.Provider>
+        )
         const usernameInput = getByTestId("SignUp.usernameInput")
         const emailInput = getByTestId("SignUp.emailInput")
         const passwordInput = getByTestId("SignUp.passwordInput")
@@ -161,11 +233,19 @@ describe('events on Sign Up button press', () => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
-        getByText("Password length should be 64 characters or less")
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "error",
+            "message": "Password length should be 64 characters or less",
+            "type": "open"
+        })
     })
 
-    it('shows no errors when entering all required inputs correctly', async () => {
-        const { getByTestId, queryAllByText } = render(<CreateAccountScreen navigation={mockNavigation} />)
+    it('shows successfull when entering all required inputs correctly', async () => {
+        const { getByTestId } = render(
+            <AlertContext.Provider value={mockAlertValue}>
+                <CreateAccountScreen navigation={mockNavigation} />
+            </AlertContext.Provider>
+        )
         const usernameInput = getByTestId("SignUp.usernameInput")
         const emailInput = getByTestId("SignUp.emailInput")
         const passwordInput = getByTestId("SignUp.passwordInput")
@@ -182,21 +262,16 @@ describe('events on Sign Up button press', () => {
             fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
         })
 
-        expect(queryAllByText("Please enter a username").length).toBe(0)
-        expect(queryAllByText("Username length should be 64 characters or less").length).toBe(0)
-        expect(queryAllByText("Please enter an email").length).toBe(0)
-        expect(queryAllByText("Please enter a valid email").length).toBe(0)
-        expect(queryAllByText("Please enter a password").length).toBe(0)
-        expect(queryAllByText("Please enter a confirmation password").length).toBe(0)
-        expect(queryAllByText("Password length should be 4 characters or more").length).toBe(0)
-        expect(queryAllByText("Please enter a confirmation password").length).toBe(0)
-        expect(queryAllByText("Password length should be 64 characters or less").length).toBe(0)
+        expect(mockAlertDispatch).toBeCalledTimes(1)
+        expect(mockAlertDispatch).toBeCalledWith({ "alertType": "success", "message": "Account created successfully!", "type": "open" })
     })
 
     it('calls dispatch function to SIGNUP_START', async () => {
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <CreateAccountScreen navigation={mockNavigation} />
+                <AlertContext.Provider value={mockAlertValue}>
+                    <CreateAccountScreen navigation={mockNavigation} />
+                </AlertContext.Provider>
             </AuthContext.Provider>
         )
         const usernameInput = getByTestId("SignUp.usernameInput")
@@ -222,7 +297,9 @@ describe('events on Sign Up button press', () => {
     it('calls createUser function', async () => {
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <CreateAccountScreen navigation={mockNavigation} />
+                <AlertContext.Provider value={mockAlertValue}>
+                    <CreateAccountScreen navigation={mockNavigation} />
+                </AlertContext.Provider>
             </AuthContext.Provider>
         )
         const usernameInput = getByTestId("SignUp.usernameInput")
@@ -255,7 +332,9 @@ describe('createUser function', () => {
     it('calls dispatch when the post requests resolves', async () => {
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <CreateAccountScreen navigation={mockNavigation} />
+                <AlertContext.Provider value={mockAlertValue}>
+                    <CreateAccountScreen navigation={mockNavigation} />
+                </AlertContext.Provider>
             </AuthContext.Provider>
         )
         const usernameInput = getByTestId("SignUp.usernameInput")
@@ -285,10 +364,43 @@ describe('createUser function', () => {
         expect(mockDispatch).toHaveBeenNthCalledWith(2, { "payload": null, "type": "SIGNUP_SUCCESS" })
     })
 
+    it('shows Account created successfully! when the post requests resolves', async () => {
+        const { getByTestId } = render(
+            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
+                <AlertContext.Provider value={mockAlertValue}>
+                    <CreateAccountScreen navigation={mockNavigation} />
+                </AlertContext.Provider>
+            </AuthContext.Provider>
+        )
+        const usernameInput = getByTestId("SignUp.usernameInput")
+        const emailInput = getByTestId("SignUp.emailInput")
+        const passwordInput = getByTestId("SignUp.passwordInput")
+        const confPasswordInput = getByTestId("SignUp.confPasswordInput")
+
+        spyCreateUser.mockResolvedValue({ msg: "success", res: null })
+
+        fireEvent.changeText(usernameInput, 'username')
+        fireEvent.changeText(emailInput, 'email@email.com')
+        fireEvent.changeText(passwordInput, 'password')
+        fireEvent.changeText(confPasswordInput, 'password')
+
+        await act(() => {
+            fireEvent.press(getByTestId("SignUp.Button"), mockEvent)
+        })
+
+        expect(mockAlertDispatch).toBeCalledWith({
+            "alertType": "success",
+            "message": "Account created successfully!",
+            "type": "open"
+        })
+    })
+
     it('navigates the login screen when the post request resolves', async () => {
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <CreateAccountScreen navigation={mockNavigation} />
+                <AlertContext.Provider value={mockAlertValue}>
+                    <CreateAccountScreen navigation={mockNavigation} />
+                </AlertContext.Provider>
             </AuthContext.Provider>
         )
         const usernameInput = getByTestId("SignUp.usernameInput")
@@ -316,7 +428,9 @@ describe('createUser function', () => {
     it('calls dispatch with SIGNUP_FAILURE when the response login fails', async () => {
         const { getByTestId } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <CreateAccountScreen navigation={mockNavigation} />
+                <AlertContext.Provider value={mockAlertValue}>
+                    <CreateAccountScreen navigation={mockNavigation} />
+                </AlertContext.Provider>
             </AuthContext.Provider>
         )
         const usernameInput = getByTestId("SignUp.usernameInput")

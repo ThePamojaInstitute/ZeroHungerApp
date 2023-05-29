@@ -268,7 +268,7 @@ describe('initializeTokenState function', () => {
 
     it('sets tokens when refresh post request resolves', async () => {
         AsyncStorage.setItem('refresh_token', "token")
-        mockAxios.onPost('token/refresh/').replyOnce(200, { refresh: 'refresh_token', access: 'access_token' })
+        mockAxios.onPost('users/token/refresh/').replyOnce(200, { refresh: 'refresh_token', access: 'access_token' })
 
         await waitFor(() => {
             render(<AuthContextProvider>
@@ -284,7 +284,7 @@ describe('initializeTokenState function', () => {
 
     it('doesnt set tokens when refresh post request rejects', async () => {
         AsyncStorage.setItem('refresh_token', "token")
-        mockAxios.onPost('token/refresh/').replyOnce(401, {})
+        mockAxios.onPost('users/token/refresh/').replyOnce(401, {})
 
         await waitFor(() => {
             render(<AuthContextProvider>
@@ -299,7 +299,7 @@ describe('initializeTokenState function', () => {
 
     it('logs user out when refresh token is expired', async () => {
         AsyncStorage.setItem('refresh_token', "token")
-        mockAxios.onPost('token/refresh/').reply(200)
+        mockAxios.onPost('users/token/refresh/').reply(200)
         const spyLogOutUser = jest.spyOn(Utils, 'logOutUser').mockResolvedValue()
 
         await waitFor(() => {
