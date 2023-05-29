@@ -33,14 +33,24 @@ export const RequestFormScreen = ({ navigation }) => {
             return
         }
 
-        createPost({
-            title: title,
-            images: images,
-            postedBy: user['user_id'],
-            postedOn: new Date().getTime(),
-            description: desc,
-            postType: 'r'
-        })
+        try {
+            createPost({
+                title: title,
+                images: images,
+                postedBy: user['user_id'],
+                postedOn: new Date().getTime(),
+                description: desc,
+                postType: 'r'
+            }).then(res => {
+                if (res.msg === "success") {
+                    navigation.navigate('LandingPageScreenTemp')
+                } else {
+                    alert('An error occured!')
+                }
+            })
+        } catch (error) {
+            alert('An error occured!')
+        }
     }
 
     return (
