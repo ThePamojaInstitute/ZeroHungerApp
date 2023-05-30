@@ -1,8 +1,9 @@
 import React, { useContext, useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList, GestureResponderEvent } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList, GestureResponderEvent, ScrollView, Dimensions  } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { deleteUser, logOutUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
+import PostRenderer from "../components/PostRenderer";
 
 //Flatlist data
 const Item = ({ name }) => {
@@ -74,6 +75,10 @@ export const LandingPageScreen = ({ navigation }) => {
         })
     }
 
+    const handleScrollFeed = () => {
+
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.landingPageText}>
@@ -121,7 +126,22 @@ export const LandingPageScreen = ({ navigation }) => {
             <TouchableOpacity testID="RequestFromNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
                 <Text style={styles.logOutBtn}>Add a Request</Text>
             </TouchableOpacity>
-            <Text style={styles.feed}>Feed Screen{"\n"}will go here</Text>
+            <ScrollView onScroll={handleScrollFeed}>
+                <Text style={styles.feed}>Feed Screen{"\n"}will go here</Text>
+                <PostRenderer/>
+                <PostRenderer/>
+                <PostRenderer/>
+                <PostRenderer/>
+                <PostRenderer/>
+                <PostRenderer/>
+                <PostRenderer/>
+                <PostRenderer/>
+                <PostRenderer/>
+                <PostRenderer/>
+
+           
+            </ScrollView>
+
         </View>
     )
 }

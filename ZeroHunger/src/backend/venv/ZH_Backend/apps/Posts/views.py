@@ -18,3 +18,8 @@ class deletePost(APIView):
      def post(self,request, format=JSONParser):
           print("delete post test")
           return Response("Reached delete post in API", status=201)
+     
+class requestPostsForFeed(APIView):
+     def get(self, request, format=JSONParser):
+        print("Request Posts Test")
+        return Response("Reached request posts in API", status=201)
