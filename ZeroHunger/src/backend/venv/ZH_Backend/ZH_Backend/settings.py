@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'ZH_Backend',
     'apps.Users',
     'apps.Posts',
+    'apps.Chat',
 ]
 
 LOGIN_EXEMPT_URLS = {
