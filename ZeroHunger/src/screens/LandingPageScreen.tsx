@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList, GestureR
 import { AuthContext } from "../context/AuthContext";
 import { deleteUser, logOutUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
+import { NotificationContext } from "../context/ChatNotificationContext";
 
 //Flatlist data
 const Item = ({ name }) => {
@@ -37,6 +38,7 @@ const renderItem = ({ item }) => (
 //Temporary landing page screen to test tokens
 export const LandingPageScreen = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext)
+    const { unreadMessageCount } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
 
     useEffect(() => {
@@ -44,6 +46,12 @@ export const LandingPageScreen = ({ navigation }) => {
             navigation.navigate('LoginScreen')
         }
     }, [])
+
+    useEffect(() => {
+        if (unreadMessageCount > 0) {
+            alert!({ type: 'open', message: `You have ${unreadMessageCount} new messages`, alertType: 'info' })
+        }
+    }, [unreadMessageCount])
 
     const handleLogOut = (e: GestureResponderEvent) => {
         logOutUser().then(() => {
@@ -79,6 +87,13 @@ export const LandingPageScreen = ({ navigation }) => {
             <View style={styles.landingPageText}>
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
+                {unreadMessageCount > 0 &&
+                    <Text>You have {unreadMessageCount} unread messages</Text>
+                }
+                {user &&
+                    <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={() => navigation.navigate('Conversations')}>
+                        <Text style={styles.logOutBtnText}>Chat</Text>
+                    </TouchableOpacity>}
                 {user &&
                     <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
                         <Text style={styles.logOutBtnText}>Log Out</Text>
