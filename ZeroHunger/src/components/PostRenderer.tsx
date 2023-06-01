@@ -37,7 +37,9 @@ const PostRenderer = () =>
                 <Text style={styles.quantityText}>Quantity: </Text>
             </View>
             <View>
-                <Text style={styles.needByText}>Need by: {postedBy}</Text>
+                <Text style={styles.needByText}>
+                    Posted On: {postedOn}{'\n'}
+                    Need by: {postedBy}</Text>
             </View>
         </View>
     )
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'right',
         alignSelf: 'flex-end',
-        marginTop: 76
+        marginTop: 62
     }
 })
 
