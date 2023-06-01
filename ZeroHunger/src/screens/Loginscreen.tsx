@@ -98,6 +98,7 @@ export const LoginScreen = ({ navigation }) => {
       <TouchableOpacity testID="RequestFromNav.Button" style={styles.signUpBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
         <Text style={styles.signUpBtnText}>Add a Request</Text>
       </TouchableOpacity>
+      
       <Button
         onPress={() =>
           alert!({ type: 'open', message: 'Sample', alertType: 'success' })
