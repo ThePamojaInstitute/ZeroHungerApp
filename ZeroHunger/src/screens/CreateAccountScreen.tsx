@@ -1,10 +1,14 @@
-import React, { useContext, useState } from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, GestureResponderEvent } from "react-native";
+import React, { useContext, useRef, useState } from "react";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, GestureResponderEvent, NativeSyntheticEvent, TextInputSubmitEditingEventData } from "react-native";
 import { createUser, logOutUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 
 export const CreateAccountScreen = ({ navigation }) => {
+  const email_input = useRef<TextInput | null>(null)
+  const password_input = useRef<TextInput | null>(null)
+  const confPassword_input = useRef<TextInput | null>(null)
+
   const { user, loading, dispatch } = useContext(AuthContext)
   const { dispatch: alert } = useAlert()
 
@@ -14,7 +18,8 @@ export const CreateAccountScreen = ({ navigation }) => {
   const [confPass, setConfPass] = useState("")
   // const [errMsg, setErrMsg] = useState("")
 
-  const handleSignUp = (e: GestureResponderEvent) => {
+  const handleSignUp = (e: (GestureResponderEvent |
+    NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
     e.preventDefault()
     dispatch({ type: "SIGNUP_START", payload: null })
     createUser({
@@ -66,6 +71,8 @@ export const CreateAccountScreen = ({ navigation }) => {
           placeholder="Username"
           placeholderTextColor="#000000"
           onChangeText={setUsername}
+          blurOnSubmit={false}
+          onSubmitEditing={() => email_input.current?.focus()}
         />
       </View>
       <View style={styles.inputView}>
@@ -76,6 +83,9 @@ export const CreateAccountScreen = ({ navigation }) => {
           placeholderTextColor="#000000"
           secureTextEntry={false}
           onChangeText={setEmail}
+          ref={email_input}
+          blurOnSubmit={false}
+          onSubmitEditing={() => password_input.current?.focus()}
         />
       </View>
       <View style={styles.inputView}>
@@ -86,6 +96,9 @@ export const CreateAccountScreen = ({ navigation }) => {
           placeholderTextColor="#000000"
           secureTextEntry={true}
           onChangeText={setPassword}
+          ref={password_input}
+          blurOnSubmit={false}
+          onSubmitEditing={() => confPassword_input.current?.focus()}
         />
       </View>
       <View style={styles.inputView}>
@@ -96,6 +109,9 @@ export const CreateAccountScreen = ({ navigation }) => {
           placeholderTextColor="#000000"
           secureTextEntry={true}
           onChangeText={setConfPass}
+          ref={confPassword_input}
+          blurOnSubmit={false}
+          onSubmitEditing={handleSignUp}
         />
       </View>
       <TouchableOpacity testID="SignUp.Button" style={styles.createBtn} onPress={handleSignUp}>

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { View, Text, FlatList } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
@@ -60,7 +60,7 @@ export const Conversations = ({ navigation }) => {
                 <Button onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}>
                     {`${namesAlph[0]}__${namesAlph[1]}`}
                 </Button>
-                <View>
+                <View style={{ marginLeft: 10 }}>
                     <Text>From {item.last_message.from_user.username === user['username']
                         ? `Me` : item.last_message.from_user.username}
                     </Text>
@@ -90,6 +90,7 @@ export const Conversations = ({ navigation }) => {
                     placeholder="Chat with(username)"
                     placeholderTextColor="#000000"
                     onChangeText={setCreateGroup}
+                    onSubmitEditing={handleCreate}
                 />
                 <Button onPress={handleCreate}>Create</Button>
             </View>

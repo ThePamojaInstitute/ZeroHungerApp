@@ -123,12 +123,10 @@ export const Chat = ({ navigation, route }) => {
                 placeholder="Message"
                 placeholderTextColor="#000000"
                 onChangeText={setMessage}
+                onSubmitEditing={handleSend}
             />
             <Button mode="contained" onPress={handleSend}>
                 Send
-            </Button>
-            <Button mode="contained" onPress={loadMessages}>
-                load
             </Button>
         </View>
     )
