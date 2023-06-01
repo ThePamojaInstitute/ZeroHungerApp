@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, FlatList } from "react-native";
 import { AuthContext } from "../context/AuthContext";
+import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
 import { axiosInstance } from "../../config";
 import { ConversationModel } from "../models/Conversation";
@@ -8,9 +9,11 @@ import { Button, TextInput } from 'react-native-paper';
 
 export const Conversations = ({ navigation }) => {
     const { user, accessToken } = useContext(AuthContext);
+    const { unreadFromUsers } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
+
     const [conversations, setActiveConversations] = useState<ConversationModel[]>([]);
-    const [create, setCreate] = useState("")
+    const [createGroup, setCreateGroup] = useState("")
 
     useEffect(() => {
         const getConversations = async () => {
@@ -29,7 +32,6 @@ export const Conversations = ({ navigation }) => {
         getConversations();
     }, [user]);
 
-
     const formatMessageTimestamp = (timestamp?: string) => {
         if (!timestamp) return;
 
@@ -47,39 +49,46 @@ export const Conversations = ({ navigation }) => {
     }
 
     const handleCreate = () => {
-        navigateToChat(user['username'], create)
+        navigateToChat(user['username'], createGroup)
     }
+
+    const renderItem = ({ item }) => {
+        const namesAlph = [user['username'], item.other_user.username].sort();
+
+        return (
+            <View key={item.other_user.username}>
+                <Button onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}>{`${namesAlph[0]}__${namesAlph[1]}`}</Button>
+                <View>
+                    <Text>From {item.other_user.username}</Text>
+                    <View>
+                        {unreadFromUsers.includes(item.other_user.username) &&
+                            <Text style={{ color: 'red' }}>You have unread messages</Text>
+                        }
+                        <Text >Last message: {item.last_message?.content}</Text>
+                        <Text>{formatMessageTimestamp(item.last_message?.timestamp)}</Text>
+                    </View>
+                </View>
+            </View>
+        )
+    };
 
     return (
         <View>
             {!user && <Button onPress={() => { navigation.navigate('LoginScreen') }}>Login</Button>}
-            {conversations.map((c) => {
-                const namesAlph = [user['username'], c.other_user.username].sort();
-
-                return (
-                    <View key={c.other_user.username}>
-                        <Button onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}>{`${namesAlph[0]}__${namesAlph[1]}`}</Button>
-                        <View>
-                            <Text>{c.other_user.username}</Text>
-                            <View >
-                                <Text >{c.last_message?.content}</Text>
-                                <Text>{formatMessageTimestamp(c.last_message?.timestamp)}</Text>
-                            </View>
-                        </View>
-                    </View>
-                )
-            })}
-            <View>
+            <FlatList
+                data={conversations}
+                renderItem={renderItem}
+            />
+            <View style={{ marginTop: 20 }}>
                 <Text>Create Chat with:</Text>
                 <TextInput
-                    value={create}
+                    value={createGroup}
                     placeholder="Chat with(username)"
                     placeholderTextColor="#000000"
-                    onChangeText={setCreate}
+                    onChangeText={setCreateGroup}
                 />
                 <Button onPress={handleCreate}>Create</Button>
             </View>
-
         </View>
     );
 }

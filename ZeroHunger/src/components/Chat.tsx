@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { FlatList, Text, View } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
+import { NotificationContext } from '../context/ChatNotificationContext';
 import { Message } from './Message';
 import { Button, TextInput } from 'react-native-paper';
 import useWebSocket, { ReadyState } from "react-use-websocket";
@@ -8,15 +9,23 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 
 export const Chat = ({ navigation, route }) => {
     const { user, accessToken } = React.useContext(AuthContext)
+    const { setChatIsOpen } = useContext(NotificationContext);
 
     useEffect(() => {
         if (!user) {
             navigation.navigate('LoginScreen')
         }
+        // on mounting
+        setChatIsOpen(true)
+
+        // on unmounting
+        return () => {
+            setChatIsOpen(false)
+        }
     }, [])
 
     const [message, setMessage] = React.useState("");
-    const [messageHistory, setMessageHistory] = React.useState<any>([]);
+    const [messageHistory, setMessageHistory] = React.useState<object[]>([]);
 
     const namesAlph = [route.params.user1, route.params.user2].sort();
     const conversationName = `${namesAlph[0]}__${namesAlph[1]}`

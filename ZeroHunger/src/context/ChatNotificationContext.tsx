@@ -5,12 +5,18 @@ import { AuthContext } from "./AuthContext";
 
 const DefaultProps = {
     unreadMessageCount: 0,
-    connectionStatus: "Uninstantiated"
+    connectionStatus: "Uninstantiated",
+    chatIsOpen: false,
+    unreadFromUsers: [],
+    setChatIsOpen: () => { },
 };
 
 export interface NotificationProps {
     unreadMessageCount: number;
     connectionStatus: string;
+    chatIsOpen: boolean;
+    unreadFromUsers: string[];
+    setChatIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const NotificationContext = createContext<NotificationProps>(DefaultProps);
@@ -18,6 +24,8 @@ export const NotificationContext = createContext<NotificationProps>(DefaultProps
 export const NotificationContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { user, accessToken } = useContext(AuthContext);
     const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+    const [chatIsOpen, setChatIsOpen] = useState(false)
+    const [unreadFromUsers, setUnreadFromUsers] = useState<string[]>([])
 
     const { readyState } = useWebSocket(user ? `ws://127.0.0.1:8000/notifications/` : null, {
         queryParams: {
@@ -34,6 +42,7 @@ export const NotificationContextProvider: React.FC<{ children: ReactNode }> = ({
             switch (data.type) {
                 case "unread_count":
                     setUnreadMessageCount(data.unread_count);
+                    setUnreadFromUsers(data.from_users)
                     break;
                 case "new_message_notification":
                     setUnreadMessageCount((count) => (count += 1));
@@ -54,7 +63,13 @@ export const NotificationContextProvider: React.FC<{ children: ReactNode }> = ({
     }[readyState];
 
     return (
-        <NotificationContext.Provider value={{ unreadMessageCount, connectionStatus }}>
+        <NotificationContext.Provider value={{
+            unreadMessageCount,
+            connectionStatus,
+            chatIsOpen,
+            setChatIsOpen,
+            unreadFromUsers,
+        }}>
             {children}
         </NotificationContext.Provider>
     );

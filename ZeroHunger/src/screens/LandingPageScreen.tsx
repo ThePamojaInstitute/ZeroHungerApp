@@ -38,17 +38,18 @@ const renderItem = ({ item }) => (
 //Temporary landing page screen to test tokens
 export const LandingPageScreen = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext)
-    const { unreadMessageCount } = useContext(NotificationContext);
+    const { unreadMessageCount, chatIsOpen, setChatIsOpen } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
 
     useEffect(() => {
         if (!user) {
             navigation.navigate('LoginScreen')
         }
+        setChatIsOpen(false)
     }, [])
 
     useEffect(() => {
-        if (unreadMessageCount > 0) {
+        if (unreadMessageCount > 0 && !chatIsOpen) {
             alert!({ type: 'open', message: `You have ${unreadMessageCount} new messages`, alertType: 'info' })
         }
     }, [unreadMessageCount])
