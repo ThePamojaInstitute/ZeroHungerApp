@@ -37,9 +37,9 @@ class ChatConsumer(JsonWebsocketConsumer):
             self.channel_name,
         )
 
-        messages = self.conversation.messages.all().order_by("-timestamp")[0:50]
+        messages = self.conversation.messages.all().order_by("-timestamp")[0:30]
         self.send_json({
-            "type": "last_50_messages",
+            "type": "last_30_messages",
             "messages": MessageSerializer(messages, many=True).data,
         })
 
@@ -124,6 +124,23 @@ class ChatConsumer(JsonWebsocketConsumer):
                 },
             )
             return super().receive_json(content, **kwargs)
+        
+        elif message_type.startswith('render__'):
+            # render from n[0] to n[1]
+            n = message_type[8:].split('_')
+            size = self.conversation.messages.all().count()
+            if(size <= int(n[1])):
+                messages = self.conversation.messages.all().order_by("-timestamp")[int(n[0]):size+1]
+                self.send_json({
+                    "type": "limit_reached",
+                    "messages": MessageSerializer(messages, many=True).data,
+                })
+            else:
+                messages = self.conversation.messages.all().order_by("-timestamp")[int(n[0]):int(n[1])]
+                self.send_json({
+                    "type": "render_x_to_y_messages",
+                    "messages": MessageSerializer(messages, many=True).data,
+                })
     
     def chat_message_echo(self, event):
         self.send_json(event)

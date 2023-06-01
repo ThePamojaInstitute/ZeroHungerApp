@@ -30,7 +30,7 @@ export const Conversations = ({ navigation }) => {
             setActiveConversations(res.data);
         }
         getConversations();
-    }, [user]);
+    }, [user, unreadFromUsers]);
 
     const formatMessageTimestamp = (timestamp?: string) => {
         if (!timestamp) return;
@@ -57,9 +57,13 @@ export const Conversations = ({ navigation }) => {
 
         return (
             <View key={item.other_user.username}>
-                <Button onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}>{`${namesAlph[0]}__${namesAlph[1]}`}</Button>
+                <Button onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}>
+                    {`${namesAlph[0]}__${namesAlph[1]}`}
+                </Button>
                 <View>
-                    <Text>From {item.other_user.username}</Text>
+                    <Text>From {item.last_message.from_user.username === user['username']
+                        ? `Me` : item.last_message.from_user.username}
+                    </Text>
                     <View>
                         {unreadFromUsers.includes(item.other_user.username) &&
                             <Text style={{ color: 'red' }}>You have unread messages</Text>
