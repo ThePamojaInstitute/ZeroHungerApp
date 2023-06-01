@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost',
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -87,6 +88,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'ZH_Backend.asgi.application'
 WSGI_APPLICATION = 'ZH_Backend.wsgi.application'
 
 
@@ -162,6 +164,13 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = "Users.BasicUser"
+
+CHANNEL_LAYERS = {
+	"default": {
+        # For production level, don’t use InMemoryChannelLayer use Redis channel instead
+		"BACKEND": "channels.layers.InMemoryChannelLayer"
+	}
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
