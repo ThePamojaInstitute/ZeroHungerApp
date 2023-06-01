@@ -72,6 +72,7 @@ class ChatConsumer(JsonWebsocketConsumer):
             )
 
             notification_group_name = self.get_receiver().username + "__notifications"
+
             async_to_sync(self.channel_layer.group_send)(
                 notification_group_name,
                 {
@@ -80,18 +81,46 @@ class ChatConsumer(JsonWebsocketConsumer):
                     "message": MessageSerializer(message).data,
                 },
             )
-        
+
+            unread = Message.objects.filter(to_user=self.get_receiver(), read=False)
+            unread_count = unread.count()
+            unread_from_users = []
+
+            for msg in unread.values_list('from_user_id'):
+                user_id = int(msg[0])
+                user = BasicUser.objects.get(pk=user_id)
+                unread_from_users.append(str(user))
+            
+            async_to_sync(self.channel_layer.group_send)(
+                notification_group_name,
+                {
+                    "type": "unread_count",
+                    "unread_count": unread_count,
+                    "from_users": unread_from_users
+                },
+            )
+
         elif message_type == "read_messages":
             messages_to_me = self.conversation.messages.filter(to_user=self.user['user_id'])
             messages_to_me.update(read=True)
 
             # Update the unread message count
-            unread_count = Message.objects.filter(to_user=self.user['user_id'], read=False).count()
+            unread = Message.objects.filter(to_user=self.user['user_id'], read=False)
+            unread_from_users = []
+
+            for msg in unread.values_list('from_user_id'):
+                user_id = int(msg[0])
+                user = BasicUser.objects.get(pk=user_id)
+                unread_from_users.append(str(user))
+                
+            unread_count = unread.count()
+
             async_to_sync(self.channel_layer.group_send)(
                 self.user['username'] + "__notifications",
                 {
                     "type": "unread_count",
                     "unread_count": unread_count,
+                    "from_users": unread_from_users
                 },
             )
             return super().receive_json(content, **kwargs)
@@ -137,11 +166,20 @@ class NotificationConsumer(JsonWebsocketConsumer):
         )   
 
         # Send count of unread messages
-        unread_count = Message.objects.filter(to_user=self.user['user_id'], read=False).count()
+        unread = Message.objects.filter(to_user=self.user['user_id'], read=False)
+        unread_from_users = []
+
+        for msg in unread.values_list('from_user_id'):
+            user_id = int(msg[0])
+            user = BasicUser.objects.get(pk=user_id)
+            unread_from_users.append(str(user))
+            
+        unread_count = unread.count()
         self.send_json(
             {
                 "type": "unread_count",
                 "unread_count": unread_count,
+                "from_users": unread_from_users
             }
         )
     def disconnect(self, code):
