@@ -76,6 +76,7 @@ export const RequestFormScreen = ({ navigation }) => {
                     placeholderTextColor="#000000"
                     style={styles.inputText}
                     onChangeText={setTitle}
+                    maxLength={100}
                 />
             </View>
             <View>
@@ -110,6 +111,7 @@ export const RequestFormScreen = ({ navigation }) => {
                     style={styles.inputText}
                     multiline={true}
                     onChangeText={setDesc}
+                    maxLength={1024}
                 />
             </View>
         </ScrollView>

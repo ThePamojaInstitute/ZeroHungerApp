@@ -73,6 +73,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           onChangeText={setUsername}
           blurOnSubmit={false}
           onSubmitEditing={() => email_input.current?.focus()}
+          maxLength={64}
         />
       </View>
       <View style={styles.inputView}>
@@ -99,6 +100,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           ref={password_input}
           blurOnSubmit={false}
           onSubmitEditing={() => confPassword_input.current?.focus()}
+          maxLength={64}
         />
       </View>
       <View style={styles.inputView}>
@@ -112,6 +114,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           ref={confPassword_input}
           blurOnSubmit={false}
           onSubmitEditing={handleSignUp}
+          maxLength={64}
         />
       </View>
       <TouchableOpacity testID="SignUp.Button" style={styles.createBtn} onPress={handleSignUp}>

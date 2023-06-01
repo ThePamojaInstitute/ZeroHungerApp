@@ -124,6 +124,7 @@ export const Chat = ({ navigation, route }) => {
                 placeholderTextColor="#000000"
                 onChangeText={setMessage}
                 onSubmitEditing={handleSend}
+                maxLength={250}
             />
             <Button mode="contained" onPress={handleSend}>
                 Send
