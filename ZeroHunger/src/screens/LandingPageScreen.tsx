@@ -92,7 +92,7 @@ export const LandingPageScreen = ({ navigation }) => {
                     <Text>You have {unreadMessageCount} unread messages</Text>
                 }
                 {user &&
-                    <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={() => navigation.navigate('Conversations')}>
+                    <TouchableOpacity testID="ChatNav.Button" style={styles.logOutBtn} onPress={() => navigation.navigate('Conversations')}>
                         <Text style={styles.logOutBtnText}>Chat</Text>
                     </TouchableOpacity>}
                 {user &&

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FlatList, Text, View } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { NotificationContext } from '../context/ChatNotificationContext';
@@ -26,6 +26,8 @@ export const Chat = ({ navigation, route }) => {
 
     const [message, setMessage] = React.useState("");
     const [messageHistory, setMessageHistory] = React.useState<object[]>([]);
+    const [start, setStart] = useState(30)
+    const [end, setEnd] = useState(40)
 
     const namesAlph = [route.params.user1, route.params.user2].sort();
     const conversationName = `${namesAlph[0]}__${namesAlph[1]}`
@@ -39,6 +41,17 @@ export const Chat = ({ navigation, route }) => {
             });
             setMessage("");
         }
+    }
+
+    const loadMessages = () => {
+        if (end) {
+            sendJsonMessage({
+                type: `render__${start}_${end}`,
+                name: user['username']
+            });
+            setStart(end)
+            setEnd(end + 10)
+        } else console.log("end!!");
     }
 
     const { readyState, sendJsonMessage } = useWebSocket(user ? `ws://127.0.0.1:8000/chats/${conversationName}/` : null, {
@@ -58,8 +71,15 @@ export const Chat = ({ navigation, route }) => {
                     setMessageHistory([data.message, ...messageHistory]);
                     sendJsonMessage({ type: "read_messages" });
                     break;
-                case "last_50_messages":
+                case "last_30_messages":
                     setMessageHistory(data.messages);
+                    break
+                case "render_x_to_y_messages":
+                    setMessageHistory([...messageHistory, ...data.messages]);
+                    break
+                case "limit_reached":
+                    setMessageHistory([...messageHistory, ...data.messages]);
+                    setEnd(0)
                     break
                 default:
                     console.error("Unknown message type!");
@@ -96,6 +116,7 @@ export const Chat = ({ navigation, route }) => {
                 inverted
                 data={messageHistory}
                 renderItem={renderItem}
+                onEndReached={loadMessages}
             />
             <TextInput
                 value={message}
@@ -105,6 +126,9 @@ export const Chat = ({ navigation, route }) => {
             />
             <Button mode="contained" onPress={handleSend}>
                 Send
+            </Button>
+            <Button mode="contained" onPress={loadMessages}>
+                load
             </Button>
         </View>
     )
