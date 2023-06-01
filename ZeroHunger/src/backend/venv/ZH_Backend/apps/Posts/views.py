@@ -33,7 +33,7 @@ class requestPostsForFeed(APIView):
         response_data = request.data
         response_data = json.dumps(response_data)
         data = json.loads(response_data)
-        counter = int(data['counter'])
+        counter = int(data['postIndex'])
         obj = BoardPost.objects.all()[counter:][:2]
         data = serializers.serialize('json', obj)
        # outdata = { 'data':data }
