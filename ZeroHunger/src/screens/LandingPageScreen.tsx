@@ -80,7 +80,7 @@ export const LandingPageScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <View style={styles.landingPageText}>
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
@@ -127,7 +127,7 @@ export const LandingPageScreen = ({ navigation }) => {
                 <Text style={styles.logOutBtn}>Add a Request</Text>
             </TouchableOpacity>
             <ScrollView onScroll={handleScrollFeed}>
-                <Text style={styles.feed}>Feed Screen{"\n"}will go here</Text>
+                {/* <Text style={styles.feed}>Feed Screen{"\n"}will go here</Text> */}
                 <PostRenderer/>
                 <PostRenderer/>
                 <PostRenderer/>
@@ -142,7 +142,7 @@ export const LandingPageScreen = ({ navigation }) => {
            
             </ScrollView>
 
-        </View>
+        </ScrollView>
     )
 }
 
