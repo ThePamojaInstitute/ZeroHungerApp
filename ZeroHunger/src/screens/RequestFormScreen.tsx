@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
@@ -27,11 +27,6 @@ export const RequestFormScreen = ({ navigation }) => {
     const [title, setTitle] = useState("")
     const [images, setImages] = useState("https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600")
     const [desc, setDesc] = useState("")
-
-    useEffect(() => {
-        console.log(title);
-
-    }, [title])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()

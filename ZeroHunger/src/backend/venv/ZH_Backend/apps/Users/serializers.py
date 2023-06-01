@@ -36,3 +36,8 @@ class LoginSerializer (serializers.ModelSerializer):
             return Response(user.__str__(), status=201)
         else:
             return Response("ERROR", status=401)
+        
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicUser
+        fields = ["username"]
