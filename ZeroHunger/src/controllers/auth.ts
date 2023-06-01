@@ -7,6 +7,8 @@ export async function createUser(user: Object) {
         return { msg: "Please enter a username", res: null }
     } else if (user['username'].length > 64) {
         return { msg: "Username length should be 64 characters or less", res: null }
+    } else if (user['username'].includes("__")) {
+        return { msg: "Username shouldn't include \"__\"", res: null }
     }
 
     if (!user['email']) {

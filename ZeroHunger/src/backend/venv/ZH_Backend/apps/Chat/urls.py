@@ -1,8 +1,10 @@
-from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from apps.Chat.views import ConversationViewSet
 
-from .views import testChatAPI
+router = DefaultRouter()
+router.register("conversations", ConversationViewSet)
 
 urlpatterns = [
-    path('testchat', testChatAPI.as_view()),
+    path('', include(router.urls)),
 ]

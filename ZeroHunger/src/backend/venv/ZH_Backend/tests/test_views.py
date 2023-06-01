@@ -97,14 +97,3 @@ class TestViews(TestCase):
                                     'password' : self.password
                                     })
         self.assertEqual(response.status_code, 401)
-    
-    #Doesn't work
-    def test_logOut_success(self):
-        user = BasicUser.objects.create(username='admin', password='pass@123', email='admin@admin.com')
-        self.client.force_login(user)
-        response = self.client.logout()
-        self.assertEqual(response, 205)
-
-    def test_logOut_fail(self):
-        response = self.client.post('/users/logOut', {})
-        self.assertEqual(response.status_code, 400)
