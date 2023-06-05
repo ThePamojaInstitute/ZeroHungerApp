@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, GestureResponderEvent, Linking } from "react-native";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, GestureResponderEvent, Linking, NativeSyntheticEvent, TextInputSubmitEditingEventData } from "react-native";
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
@@ -9,6 +9,8 @@ import jwt_decode from "jwt-decode";
 
 
 export const LoginScreen = ({ navigation }) => {
+  const password_input = useRef<TextInput | null>(null)
+
   const { user, loading, dispatch } = useContext(AuthContext)
   const { dispatch: alert } = useAlert()
 
@@ -21,7 +23,8 @@ export const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 
-  const handleLogin = (e: GestureResponderEvent) => {
+  const handleLogin = (e: (GestureResponderEvent |
+    NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
     e.preventDefault()
     dispatch({ type: "LOGIN_START", payload: null })
     logInUser({ "username": username, "password": password }).then(async res => {
@@ -73,6 +76,8 @@ export const LoginScreen = ({ navigation }) => {
           placeholder="Username"
           placeholderTextColor="#000000"
           onChangeText={setUsername}
+          blurOnSubmit={false}
+          onSubmitEditing={() => password_input.current?.focus()}
         />
       </View>
       <View style={styles.inputView}>
@@ -84,6 +89,9 @@ export const LoginScreen = ({ navigation }) => {
           placeholderTextColor="#000000"
           secureTextEntry={true}
           onChangeText={setPassword}
+          ref={password_input}
+          blurOnSubmit={false}
+          onSubmitEditing={handleLogin}
         />
       </View>
       <TouchableOpacity testID="passwordReset.Button" onPress={handlePasswordRecovery}>

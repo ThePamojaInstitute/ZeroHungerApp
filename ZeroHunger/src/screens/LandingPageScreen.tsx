@@ -51,7 +51,10 @@ export const LandingPageScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (unreadMessageCount > 0 && !chatIsOpen) {
-            alert!({ type: 'open', message: `You have ${unreadMessageCount} new messages`, alertType: 'info' })
+            alert!({
+                type: 'open', message: `You have ${unreadMessageCount} new ${unreadMessageCount > 1
+                    ? 'messages' : 'message'}`, alertType: 'info'
+            })
         }
     }, [unreadMessageCount])
 
@@ -94,10 +97,11 @@ export const LandingPageScreen = ({ navigation }) => {
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
                 {unreadMessageCount > 0 &&
-                    <Text>You have {unreadMessageCount} unread messages</Text>
+                    <Text>You have {unreadMessageCount} unread
+                        {unreadMessageCount > 1 ? ' messages' : ' message'}</Text>
                 }
                 {user &&
-                    <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={() => navigation.navigate('Conversations')}>
+                    <TouchableOpacity testID="ChatNav.Button" style={styles.logOutBtn} onPress={() => navigation.navigate('Conversations')}>
                         <Text style={styles.logOutBtnText}>Chat</Text>
                     </TouchableOpacity>}
                 {user &&
