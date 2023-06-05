@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
@@ -9,18 +9,6 @@ import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 
 export const RequestFormScreen = ({ navigation }) => {
-    // React.useLayoutEffect(() => {
-    //     navigation.setOptions({
-    //         title: 'Make a Request',
-    //         headerTitleAlign: 'center',
-    //         headerRight: () => (
-    //             <TouchableOpacity>
-    //                 <Text onPress={handlePress} style={{ color: 'blue', fontSize: 18, }}>Post</Text>
-    //             </TouchableOpacity>
-    //         )
-    //     })
-    // }, [navigation])
-
     const { user } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
 
@@ -28,9 +16,18 @@ export const RequestFormScreen = ({ navigation }) => {
     const [images, setImages] = useState("https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600")
     const [desc, setDesc] = useState("")
 
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity>
+                    <Text testID="createPost.Button" onPress={handlePress} style={{ color: 'blue', fontSize: 18, }}>Post</Text>
+                </TouchableOpacity>
+            )
+        })
+    }, [title, images, desc])
+
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
-        console.log(typeof title);
         if (!user || !user['user_id']) {
             alert!({ type: 'open', message: 'You are not logged in!', alertType: 'error' })
             navigation.navigate('LoginScreen')
@@ -62,16 +59,15 @@ export const RequestFormScreen = ({ navigation }) => {
 
     return (
         <ScrollView style={styles.container}>
-            <TouchableOpacity>
-                <Text onPress={handlePress} style={{ color: 'blue', fontSize: 18, }}>Post</Text>
-            </TouchableOpacity>
             <View>
-                <Text style={styles.titleText}>Title <Text style={{ color: 'red' }}>*</Text></Text>
+                <Text testID="reqTitle" style={styles.titleText}>Title <Text style={{ color: 'red' }}>*</Text></Text>
                 <Text style={styles.descText}>Create a descriptive title for the food you are offering</Text>
             </View>
             <View style={styles.titleInputView}>
                 <TextInput
                     // value={title}
+                    nativeID="title"
+                    testID="reqTitleInput"
                     placeholder="Enter name of food offering"
                     placeholderTextColor="#000000"
                     style={styles.inputText}
@@ -106,6 +102,8 @@ export const RequestFormScreen = ({ navigation }) => {
             <View style={styles.descriptionInputView}>
                 <TextInput
                     // value={description}
+                    nativeID="desc"
+                    testID="reqDescInput"
                     placeholder="Enter Description"
                     placeholderTextColor="#000000"
                     style={styles.inputText}
