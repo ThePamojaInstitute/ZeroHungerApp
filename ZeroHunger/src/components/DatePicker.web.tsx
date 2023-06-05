@@ -21,6 +21,7 @@ const DatePicker = () => {
         <View>
             <ReactDatePicker
                 portalId="id"
+                id="datePicker"
                 selected={date}
                 onChange={handleChange}
                 minDate={minDate}
