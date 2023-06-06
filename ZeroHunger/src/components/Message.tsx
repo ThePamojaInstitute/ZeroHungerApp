@@ -1,7 +1,7 @@
 import { useContext } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { MessageModel } from "../models/Message";
 import { AuthContext } from "../context/AuthContext";
-import { StyleSheet, Text, View } from "react-native";
 
 
 export function Message({ message }: { message: MessageModel }) {
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     containerSen: {
         marginTop: 1,
         marginBottom: 1,
+        marginRight: 16,
         flexDirection: 'row-reverse'
     },
     msgRec: {
