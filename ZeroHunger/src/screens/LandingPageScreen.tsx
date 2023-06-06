@@ -85,11 +85,11 @@ export const LandingPageScreen = ({ navigation }) => {
     }
 
     const handleScrollFeed = () => {
-
+        // console.log("test")
     }
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <View style={styles.landingPageText}>
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
@@ -142,23 +142,8 @@ export const LandingPageScreen = ({ navigation }) => {
             <TouchableOpacity testID="RequestFromNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
                 <Text style={styles.logOutBtn}>Add a Request</Text>
             </TouchableOpacity>
-            <ScrollView onScroll={handleScrollFeed}>
-                {/* <Text style={styles.feed}>Feed Screen{"\n"}will go here</Text> */}
-                <PostRenderer/>
-                <PostRenderer/>
-                <PostRenderer/>
-                <PostRenderer/>
-                <PostRenderer/>
-                <PostRenderer/>
-                <PostRenderer/>
-                <PostRenderer/>
-                <PostRenderer/>
-                <PostRenderer/>
-
-           
-            </ScrollView>
-
-        </ScrollView>
+            <PostRenderer/>
+        </View>
     )
 }
 
