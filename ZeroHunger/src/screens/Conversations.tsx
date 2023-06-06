@@ -17,17 +17,17 @@ export const Conversations = ({ navigation }) => {
 
     useEffect(() => {
         const getConversations = async () => {
-            const res = await axiosInstance.get("http://127.0.0.1:8000/chat/conversations/", {
-                headers: {
-                    Authorization: `${accessToken}`
-                }
-            });
-
-            if (res.data.length == 0) {
+            try {
+                const res = await axiosInstance.get("http://127.0.0.1:8000/chat/conversations/", {
+                    headers: {
+                        Authorization: `${accessToken}`
+                    }
+                });
+                setActiveConversations(res.data);
+            } catch (error) {
                 alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
             }
 
-            setActiveConversations(res.data);
         }
         getConversations();
     }, [user, unreadFromUsers]);
@@ -60,7 +60,7 @@ export const Conversations = ({ navigation }) => {
                 <Button onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}>
                     {`${namesAlph[0]}__${namesAlph[1]}`}
                 </Button>
-                <View style={{ marginLeft: 10 }}>
+                {item.last_message && (<View style={{ marginLeft: 10 }}>
                     <Text>From {item.last_message.from_user.username === user['username']
                         ? `Me` : item.last_message.from_user.username}
                     </Text>
@@ -71,7 +71,7 @@ export const Conversations = ({ navigation }) => {
                         <Text >Last message: {item.last_message?.content}</Text>
                         <Text>{formatMessageTimestamp(item.last_message?.timestamp)}</Text>
                     </View>
-                </View>
+                </View>)}
             </View>
         )
     };

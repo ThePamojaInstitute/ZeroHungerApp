@@ -70,6 +70,7 @@ export const LoginScreen = ({ navigation }) => {
       <Text>{loading && "Loading..."}</Text>
       <View style={styles.inputView}>
         <TextInput
+          nativeID="LogIn.usernameInput"
           testID="LogIn.usernameInput"
           value={username}
           style={styles.input}
@@ -82,6 +83,7 @@ export const LoginScreen = ({ navigation }) => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          nativeID="LogIn.passwordInput"
           testID="LogIn.passwordInput"
           value={password}
           style={styles.input}

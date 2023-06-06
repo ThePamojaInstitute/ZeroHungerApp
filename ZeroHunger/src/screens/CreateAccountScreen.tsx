@@ -66,6 +66,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       <Text>{loading && "Loading..."}</Text>
       <View style={styles.inputView}>
         <TextInput
+          nativeID="SignUp.usernameInput"
           testID="SignUp.usernameInput"
           style={styles.input}
           placeholder="Username"
@@ -78,6 +79,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          nativeID="SignUp.emailInput"
           testID="SignUp.emailInput"
           style={styles.input}
           placeholder="Email Address"
@@ -91,6 +93,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          nativeID="SignUp.passwordInput"
           testID="SignUp.passwordInput"
           style={styles.input}
           placeholder="Password"
@@ -105,6 +108,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          nativeID="SignUp.confPasswordInput"
           testID="SignUp.confPasswordInput"
           style={styles.input}
           placeholder="Confirm Password"

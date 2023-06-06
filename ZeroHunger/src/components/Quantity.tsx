@@ -23,17 +23,17 @@ const Quantity = () => {
         }
     }
 
-    const Option = ({option}) => {
+    const Option = ({ option }) => {
         const [pressed, setPressed] = useState(false);
         const onPress = () => {
             setPressed(!pressed);
         }
 
-        var btnStyle = { style: pressed ? styles.itemPressed : styles.item}
+        var btnStyle = { style: pressed ? styles.itemPressed : styles.item }
 
         return (
             <TouchableOpacity {...btnStyle} onPress={onPress}>
-                <Text style={[{color: pressed ? '#FFFFFF' : '#000000'}]}>{option}</Text>
+                <Text style={[{ color: pressed ? '#FFFFFF' : '#000000' }]}>{option}</Text>
             </TouchableOpacity>
         );
     }
@@ -44,6 +44,7 @@ const Quantity = () => {
                 <Text style={styles.buttonText}>-</Text>
             </TouchableOpacity>
             <TextInput
+                nativeID="quantity"
                 style={styles.input}
                 keyboardType='numeric'
                 inputMode="numeric"
@@ -55,9 +56,9 @@ const Quantity = () => {
             </TouchableOpacity>
 
             {/* Temporary buttons for dropdown menu */}
-            <View style={{ padding: 20 }}/>
-            <Option option='Piece'/>
-            <Option option='Measurement'/>
+            <View style={{ padding: 20 }} />
+            <Option option='Piece' />
+            <Option option='Measurement' />
         </View>
     )
 }
