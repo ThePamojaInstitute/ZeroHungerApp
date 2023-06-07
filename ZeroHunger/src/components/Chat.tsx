@@ -119,6 +119,8 @@ export const Chat = ({ navigation, route }) => {
                 onEndReached={loadMessages}
                 onEndReachedThreshold={0.3}
                 inverted={true}
+                estimatedItemSize={30}
+                testID='messagesList'
             />
             {/* {Platform.OS != 'web' &&
                 <FlashList
@@ -144,7 +146,7 @@ export const Chat = ({ navigation, route }) => {
                 onSubmitEditing={handleSend}
                 maxLength={250}
             />
-            <Button mode="contained" onPress={handleSend}>
+            <Button testID='MessageSend.Button' mode="contained" onPress={handleSend}>
                 Send
             </Button>
         </View>

@@ -1,11 +1,12 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { View, Text, FlatList } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { View, Text } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
 import { axiosInstance } from "../../config";
 import { ConversationModel } from "../models/Conversation";
 import { Button, TextInput } from 'react-native-paper';
+import { FlashList } from "@shopify/flash-list";
 
 export const Conversations = ({ navigation }) => {
     const { user, accessToken } = useContext(AuthContext);
@@ -56,8 +57,10 @@ export const Conversations = ({ navigation }) => {
         const namesAlph = [user['username'], item.other_user.username].sort();
 
         return (
-            <View key={item.other_user.username}>
-                <Button onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}>
+            <View testID={`${namesAlph[0]}__${namesAlph[1]}`} key={item.other_user.username}>
+                <Button onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}
+                    testID={`${namesAlph[0]}__${namesAlph[1]}.Button`}
+                >
                     {`${namesAlph[0]}__${namesAlph[1]}`}
                 </Button>
                 {item.last_message && (<View style={{ marginLeft: 10 }}>
@@ -79,9 +82,10 @@ export const Conversations = ({ navigation }) => {
     return (
         <View>
             {!user && <Button onPress={() => { navigation.navigate('LoginScreen') }}>Login</Button>}
-            <FlatList
+            <FlashList
                 data={conversations}
                 renderItem={renderItem}
+                testID="conversationsList"
             />
             <View style={{ marginTop: 20 }}>
                 <Text>Create Chat with:</Text>
