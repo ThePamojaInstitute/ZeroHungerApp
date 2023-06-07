@@ -119,7 +119,7 @@ export const Chat = ({ navigation, route }) => {
                 onEndReached={loadMessages}
                 onEndReachedThreshold={0.3}
                 inverted={true}
-                estimatedItemSize={30}
+                estimatedItemSize={100}
                 testID='messagesList'
             />
             {/* {Platform.OS != 'web' &&
