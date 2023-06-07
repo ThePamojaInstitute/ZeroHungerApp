@@ -223,7 +223,7 @@ describe('createPost', () => {
             "images": imageUrl,
             "postType": "r",
             "postedBy": "1",
-            "postedOn": Math.floor(new Date().getTime() / 1000),
+            "postedOn": Math.floor(new Date().getTime() / 1000) || Math.floor(new Date().getTime() / 1000) + 1,
             "title": "test title"
         })
     })
