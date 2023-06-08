@@ -54,3 +54,27 @@ def test_create_message_without_users():
             conversation=conversation,
             content="Hello, user2!"
         )
+
+@pytest.mark.django_db
+def test_create_message_without_from_user():
+    user = BasicUser.objects.create_user(username="testuser1", email="test1@email.com", password="test1")
+    conversation = Conversation.objects.create(name="Test Conversation")
+    
+    with pytest.raises(IntegrityError):
+        Message.objects.create(
+            conversation=conversation,
+            to_user=user,
+            content="Hello, user2!"
+        )
+
+@pytest.mark.django_db
+def test_create_message_without_to_user():
+    user = BasicUser.objects.create_user(username="testuser1", email="test1@email.com", password="test1")
+    conversation = Conversation.objects.create(name="Test Conversation")
+    
+    with pytest.raises(IntegrityError):
+        Message.objects.create(
+            conversation=conversation,
+            from_user=user,
+            content="Hello, user2!"
+        )
