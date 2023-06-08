@@ -98,7 +98,7 @@ const PostRenderer = () => {
     }
     
     return (
-        <View style={{backgroundColor: '#F3F3F3'}}>
+        <View style={{backgroundColor: '#F3F3F3', height: "80%"}}>
             {/* Temporary refresh button for web */}
             <TouchableOpacity onPress={loadPosts}>
                 <Text style={[styles.refreshBtnText]}>Refresh</Text>
@@ -108,8 +108,7 @@ const PostRenderer = () => {
                 renderItem={renderItem}
                 data={array}
                 onEndReached={loadPosts}
-                // onScroll={loadPosts}
-                onEndReachedThreshold={0.7}
+                onEndReachedThreshold={0.01}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
                 estimatedItemSize={125}
