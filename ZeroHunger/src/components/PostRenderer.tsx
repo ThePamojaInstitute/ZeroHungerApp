@@ -1,12 +1,15 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, FlatList } from "react-native";
 import { useState } from "react";
 import { axiosInstance } from "../../config";
+import { useAlert } from "../context/Alert";
 import { FlashList } from "@shopify/flash-list"
 
+
 const PostRenderer = () => {
+    const { dispatch: alert } = useAlert()
     const [noPosts, setNoPosts] = useState(true)
     const [postIndex, setPostIndex] = useState(0)
-    const [loadNumPosts, setLoadNumPosts] = useState(2) //Change if number of posts to load changes
+    const [loadNumPosts, setLoadNumPosts] = useState(1) //Change if number of posts to load changes
 
     const [array, setArray] = useState([])
 
@@ -16,13 +19,11 @@ const PostRenderer = () => {
         }).then((res) => {
             if(res.data.length == 2 && postIndex == 0) {
                 console.log('No posts available')
-                // return { msg: 'No posts available' }
-                // alert!({ type: 'open', message: 'No posts available', alertType: 'success' })
+                alert!({ type: 'open', message: 'No posts available', alertType: 'info' })
             }
             else if(res.data.length == 2 && postIndex > 0) {
                 console.log ('All posts displayed')
-                // return { msg: 'All posts displayed' }
-                // alert!({ type: 'open', message: 'All posts displayed', alertType: 'success'})
+                alert!({ type: 'open', message: 'All posts displayed', alertType: 'info'})
             }
             else {
                 try {
@@ -83,7 +84,7 @@ const PostRenderer = () => {
 
     const renderItem = ({ item }) => {
         return (
-            <View>
+            // <View>
                 <Post 
                     title={item.title}
                     imagesLink={item.imagesLink}
@@ -92,12 +93,12 @@ const PostRenderer = () => {
                     description={item.description}
                     postType={item.postType}
                 />
-            </View>
+            
         )
     }
     
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{backgroundColor: '#F3F3F3'}}>
             {/* Temporary refresh button for web */}
             <TouchableOpacity onPress={loadPosts}>
                 <Text style={[styles.refreshBtnText]}>Refresh</Text>
@@ -106,9 +107,12 @@ const PostRenderer = () => {
             <FlashList
                 renderItem={renderItem}
                 data={array}
-                // keyExtractor={item => item.title}
                 onEndReached={loadPosts}
-                estimatedItemSize={126}
+                // onScroll={loadPosts}
+                onEndReachedThreshold={0.7}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                estimatedItemSize={125}
             />
         </View>
     )
