@@ -27,3 +27,5 @@ jest.mock('@react-native-community/datetimepicker', () => {
     Picker.propTypes = RealComponent.propTypes
     return Picker
 })
+
+require("@shopify/flash-list/jestSetup");

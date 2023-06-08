@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, Platform, Text, View } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { NotificationContext } from '../context/ChatNotificationContext';
 import { Message } from './Message';
 import { Button, TextInput } from 'react-native-paper';
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { FlashList } from "@shopify/flash-list";
 
 
 export const Chat = ({ navigation, route }) => {
@@ -112,12 +113,31 @@ export const Chat = ({ navigation, route }) => {
         <View style={{ flex: 1 }}>
             {!user && <Button onPress={() => { navigation.navigate('LoginScreen') }}>Login</Button>}
             <Text>The WebSocket is currently {connectionStatus}</Text>
-            <FlatList
-                inverted
-                data={messageHistory}
+            <FlashList
                 renderItem={renderItem}
+                data={messageHistory}
                 onEndReached={loadMessages}
+                onEndReachedThreshold={0.3}
+                inverted={true}
+                estimatedItemSize={100}
+                testID='messagesList'
             />
+            {/* {Platform.OS != 'web' &&
+                <FlashList
+                    inverted={true}
+                    data={messageHistory}
+                    renderItem={renderItem}
+                    onEndReached={loadMessages}
+                    onEndReachedThreshold={0.3}
+                />}
+            {Platform.OS === 'web' &&
+                <FlatList
+                    inverted={true}
+                    data={messageHistory}
+                    renderItem={renderItem}
+                    onEndReached={loadMessages}
+                    onEndReachedThreshold={0.3}
+                />} */}
             <TextInput
                 value={message}
                 placeholder="Message"
@@ -126,7 +146,7 @@ export const Chat = ({ navigation, route }) => {
                 onSubmitEditing={handleSend}
                 maxLength={250}
             />
-            <Button mode="contained" onPress={handleSend}>
+            <Button testID='MessageSend.Button' mode="contained" onPress={handleSend}>
                 Send
             </Button>
         </View>
