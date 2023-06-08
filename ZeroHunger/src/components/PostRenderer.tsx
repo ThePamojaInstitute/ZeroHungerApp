@@ -1,51 +1,117 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import { useState } from "react";
+import { axiosInstance } from "../../config";
+import { FlashList } from "@shopify/flash-list"
 
-const PostRenderer = () =>
-{
+const PostRenderer = () => {
+    const [noPosts, setNoPosts] = useState(true)
+    const [postIndex, setPostIndex] = useState(0)
+    const [loadNumPosts, setLoadNumPosts] = useState(2) //Change if number of posts to load changes
 
-    const [title, setTitle] = useState("title")
-    const [imagesLink, setImagesLink] = useState("imageLink")
-    const [postedOn, setPostedOn] = useState(1)
-    const [postedBy, setPostedBy] = useState(0)
-    const [description, setDescription] = useState("description")
-    const [postType, setPostType] = useState('r')
+    const [array, setArray] = useState([])
+
+    const loadPosts = async () => {
+        const json = JSON.stringify({ postIndex: postIndex })
+        const res = await axiosInstance.post("posts/requestPostsForFeed", json, {
+        }).then((res) => {
+            if(res.data.length == 2 && postIndex == 0) {
+                console.log('No posts available')
+                // return { msg: 'No posts available' }
+                // alert!({ type: 'open', message: 'No posts available', alertType: 'success' })
+            }
+            else if(res.data.length == 2 && postIndex > 0) {
+                console.log ('All posts displayed')
+                // return { msg: 'All posts displayed' }
+                // alert!({ type: 'open', message: 'All posts displayed', alertType: 'success'})
+            }
+            else {
+                try {
+                    setNoPosts(false)
+                    setPostIndex(postIndex + loadNumPosts)
+                    
+                    for(let i = 0; i < loadNumPosts; i++) {
+                        const data = JSON.parse(res.data)[i].fields
+                        console.log(data)
+                        const postedOnDate = new Date(data.postedOn*1000).toLocaleDateString('en-US')
+                        const postedByDate = new Date(data.postedBy*1000).toLocaleDateString('en-US')
+
+                        let newPost = {
+                            title: data.title,
+                            imagesLink: data.images,
+                            postedOn: postedOnDate,
+                            postedBy: postedByDate,
+                            description: data.description,
+                            postType: data.postType
+                        }
+                        setArray(arr => [...arr, newPost])
+                    }
+                }
+                catch(e) {
+                    console.log("Fewer than " + loadNumPosts + " new posts")
+                }
+            }
+        })
+    }
+
+    //TODO: Show more post details (description, option to message, etc)on press
+    const onPress = () => {}
+
+    const Post = ({ title, imagesLink, postedOn, postedBy, description, postType }) => {
+        return (
+            <TouchableOpacity style={styles.container} onPress={onPress}>
+                <Image 
+                    style={styles.image}
+                    source={{uri: imagesLink}}
+                />
+                <View style={styles.subContainer}>
+                    <Text style={styles.titleText}>{title}</Text>
+                    <View style={{padding: 8}}>
+                        {/* Placeholder profile picture
+                        <Image source={{uri: }}> */}
+                        <Text>User</Text>
+                    </View>
+                    <Text style={styles.quantityText}>Quantity: </Text>
+                </View>
+                <View>
+                    <Text style={styles.needByText}>
+                        Posted On: {postedOn}{'\n'}
+                        Need by: {postedBy}</Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
+    const renderItem = ({ item }) => {
+        return (
+            <View>
+                <Post 
+                    title={item.title}
+                    imagesLink={item.imagesLink}
+                    postedOn={item.postedOn}
+                    postedBy={item.postedBy}
+                    description={item.description}
+                    postType={item.postType}
+                />
+            </View>
+        )
+    }
     
     return (
-        // <View>
-        //     <Text> {title} </Text>
-        //     <Text> {imagesLink} </Text>
-        //     <Text> {postedOn} </Text>
-        //     <Text> {postedBy} </Text>
-        //     <Text> {description} </Text>
-        //     <Text> {postType}  </Text>
-        // </View>
-        <View style={styles.container}>
-            <Image 
-                style={styles.image}
-                // source={{uri: imagesLink}}
-                //Placeholder image
-                source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}}
+        <View style={{ flex: 1 }}>
+            {/* Temporary refresh button for web */}
+            <TouchableOpacity onPress={loadPosts}>
+                <Text style={[styles.refreshBtnText]}>Refresh</Text>
+            </TouchableOpacity>
+            {noPosts ? <Text style={styles.noPostsText}>No posts available</Text> : <></>}
+            <FlashList
+                renderItem={renderItem}
+                data={array}
+                // keyExtractor={item => item.title}
+                onEndReached={loadPosts}
+                estimatedItemSize={126}
             />
-            <View style={styles.subContainer}>
-                <Text style={styles.titleText}>{title}</Text>
-                <View style={{padding: 8}}>
-                    {/* Placeholder profile picture
-                    <Image source={{uri: }}> */}
-                    <Text>{postedBy}</Text>
-                </View>
-                <Text style={styles.quantityText}>Quantity: </Text>
-            </View>
-            <View>
-                <Text style={styles.needByText}>
-                    Posted On: {postedOn}{'\n'}
-                    Need by: {postedBy}</Text>
-            </View>
         </View>
     )
-    /*
-    
-    */
 }
 
 const styles = StyleSheet.create({
@@ -76,6 +142,15 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         alignSelf: 'flex-end',
         marginTop: 62
+    },
+    noPostsText: {
+        fontSize: 36,
+        padding: 15,
+    },
+    refreshBtnText: {
+        color: 'blue',
+        fontSize: 24,
+        padding: 15,
     }
 })
 
