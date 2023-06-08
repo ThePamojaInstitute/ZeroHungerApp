@@ -25,6 +25,9 @@ const mockAlertValue: AlertContextType = {
 const spyLogOutUser = jest.spyOn(Utils, 'logOutUser')
 const spyDeleteUser = jest.spyOn(Utils, 'deleteUser')
 
+// Temporary, remove when you start testing posts feed
+mockAxios.onPost("posts/requestPostsForFeed").reply(200, {})
+
 afterEach(() => {
     jest.clearAllMocks();
     spyLogOutUser.mockReset()
