@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.apps import apps
 
 from apps.Users.models import BasicUser
-from apps.Posts.models import BoardPost
+from apps.Posts.models import OfferPost, RequestPost
 
-admin.site.register(BoardPost)
+admin.site.register(RequestPost)
+admin.site.register(OfferPost)
 admin.site.register(BasicUser)

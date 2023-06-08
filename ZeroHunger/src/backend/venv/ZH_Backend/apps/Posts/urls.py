@@ -22,5 +22,4 @@ from .views import createPost , requestPostsForFeed
 urlpatterns = [
     path('createPost', createPost.as_view()),
     path('requestPostsForFeed',requestPostsForFeed.as_view()),
-
 ]
