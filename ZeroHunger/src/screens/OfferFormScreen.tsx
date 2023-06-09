@@ -60,14 +60,14 @@ export const OfferFormScreen = ({ navigation }) => {
     return (
         <ScrollView style={styles.container}>
             <View>
-                <Text testID="reqTitle" style={styles.titleText}>Title <Text style={{ color: 'red' }}>*</Text></Text>
+                <Text testID="offerTitle" style={styles.titleText}>Title <Text style={{ color: 'red' }}>*</Text></Text>
                 <Text style={styles.descText}>Create a descriptive title for the food you are offering</Text>
             </View>
             <View style={styles.titleInputView}>
                 <TextInput
                     // value={title}
                     nativeID="title"
-                    testID="reqTitleInput"
+                    testID="offerTitleInput"
                     placeholder="Enter name of food offering"
                     placeholderTextColor="#000000"
                     style={styles.inputText}
@@ -103,7 +103,7 @@ export const OfferFormScreen = ({ navigation }) => {
                 <TextInput
                     // value={description}
                     nativeID="desc"
-                    testID="reqDescInput"
+                    testID="offerDescInput"
                     placeholder="Enter Description"
                     placeholderTextColor="#000000"
                     style={styles.inputText}

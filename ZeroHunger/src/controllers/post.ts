@@ -11,13 +11,13 @@ export const createPost = async (obj: {
     postType: Char
 }) => {
     if (!obj.title) {
-        return { msg: "Please enter a title to your request", res: null }
+        return { msg: `Please enter a title to your ${obj.postType === "r" ? "request" : "offer"}`, res: null }
     } else if (obj.title.length > 100) {
         return { msg: "Title should be at most 100 characters", res: null }
     }
 
     if (!obj.description) {
-        return { msg: "Please enter a description to your request", res: null }
+        return { msg: `Please enter a description to your ${obj.postType === "r" ? "request" : "offer"}`, res: null }
     }
 
     try {

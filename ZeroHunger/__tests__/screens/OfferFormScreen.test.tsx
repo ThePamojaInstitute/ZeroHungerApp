@@ -1,13 +1,13 @@
 import { act, fireEvent, render } from "@testing-library/react-native"
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { RequestFormScreen } from "../../src/screens/RequestFormScreen";
 import * as Utils from "../../src/controllers/post";
 import { axiosInstance } from "../../config";
 import { AuthContext } from "../../src/context/AuthContext"
 import { AlertContext, AlertContextFields, AlertContextType } from "../../src/context/Alert"
 import { mock } from "jest-mock-extended";
 import MockAdapter from "axios-mock-adapter";
+import { OfferFormScreen } from "../../src/screens/OfferFormScreen";
 
 
 const mockAxios = new MockAdapter(axiosInstance)
@@ -37,8 +37,8 @@ const TestComponent = () => {
             <AlertContext.Provider value={mockAlertValue}>
                 <Stack.Navigator>
                     <Stack.Screen
-                        name="RequestFormScreen"
-                        component={RequestFormScreen}
+                        name="OfferFormScreen"
+                        component={OfferFormScreen}
                     />
                 </Stack.Navigator>
             </AlertContext.Provider>
@@ -54,16 +54,16 @@ describe('onload', () => {
             </AuthContext.Provider >
         )
 
-        expect(getAllByTestId('reqTitle').length).toBe(1)
-        expect(getAllByText('Create a descriptive title for your request').length).toBe(1)
-        expect(getAllByTestId('reqTitleInput').length).toBe(1)
+        expect(getAllByTestId('offerTitle').length).toBe(1)
+        expect(getAllByText('Create a descriptive title for the food you are offering').length).toBe(1)
+        expect(getAllByTestId('offerTitleInput').length).toBe(1)
         expect(getAllByText('Photo').length).toBe(1)
-        expect(getAllByText('Optional: Add photo(s) to help community members understand what you are looking for!').length).toBe(1)
+        expect(getAllByText('Optional: Add photo(s) to help community members understand what you are sharing').length).toBe(1)
         expect(getAllByTestId('AccessCameraRoll.Button').length).toBe(1)
         expect(getAllByText('No Images').length).toBe(1)
         expect(getAllByText('Description').length).toBe(1)
-        expect(getAllByText('Optional: Describe your food request in detail').length).toBe(1)
-        expect(getAllByTestId('reqDescInput').length).toBe(1)
+        expect(getAllByText('Optional: Describe your offer in detail').length).toBe(1)
+        expect(getAllByTestId('offerDescInput').length).toBe(1)
     })
 })
 
@@ -111,7 +111,7 @@ describe('on post submit', () => {
         expect(mockAlertDispatch).toBeCalledTimes(1)
         expect(mockAlertDispatch).toBeCalledWith({
             "alertType": "error",
-            "message": "Please enter a title to your request",
+            "message": "Please enter a title to your offer",
             "type": "open"
         })
     })
@@ -123,7 +123,7 @@ describe('on post submit', () => {
             </AuthContext.Provider >
         )
 
-        const titleInput = getByTestId("reqTitleInput")
+        const titleInput = getByTestId("offerTitleInput")
 
         fireEvent.changeText(titleInput,
             'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean ma'
@@ -148,7 +148,7 @@ describe('on post submit', () => {
             </AuthContext.Provider >
         )
 
-        const titleInput = getByTestId("reqTitleInput")
+        const titleInput = getByTestId("offerTitleInput")
 
         fireEvent.changeText(titleInput, 'test title')
 
@@ -159,7 +159,7 @@ describe('on post submit', () => {
         expect(mockAlertDispatch).toBeCalledTimes(1)
         expect(mockAlertDispatch).toBeCalledWith({
             "alertType": "error",
-            "message": "Please enter a description to your request",
+            "message": "Please enter a description to your offer",
             "type": "open"
         })
     })
@@ -171,8 +171,8 @@ describe('on post submit', () => {
             </AuthContext.Provider >
         )
 
-        const titleInput = getByTestId("reqTitleInput")
-        const descInput = getByTestId("reqDescInput")
+        const titleInput = getByTestId("offerTitleInput")
+        const descInput = getByTestId("offerDescInput")
 
         fireEvent.changeText(titleInput, 'test title')
         fireEvent.changeText(descInput, 'test desc')
@@ -183,7 +183,7 @@ describe('on post submit', () => {
 
         expect(mockAlertDispatch).not.toBeCalledWith({
             "alertType": "error",
-            "message": "Please enter a title to your request",
+            "message": "Please enter a title to your offer",
             "type": "open"
         })
         expect(mockAlertDispatch).not.toBeCalledWith({
@@ -193,7 +193,7 @@ describe('on post submit', () => {
         })
         expect(mockAlertDispatch).not.toBeCalledWith({
             "alertType": "error",
-            "message": "Please enter a description to your request",
+            "message": "Please enter a description to your offer",
             "type": "open"
         })
     })
@@ -207,8 +207,8 @@ describe('createPost', () => {
             </AuthContext.Provider >
         )
 
-        const titleInput = getByTestId("reqTitleInput")
-        const descInput = getByTestId("reqDescInput")
+        const titleInput = getByTestId("offerTitleInput")
+        const descInput = getByTestId("offerDescInput")
 
         fireEvent.changeText(titleInput, 'test title')
         fireEvent.changeText(descInput, 'test desc')
@@ -221,7 +221,7 @@ describe('createPost', () => {
         expect(spyCreatePost).toBeCalledWith({
             "description": "test desc",
             "images": imageUrl,
-            "postType": "r",
+            "postType": "o",
             "postedBy": "1",
             "postedOn": Math.floor(new Date().getTime() / 1000) || Math.floor(new Date().getTime() / 1000) + 1,
             "title": "test title"
@@ -237,8 +237,8 @@ describe('createPost', () => {
 
         mockAxios.onPost('/posts/createPost').reply(500)
 
-        const titleInput = getByTestId("reqTitleInput")
-        const descInput = getByTestId("reqDescInput")
+        const titleInput = getByTestId("offerTitleInput")
+        const descInput = getByTestId("offerDescInput")
 
         fireEvent.changeText(titleInput, 'test title')
         fireEvent.changeText(descInput, 'test desc')
@@ -264,8 +264,8 @@ describe('createPost', () => {
 
         mockAxios.onPost('/posts/createPost').reply(201)
 
-        const titleInput = getByTestId("reqTitleInput")
-        const descInput = getByTestId("reqDescInput")
+        const titleInput = getByTestId("offerTitleInput")
+        const descInput = getByTestId("offerDescInput")
 
         fireEvent.changeText(titleInput, 'test title')
         fireEvent.changeText(descInput, 'test desc')

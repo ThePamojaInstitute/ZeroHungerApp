@@ -61,7 +61,7 @@ export const RequestFormScreen = ({ navigation }) => {
         <ScrollView style={styles.container}>
             <View>
                 <Text testID="reqTitle" style={styles.titleText}>Title <Text style={{ color: 'red' }}>*</Text></Text>
-                <Text style={styles.descText}>Create a descriptive title for your request </Text>
+                <Text style={styles.descText}>Create a descriptive title for your request</Text>
             </View>
             <View style={styles.titleInputView}>
                 <TextInput
