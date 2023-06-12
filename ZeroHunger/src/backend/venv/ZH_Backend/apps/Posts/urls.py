@@ -20,6 +20,6 @@ from django.urls import path
 from .views import createPost , requestPostsForFeed
 
 urlpatterns = [
-    path('createPost', createPost.as_view()),
-    path('requestPostsForFeed',requestPostsForFeed.as_view()),
+    path('createPost', createPost.as_view(), name='create_post'),
+    path('requestPostsForFeed', requestPostsForFeed.as_view(), name='request_posts_for_feed'),
 ]
