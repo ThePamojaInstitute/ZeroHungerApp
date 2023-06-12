@@ -3,7 +3,7 @@ from django.db import models
 
 class RequestPost(models.Model):
     title = models.CharField(max_length=128, default="Untitled")
-    images = models.CharField(max_length=256, default="linkToImageDB") #link to images in DB
+    images = models.CharField(max_length=256, blank=True) #link to images in DB
     postedOn = models.IntegerField(default=1) #Stores time as unix timestamp, defaults to UTC
     postedBy = models.IntegerField()#User ID of user who made this post
     description = models.CharField(max_length=1024, blank=True)
@@ -13,7 +13,7 @@ class RequestPost(models.Model):
 
 class OfferPost(models.Model):
     title = models.CharField(max_length=128, default="Untitled")
-    images = models.CharField(max_length=256, default="linkToImageDB") #link to images in DB
+    images = models.CharField(max_length=256, blank=True) #link to images in DB
     postedOn = models.IntegerField(default=1) #Stores time as unix timestamp, defaults to UTC
     postedBy = models.IntegerField()#User ID of user who made this post
     description = models.CharField(max_length=1024, blank=True)

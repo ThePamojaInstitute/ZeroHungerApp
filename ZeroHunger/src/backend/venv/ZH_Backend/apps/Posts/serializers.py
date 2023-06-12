@@ -3,7 +3,7 @@ from .models import RequestPost, OfferPost
 
 class createRequestSerializer (serializers.ModelSerializer):
     title = serializers.CharField(max_length=128)
-    images = serializers.CharField(max_length=256)
+    images = serializers.CharField(max_length=256, required=False, allow_blank=True)
     postedOn = serializers.IntegerField(min_value = 1, max_value= 2147483647) #Checks the time value is within 32 bit integer limit and is not negative
     postedBy = serializers.IntegerField() #User ID
     description = serializers.CharField(max_length=1024, required=False, allow_blank=True)
@@ -22,7 +22,7 @@ class createRequestSerializer (serializers.ModelSerializer):
 
 class createOfferSerializer (serializers.ModelSerializer):
     title = serializers.CharField(max_length=128)
-    images = serializers.CharField(max_length=256)
+    images = serializers.CharField(max_length=256, required=False, allow_blank=True)
     postedOn = serializers.IntegerField(min_value = 1, max_value= 2147483647) #Checks the time value is within 32 bit integer limit and is not negative
     postedBy = serializers.IntegerField() #User ID
     description = serializers.CharField(max_length=1024, required=False, allow_blank=True)

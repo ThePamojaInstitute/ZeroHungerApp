@@ -57,15 +57,15 @@ class CreatePostTest(APITestCase):
 
     def test_create_request_without_images(self):
         data = create_request_data()
-        data['postData'].pop('images')
+        data['postData']['images'] = ""
         response = self.client.post(self.url, data, format='json')
-        assert response.status_code == 401
+        assert response.status_code == 201
 
     def test_create_offer_without_images(self):
         data = create_offer_data()
-        data['postData'].pop('images')
+        data['postData']['images'] = ""
         response = self.client.post(self.url, data, format='json')
-        assert response.status_code == 401
+        assert response.status_code == 201
 
     def test_create_request_without_postedOn(self):
         data = create_request_data()

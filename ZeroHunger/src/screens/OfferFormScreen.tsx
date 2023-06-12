@@ -13,7 +13,7 @@ export const OfferFormScreen = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
 
     const [title, setTitle] = useState("")
-    const [images, setImages] = useState("https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600")
+    const [images, setImages] = useState("")
     const [desc, setDesc] = useState("")
 
     useEffect(() => {

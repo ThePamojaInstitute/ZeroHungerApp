@@ -27,7 +27,6 @@ afterEach(() => {
 })
 
 const AuthContextValues = { user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: null }
-const imageUrl = "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
 
 const TestComponent = () => {
     const Stack = createNativeStackNavigator();
@@ -219,12 +218,14 @@ describe('createPost', () => {
 
         expect(spyCreatePost).toBeCalledTimes(1)
         expect(spyCreatePost).toBeCalledWith({
-            "description": "test desc",
-            "images": imageUrl,
+            "postData": {
+                "description": "test desc",
+                "images": "",
+                "postedBy": "1",
+                "postedOn": Math.floor(new Date().getTime() / 1000) || Math.floor(new Date().getTime() / 1000) + 1,
+                "title": "test title"
+            },
             "postType": "r",
-            "postedBy": "1",
-            "postedOn": Math.floor(new Date().getTime() / 1000) || Math.floor(new Date().getTime() / 1000) + 1,
-            "title": "test title"
         })
     })
 

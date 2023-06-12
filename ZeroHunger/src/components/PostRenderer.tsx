@@ -66,7 +66,12 @@ const PostRenderer = ({ type }) => {
             }}>
                 <Image
                     style={styles.image}
-                    source={{ uri: imagesLink }}
+                    source={{
+                        uri:
+                            imagesLink ?
+                                imagesLink :
+                                "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
+                    }}
                 />
                 <View style={styles.subContainer}>
                     <Text style={styles.titleText}>{title}</Text>

@@ -96,7 +96,7 @@ def test_create_OfferPost_without_images():
     offer_post_db = OfferPost.objects.get(id=offer_post.id)
         
     assert offer_post_db.title =='Test Title'
-    assert offer_post_db.images == 'linkToImageDB'
+    assert offer_post_db.images == ''
     assert offer_post_db.postedOn == int(date_now)
     assert offer_post_db.postedBy == 0
     assert offer_post_db.description == 'test description'
@@ -115,7 +115,7 @@ def test_create_RequestPost_without_images():
     request_post_db = RequestPost.objects.get(id=request_post.id)
         
     assert request_post_db.title =='Test Title'
-    assert request_post_db.images == 'linkToImageDB'
+    assert request_post_db.images == ''
     assert request_post_db.postedOn == int(date_now)
     assert request_post_db.postedBy == 0
     assert request_post_db.description == 'test description'
