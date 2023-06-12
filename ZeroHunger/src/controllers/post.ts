@@ -18,13 +18,32 @@ export const createPost = async (obj: {
         return { msg: "Title should be at most 100 characters", res: null }
     }
 
-    // if (!obj.description) {
-    //     return { msg: `Please enter a description to your ${obj.postType === "r" ? "request" : "offer"}`, res: null }
-    // }
-
     try {
         const res = await axiosInstance.post('/posts/createPost', obj)
         if (res.status === 201) {
+            return { msg: "success", res: res.data }
+        } else {
+            return { msg: "failure", res: res.data }
+        }
+    } catch (error) {
+        console.log(error);
+        return { msg: "failure", res: error }
+    }
+}
+
+export const deletePost = async (postType: Char, postId: Number, token: string) => {
+    try {
+        const res = await axiosInstance.delete('/posts/deletePost', {
+            headers: {
+                Authorization: token
+            },
+            data: {
+                'postType': postType,
+                'postId': postId
+            }
+        })
+
+        if (res.status === 200) {
             return { msg: "success", res: res.data }
         } else {
             return { msg: "failure", res: res.data }
