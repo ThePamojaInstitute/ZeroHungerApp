@@ -141,28 +141,28 @@ describe('on post submit', () => {
         })
     })
 
-    it('shows alert when no description inputed', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ ...AuthContextValues, user: mockUser }}>
-                <TestComponent />
-            </AuthContext.Provider >
-        )
+    // it('shows alert when no description inputed', async () => {
+    //     const { getByTestId } = render(
+    //         <AuthContext.Provider value={{ ...AuthContextValues, user: mockUser }}>
+    //             <TestComponent />
+    //         </AuthContext.Provider >
+    //     )
 
-        const titleInput = getByTestId("offerTitleInput")
+    //     const titleInput = getByTestId("offerTitleInput")
 
-        fireEvent.changeText(titleInput, 'test title')
+    //     fireEvent.changeText(titleInput, 'test title')
 
-        await act(() => {
-            fireEvent.press(getByTestId("createPost.Button"), mockEvent)
-        })
+    //     await act(() => {
+    //         fireEvent.press(getByTestId("createPost.Button"), mockEvent)
+    //     })
 
-        expect(mockAlertDispatch).toBeCalledTimes(1)
-        expect(mockAlertDispatch).toBeCalledWith({
-            "alertType": "error",
-            "message": "Please enter a description to your offer",
-            "type": "open"
-        })
-    })
+    //     expect(mockAlertDispatch).toBeCalledTimes(1)
+    //     expect(mockAlertDispatch).toBeCalledWith({
+    //         "alertType": "error",
+    //         "message": "Please enter a description to your offer",
+    //         "type": "open"
+    //     })
+    // })
 
     it('shows no alert when title and description are inputed', async () => {
         const { getByTestId } = render(

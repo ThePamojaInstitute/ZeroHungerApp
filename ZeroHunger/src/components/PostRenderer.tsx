@@ -102,7 +102,7 @@ const PostRenderer = ({ type }) => {
     }
 
     return (
-        <View style={{ backgroundColor: '#F3F3F3', height: "80%" }}>
+        <View style={{ backgroundColor: '#F3F3F3', height: "80%", flex: 1 }}>
             {/* Temporary refresh button for web */}
             <TouchableOpacity onPress={loadPosts}>
                 <Text style={[styles.refreshBtnText]}>Refresh</Text>
