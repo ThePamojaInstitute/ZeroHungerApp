@@ -17,6 +17,6 @@ class OfferPost(models.Model):
     postedOn = models.IntegerField(default=1) #Stores time as unix timestamp, defaults to UTC
     postedBy = models.IntegerField()#User ID of user who made this post
     description = models.CharField(max_length=1024, blank=True)
-
+    description2 = models.CharField(max_length=1024, blank=True)
     def __str__(self):
         return self.title
