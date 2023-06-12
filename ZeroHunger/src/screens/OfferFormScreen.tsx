@@ -8,7 +8,7 @@ import { createPost } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 
-export const RequestFormScreen = ({ navigation }) => {
+export const OfferFormScreen = ({ navigation }) => {
     const { user } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
 
@@ -41,7 +41,7 @@ export const RequestFormScreen = ({ navigation }) => {
                 postedBy: user['user_id'],
                 postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
                 description: desc,
-                postType: 'r'
+                postType: 'o'
             }).then(res => {
                 if (res.msg === "success") {
                     alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
@@ -60,15 +60,15 @@ export const RequestFormScreen = ({ navigation }) => {
     return (
         <ScrollView style={styles.container}>
             <View>
-                <Text testID="reqTitle" style={styles.titleText}>Title <Text style={{ color: 'red' }}>*</Text></Text>
-                <Text style={styles.descText}>Create a descriptive title for your request</Text>
+                <Text testID="offerTitle" style={styles.titleText}>Title <Text style={{ color: 'red' }}>*</Text></Text>
+                <Text style={styles.descText}>Create a descriptive title for the food you are offering</Text>
             </View>
             <View style={styles.titleInputView}>
                 <TextInput
                     // value={title}
                     nativeID="title"
-                    testID="reqTitleInput"
-                    placeholder="Enter name of request"
+                    testID="offerTitleInput"
+                    placeholder="Enter name of food offering"
                     placeholderTextColor="#000000"
                     style={styles.inputText}
                     onChangeText={setTitle}
@@ -77,7 +77,7 @@ export const RequestFormScreen = ({ navigation }) => {
             </View>
             <View>
                 <Text style={styles.titleText}>Photo</Text>
-                <Text style={styles.descText}>Optional: Add photo(s) to help community members understand what you are looking for!</Text>
+                <Text style={styles.descText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
             </View>
             <ImagePicker setImages={setImages} />
             <View>
@@ -87,23 +87,23 @@ export const RequestFormScreen = ({ navigation }) => {
             </View>
             <View>
                 <Text style={styles.titleText}>Quantity <Text style={{ color: 'red' }}>*</Text></Text>
-                <Text style={styles.descText}>Please input the desired quantity of the food item you need</Text>
+                <Text style={styles.descText}>Please input the quantity of the food you are giving away</Text>
                 <Quantity />
             </View>
-            <View>
+            {/* <View>
                 <Text style={styles.titleText}>Need By Date</Text>
                 <Text style={styles.descText}>Optional: Please select a date you would need this item by. Your post will expire at the end of this date.</Text>
                 <DatePicker />
-            </View>
+            </View> */}
             <View>
                 <Text style={styles.titleText}>Description</Text>
-                <Text style={styles.descText}>Optional: Describe your food request in detail</Text>
+                <Text style={styles.descText}>Optional: Describe your offer in detail</Text>
             </View>
             <View style={styles.descriptionInputView}>
                 <TextInput
                     // value={description}
                     nativeID="desc"
-                    testID="reqDescInput"
+                    testID="offerDescInput"
                     placeholder="Enter Description"
                     placeholderTextColor="#000000"
                     style={styles.inputText}

@@ -1,19 +1,21 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
-from django.http import JsonResponse
 from django.core import serializers
 
 import json
-import sys
 
-from .models import BoardPost
-from .serializers import createPostSerializer
+from .models import OfferPost, RequestPost
+from .serializers import createOfferSerializer, createRequestSerializer
 
 
 class createPost(APIView):
     def post(self, request, format=JSONParser):
-        serializer = createPostSerializer(data=request.data)
+        if (request.data['postType'] == "r"): 
+            serializer = createRequestSerializer(data=request.data)
+        elif (request.data['postType'] == "o"):
+            serializer = createOfferSerializer(data=request.data)
+
         if (serializer.is_valid()):
             serializer.save()
             return Response(serializer.data, status=201)
@@ -29,12 +31,15 @@ class deletePost(APIView):
 #https://stackoverflow.com/questions/57031455/infinite-scrolling-using-django
 class requestPostsForFeed(APIView):
      def post(self, request):
-        print("Request Posts Test")
         response_data = request.data
         response_data = json.dumps(response_data)
         data = json.loads(response_data)
         counter = int(data['postIndex'])
-        obj = BoardPost.objects.all()[counter:][:2]
+
+        if(request.data['postType'] == "r"):
+            obj = RequestPost.objects.all()[counter:][:2]
+        elif(request.data['postType'] == "o"):
+            obj = OfferPost.objects.all()[counter:][:2]
+
         data = serializers.serialize('json', obj)
-       # outdata = { 'data':data }
         return Response(data, status=201)

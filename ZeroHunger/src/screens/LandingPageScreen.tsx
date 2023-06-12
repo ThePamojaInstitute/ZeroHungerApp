@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList, GestureResponderEvent, ScrollView, Dimensions  } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList, GestureResponderEvent, ScrollView, Dimensions } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { deleteUser, logOutUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
@@ -41,6 +41,9 @@ export const LandingPageScreen = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext)
     const { unreadMessageCount, chatIsOpen, setChatIsOpen } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
+
+    const [showRequests, setShowRequests] = useState(true)
+    // const [showOffers, setShowOffers] = useState(true)
 
     useEffect(() => {
         if (!user) {
@@ -92,7 +95,7 @@ export const LandingPageScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <View style={styles.landingPageText}>
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
@@ -117,20 +120,24 @@ export const LandingPageScreen = ({ navigation }) => {
                 <Pressable
                     style={({ pressed }) => [
                         {
-                            backgroundColor: pressed ? '#F0F000' : '#FFFFFF',
+                            backgroundColor: showRequests ? '#F0F000' : '#FFFFFF',
                         },
                         styles.pressableText,
-                    ]}>
+                    ]}
+                    onPress={() => setShowRequests(true)}
+                >
                     <Text style={styles.pressableText}>Requests</Text>
                 </Pressable>
                 <Pressable
                     style={({ pressed }) => [
                         {
-                            backgroundColor: pressed ? '#F0F000' : '#FFFFFF',
+                            backgroundColor: !showRequests ? '#F0F000' : '#FFFFFF',
                             marginLeft: 40,
                         },
                         styles.pressableText,
-                    ]}>
+                    ]}
+                    onPress={() => setShowRequests(false)}
+                >
                     <Text style={styles.pressableText}>Offers</Text>
                 </Pressable>
             </View>
@@ -143,11 +150,15 @@ export const LandingPageScreen = ({ navigation }) => {
                     horizontal
                 />
             </View>
-            <TouchableOpacity testID="RequestFromNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
+            <TouchableOpacity testID="RequestFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
                 <Text style={styles.logOutBtn}>Add a Request</Text>
             </TouchableOpacity>
-            <PostRenderer/>
-        </View>
+            <TouchableOpacity testID="OfferFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("OfferFormScreen")}>
+                <Text style={styles.logOutBtn}>Add an Offer</Text>
+            </TouchableOpacity>
+            {showRequests && <PostRenderer type={"r"} />}
+            {!showRequests && <PostRenderer type={"o"} />}
+        </ScrollView>
     )
 }
 

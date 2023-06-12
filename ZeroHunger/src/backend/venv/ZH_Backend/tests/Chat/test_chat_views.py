@@ -27,6 +27,7 @@ def token_factory():
     def create_token(username):
         return jwt.encode({'username': username}, settings.SECRET_KEY, algorithm='HS256')
     return create_token
+
 # Create request
 @pytest.fixture
 def request_factory():

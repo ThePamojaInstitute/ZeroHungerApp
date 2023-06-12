@@ -10,6 +10,7 @@ import { AuthContextProvider } from './src/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { RequestFormScreen } from './src/screens/RequestFormScreen';
+import { OfferFormScreen } from './src/screens/OfferFormScreen';
 import { AlertProvider } from './src/context/Alert';
 import SnackBar from './src/components/Snackbar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -71,17 +72,10 @@ export default function App() {
                   <Stack.Screen
                     name="RequestFormScreen"
                     component={RequestFormScreen}
-                  // options={{ headerShown: false }}
-                  // options={{
-                  //   title: 'Make a Request',
-                  //   headerTitleAlign: 'center',
-                  //   headerRight: () => (
-                  //     <TouchableOpacity>
-                  //       <Text style={{color:'blue', fontSize: 18,}}>Post</Text>
-                  //     </TouchableOpacity>
-
-                  //   )
-                  // }}
+                  />
+                  <Stack.Screen
+                    name="OfferFormScreen"
+                    component={OfferFormScreen}
                   />
                   <Stack.Screen
                     name="LoginScreen"

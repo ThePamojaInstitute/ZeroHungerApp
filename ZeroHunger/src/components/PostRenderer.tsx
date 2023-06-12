@@ -5,7 +5,7 @@ import { useAlert } from "../context/Alert";
 import { FlashList } from "@shopify/flash-list"
 
 
-const PostRenderer = () => {
+const PostRenderer = ({ type }) => {
     const { dispatch: alert } = useAlert()
     const [noPosts, setNoPosts] = useState(true)
     const [postIndex, setPostIndex] = useState(0)
@@ -14,27 +14,27 @@ const PostRenderer = () => {
     const [array, setArray] = useState([])
 
     const loadPosts = async () => {
-        const json = JSON.stringify({ postIndex: postIndex })
+        const json = JSON.stringify({ postIndex: postIndex, postType: type })
         const res = await axiosInstance.post("posts/requestPostsForFeed", json, {
         }).then((res) => {
-            if(res.data.length == 2 && postIndex == 0) {
+            if (res.data.length == 2 && postIndex == 0) {
                 console.log('No posts available')
                 alert!({ type: 'open', message: 'No posts available', alertType: 'info' })
             }
-            else if(res.data.length == 2 && postIndex > 0) {
-                console.log ('All posts displayed')
-                alert!({ type: 'open', message: 'All posts displayed', alertType: 'info'})
+            else if (res.data.length == 2 && postIndex > 0) {
+                console.log('All posts displayed')
+                alert!({ type: 'open', message: 'All posts displayed', alertType: 'info' })
             }
             else {
                 try {
                     setNoPosts(false)
                     setPostIndex(postIndex + loadNumPosts)
-                    
-                    for(let i = 0; i < loadNumPosts; i++) {
+
+                    for (let i = 0; i < loadNumPosts; i++) {
                         const data = JSON.parse(res.data)[i].fields
-                        console.log(data)
-                        const postedOnDate = new Date(data.postedOn*1000).toLocaleDateString('en-US')
-                        const postedByDate = new Date(data.postedBy*1000).toLocaleDateString('en-US')
+                        // console.log(data)
+                        const postedOnDate = new Date(data.postedOn * 1000).toLocaleDateString('en-US')
+                        const postedByDate = new Date(data.postedBy * 1000).toLocaleDateString('en-US')
 
                         let newPost = {
                             title: data.title,
@@ -47,7 +47,7 @@ const PostRenderer = () => {
                         setArray(arr => [...arr, newPost])
                     }
                 }
-                catch(e) {
+                catch (e) {
                     console.log("Fewer than " + loadNumPosts + " new posts")
                 }
             }
@@ -55,18 +55,22 @@ const PostRenderer = () => {
     }
 
     //TODO: Show more post details (description, option to message, etc)on press
-    const onPress = () => {}
+    const onPress = () => {
+
+    }
 
     const Post = ({ title, imagesLink, postedOn, postedBy, description, postType }) => {
         return (
-            <TouchableOpacity style={styles.container} onPress={onPress}>
-                <Image 
+            <TouchableOpacity style={styles.container} onPress={() => {
+                // console.log({ title, imagesLink, postedOn, postedBy, description, postType });
+            }}>
+                <Image
                     style={styles.image}
-                    source={{uri: imagesLink}}
+                    source={{ uri: imagesLink }}
                 />
                 <View style={styles.subContainer}>
                     <Text style={styles.titleText}>{title}</Text>
-                    <View style={{padding: 8}}>
+                    <View style={{ padding: 8 }}>
                         {/* Placeholder profile picture
                         <Image source={{uri: }}> */}
                         <Text>User</Text>
@@ -85,20 +89,20 @@ const PostRenderer = () => {
     const renderItem = ({ item }) => {
         return (
             // <View>
-                <Post 
-                    title={item.title}
-                    imagesLink={item.imagesLink}
-                    postedOn={item.postedOn}
-                    postedBy={item.postedBy}
-                    description={item.description}
-                    postType={item.postType}
-                />
-            
+            <Post
+                title={item.title}
+                imagesLink={item.imagesLink}
+                postedOn={item.postedOn}
+                postedBy={item.postedBy}
+                description={item.description}
+                postType={item.postType}
+            />
+
         )
     }
-    
+
     return (
-        <View style={{backgroundColor: '#F3F3F3', height: "80%"}}>
+        <View style={{ backgroundColor: '#F3F3F3', height: "80%", flex: 1 }}>
             {/* Temporary refresh button for web */}
             <TouchableOpacity onPress={loadPosts}>
                 <Text style={[styles.refreshBtnText]}>Refresh</Text>
@@ -108,7 +112,7 @@ const PostRenderer = () => {
                 renderItem={renderItem}
                 data={array}
                 onEndReached={loadPosts}
-                onEndReachedThreshold={0.01}
+                onEndReachedThreshold={0.3}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
                 estimatedItemSize={125}
