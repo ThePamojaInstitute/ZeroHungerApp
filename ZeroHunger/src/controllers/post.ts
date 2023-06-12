@@ -16,9 +16,9 @@ export const createPost = async (obj: {
         return { msg: "Title should be at most 100 characters", res: null }
     }
 
-    if (!obj.description) {
-        return { msg: `Please enter a description to your ${obj.postType === "r" ? "request" : "offer"}`, res: null }
-    }
+    // if (!obj.description) {
+    //     return { msg: `Please enter a description to your ${obj.postType === "r" ? "request" : "offer"}`, res: null }
+    // }
 
     try {
         const res = await axiosInstance.post('/posts/createPost', obj)

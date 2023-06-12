@@ -6,7 +6,7 @@ class createRequestSerializer (serializers.ModelSerializer):
     images = serializers.CharField(max_length=256)
     postedOn = serializers.IntegerField(min_value = 1, max_value= 2147483647) #Checks the time value is within 32 bit integer limit and is not negative
     postedBy = serializers.IntegerField() #User ID
-    description = serializers.CharField(max_length=1024)
+    description = serializers.CharField(max_length=1024, required=False, allow_blank=True)
     postType = serializers.CharField(max_length=1)
 
     class Meta:
@@ -27,7 +27,7 @@ class createOfferSerializer (serializers.ModelSerializer):
     images = serializers.CharField(max_length=256)
     postedOn = serializers.IntegerField(min_value = 1, max_value= 2147483647) #Checks the time value is within 32 bit integer limit and is not negative
     postedBy = serializers.IntegerField() #User ID
-    description = serializers.CharField(max_length=1024)
+    description = serializers.CharField(max_length=1024, required=False, allow_blank=True)
     postType = serializers.CharField(max_length=1)
 
     class Meta:
