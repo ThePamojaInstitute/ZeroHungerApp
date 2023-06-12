@@ -1,21 +1,25 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, FlatList } from "react-native";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
+import { AuthContext } from "../context/AuthContext";
+import { deletePost } from "../controllers/post";
 import { FlashList } from "@shopify/flash-list"
+import { Button } from "react-native-paper";
 
 
 const PostRenderer = ({ type }) => {
+    const { accessToken } = useContext(AuthContext);
     const { dispatch: alert } = useAlert()
+
     const [noPosts, setNoPosts] = useState(true)
     const [postIndex, setPostIndex] = useState(0)
     const [loadNumPosts, setLoadNumPosts] = useState(1) //Change if number of posts to load changes
-
     const [array, setArray] = useState([])
 
     const loadPosts = async () => {
         const json = JSON.stringify({ postIndex: postIndex, postType: type })
-        const res = await axiosInstance.post("posts/requestPostsForFeed", json, {
+        await axiosInstance.post("posts/requestPostsForFeed", json, {
         }).then((res) => {
             if (res.data.length == 2 && postIndex == 0) {
                 console.log('No posts available')
@@ -32,7 +36,9 @@ const PostRenderer = ({ type }) => {
 
                     for (let i = 0; i < loadNumPosts; i++) {
                         const data = JSON.parse(res.data)[i].fields
-                        // console.log(data)
+                        // post's primary key | id
+                        const pk = JSON.parse(res.data)[i].pk
+
                         const postedOnDate = new Date(data.postedOn * 1000).toLocaleDateString('en-US')
                         const postedByDate = new Date(data.postedBy * 1000).toLocaleDateString('en-US')
 
@@ -42,7 +48,7 @@ const PostRenderer = ({ type }) => {
                             postedOn: postedOnDate,
                             postedBy: postedByDate,
                             description: data.description,
-                            postType: data.postType
+                            id: pk
                         }
                         setArray(arr => [...arr, newPost])
                     }
@@ -54,15 +60,26 @@ const PostRenderer = ({ type }) => {
         })
     }
 
+    const handleDelete = (postId: Number) => {
+        deletePost(type, postId, accessToken).then(res => {
+            if (res.msg == "success") {
+                setArray(array.filter(item => item.id != postId))
+                alert!({ type: 'open', message: res.res, alertType: 'success' })
+            } else {
+                alert!({ type: 'open', message: res.res, alertType: 'error' })
+            }
+        })
+    }
+
     //TODO: Show more post details (description, option to message, etc)on press
     const onPress = () => {
 
     }
 
-    const Post = ({ title, imagesLink, postedOn, postedBy, description, postType }) => {
+    const Post = ({ title, imagesLink, postedOn, postedBy, description, id }) => {
         return (
             <TouchableOpacity style={styles.container} onPress={() => {
-                // console.log({ title, imagesLink, postedOn, postedBy, description, postType });
+                console.log({ title, imagesLink, postedOn, postedBy, description, id });
             }}>
                 <Image
                     style={styles.image}
@@ -86,6 +103,7 @@ const PostRenderer = ({ type }) => {
                     <Text style={styles.needByText}>
                         Posted On: {postedOn}{'\n'}
                         Need by: {postedBy}</Text>
+                    <Button buttonColor="red" mode="contained" onPress={() => handleDelete(id)}>Delete Post</Button>
                 </View>
             </TouchableOpacity>
         )
@@ -100,7 +118,7 @@ const PostRenderer = ({ type }) => {
                 postedOn={item.postedOn}
                 postedBy={item.postedBy}
                 description={item.description}
-                postType={item.postType}
+                id={item.id}
             />
 
         )
