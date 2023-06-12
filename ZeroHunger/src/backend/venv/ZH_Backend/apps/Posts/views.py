@@ -2,8 +2,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from django.core import serializers
+from django.conf import settings
 
 import json
+import jwt
 
 from .models import OfferPost, RequestPost
 from .serializers import createOfferSerializer, createRequestSerializer
@@ -23,11 +25,31 @@ class createPost(APIView):
               return Response(serializer.errors, status=401)
         
 class deletePost(APIView):
-     def post(self,request, format=JSONParser):
-          print("delete post test")
-          return Response("Reached delete post in API", status=201)
-     
+     def delete(self,request, format=JSONParser):
+        try:
+            decoded_token = jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
+        
+        try:
+            if(request.data['postType'] == "r"):
+                obj = RequestPost.objects.get(pk=request.data['postId'])
+            elif(request.data['postType'] == "o"):
+                    obj = OfferPost.objects.get(pk=request.data['postId'])
+        except:
+            return Response("Post not found", 404)
+        
+        # if user is the owner of the post
+        if(decoded_token['user_id'] == obj.postedBy):
+            try:
+                obj.delete()
 
+                return Response("Post deleted successfully!", 200)
+            except:
+                return Response("Error while deleting post", 500)
+        else:
+            Response("Unauthorized", 401)
+            
 #https://stackoverflow.com/questions/57031455/infinite-scrolling-using-django
 class requestPostsForFeed(APIView):
      def post(self, request):
