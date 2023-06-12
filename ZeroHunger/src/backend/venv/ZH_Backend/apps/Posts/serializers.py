@@ -7,19 +7,17 @@ class createRequestSerializer (serializers.ModelSerializer):
     postedOn = serializers.IntegerField(min_value = 1, max_value= 2147483647) #Checks the time value is within 32 bit integer limit and is not negative
     postedBy = serializers.IntegerField() #User ID
     description = serializers.CharField(max_length=1024, required=False, allow_blank=True)
-    postType = serializers.CharField(max_length=1)
 
     class Meta:
         model=RequestPost
         fields = ['title', 'images', 'postedOn', 'postedBy', 
-                  'description', 'postType']
+                  'description']
     def save(self):
         post=RequestPost(title=self.validated_data['title'],
                        images=self.validated_data['images'],
                        postedOn=self.validated_data['postedOn'],
                        postedBy=self.validated_data['postedBy'],
-                       description=self.validated_data['description'],
-                       postType=self.validated_data['postType'])
+                       description=self.validated_data['description'])
         post.save()
 
 class createOfferSerializer (serializers.ModelSerializer):
@@ -28,17 +26,15 @@ class createOfferSerializer (serializers.ModelSerializer):
     postedOn = serializers.IntegerField(min_value = 1, max_value= 2147483647) #Checks the time value is within 32 bit integer limit and is not negative
     postedBy = serializers.IntegerField() #User ID
     description = serializers.CharField(max_length=1024, required=False, allow_blank=True)
-    postType = serializers.CharField(max_length=1)
 
     class Meta:
         model=OfferPost
         fields = ['title', 'images', 'postedOn', 'postedBy', 
-                  'description', 'postType']
+                  'description']
     def save(self):
         post=OfferPost(title=self.validated_data['title'],
                        images=self.validated_data['images'],
                        postedOn=self.validated_data['postedOn'],
                        postedBy=self.validated_data['postedBy'],
-                       description=self.validated_data['description'],
-                       postType=self.validated_data['postType'])
+                       description=self.validated_data['description'])
         post.save()

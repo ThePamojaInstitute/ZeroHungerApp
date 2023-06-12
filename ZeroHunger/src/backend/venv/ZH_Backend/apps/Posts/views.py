@@ -12,9 +12,9 @@ from .serializers import createOfferSerializer, createRequestSerializer
 class createPost(APIView):
     def post(self, request, format=JSONParser):
         if (request.data['postType'] == "r"): 
-            serializer = createRequestSerializer(data=request.data)
+            serializer = createRequestSerializer(data=request.data['postData'])
         elif (request.data['postType'] == "o"):
-            serializer = createOfferSerializer(data=request.data)
+            serializer = createOfferSerializer(data=request.data['postData'])
 
         if (serializer.is_valid()):
             serializer.save()

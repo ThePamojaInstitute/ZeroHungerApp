@@ -3,16 +3,18 @@ import { Char } from "../../types";
 
 
 export const createPost = async (obj: {
-    title: string
-    images: string,
-    postedBy: Number,
-    postedOn: Number,
-    description: string
+    postData: {
+        title: string
+        images: string,
+        postedBy: Number,
+        postedOn: Number,
+        description: string
+    }
     postType: Char
 }) => {
-    if (!obj.title) {
+    if (!obj.postData.title) {
         return { msg: `Please enter a title to your ${obj.postType === "r" ? "request" : "offer"}`, res: null }
-    } else if (obj.title.length > 100) {
+    } else if (obj.postData.title.length > 100) {
         return { msg: "Title should be at most 100 characters", res: null }
     }
 

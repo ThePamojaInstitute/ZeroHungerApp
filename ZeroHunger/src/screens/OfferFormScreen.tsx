@@ -36,11 +36,13 @@ export const OfferFormScreen = ({ navigation }) => {
 
         try {
             createPost({
-                title: title,
-                images: images,
-                postedBy: user['user_id'],
-                postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
-                description: desc,
+                postData: {
+                    title: title,
+                    images: images,
+                    postedBy: user['user_id'],
+                    postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
+                    description: desc,
+                },
                 postType: 'o'
             }).then(res => {
                 if (res.msg === "success") {
