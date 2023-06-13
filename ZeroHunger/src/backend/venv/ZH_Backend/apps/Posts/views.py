@@ -9,6 +9,7 @@ import jwt
 
 from .models import OfferPost, RequestPost
 from .serializers import createOfferSerializer, createRequestSerializer
+from apps.Users.models import BasicUser
 
 
 class createPost(APIView):
@@ -48,7 +49,7 @@ class deletePost(APIView):
             except:
                 return Response("Error while deleting post", 500)
         else:
-            Response("Unauthorized", 401)
+            return Response("Unauthorized", 401)
             
 #https://stackoverflow.com/questions/57031455/infinite-scrolling-using-django
 class requestPostsForFeed(APIView):
@@ -62,6 +63,16 @@ class requestPostsForFeed(APIView):
             obj = RequestPost.objects.all()[counter:][:2]
         elif(request.data['postType'] == "o"):
             obj = OfferPost.objects.all()[counter:][:2]
-
+        
         data = serializers.serialize('json', obj)
-        return Response(data, status=201)
+        data = json.loads(data)
+
+        for post in data:
+            try:
+                user_id = post['fields']['postedBy'] 
+                user = BasicUser.objects.get(pk=user_id)
+                post.update({'username': user.username})
+            except:
+                return Response("Error while adding usernames", 500)
+        
+        return Response(json.dumps(data), status=201)
