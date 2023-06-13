@@ -2,14 +2,9 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, FlatList }
 import { useContext, useState } from "react";
 import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
-import { AuthContext } from "../context/AuthContext";
-import { deletePost } from "../controllers/post";
-import { FlashList } from "@shopify/flash-list"
-import { Button } from "react-native-paper";
+import { FlashList } from "@shopify/flash-list";
 
-
-const PostRenderer = ({ type }) => {
-    const { user, accessToken } = useContext(AuthContext);
+export const PostRenderer = ({ type, navigation }) => {
     const { dispatch: alert } = useAlert()
 
     const [noPosts, setNoPosts] = useState(true)
@@ -61,27 +56,31 @@ const PostRenderer = ({ type }) => {
         })
     }
 
-    const handleDelete = (postId: Number) => {
-        deletePost(type, postId, accessToken).then(res => {
-            if (res.msg == "success") {
-                setArray(array.filter(item => item.postId != postId))
-                alert!({ type: 'open', message: res.res, alertType: 'success' })
-            } else {
-                alert!({ type: 'open', message: res.res, alertType: 'error' })
-            }
-        })
-    }
+    const onPress = (title, imagesLink, postedOn, postedBy, description) => {
+        //Placeholder image
+        imagesLink = imagesLink ? imagesLink : "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
 
-    //TODO: Show more post details (description, option to message, etc)on press
-    const onPress = () => {
-
+        type == "r" ? 
+            navigation.navigate('RequestDetailsScreen', {
+                title,
+                imagesLink,
+                postedOn,
+                postedBy,
+                description,
+            })
+        :
+            navigation.navigate('OfferDetailsScreen', {
+                title,
+                imagesLink,
+                postedOn,
+                postedBy,
+                description,
+            })
     }
 
     const Post = ({ title, imagesLink, postedOn, postedBy, description, postId, username }) => {
         return (
-            <TouchableOpacity style={styles.container} onPress={() => {
-                console.log({ title, imagesLink, postedOn, postedBy, description, postId, username });
-            }}>
+            <TouchableOpacity style={styles.container} onPress={() => onPress(title, imagesLink, postedOn, postedBy, description)}>
                 <Image
                     style={styles.image}
                     source={{
@@ -93,22 +92,15 @@ const PostRenderer = ({ type }) => {
                 />
                 <View style={styles.subContainer}>
                     <Text style={styles.titleText}>{title}</Text>
-                    <View style={{ padding: 8 }}>
+                    <View style={{ padding: 0}}>
                         {/* Placeholder profile picture
                         <Image source={{uri: }}> */}
-                        <Text>User</Text>
+                        <Text style={{marginTop: 8}}>{postedBy}</Text>
                     </View>
-                    <Text style={styles.quantityText}>Quantity: </Text>
+                    {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                 </View>
                 <View>
-                    <Text style={styles.needByText}>
-                        Posted On: {postedOn}{'\n'}
-                        Posted by: {username}</Text>
-                    {user && user['username'] === username &&
-                        <Button buttonColor="red"
-                            mode="contained"
-                            onPress={() => handleDelete(postId)}
-                        >Delete Post</Button>}
+                    <Text style={styles.postedOnText}>Posted On: {postedOn}</Text>
                 </View>
             </TouchableOpacity>
         )
@@ -116,7 +108,6 @@ const PostRenderer = ({ type }) => {
 
     const renderItem = ({ item }) => {
         return (
-            // <View>
             <Post
                 title={item.title}
                 imagesLink={item.imagesLink}
@@ -126,7 +117,6 @@ const PostRenderer = ({ type }) => {
                 postId={item.postId}
                 username={item.username}
             />
-
         )
     }
 
@@ -173,7 +163,7 @@ const styles = StyleSheet.create({
     quantityText: {
         fontSize: 14,
     },
-    needByText: {
+    postedOnText: {
         flex: 1,
         textAlign: 'right',
         alignSelf: 'flex-end',

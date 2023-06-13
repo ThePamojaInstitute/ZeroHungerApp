@@ -156,8 +156,8 @@ export const LandingPageScreen = ({ navigation }) => {
             <TouchableOpacity testID="OfferFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("OfferFormScreen")}>
                 <Text style={styles.logOutBtn}>Add an Offer</Text>
             </TouchableOpacity>
-            {showRequests && <PostRenderer type={"r"} />}
-            {!showRequests && <PostRenderer type={"o"} />}
+            {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
+            {!showRequests && <PostRenderer type={"o"} navigation={navigation}/>}
         </ScrollView>
     )
 }
