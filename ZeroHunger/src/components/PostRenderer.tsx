@@ -2,10 +2,9 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, FlatList }
 import { useState } from "react";
 import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
-import { FlashList } from "@shopify/flash-list"
+import { FlashList } from "@shopify/flash-list";
 
-
-const PostRenderer = ({ type }) => {
+export const PostRenderer = ({ type, navigation }) => {
     const { dispatch: alert } = useAlert()
     const [noPosts, setNoPosts] = useState(true)
     const [postIndex, setPostIndex] = useState(0)
@@ -34,13 +33,12 @@ const PostRenderer = ({ type }) => {
                         const data = JSON.parse(res.data)[i].fields
                         // console.log(data)
                         const postedOnDate = new Date(data.postedOn * 1000).toLocaleDateString('en-US')
-                        const postedByDate = new Date(data.postedBy * 1000).toLocaleDateString('en-US')
 
                         let newPost = {
                             title: data.title,
                             imagesLink: data.images,
                             postedOn: postedOnDate,
-                            postedBy: postedByDate,
+                            postedBy: data.postedBy,
                             description: data.description,
                             postType: data.postType
                         }
@@ -54,16 +52,31 @@ const PostRenderer = ({ type }) => {
         })
     }
 
-    //TODO: Show more post details (description, option to message, etc)on press
-    const onPress = () => {
+    const onPress = (title, imagesLink, postedOn, postedBy, description) => {
+        //Placeholder image
+        imagesLink = imagesLink ? imagesLink : "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
 
+        type == "r" ? 
+            navigation.navigate('RequestDetailsScreen', {
+                title,
+                imagesLink,
+                postedOn,
+                postedBy,
+                description,
+            })
+        :
+            navigation.navigate('OfferDetailsScreen', {
+                title,
+                imagesLink,
+                postedOn,
+                postedBy,
+                description,
+            })
     }
 
     const Post = ({ title, imagesLink, postedOn, postedBy, description, postType }) => {
         return (
-            <TouchableOpacity style={styles.container} onPress={() => {
-                // console.log({ title, imagesLink, postedOn, postedBy, description, postType });
-            }}>
+            <TouchableOpacity style={styles.container} onPress={() => onPress(title, imagesLink, postedOn, postedBy, description)}>
                 <Image
                     style={styles.image}
                     source={{
@@ -75,17 +88,15 @@ const PostRenderer = ({ type }) => {
                 />
                 <View style={styles.subContainer}>
                     <Text style={styles.titleText}>{title}</Text>
-                    <View style={{ padding: 8 }}>
+                    <View style={{ padding: 0}}>
                         {/* Placeholder profile picture
                         <Image source={{uri: }}> */}
-                        <Text>User</Text>
+                        <Text style={{marginTop: 8}}>{postedBy}</Text>
                     </View>
-                    <Text style={styles.quantityText}>Quantity: </Text>
+                    {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                 </View>
                 <View>
-                    <Text style={styles.needByText}>
-                        Posted On: {postedOn}{'\n'}
-                        Need by: {postedBy}</Text>
+                    <Text style={styles.postedOnText}>Posted On: {postedOn}</Text>
                 </View>
             </TouchableOpacity>
         )
@@ -93,7 +104,6 @@ const PostRenderer = ({ type }) => {
 
     const renderItem = ({ item }) => {
         return (
-            // <View>
             <Post
                 title={item.title}
                 imagesLink={item.imagesLink}
@@ -102,7 +112,6 @@ const PostRenderer = ({ type }) => {
                 description={item.description}
                 postType={item.postType}
             />
-
         )
     }
 
@@ -149,7 +158,7 @@ const styles = StyleSheet.create({
     quantityText: {
         fontSize: 14,
     },
-    needByText: {
+    postedOnText: {
         flex: 1,
         textAlign: 'right',
         alignSelf: 'flex-end',
