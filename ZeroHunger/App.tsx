@@ -6,6 +6,8 @@ import Feedscreen from './src/screens/FeedScreen';
 import LoginScreen from './src/screens/Loginscreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
 import LandingPageScreen from './src/screens/LandingPageScreen';
+import RequestDetailsScreen from './src/screens/RequestDetailsScreen';
+import OfferDetailsScreen from './src/screens/OfferDetailsScreen';
 import { AuthContextProvider } from './src/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -86,6 +88,14 @@ export default function App() {
                     name="CreateAccountScreen" //Placeholder header to return to login screen
                     component={CreateAccountScreen}
                   // options={{headerShown: false}}
+                  />
+                  <Stack.Screen
+                    name="RequestDetailsScreen"
+                    component={RequestDetailsScreen}
+                  />
+                  <Stack.Screen
+                    name="OfferDetailsScreen"
+                    component={OfferDetailsScreen}
                   />
                 </Stack.Navigator>
                 <SnackBar />
