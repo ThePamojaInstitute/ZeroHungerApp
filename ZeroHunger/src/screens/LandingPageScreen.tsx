@@ -95,7 +95,7 @@ export const LandingPageScreen = ({ navigation }) => {
     }
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <View style={styles.landingPageText}>
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
@@ -157,8 +157,8 @@ export const LandingPageScreen = ({ navigation }) => {
                 <Text style={styles.logOutBtn}>Add an Offer</Text>
             </TouchableOpacity>
             {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
-            {!showRequests && <PostRenderer type={"o"} navigation={navigation}/>}
-        </ScrollView>
+            {!showRequests && <PostRenderer type={"o"} navigation={navigation} />}
+        </View>
     )
 }
 

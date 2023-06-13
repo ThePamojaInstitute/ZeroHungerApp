@@ -1,17 +1,24 @@
 import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useAlert } from "../context/Alert";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 
 export const RequestDetailsScreen = () => {
-    let route: RouteProp<{params: {
-        title: string,
-        imagesLink: string,
-        postedOn: string,
-        postedBy: string,
-        description: string,
-    }}> = useRoute()
+    let route: RouteProp<{
+        params: {
+            title: string,
+            imagesLink: string,
+            postedOn: string,
+            postedBy: string,
+            description: string,
+            postId: Number,
+            username: string,
+        }
+    }> = useRoute()
 
     const { dispatch: alert } = useAlert()
+    const { user } = useContext(AuthContext);
 
     const sendMsg = () => {
         // Send msg function blocked until username/user id complete
@@ -19,7 +26,7 @@ export const RequestDetailsScreen = () => {
     }
 
     return (
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
             <Text style={styles.titleText}>{route.params.title}</Text>
             <Image
                 style={styles.image}
@@ -28,26 +35,30 @@ export const RequestDetailsScreen = () => {
                 }}
             />
             <Text style={styles.headerText}>Description</Text>
-            <View style={{width: "30%"}}>
+            <View style={{ width: "30%" }}>
                 <Text style={styles.text}>
                     {route.params.description == "" ? "No Description" : route.params.description}
                 </Text>
             </View>
             <Text style={styles.headerText}>Poster Information</Text>
-            <Text style={styles.text}>{route.params.postedBy}</Text>
-            <Text style={styles.headerText}>Have this item? Send {route.params.postedBy} a message.</Text>
-            <View style={styles.messageInputView}>
-                <TextInput
-                    placeholder={"Hi " + route.params.postedBy + ", I have " + route.params.title + " to share, would you like to meet?"}
-                    placeholderTextColor="#000000"
-                    style={styles.inputText}
-                    multiline={true}
-                    maxLength={1024}
-            />
-            </View>
-            <TouchableOpacity style={styles.sendBtn} onPress={sendMsg}>
-                <Text>Send</Text>
-            </TouchableOpacity>
+            <Text style={styles.text}>{route.params.username === user['username'] ? 'You' : route.params.username}</Text>
+            {user['username'] != route.params.username &&
+                <>
+                    <Text style={styles.headerText}>Have this item? Send {route.params.username} a message.</Text>
+                    <View style={styles.messageInputView}>
+                        <TextInput
+                            placeholder={"Hi " + route.params.username + ", I have " + route.params.title + " to share, would you like to meet?"}
+                            placeholderTextColor="#000000"
+                            style={styles.inputText}
+                            multiline={true}
+                            maxLength={1024}
+                        />
+                    </View>
+                    <TouchableOpacity style={styles.sendBtn} onPress={sendMsg}>
+                        <Text>Send</Text>
+                    </TouchableOpacity>
+                </>
+            }
         </View>
     )
 }
@@ -73,7 +84,7 @@ const styles = StyleSheet.create({
         padding: 8,
     },
     text: {
-        padding: 8, 
+        padding: 8,
     },
     inputText: {
         flex: 1,
