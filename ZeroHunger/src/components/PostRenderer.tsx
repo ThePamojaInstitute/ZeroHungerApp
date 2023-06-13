@@ -9,7 +9,7 @@ import { Button } from "react-native-paper";
 
 
 const PostRenderer = ({ type }) => {
-    const { accessToken } = useContext(AuthContext);
+    const { user, accessToken } = useContext(AuthContext);
     const { dispatch: alert } = useAlert()
 
     const [noPosts, setNoPosts] = useState(true)
@@ -27,7 +27,7 @@ const PostRenderer = ({ type }) => {
             }
             else if (res.data.length == 2 && postIndex > 0) {
                 console.log('All posts displayed')
-                alert!({ type: 'open', message: 'All posts displayed', alertType: 'info' })
+                // alert!({ type: 'open', message: 'All posts displayed', alertType: 'info' })
             }
             else {
                 try {
@@ -38,17 +38,18 @@ const PostRenderer = ({ type }) => {
                         const data = JSON.parse(res.data)[i].fields
                         // post's primary key | id
                         const pk = JSON.parse(res.data)[i].pk
+                        const username = JSON.parse(res.data)[i].username
 
                         const postedOnDate = new Date(data.postedOn * 1000).toLocaleDateString('en-US')
-                        const postedByDate = new Date(data.postedBy * 1000).toLocaleDateString('en-US')
 
                         let newPost = {
                             title: data.title,
                             imagesLink: data.images,
                             postedOn: postedOnDate,
-                            postedBy: postedByDate,
+                            postedBy: data.postedBy,
                             description: data.description,
-                            id: pk
+                            postId: pk,
+                            username: username
                         }
                         setArray(arr => [...arr, newPost])
                     }
@@ -63,7 +64,7 @@ const PostRenderer = ({ type }) => {
     const handleDelete = (postId: Number) => {
         deletePost(type, postId, accessToken).then(res => {
             if (res.msg == "success") {
-                setArray(array.filter(item => item.id != postId))
+                setArray(array.filter(item => item.postId != postId))
                 alert!({ type: 'open', message: res.res, alertType: 'success' })
             } else {
                 alert!({ type: 'open', message: res.res, alertType: 'error' })
@@ -76,10 +77,10 @@ const PostRenderer = ({ type }) => {
 
     }
 
-    const Post = ({ title, imagesLink, postedOn, postedBy, description, id }) => {
+    const Post = ({ title, imagesLink, postedOn, postedBy, description, postId, username }) => {
         return (
             <TouchableOpacity style={styles.container} onPress={() => {
-                console.log({ title, imagesLink, postedOn, postedBy, description, id });
+                console.log({ title, imagesLink, postedOn, postedBy, description, postId, username });
             }}>
                 <Image
                     style={styles.image}
@@ -102,8 +103,12 @@ const PostRenderer = ({ type }) => {
                 <View>
                     <Text style={styles.needByText}>
                         Posted On: {postedOn}{'\n'}
-                        Need by: {postedBy}</Text>
-                    <Button buttonColor="red" mode="contained" onPress={() => handleDelete(id)}>Delete Post</Button>
+                        Posted by: {username}</Text>
+                    {user && user['username'] === username &&
+                        <Button buttonColor="red"
+                            mode="contained"
+                            onPress={() => handleDelete(postId)}
+                        >Delete Post</Button>}
                 </View>
             </TouchableOpacity>
         )
@@ -118,7 +123,8 @@ const PostRenderer = ({ type }) => {
                 postedOn={item.postedOn}
                 postedBy={item.postedBy}
                 description={item.description}
-                id={item.id}
+                postId={item.postId}
+                username={item.username}
             />
 
         )
