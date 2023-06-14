@@ -19,6 +19,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Chat } from './src/components/Chat';
 import { Conversations } from './src/screens/Conversations';
 import { NotificationContextProvider } from './src/context/ChatNotificationContext';
+import { Colors } from './styles/globalStyleSheet';
+
 // import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 // export default function App() {
@@ -82,12 +84,27 @@ export default function App() {
                   <Stack.Screen
                     name="LoginScreen"
                     component={LoginScreen}
-                    options={{ headerShown: false }}
+                    options={{
+                      // headerShown: false,
+                      title: "Zero Hunger",
+                      headerTitleAlign: 'center',
+                      headerStyle: {
+                        backgroundColor: Colors.Background
+                      },
+                      headerLeft: () => (<></>),
+                    }}
                   />
                   <Stack.Screen
                     name="CreateAccountScreen" //Placeholder header to return to login screen
                     component={CreateAccountScreen}
-                  // options={{headerShown: false}}
+                    options={{
+                      // headerShown: false,
+                      title: "Zero Hunger",
+                      headerTitleAlign: 'center',
+                      headerStyle: {
+                        backgroundColor: Colors.Background
+                      }
+                    }}
                   />
                   <Stack.Screen
                     name="RequestDetailsScreen"
