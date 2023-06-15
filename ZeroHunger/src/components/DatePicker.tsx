@@ -67,7 +67,7 @@ export default DatePicker
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.Background,
+        backgroundColor: Colors.white,
         borderWidth: 1,
         borderColor: '#D1D1D1',
         borderRadius: 10,
@@ -78,9 +78,13 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     img: {
-        marginLeft: 5,
-        marginRight: 15,
-        marginVertical: 2
+        marginLeft: -5,
+        marginRight: 4,
+        marginTop: 0,
+        marginVertical: 2,
+        width: '30%',
+        height: '100%',
+        resizeMode: 'contain'
     },
     date: {
         fontFamily: 'PublicSans_400Regular',
