@@ -4,6 +4,7 @@ import { useAlert } from "../context/Alert";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ExpoImagePicker from 'expo-image-picker';
 import { Image } from "react-native";
+import { Platform } from "react-native";
 
 
 const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<string>> }) => {
@@ -65,7 +66,7 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
                 testID="AccessCameraRoll.Button"
                 onPress={pickImages}>
                 <Image
-                    style={styles.imgInput}
+                    style={[styles.imgInput, { width: Platform.OS === 'web' ? 370 : '100%' }]}
                     source={require('../../assets/Photo_Input.png')} />
             </Pressable>
             <View style={{ marginLeft: 20 }}>
@@ -111,9 +112,9 @@ const styles = StyleSheet.create({
     },
     imgInput: {
         marginTop: 5,
-        width: 370,
+        width: '100%',
         height: 123,
-        resizeMode: 'cover'
+        resizeMode: 'contain'
     },
     topRight: {
         position: 'absolute',

@@ -37,7 +37,6 @@
     "expo-image-picker": "~14.1.1",
     "expo-modules-core": "^1.2.7",
     "expo-notifications": "~0.18.1",
-    "expo-permissions": "~14.1.1",
     "expo-splash-screen": "~0.18.2",
     "expo-status-bar": "~1.4.2",
     "install": "^0.13.0",
