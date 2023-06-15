@@ -118,6 +118,8 @@ export const OfferFormScreen = ({ navigation }) => {
     )
 }
 
+export default OfferFormScreen
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
