@@ -43,7 +43,7 @@ export const RequestFormScreen = ({ navigation }) => {
                 backgroundColor: Colors.Background
             },
             headerLeft: () => (
-                <TouchableOpacity onPress={() => navigation.navigate('LandingPageScreenTemp')}>
+                <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
                     <Text style={styles.cancelBtn}>Cancel</Text>
                 </TouchableOpacity>
             ),
@@ -76,7 +76,7 @@ export const RequestFormScreen = ({ navigation }) => {
             }).then(res => {
                 if (res.msg === "success") {
                     alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
-                    navigation.navigate('LandingPageScreenTemp')
+                    navigation.navigate('HomeScreen')
                 } else if (res.msg === "failure") {
                     alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
                 } else {

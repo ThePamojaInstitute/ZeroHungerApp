@@ -5,7 +5,7 @@ import { TouchableOpacity } from "react-native"
 import Feedscreen from './src/screens/FeedScreen';
 import LoginScreen from './src/screens/Loginscreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
-import LandingPageScreen from './src/screens/LandingPageScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import RequestDetailsScreen from './src/screens/RequestDetailsScreen';
 import OfferDetailsScreen from './src/screens/OfferDetailsScreen';
 import { AuthContextProvider } from './src/context/AuthContext';
@@ -48,8 +48,8 @@ export default function App() {
               <>
                 <Stack.Navigator>
                   <Stack.Screen
-                    name="LandingPageScreenTemp"
-                    component={LandingPageScreen}
+                    name="HomeScreen"
+                    component={HomeScreen}
                     options={{
                       title: "Zero Hunger",
                       headerTitleAlign: 'center',
