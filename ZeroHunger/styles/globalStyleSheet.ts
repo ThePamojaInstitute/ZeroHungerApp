@@ -92,6 +92,15 @@ export const globalStyles = StyleSheet.create({
         alignItems: 'center',
         color: Colors.primary,
     },
+    navDefaultBtn: {
+        justifyContent: 'center',
+        alignItems: "center",
+        gap: 10,
+        borderRadius: 100,
+        paddingVertical: 3.5,
+        paddingHorizontal: 13,
+        backgroundColor: Colors.primary,
+    },
     inputContainer: {
         display: 'flex',
         flexDirection: 'column',
