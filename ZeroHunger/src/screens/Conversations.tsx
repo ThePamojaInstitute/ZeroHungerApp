@@ -101,3 +101,5 @@ export const Conversations = ({ navigation }) => {
         </View>
     );
 }
+
+export default Conversations

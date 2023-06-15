@@ -46,7 +46,7 @@ export const LoginScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (user) {
-      navigation.navigate('LandingPageScreenTemp')
+      navigation.navigate('HomeScreen')
     }
   }, [])
 
@@ -89,7 +89,7 @@ export const LoginScreen = ({ navigation }) => {
           setUsername("")
           setPassword("")
           alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
-          navigation.navigate('LandingPageScreenTemp')
+          navigation.navigate('HomeScreen')
         })
       } else if (res.msg === "failure") {
         dispatch({ type: "LOGIN_FAILURE", payload: res.res })
