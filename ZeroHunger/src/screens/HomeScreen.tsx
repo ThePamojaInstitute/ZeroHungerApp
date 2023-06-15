@@ -1,10 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Pressable, FlatList, GestureResponderEvent, ScrollView, Dimensions } from "react-native";
+import { 
+    StyleSheet, 
+    Text, 
+    View, 
+    TouchableOpacity, 
+    Pressable, 
+    FlatList, 
+    GestureResponderEvent 
+} from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { deleteUser, logOutUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import PostRenderer from "../components/PostRenderer";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 //Flatlist data
 const Item = ({ name }) => {
@@ -37,7 +46,7 @@ const renderItem = ({ item }) => (
 );
 
 //Temporary landing page screen to test tokens
-export const LandingPageScreen = ({ navigation }) => {
+export const HomeScreen = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext)
     const { unreadMessageCount, chatIsOpen, setChatIsOpen } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
@@ -162,7 +171,7 @@ export const LandingPageScreen = ({ navigation }) => {
     )
 }
 
-export default LandingPageScreen
+export default HomeScreen
 
 const styles = StyleSheet.create({
     container: {
