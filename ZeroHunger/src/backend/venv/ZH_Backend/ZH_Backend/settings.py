@@ -19,7 +19,7 @@ from azure.keyvault.secrets import SecretClient
 VAULT_URL = os.environ["VAULT_URL"]
 envcredential = EnvironmentCredential()
 client = SecretClient(vault_url=VAULT_URL, credential=envcredential)
-
+print(VAULT_URL)
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
