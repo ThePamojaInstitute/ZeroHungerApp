@@ -30,7 +30,7 @@ export function Message({ message }: { message: MessageModel }) {
                             marginLeft: 20,
                             marginRight: 5,
                             fontSize: 15,
-                            lineHeight: 1
+                            // lineHeight: 1,
                         }}
                     >
                         {formatMessageTimestamp(message.timestamp)}
