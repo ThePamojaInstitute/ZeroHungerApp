@@ -32,7 +32,6 @@
     "@shopify/flash-list": "^1.4.0",
     "@testing-library/jest-dom": "^5.16.5",
     "dayjs": "^1.11.7",
-    "eas-cli": "^3.13.3",
     "expo": "^48.0.17",
     "expo-constants": "~14.2.1",
     "expo-dev-client": "~2.2.1",
