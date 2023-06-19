@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { FlatList, ImageBackground, StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { FlatList, ImageBackground, Pressable, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import { useAlert } from "../context/Alert";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ExpoImagePicker from 'expo-image-picker';
+import { Image } from "react-native";
+import { Platform } from "react-native";
 
 
 const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<string>> }) => {
@@ -47,8 +49,26 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
     );
 
     return (
-        <View>
-            <Ionicons name="images-outline" size={50} testID="AccessCameraRoll.Button" onPress={pickImages} title="Access Camera Roll" />
+        // <View>
+        //     <Ionicons name="images-outline" size={50} testID="AccessCameraRoll.Button" onPress={pickImages} title="Access Camera Roll" />
+        //     <View style={{ marginLeft: 20 }}>
+        //         <FlatList
+        //             data={images}
+        //             renderItem={renderItem}
+        //             horizontal
+        //             style={styles.imgList}
+        //         />
+        //     </View>
+        //     {images.length == 0 && <Text>No Images</Text>}
+        // </View>
+        <View style={{ marginBottom: 20 }}>
+            <Pressable
+                testID="AccessCameraRoll.Button"
+                onPress={pickImages}>
+                <Image
+                    style={[styles.imgInput, { width: Platform.OS === 'web' ? 370 : '100%' }]}
+                    source={require('../../assets/Photo_Input.png')} />
+            </Pressable>
             <View style={{ marginLeft: 20 }}>
                 <FlatList
                     data={images}
@@ -57,7 +77,6 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
                     style={styles.imgList}
                 />
             </View>
-            {images.length == 0 && <Text>No Images</Text>}
         </View>
     )
 }
@@ -80,8 +99,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 15,
     },
-    Img:
-    {
+    Img: {
         marginTop: 20,
         marginLeft: 20,
         width: 100,
@@ -91,6 +109,12 @@ const styles = StyleSheet.create({
     imgList: {
         left: -40,
         marginRight: -40
+    },
+    imgInput: {
+        marginTop: 5,
+        width: '100%',
+        height: 123,
+        resizeMode: 'contain'
     },
     topRight: {
         position: 'absolute',

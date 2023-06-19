@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Colors } from "../../styles/globalStyleSheet";
 
 
 const DatePicker = () => {
@@ -20,16 +21,34 @@ const DatePicker = () => {
         setSelected(true)
     };
 
-    // for iOS, add a button that closes the picker
-    // const showDatepicker = () => {
-    //     setShow(true);
-    // };
+    const toStringDate = (date: Date) => {
+        const day = date.getDate()
+        const month = date.getMonth() + 1
+        const year = date.getFullYear()
+
+        if (day < 10 && month < 10) {
+            return `0${month}/0${day}/${year}`
+        } else if (day < 10) {
+            return `${month}/0${day}/${year}`
+        } else if (month < 10) {
+            return `0${month}/${day}/${year}`
+        } else {
+            return `${month}/${day}/${year}`
+        }
+    }
 
     return (
         <View>
             {/* <Button style={styles.logOutBtn} onPress={() => setShow(true)} title="Show date picker!" /> */}
-            <Ionicons name="calendar-outline" size={50} onPress={() => setShow(true)} title="Show date picker!" testID="ShowDatePicker.Button" />
-            <Text>{selected && `selected: ${date.toLocaleDateString()}`}</Text>
+            {/* <Ionicons name="calendar-outline" size={50} onPress={() => setShow(true)} title="Show date picker!" testID="ShowDatePicker.Button" />
+            <Text>{selected && `selected: ${date.toLocaleDateString()}`}</Text> */}
+            <Pressable
+                style={styles.container}
+                onPress={() => setShow(true)}
+            >
+                <Image style={styles.img} source={require('../../assets/calendar.png')} />
+                <Text style={styles.date}>{selected ? toStringDate(date) : 'MM/DD/YYYY'}</Text>
+            </Pressable>
             {show && (
                 <DateTimePicker
                     testID="dateTimePicker"
@@ -47,13 +66,30 @@ const DatePicker = () => {
 export default DatePicker
 
 const styles = StyleSheet.create({
-    logOutBtn: {
-        title: "Login",
-        width: "25%",
-        borderRadius: 25,
-        marginTop: 10,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "#6A6A6A",
+    container: {
+        backgroundColor: Colors.white,
+        borderWidth: 1,
+        borderColor: '#D1D1D1',
+        borderRadius: 10,
+        width: '38%',
+        padding: 5,
+        flexDirection: 'row',
+        marginBottom: 15,
+        marginTop: 10
     },
+    img: {
+        marginLeft: -5,
+        marginRight: 4,
+        marginTop: 0,
+        marginVertical: 2,
+        width: '30%',
+        height: '100%',
+        resizeMode: 'contain'
+    },
+    date: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 13,
+        color: '#656565',
+        marginTop: 2
+    }
 })

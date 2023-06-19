@@ -152,3 +152,5 @@ export const Chat = ({ navigation, route }) => {
         </View>
     )
 }
+
+export default Chat

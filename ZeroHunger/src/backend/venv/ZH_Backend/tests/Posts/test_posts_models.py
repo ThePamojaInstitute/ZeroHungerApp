@@ -13,8 +13,7 @@ def test_create_OfferPost():
         images="testImageLink",
         postedOn=date_now,
         postedBy=0,
-        description="test description",
-        postType="o"
+        description="test description"
     )
 
     offer_post_db = OfferPost.objects.get(id=offer_post.id)
@@ -24,7 +23,6 @@ def test_create_OfferPost():
     assert offer_post_db.postedOn == int(date_now)
     assert offer_post_db.postedBy == 0
     assert offer_post_db.description == 'test description'
-    assert offer_post_db.postType == "o"
 
 @pytest.mark.django_db
 def test_create_RequestPost():
@@ -35,8 +33,7 @@ def test_create_RequestPost():
         images="testImageLink",
         postedOn=date_now,
         postedBy=0,
-        description="test description",
-        postType="r"
+        description="test description"
     )
 
     request_post_db = RequestPost.objects.get(id=request_post.id)
@@ -46,7 +43,6 @@ def test_create_RequestPost():
     assert request_post_db.postedOn == int(date_now)
     assert request_post_db.postedBy == 0
     assert request_post_db.description == 'test description'
-    assert request_post_db.postType == "r"
 
 @pytest.mark.django_db
 def test_create_OfferPost_without_title():
@@ -56,8 +52,7 @@ def test_create_OfferPost_without_title():
         images="testImageLink",
         postedOn=date_now,
         postedBy=0,
-        description="test description",
-        postType="o"
+        description="test description"
     )
 
     offer_post_db = OfferPost.objects.get(id=offer_post.id)
@@ -67,7 +62,6 @@ def test_create_OfferPost_without_title():
     assert offer_post_db.postedOn == int(date_now)
     assert offer_post_db.postedBy == 0
     assert offer_post_db.description == 'test description'
-    assert offer_post_db.postType == "o"
 
 @pytest.mark.django_db
 def test_create_RequestPost_without_title():
@@ -77,8 +71,7 @@ def test_create_RequestPost_without_title():
         images="testImageLink",
         postedOn=date_now,
         postedBy=0,
-        description="test description",
-        postType="r"
+        description="test description"
     )
 
     request_post_db = RequestPost.objects.get(id=request_post.id)
@@ -88,7 +81,6 @@ def test_create_RequestPost_without_title():
     assert request_post_db.postedOn == int(date_now)
     assert request_post_db.postedBy == 0
     assert request_post_db.description == 'test description'
-    assert request_post_db.postType == "r"
 
 @pytest.mark.django_db
 def test_create_OfferPost_without_images():
@@ -98,18 +90,16 @@ def test_create_OfferPost_without_images():
         title="Test Title",
         postedOn=date_now,
         postedBy=0,
-        description="test description",
-        postType="o"
+        description="test description"
     )
 
     offer_post_db = OfferPost.objects.get(id=offer_post.id)
         
     assert offer_post_db.title =='Test Title'
-    assert offer_post_db.images == 'linkToImageDB'
+    assert offer_post_db.images == ''
     assert offer_post_db.postedOn == int(date_now)
     assert offer_post_db.postedBy == 0
     assert offer_post_db.description == 'test description'
-    assert offer_post_db.postType == "o"
 
 @pytest.mark.django_db
 def test_create_RequestPost_without_images():
@@ -119,18 +109,16 @@ def test_create_RequestPost_without_images():
         title="Test Title",
         postedOn=date_now,
         postedBy=0,
-        description="test description",
-        postType="r"
+        description="test description"
     )
 
     request_post_db = RequestPost.objects.get(id=request_post.id)
         
     assert request_post_db.title =='Test Title'
-    assert request_post_db.images == 'linkToImageDB'
+    assert request_post_db.images == ''
     assert request_post_db.postedOn == int(date_now)
     assert request_post_db.postedBy == 0
     assert request_post_db.description == 'test description'
-    assert request_post_db.postType == "r"
 
 @pytest.mark.django_db
 def test_create_OfferPost_without_postedOn():
@@ -138,8 +126,7 @@ def test_create_OfferPost_without_postedOn():
         title="Test Title",
         images="testImageLink",
         postedBy=0,
-        description="test description",
-        postType="o"
+        description="test description"
     )
 
     offer_post_db = OfferPost.objects.get(id=offer_post.id)
@@ -149,7 +136,6 @@ def test_create_OfferPost_without_postedOn():
     assert offer_post_db.postedOn == 1
     assert offer_post_db.postedBy == 0
     assert offer_post_db.description == 'test description'
-    assert offer_post_db.postType == "o"
 
 @pytest.mark.django_db
 def test_create_RequestPost_without_postedOn():
@@ -157,8 +143,7 @@ def test_create_RequestPost_without_postedOn():
         title="Test Title",
         images="testImageLink",
         postedBy=0,
-        description="test description",
-        postType="r"
+        description="test description"
     )
 
     request_post_db = RequestPost.objects.get(id=request_post.id)
@@ -168,7 +153,6 @@ def test_create_RequestPost_without_postedOn():
     assert request_post_db.postedOn == 1
     assert request_post_db.postedBy == 0
     assert request_post_db.description == 'test description'
-    assert request_post_db.postType == "r"
 
 @pytest.mark.django_db
 def test_create_OfferPost_without_postedBy():
@@ -180,7 +164,6 @@ def test_create_OfferPost_without_postedBy():
             images="testImageLink",
             postedOn=date_now,
             description="test description",
-            postType="o"
         )
 
 @pytest.mark.django_db
@@ -193,7 +176,6 @@ def test_create_RequestPost_without_PostedBy():
             images="testImageLink",
             postedOn=date_now,
             description="test description",
-            postType="r"
         )
 
 @pytest.mark.django_db
@@ -204,8 +186,7 @@ def test_create_OfferPost_without_description():
         title="Test Title",
         images="testImageLink",
         postedOn=date_now,
-        postedBy=0,
-        postType="o"
+        postedBy=0
     )
 
     offer_post_db = OfferPost.objects.get(id=offer_post.id)
@@ -215,7 +196,6 @@ def test_create_OfferPost_without_description():
     assert offer_post_db.postedOn == int(date_now)
     assert offer_post_db.postedBy == 0
     assert offer_post_db.description == ''
-    assert offer_post_db.postType == "o"
 
 @pytest.mark.django_db
 def test_create_RequestPost_without_description():
@@ -225,8 +205,7 @@ def test_create_RequestPost_without_description():
         title="Test Title",
         images="testImageLink",
         postedOn=date_now,
-        postedBy=0,
-        postType="r"
+        postedBy=0
     )
 
     request_post_db = RequestPost.objects.get(id=request_post.id)
@@ -236,7 +215,6 @@ def test_create_RequestPost_without_description():
     assert request_post_db.postedOn == int(date_now)
     assert request_post_db.postedBy == 0
     assert request_post_db.description == ''
-    assert request_post_db.postType == "r"
 
 @pytest.mark.django_db
 def test_create_OfferPost_without_postType():
@@ -257,7 +235,6 @@ def test_create_OfferPost_without_postType():
     assert offer_post_db.postedOn == int(date_now)
     assert offer_post_db.postedBy == 0
     assert offer_post_db.description == 'test description'
-    assert offer_post_db.postType == "o"
 
 @pytest.mark.django_db
 def test_create_RequestPost_without_postType():
@@ -278,4 +255,3 @@ def test_create_RequestPost_without_postType():
     assert request_post_db.postedOn == int(date_now)
     assert request_post_db.postedBy == 0
     assert request_post_db.description == 'test description'
-    assert request_post_db.postType == "r"

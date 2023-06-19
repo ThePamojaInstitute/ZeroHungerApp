@@ -1,48 +1,58 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, FlatList } from "react-native";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
-import { FlashList } from "@shopify/flash-list"
+import { AuthContext } from "../context/AuthContext";
+import { FlashList } from "@shopify/flash-list";
+import { Button } from "react-native-paper";
+import { deletePost } from "../controllers/post";
 
-
-const PostRenderer = ({ type }) => {
+export const PostRenderer = ({ type, navigation }) => {
     const { dispatch: alert } = useAlert()
-    const [noPosts, setNoPosts] = useState(true)
+    const { user, accessToken } = useContext(AuthContext);
+
+    const [noPosts, setNoPosts] = useState(false)
     const [postIndex, setPostIndex] = useState(0)
     const [loadNumPosts, setLoadNumPosts] = useState(1) //Change if number of posts to load changes
-
     const [array, setArray] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [endReached, setEndReached] = useState(false)
 
     const loadPosts = async () => {
         const json = JSON.stringify({ postIndex: postIndex, postType: type })
-        const res = await axiosInstance.post("posts/requestPostsForFeed", json, {
+        await axiosInstance.post("posts/requestPostsForFeed", json, {
         }).then((res) => {
             if (res.data.length == 2 && postIndex == 0) {
                 console.log('No posts available')
+                setNoPosts(true)
                 alert!({ type: 'open', message: 'No posts available', alertType: 'info' })
             }
             else if (res.data.length == 2 && postIndex > 0) {
                 console.log('All posts displayed')
-                alert!({ type: 'open', message: 'All posts displayed', alertType: 'info' })
+                setEndReached(true)
+                // alert!({ type: 'open', message: 'All posts displayed', alertType: 'info' })
             }
             else {
+                setIsLoading(true)
                 try {
-                    setNoPosts(false)
                     setPostIndex(postIndex + loadNumPosts)
 
                     for (let i = 0; i < loadNumPosts; i++) {
                         const data = JSON.parse(res.data)[i].fields
-                        // console.log(data)
+                        // post's primary key | id
+                        const pk = JSON.parse(res.data)[i].pk
+                        const username = JSON.parse(res.data)[i].username
+
                         const postedOnDate = new Date(data.postedOn * 1000).toLocaleDateString('en-US')
-                        const postedByDate = new Date(data.postedBy * 1000).toLocaleDateString('en-US')
 
                         let newPost = {
                             title: data.title,
                             imagesLink: data.images,
                             postedOn: postedOnDate,
-                            postedBy: postedByDate,
+                            postedBy: data.postedBy,
                             description: data.description,
-                            postType: data.postType
+                            postId: pk,
+                            username: username
                         }
                         setArray(arr => [...arr, newPost])
                     }
@@ -51,36 +61,87 @@ const PostRenderer = ({ type }) => {
                     console.log("Fewer than " + loadNumPosts + " new posts")
                 }
             }
+        }).finally(() => setIsLoading(false))
+    }
+
+    const handleDelete = (postId: Number) => {
+        deletePost(type, postId, accessToken).then(res => {
+            if (res.msg == "success") {
+                setArray(array.filter(item => item.postId != postId))
+                alert!({ type: 'open', message: res.res, alertType: 'success' })
+            } else {
+                alert!({ type: 'open', message: res.res, alertType: 'error' })
+            }
         })
     }
 
-    //TODO: Show more post details (description, option to message, etc)on press
-    const onPress = () => {
+    const onPress = (title: string,
+        imagesLink: string,
+        postedOn: Number,
+        postedBy: Number,
+        description: string,
+        postId: Number,
+        username: string) => {
+        //Placeholder image
+        imagesLink = imagesLink ? imagesLink : "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
 
+        type === "r" ?
+            navigation.navigate('RequestDetailsScreen', {
+                title,
+                imagesLink,
+                postedOn,
+                postedBy,
+                description,
+                postId,
+                username
+            })
+            :
+            navigation.navigate('OfferDetailsScreen', {
+                title,
+                imagesLink,
+                postedOn,
+                postedBy,
+                description,
+                postId,
+                username
+            })
     }
 
-    const Post = ({ title, imagesLink, postedOn, postedBy, description, postType }) => {
+    const Post = ({ title, imagesLink, postedOn, postedBy, description, postId, username }) => {
         return (
-            <TouchableOpacity style={styles.container} onPress={() => {
-                // console.log({ title, imagesLink, postedOn, postedBy, description, postType });
-            }}>
+            <TouchableOpacity style={styles.container} onPress={() => onPress(
+                title,
+                imagesLink,
+                postedOn,
+                postedBy,
+                description,
+                postId,
+                username)}>
                 <Image
                     style={styles.image}
-                    source={{ uri: imagesLink }}
+                    source={{
+                        uri:
+                            imagesLink ?
+                                imagesLink :
+                                "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
+                    }}
                 />
                 <View style={styles.subContainer}>
                     <Text style={styles.titleText}>{title}</Text>
-                    <View style={{ padding: 8 }}>
+                    <View style={{ padding: 0 }}>
                         {/* Placeholder profile picture
                         <Image source={{uri: }}> */}
-                        <Text>User</Text>
+                        <Text style={{ marginTop: 8 }}>{username}</Text>
                     </View>
-                    <Text style={styles.quantityText}>Quantity: </Text>
+                    {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                 </View>
                 <View>
-                    <Text style={styles.needByText}>
-                        Posted On: {postedOn}{'\n'}
-                        Need by: {postedBy}</Text>
+                    <Text style={styles.postedOnText}>Posted On: {postedOn}</Text>
+                    {user && user['username'] === username &&
+                        <Button buttonColor="red"
+                            mode="contained"
+                            onPress={() => handleDelete(postId)}
+                        >Delete Post</Button>}
                 </View>
             </TouchableOpacity>
         )
@@ -88,35 +149,37 @@ const PostRenderer = ({ type }) => {
 
     const renderItem = ({ item }) => {
         return (
-            // <View>
             <Post
                 title={item.title}
                 imagesLink={item.imagesLink}
                 postedOn={item.postedOn}
                 postedBy={item.postedBy}
                 description={item.description}
-                postType={item.postType}
+                postId={item.postId}
+                username={item.username}
             />
-
         )
     }
 
     return (
-        <View style={{ backgroundColor: '#F3F3F3', height: "80%", flex: 1 }}>
+        <View style={{ backgroundColor: '#F3F3F3', height: "80%" }}>
             {/* Temporary refresh button for web */}
             <TouchableOpacity onPress={loadPosts}>
                 <Text style={[styles.refreshBtnText]}>Refresh</Text>
             </TouchableOpacity>
             {noPosts ? <Text style={styles.noPostsText}>No posts available</Text> : <></>}
-            <FlashList
-                renderItem={renderItem}
-                data={array}
-                onEndReached={loadPosts}
-                onEndReachedThreshold={0.3}
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                estimatedItemSize={125}
-            />
+            {user &&
+                <FlashList
+                    renderItem={renderItem}
+                    data={array}
+                    onEndReached={loadPosts}
+                    onEndReachedThreshold={0.3}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    estimatedItemSize={125}
+                />}
+            {!endReached && isLoading && <Text>Loading...</Text>}
+            {endReached && <Text style={{ fontSize: 20 }}>End Reached</Text>}
         </View>
     )
 }
@@ -144,7 +207,7 @@ const styles = StyleSheet.create({
     quantityText: {
         fontSize: 14,
     },
-    needByText: {
+    postedOnText: {
         flex: 1,
         textAlign: 'right',
         alignSelf: 'flex-end',

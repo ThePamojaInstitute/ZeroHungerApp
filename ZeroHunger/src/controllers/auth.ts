@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { axiosInstance } from "../../config";
 
 
-export async function createUser(user: Object) {
+export async function createUser(user: Object, acceptedTerms: boolean) {
     if (!user['username']) {
         return { msg: "Please enter a username", res: null }
     } else if (user['username'].length > 64) {
@@ -27,6 +27,10 @@ export async function createUser(user: Object) {
         return { msg: "Password length should be 4 characters or more", res: null }
     } else if (user['password'].length > 64) {
         return { msg: "Password length should be 64 characters or less", res: null }
+    }
+
+    if (!acceptedTerms) {
+        return { msg: "Please accept terms and conditions", res: null }
     }
 
     try {

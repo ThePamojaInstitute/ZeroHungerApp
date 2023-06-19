@@ -5,7 +5,9 @@ import { TouchableOpacity } from "react-native"
 import Feedscreen from './src/screens/FeedScreen';
 import LoginScreen from './src/screens/Loginscreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
-import LandingPageScreen from './src/screens/LandingPageScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import RequestDetailsScreen from './src/screens/RequestDetailsScreen';
+import OfferDetailsScreen from './src/screens/OfferDetailsScreen';
 import { AuthContextProvider } from './src/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -17,6 +19,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Chat } from './src/components/Chat';
 import { Conversations } from './src/screens/Conversations';
 import { NotificationContextProvider } from './src/context/ChatNotificationContext';
+import { Colors } from './styles/globalStyleSheet';
+
 // import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 // export default function App() {
@@ -44,8 +48,8 @@ export default function App() {
               <>
                 <Stack.Navigator>
                   <Stack.Screen
-                    name="LandingPageScreenTemp"
-                    component={LandingPageScreen}
+                    name="HomeScreen"
+                    component={HomeScreen}
                     options={{
                       title: "Zero Hunger",
                       headerTitleAlign: 'center',
@@ -80,12 +84,35 @@ export default function App() {
                   <Stack.Screen
                     name="LoginScreen"
                     component={LoginScreen}
-                    options={{ headerShown: false }}
+                    options={{
+                      // headerShown: false,
+                      title: "Zero Hunger",
+                      headerTitleAlign: 'center',
+                      headerStyle: {
+                        backgroundColor: Colors.Background
+                      },
+                      headerLeft: () => (<></>),
+                    }}
                   />
                   <Stack.Screen
                     name="CreateAccountScreen" //Placeholder header to return to login screen
                     component={CreateAccountScreen}
-                  // options={{headerShown: false}}
+                    options={{
+                      // headerShown: false,
+                      title: "Zero Hunger",
+                      headerTitleAlign: 'center',
+                      headerStyle: {
+                        backgroundColor: Colors.Background
+                      }
+                    }}
+                  />
+                  <Stack.Screen
+                    name="RequestDetailsScreen"
+                    component={RequestDetailsScreen}
+                  />
+                  <Stack.Screen
+                    name="OfferDetailsScreen"
+                    component={OfferDetailsScreen}
                   />
                 </Stack.Navigator>
                 <SnackBar />
