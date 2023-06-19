@@ -20,7 +20,7 @@
         "resourceClass": "m1-medium"
       },
       "android": {
-        "gradleCommand": ":app:assembleRelease"
+        "buildType": "apk"
       }
     },
     "production": {
