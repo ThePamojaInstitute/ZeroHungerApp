@@ -24,9 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.noahg.ZeroHunger",
-      "googleServicesFile": "./google-services.json",
-      "useNextNotificationsApi": true
+      "package": "com.noahg.ZeroHunger"
     },
     "web": {
       "favicon": "./assets/favicon.png"
