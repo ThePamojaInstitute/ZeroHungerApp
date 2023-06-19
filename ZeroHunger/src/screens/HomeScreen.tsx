@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { 
-    StyleSheet, 
-    Text, 
-    View, 
-    TouchableOpacity, 
-    Pressable, 
-    FlatList, 
-    GestureResponderEvent 
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    Pressable,
+    FlatList,
+    GestureResponderEvent
 } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { deleteUser, logOutUser } from "../controllers/auth";
@@ -14,6 +14,12 @@ import { useAlert } from "../context/Alert";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import PostRenderer from "../components/PostRenderer";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+    useFonts,
+    PublicSans_600SemiBold,
+    PublicSans_500Medium,
+    PublicSans_400Regular
+} from '@expo-google-fonts/public-sans';
 
 //Flatlist data
 const Item = ({ name }) => {
@@ -47,6 +53,17 @@ const renderItem = ({ item }) => (
 
 //Temporary landing page screen to test tokens
 export const HomeScreen = ({ navigation }) => {
+    const [loaded, setLoaded] = useState(false)
+    let [fontsLoaded] = useFonts({
+        PublicSans_400Regular,
+        PublicSans_500Medium,
+        PublicSans_600SemiBold
+    })
+
+    useEffect(() => {
+        setLoaded(fontsLoaded)
+    }, [fontsLoaded])
+
     const { user, accessToken, dispatch } = useContext(AuthContext)
     const { unreadMessageCount, chatIsOpen, setChatIsOpen } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
@@ -105,68 +122,73 @@ export const HomeScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.landingPageText}>
-                <Text style={styles.text}>Temporary Landing Page</Text>
-                <Text>Good Morning {user ? user['username'] : "User"}</Text>
-                {unreadMessageCount > 0 &&
-                    <Text>You have {unreadMessageCount} unread
-                        {unreadMessageCount > 1 ? ' messages' : ' message'}</Text>
-                }
-                {user &&
-                    <TouchableOpacity testID="ChatNav.Button" style={styles.logOutBtn} onPress={() => navigation.navigate('Conversations')}>
-                        <Text style={styles.logOutBtnText}>Chat</Text>
-                    </TouchableOpacity>}
-                {user &&
-                    <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
-                        <Text style={styles.logOutBtnText}>Log Out</Text>
-                    </TouchableOpacity>}
-                {user &&
-                    <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
-                        <Text style={styles.deleteBtnText}>Delete User</Text>
-                    </TouchableOpacity>}
-            </View>
-            <View style={styles.pressable}>
-                <Pressable
-                    style={({ pressed }) => [
-                        {
-                            backgroundColor: showRequests ? '#F0F000' : '#FFFFFF',
-                        },
-                        styles.pressableText,
-                    ]}
-                    onPress={() => setShowRequests(true)}
-                >
-                    <Text style={styles.pressableText}>Requests</Text>
-                </Pressable>
-                <Pressable
-                    style={({ pressed }) => [
-                        {
-                            backgroundColor: !showRequests ? '#F0F000' : '#FFFFFF',
-                            marginLeft: 40,
-                        },
-                        styles.pressableText,
-                    ]}
-                    onPress={() => setShowRequests(false)}
-                >
-                    <Text style={styles.pressableText}>Offers</Text>
-                </Pressable>
-            </View>
-            <Text style={styles.categoryText}>Categories</Text>
-            <View style={{ marginLeft: 20 }}>
-                <FlatList
-                    data={foods}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.name}
-                    horizontal
-                />
-            </View>
-            <TouchableOpacity testID="RequestFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
-                <Text style={styles.logOutBtn}>Add a Request</Text>
-            </TouchableOpacity>
-            <TouchableOpacity testID="OfferFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("OfferFormScreen")}>
-                <Text style={styles.logOutBtn}>Add an Offer</Text>
-            </TouchableOpacity>
-            {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
-            {!showRequests && <PostRenderer type={"o"} navigation={navigation} />}
+            {!loaded && <Text>Loading...</Text>}
+            {loaded &&
+                <>
+                    <View style={styles.landingPageText}>
+                        <Text style={styles.text}>Temporary Landing Page</Text>
+                        <Text>Good Morning {user ? user['username'] : "User"}</Text>
+                        {unreadMessageCount > 0 &&
+                            <Text>You have {unreadMessageCount} unread
+                                {unreadMessageCount > 1 ? ' messages' : ' message'}</Text>
+                        }
+                        {user &&
+                            <TouchableOpacity testID="ChatNav.Button" style={styles.logOutBtn} onPress={() => navigation.navigate('Conversations')}>
+                                <Text style={styles.logOutBtnText}>Chat</Text>
+                            </TouchableOpacity>}
+                        {user &&
+                            <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
+                                <Text style={styles.logOutBtnText}>Log Out</Text>
+                            </TouchableOpacity>}
+                        {user &&
+                            <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
+                                <Text style={styles.deleteBtnText}>Delete User</Text>
+                            </TouchableOpacity>}
+                    </View>
+                    <View style={styles.pressable}>
+                        <Pressable
+                            style={({ pressed }) => [
+                                {
+                                    backgroundColor: showRequests ? '#F0F000' : '#FFFFFF',
+                                },
+                                styles.pressableText,
+                            ]}
+                            onPress={() => setShowRequests(true)}
+                        >
+                            <Text style={styles.pressableText}>Requests</Text>
+                        </Pressable>
+                        <Pressable
+                            style={({ pressed }) => [
+                                {
+                                    backgroundColor: !showRequests ? '#F0F000' : '#FFFFFF',
+                                    marginLeft: 40,
+                                },
+                                styles.pressableText,
+                            ]}
+                            onPress={() => setShowRequests(false)}
+                        >
+                            <Text style={styles.pressableText}>Offers</Text>
+                        </Pressable>
+                    </View>
+                    <Text style={styles.categoryText}>Categories</Text>
+                    <View style={{ marginLeft: 20 }}>
+                        <FlatList
+                            data={foods}
+                            renderItem={renderItem}
+                            keyExtractor={(item) => item.name}
+                            horizontal
+                        />
+                    </View>
+                    <TouchableOpacity testID="RequestFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
+                        <Text style={styles.logOutBtn}>Add a Request</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity testID="OfferFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("OfferFormScreen")}>
+                        <Text style={styles.logOutBtn}>Add an Offer</Text>
+                    </TouchableOpacity>
+                </>
+            }
+            {showRequests && loaded && <PostRenderer type={"r"} navigation={navigation} />}
+            {!showRequests && loaded && <PostRenderer type={"o"} navigation={navigation} />}
         </View>
     )
 }
