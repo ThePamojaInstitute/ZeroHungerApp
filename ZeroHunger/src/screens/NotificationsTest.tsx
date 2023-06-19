@@ -10,22 +10,18 @@ import type { Notification } from 'expo-notifications';
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
-        shouldPlaySound: false,
+        shouldPlaySound: true,
         shouldSetBadge: false,
     }),
 });
 
-async function sendPushNotification(expoPushToken) {
-    console.log(expoPushToken);
-
+async function sendPushNotification(expoPushToken: string) {
     const message = {
         to: expoPushToken,
         sound: 'default',
+        title: "test push",
         body: 'And here is the body!',
     };
-
-    // console.log(JSON.stringify(message));
-
 
     const res = await fetch('https://exp.host/--/api/v2/push/send', {
         method: 'POST',
@@ -36,8 +32,6 @@ async function sendPushNotification(expoPushToken) {
         body: JSON.stringify(message),
     })
 
-    console.log(res.status);
-    // "id": "24a551a1-0ac2-45f7-a5c8-2933fb3d2f15"
 }
 
 export default function NotificationsTest() {
@@ -50,15 +44,12 @@ export default function NotificationsTest() {
     useEffect(() => {
 
         registerForPushNotificationsAsync().then(token => {
-            // console.log("called");
-            // console.log(token);
-
+            console.log(token);
             setExpoPushToken(token)
         });
 
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
             console.log(notification);
-
             setNotification(notification);
         });
 
@@ -66,11 +57,9 @@ export default function NotificationsTest() {
             console.log(response);
         });
 
-        // sendPushNotification(expoPushToken)
-
         return () => {
             Notifications.removeNotificationSubscription(notificationListener.current);
-            Notifications.removeNotificationSubscription(responseListener.current);
+            Notifications.removeNotificationSubscription(responseListener.current)
         };
     }, []);
 
@@ -126,15 +115,15 @@ async function registerForPushNotificationsAsync() {
             vibrationPattern: [0, 250, 250, 250],
             lightColor: '#FF231F7C',
         });
-        console.log(res.id);
 
+        console.log(`channel: ${res.id}`);
     }
 
-    if (Platform.OS === 'android' && parseInt(Device.osVersion) >= 13) {
-        token = (await Notifications.getExpoPushTokenAsync()).data;
-        // console.log(token);
-        return token
-    }
+    // if (Platform.OS === 'android' && parseInt(Device.osVersion) >= 13) {
+    //     token = (await Notifications.getExpoPushTokenAsync()).data;
+    //     // console.log(token);
+    //     return token
+    // }
 
     if (Device.isDevice) {
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -150,7 +139,6 @@ async function registerForPushNotificationsAsync() {
             return;
         }
         token = (await Notifications.getExpoPushTokenAsync()).data;
-        // console.log(token);
     } else {
         alert('Must use physical device for Push Notifications');
     }
