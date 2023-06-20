@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Dimensions } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
@@ -19,7 +19,7 @@ export const Conversations = ({ navigation }) => {
     useEffect(() => {
         const getConversations = async () => {
             try {
-                const res = await axiosInstance.get("http://127.0.0.1:8000/chat/conversations/", {
+                const res = await axiosInstance.get("chat/conversations/", {
                     headers: {
                         Authorization: `${accessToken}`
                     }
@@ -82,11 +82,14 @@ export const Conversations = ({ navigation }) => {
     return (
         <View>
             {!user && <Button onPress={() => { navigation.navigate('LoginScreen') }}>Login</Button>}
-            <FlashList
-                data={conversations}
-                renderItem={renderItem}
-                testID="conversationsList"
-            />
+            <View style={{ height: Dimensions.get("screen").height - 350, width: Dimensions.get("screen").width }}>
+                <FlashList
+                    data={conversations}
+                    renderItem={renderItem}
+                    testID="conversationsList"
+                    estimatedItemSize={100}
+                />
+            </View>
             <View style={{ marginTop: 20 }}>
                 <Text>Create Chat with:</Text>
                 <TextInput

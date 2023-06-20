@@ -55,7 +55,7 @@ export const Chat = ({ navigation, route }) => {
         } else console.log("end!!");
     }
 
-    const { readyState, sendJsonMessage } = useWebSocket(user ? `ws://127.0.0.1:8000/chats/${conversationName}/` : null, {
+    const { readyState, sendJsonMessage } = useWebSocket(user ? `ws://zh-backend-azure-webapp.azurewebsites.net/chats/${conversationName}/` : null, {
         queryParams: {
             token: user ? accessToken : ""
         },
