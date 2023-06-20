@@ -14,6 +14,7 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
+    expo_push_token = models.CharField(max_length=50, default="", blank=True)
 
     REQUIRED_FIELDS = ["email"]
 
@@ -21,6 +22,12 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.get_username()
+    
+    def get_expo_push_token(self):
+        return self.expo_push_token
+    
+    def set_expo_push_token(self, token):
+        self.expo_push_token = token
     
     def has_perm(self, perm, obj=None):
         return self.is_superuser
