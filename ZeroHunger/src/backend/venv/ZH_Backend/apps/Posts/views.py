@@ -70,9 +70,13 @@ class requestPostsForFeed(APIView):
         for post in data:
             try:
                 user_id = post['fields']['postedBy'] 
-                user = BasicUser.objects.get(pk=user_id)
-                post.update({'username': user.username})
-            except:
-                return Response("Error while adding usernames", 500)
+                try:   
+                    user = BasicUser.objects.get(pk=user_id)
+                    post.update({'username': user.username})
+                except:
+                    data.remove(post)
+                    pass   
+            except Exception as err:
+                return Response(err.__str__(), 500)
         
         return Response(json.dumps(data), status=201)
