@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, GestureResponderEvent, NativeSyntheticEvent, TextInputSubmitEditingEventData, Keyboard } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { createUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
@@ -29,8 +30,14 @@ export const CreateAccountScreen = ({ navigation }) => {
   const password_input = useRef<TextInput | null>(null)
   const confPassword_input = useRef<TextInput | null>(null)
 
-  const { loading, dispatch } = useContext(AuthContext)
+  const { user, loading, dispatch } = useContext(AuthContext)
   const { dispatch: alert } = useAlert()
+
+  useFocusEffect(() => {
+    if (user) {
+      navigation.navigate('HomeScreen')
+    }
+  })
 
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")

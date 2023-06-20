@@ -12,6 +12,7 @@ import {
   Pressable,
   Keyboard
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
@@ -25,7 +26,7 @@ import {
   PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
 import { Ionicons } from '@expo/vector-icons';
-
+import NotificationsTest from "./NotificationsTest";
 
 export const LoginScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false)
@@ -43,6 +44,12 @@ export const LoginScreen = ({ navigation }) => {
 
   const { user, loading, dispatch } = useContext(AuthContext)
   const { dispatch: alert } = useAlert()
+
+  useFocusEffect(() => {
+    if (user) {
+      navigation.navigate('HomeScreen')
+    }
+  })
 
   useEffect(() => {
     if (user) {
@@ -88,7 +95,7 @@ export const LoginScreen = ({ navigation }) => {
         }).then(() => {
           setUsername("")
           setPassword("")
-          alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
+          // alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
           navigation.navigate('HomeScreen')
         })
       } else if (res.msg === "failure") {
@@ -136,7 +143,7 @@ export const LoginScreen = ({ navigation }) => {
               { borderColor: `${(errField === 'username') ? Colors.alert2 : Colors.midLight}` }]}
               onChangeText={setUsername}
               onChange={() => {
-                if (errField === 'email' || errField === 'general') {
+                if (errField === 'username' || errField === 'general') {
                   setErrField('')
                 }
               }}
@@ -198,9 +205,13 @@ export const LoginScreen = ({ navigation }) => {
           }}>
             <Text style={globalStyles.outlineBtnLabel}>Sign Up</Text>
           </TouchableOpacity>
-          <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
+          {/* <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add a Request</Text>
           </TouchableOpacity>
+          <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("OfferFormScreen")}>
+            <Text style={globalStyles.secondaryBtnLabel}>Add an Offer</Text>
+          </TouchableOpacity> */}
+          {/* <NotificationsTest /> */}
         </>
       }
       {/* <Button
