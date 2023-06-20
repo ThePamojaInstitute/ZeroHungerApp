@@ -7,7 +7,7 @@ RUN curl -fsSL https://get.docker.com -o get-docker.sh
 RUN chmod +x get-docker.sh
 RUN sh get-docker.sh
 COPY . .
-EXPOSE 8000
+EXPOSE 8001
 
 
-CMD ["python","manage.py","runserver","0.0.0.0:8000"]
+CMD ["python","manage.py","runserver","0.0.0.0:8001"]
