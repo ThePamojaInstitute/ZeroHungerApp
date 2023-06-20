@@ -19,7 +19,6 @@ from azure.keyvault.secrets import SecretClient
 VAULT_URL = os.environ["VAULT_URL"]
 envcredential = EnvironmentCredential()
 client = SecretClient(vault_url=VAULT_URL, credential=envcredential)
-print(VAULT_URL)
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,10 +37,7 @@ SECRET_KEY = django_key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost',
-                 '10.0.0.238', 'http://127.0.0.1:8000/',
-                 'zh-backend-azure-webapp.azurewebsites.net',
-                 '20.48.202.167']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
