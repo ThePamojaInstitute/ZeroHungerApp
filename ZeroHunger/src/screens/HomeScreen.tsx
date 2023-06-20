@@ -6,8 +6,10 @@ import {
     TouchableOpacity,
     Pressable,
     FlatList,
-    GestureResponderEvent
+    GestureResponderEvent,
+    ScrollView
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../context/AuthContext";
 import { deleteUser, logOutUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
@@ -71,6 +73,15 @@ export const HomeScreen = ({ navigation }) => {
     const [showRequests, setShowRequests] = useState(true)
     // const [showOffers, setShowOffers] = useState(true)
 
+    // on navigation change
+    useFocusEffect(() => {
+        if (!user) {
+            navigation.navigate('LoginScreen')
+        }
+        setChatIsOpen(false)
+    })
+
+    // on mount
     useEffect(() => {
         if (!user) {
             navigation.navigate('LoginScreen')

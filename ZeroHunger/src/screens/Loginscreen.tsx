@@ -12,6 +12,7 @@ import {
   Pressable,
   Keyboard
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
@@ -43,6 +44,12 @@ export const LoginScreen = ({ navigation }) => {
 
   const { user, loading, dispatch } = useContext(AuthContext)
   const { dispatch: alert } = useAlert()
+
+  useFocusEffect(() => {
+    if (user) {
+      navigation.navigate('HomeScreen')
+    }
+  })
 
   useEffect(() => {
     if (user) {
@@ -204,7 +211,7 @@ export const LoginScreen = ({ navigation }) => {
           <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("OfferFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add an Offer</Text>
           </TouchableOpacity> */}
-          <NotificationsTest />
+          {/* <NotificationsTest /> */}
         </>
       }
       {/* <Button
