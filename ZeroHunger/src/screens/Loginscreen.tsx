@@ -62,6 +62,7 @@ export const LoginScreen = ({ navigation }) => {
   const [hidePass, setHidePass] = useState(true)
   const [errMsg, setErrMsg] = useState("")
   const [errField, setErrField] = useState("")
+  const [expoPushToken, setExpoPushToken] = useState("");
 
   const handleErrorMessage = (error: string) => {
     if (error.toLowerCase() === "invalid credentials") {
@@ -83,7 +84,7 @@ export const LoginScreen = ({ navigation }) => {
     e.preventDefault()
     Keyboard.dismiss()
     dispatch({ type: "LOGIN_START", payload: null })
-    logInUser({ "username": username, "password": password }).then(async res => {
+    logInUser({ "username": username, "password": password, "expo_push_token": expoPushToken }).then(async res => {
       if (res.msg === "success") {
         await axiosInstance.post("users/token/", { "username": username, "password": password }).then(resp => {
           dispatch({
@@ -211,7 +212,7 @@ export const LoginScreen = ({ navigation }) => {
           <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("OfferFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add an Offer</Text>
           </TouchableOpacity> */}
-          {/* <NotificationsTest /> */}
+          <NotificationsTest setExpoToken={setExpoPushToken} />
         </>
       }
       {/* <Button

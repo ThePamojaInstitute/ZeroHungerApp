@@ -73,6 +73,14 @@ class logIn(APIView):
          
         serializer = LoginSerializer(data=request.data)
         if (serializer.is_valid()):
+            try:
+                user = BasicUser.objects.get(username=request.data['username'])
+                user.set_expo_push_token(request.data['expo_push_token'])
+                user.save()
+            except Exception as e:
+                print(e)
+                pass
+            print(user.get_expo_push_token())
             return serializer.logIn()
         else:
             return Response({"Error logging in", 401})
@@ -81,8 +89,19 @@ class logOut(APIView):
     def post(self,request, format=None):
         try:
                refresh_token = request.data["refresh_token"]
+               
+               try:  
+                    decoded_user = jwt.decode(refresh_token, settings.SECRET_KEY)
+                    user = BasicUser.objects.get(pk=decoded_user['user_id'])
+                    user.set_expo_push_token("")
+                    user.save()
+               except Exception as e:
+                   print(e)
+                   pass
+
                token = RefreshToken(refresh_token)
                token.blacklist()
                return Response(status=205)
         except Exception as e:
+           print(e)
            return Response(status=400)

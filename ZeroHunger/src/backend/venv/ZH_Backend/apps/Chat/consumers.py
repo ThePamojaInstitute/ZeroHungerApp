@@ -3,8 +3,10 @@ from asgiref.sync import async_to_sync
 from .models import Conversation, Message
 from apps.Chat.serializers import MessageSerializer
 from apps.Users.models import BasicUser
+from collections import defaultdict
 from uuid import UUID
 import json
+import requests
 
 
 class UUIDEncoder(json.JSONEncoder):
@@ -16,6 +18,7 @@ class UUIDEncoder(json.JSONEncoder):
 
 class ChatConsumer(JsonWebsocketConsumer):
     # This consumer is used to show user's online status, and send notifications.
+    room_connection_counts = defaultdict(lambda: 0)
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -30,6 +33,7 @@ class ChatConsumer(JsonWebsocketConsumer):
         
         self.accept()
         self.conversation_name = f"{self.scope['url_route']['kwargs']['conversation_name']}"
+        self.room_connection_counts[self.conversation_name] += 1
         self.conversation, created = Conversation.objects.get_or_create(name=self.conversation_name)
 
         async_to_sync(self.channel_layer.group_add)(
@@ -44,6 +48,7 @@ class ChatConsumer(JsonWebsocketConsumer):
         })
 
     def disconnect(self, code):
+        self.room_connection_counts[self.conversation_name] -= 1
         print("Websocket disconnected!")
         return super().disconnect(code)
 
@@ -72,6 +77,16 @@ class ChatConsumer(JsonWebsocketConsumer):
             )
 
             notification_group_name = self.get_receiver().username + "__notifications"
+
+            if(self.room_connection_counts[self.conversation_name] <= 1):
+                receiver = BasicUser.objects.get(username=self.get_receiver().username)
+                push_message = {
+                    'to': receiver.get_expo_push_token(),
+                    'sound': 'default',
+                    'title': f"New Message From {self.user['username']}",
+                    'body': MessageSerializer(message).data['content'],
+                }
+                requests.post('https://exp.host/--/api/v2/push/send', json=push_message)
 
             async_to_sync(self.channel_layer.group_send)(
                 notification_group_name,
