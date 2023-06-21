@@ -73,6 +73,17 @@ class ChatConsumer(JsonWebsocketConsumer):
 
             notification_group_name = self.get_receiver().username + "__notifications"
 
+            if(self.room_connection_counts[self.conversation_name] <= 1):
+                receiver = BasicUser.objects.get(username=self.get_receiver().username)
+                push_message = {
+                    'to': receiver.get_expo_push_token(),
+                    'sound': 'default',
+                    'title': f"New Message From {self.user['username']}",
+                    'body': MessageSerializer(message).data['content'],
+                }
+                res = requests.post('https://exp.host/--/api/v2/push/send', json=push_message)
+                print(res)
+
             async_to_sync(self.channel_layer.group_send)(
                 notification_group_name,
                 {

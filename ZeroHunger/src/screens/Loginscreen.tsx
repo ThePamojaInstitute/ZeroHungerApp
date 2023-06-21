@@ -83,7 +83,7 @@ export const LoginScreen = ({ navigation }) => {
     e.preventDefault()
     Keyboard.dismiss()
     dispatch({ type: "LOGIN_START", payload: null })
-    logInUser({ "username": username, "password": password }).then(async res => {
+    logInUser({ "username": username, "password": password, "expo_push_token": 'ExponentPushToken[MjkammOqHjv1AmvAYEP4A_]' }).then(async res => {
       if (res.msg === "success") {
         await axiosInstance.post("users/token/", { "username": username, "password": password }).then(resp => {
           dispatch({
