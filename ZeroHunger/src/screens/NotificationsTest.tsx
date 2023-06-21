@@ -34,7 +34,7 @@ async function sendPushNotification(expoPushToken: string) {
 
 }
 
-export default function NotificationsTest() {
+export default function NotificationsTest({ setExpoToken }) {
     const [expoPushToken, setExpoPushToken] = useState('');
     const [notification, setNotification] = useState<Notification>();
     const notificationListener = useRef<Subscription>();
@@ -45,6 +45,7 @@ export default function NotificationsTest() {
 
         registerForPushNotificationsAsync().then(token => {
             console.log(token);
+            setExpoToken(token)
             setExpoPushToken(token)
         });
 

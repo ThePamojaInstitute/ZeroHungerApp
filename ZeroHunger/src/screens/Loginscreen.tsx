@@ -62,6 +62,7 @@ export const LoginScreen = ({ navigation }) => {
   const [hidePass, setHidePass] = useState(true)
   const [errMsg, setErrMsg] = useState("")
   const [errField, setErrField] = useState("")
+  const [expoPushToken, setExpoPushToken] = useState("");
 
   const handleErrorMessage = (error: string) => {
     if (error.toLowerCase() === "invalid credentials") {
@@ -113,11 +114,11 @@ export const LoginScreen = ({ navigation }) => {
   }
 
   const handlePasswordRecovery = () => {
-    Linking.canOpenURL("http://127.0.0.1:8000/users/reset_password/").then(supported => {
+    Linking.canOpenURL("zh-backend-azure-webapp.azurewebsites.net/users/reset_password/").then(supported => {
       if (supported) {
-        Linking.openURL("http://127.0.0.1:8000/users/reset_password/");
+        Linking.openURL("zh-backend-azure-webapp.azurewebsites.net/users/reset_password/");
       } else {
-        console.log("Cannot open URL: " + "http://127.0.0.1:8000/users/password-reset/");
+        console.log("Cannot open URL: " + "zh-backend-azure-webapp.azurewebsites.net/users/password-reset/");
       }
     })  //replace this with actual URL later
   }
@@ -211,7 +212,7 @@ export const LoginScreen = ({ navigation }) => {
           <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("OfferFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add an Offer</Text>
           </TouchableOpacity> */}
-          {/* <NotificationsTest /> */}
+          <NotificationsTest setExpoToken={setExpoPushToken} />
         </>
       }
       {/* <Button

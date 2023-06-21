@@ -3,8 +3,10 @@ from asgiref.sync import async_to_sync
 from .models import Conversation, Message
 from apps.Chat.serializers import MessageSerializer
 from apps.Users.models import BasicUser
+from collections import defaultdict
 from uuid import UUID
 import json
+import requests
 
 
 class UUIDEncoder(json.JSONEncoder):
@@ -16,6 +18,7 @@ class UUIDEncoder(json.JSONEncoder):
 
 class ChatConsumer(JsonWebsocketConsumer):
     # This consumer is used to show user's online status, and send notifications.
+    room_connection_counts = defaultdict(lambda: 0)
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -30,6 +33,7 @@ class ChatConsumer(JsonWebsocketConsumer):
         
         self.accept()
         self.conversation_name = f"{self.scope['url_route']['kwargs']['conversation_name']}"
+        self.room_connection_counts[self.conversation_name] += 1
         self.conversation, created = Conversation.objects.get_or_create(name=self.conversation_name)
 
         async_to_sync(self.channel_layer.group_add)(
@@ -44,6 +48,7 @@ class ChatConsumer(JsonWebsocketConsumer):
         })
 
     def disconnect(self, code):
+        self.room_connection_counts[self.conversation_name] -= 1
         print("Websocket disconnected!")
         return super().disconnect(code)
 

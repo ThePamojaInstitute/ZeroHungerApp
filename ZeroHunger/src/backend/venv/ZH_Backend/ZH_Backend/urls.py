@@ -22,12 +22,16 @@ from django.contrib.auth.views import ( #default django password reset views, pr
     PasswordResetCompleteView
 )
 from django.contrib.auth import views as auth_views
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework_simplejwt import views as jwt_views
+
+from django.views.static import serve
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls), 
     path('users/', include('apps.Users.urls')),
     path('posts/', include('apps.Posts.urls')),
     path('chat/', include('apps.Chat.urls')),
+    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT})
 ]
