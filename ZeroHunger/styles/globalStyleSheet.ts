@@ -170,5 +170,35 @@ export const globalStyles = StyleSheet.create({
         fontSize: 13,
         color: Colors.alert2,
         alignSelf: 'flex-start',
-    }
+    },
+    H1: {
+        fontFamily: 'PublicSans_600SemiBold',
+        fontSize: 28,
+        color: Colors.dark
+    },
+    H2: {
+        fontFamily: 'PublicSans600_SemiBold',
+        fontSize: 22,
+        color: Colors.dark
+    },
+    H3: {
+        fontFamily: 'PublicSans_600SemiBold',
+        fontSize: 20,
+        color: Colors.dark
+    },
+    H4: {
+        fontFamily: 'PublicSans_600SemiBold',
+        fontSize: 28,
+        color: Colors.dark
+    },
+    H5: {
+        fontFamily: 'PublicSans_600Medium',
+        fontSize: 15,
+        color: Colors.dark
+    },
+    Body: {
+        fontFamily: 'PublicSans_600Regular',
+        fontSize:16,
+        color: Colors.dark
+    },
 })
