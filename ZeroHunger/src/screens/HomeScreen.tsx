@@ -13,39 +13,9 @@ import { deleteUser, logOutUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import PostRenderer from "../components/PostRenderer";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import FoodCategories from "../components/FoodCategories";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet"
 
-//Flatlist data
-const Item = ({ name }) => {
-    return (
-        <View style={styles.item}>
-            <TouchableOpacity>
-                <Text style={{ textAlign: 'center' }}>{name}</Text>
-            </TouchableOpacity>
-        </View>
-    );
-}
-
-//Food categories placeholder
-const foods = [
-    { name: 'Food1' },
-    { name: 'Food2' },
-    { name: 'Food3' },
-    { name: 'Food4' },
-    { name: 'Food5' },
-    { name: 'Food6' },
-    { name: 'Food7' },
-    { name: 'Food8' },
-    { name: 'Food9' },
-    { name: 'Food10' },
-]
-
-//Render flatlist items
-const renderItem = ({ item }) => (
-    <Item name={item.name} />
-);
-
-//Temporary landing page screen to test tokens
 export const HomeScreen = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext)
     const { unreadMessageCount, chatIsOpen, setChatIsOpen } = useContext(NotificationContext);
@@ -98,14 +68,10 @@ export const HomeScreen = ({ navigation }) => {
             }
         })
     }
-
-    const handleScrollFeed = () => {
-        // console.log("test")
-    }
-
+    
     return (
         <View style={styles.container}>
-            <View style={styles.landingPageText}>
+            {/* <View style={styles.landingPageText}>
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
                 {unreadMessageCount > 0 &&
@@ -124,40 +90,48 @@ export const HomeScreen = ({ navigation }) => {
                     <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
                         <Text style={styles.deleteBtnText}>Delete User</Text>
                     </TouchableOpacity>}
+            </View> */}
+            <View style={{flexDirection: 'row', marginTop: 8, marginRight: 16, marginBottom: 4, marginLeft: 16 }}>
+                <View style={[
+                    {
+                        borderBottomColor: showRequests ? 'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                    },
+                    styles.pressable
+                ]}>
+                    <Pressable
+                        style={({ pressed }) => [
+                            {
+                                // backgroundColor: showRequests ? '#F0F000' : '#FFFFFF',
+                            },
+                            styles.pressableText,
+                        ]}
+                        onPress={() => setShowRequests(true)}
+                    >
+                        <Text style={globalStyles.H3}>Requests</Text>
+                    </Pressable>
+                </View>
+                <View style={[
+                    {
+                        borderBottomColor: !showRequests ? 'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                    },
+                    styles.pressable
+                ]}>
+                    <Pressable
+                        style={({ pressed }) => [
+                            {
+                                // backgroundColor: !showRequests ? '#F0F000' : '#FFFFFF',
+                                // marginLeft: 24,
+                            },
+                            styles.pressableText,
+                        ]}
+                        onPress={() => setShowRequests(false)}
+                    >
+                        <Text style={globalStyles.H3}>Offers</Text>
+                    </Pressable>
+                </View>
             </View>
-            <View style={styles.pressable}>
-                <Pressable
-                    style={({ pressed }) => [
-                        {
-                            backgroundColor: showRequests ? '#F0F000' : '#FFFFFF',
-                        },
-                        styles.pressableText,
-                    ]}
-                    onPress={() => setShowRequests(true)}
-                >
-                    <Text style={styles.pressableText}>Requests</Text>
-                </Pressable>
-                <Pressable
-                    style={({ pressed }) => [
-                        {
-                            backgroundColor: !showRequests ? '#F0F000' : '#FFFFFF',
-                            marginLeft: 40,
-                        },
-                        styles.pressableText,
-                    ]}
-                    onPress={() => setShowRequests(false)}
-                >
-                    <Text style={styles.pressableText}>Offers</Text>
-                </Pressable>
-            </View>
-            <Text style={styles.categoryText}>Categories</Text>
-            <View style={{ marginLeft: 20 }}>
-                <FlatList
-                    data={foods}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.name}
-                    horizontal
-                />
+            <View style={{marginTop: 8, marginRight: 16, marginBottom: 4, marginLeft: 16}}>
+                <FoodCategories />
             </View>
             <TouchableOpacity testID="RequestFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
                 <Text style={styles.logOutBtn}>Add a Request</Text>
@@ -165,6 +139,14 @@ export const HomeScreen = ({ navigation }) => {
             <TouchableOpacity testID="OfferFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("OfferFormScreen")}>
                 <Text style={styles.logOutBtn}>Add an Offer</Text>
             </TouchableOpacity>
+            {user &&
+                    <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
+                        <Text style={styles.logOutBtnText}>Log Out</Text>
+                    </TouchableOpacity>}
+            {user &&
+                <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
+                    <Text style={styles.deleteBtnText}>Delete User</Text>
+                </TouchableOpacity>}
             {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
             {!showRequests && <PostRenderer type={"o"} navigation={navigation} />}
         </View>
@@ -176,6 +158,7 @@ export default HomeScreen
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: Colors.offWhite,
         // alignItems: 'center',
         // justifyContext: 'center',
     },
@@ -222,8 +205,10 @@ const styles = StyleSheet.create({
     },
     pressable: {
         flexDirection: 'row',
-        marginLeft: 25,
+        marginLeft: 4,
         marginRight: 25,
+        borderBottomWidth: 4,
+        // borderBottomColor: 'rgba(48, 103, 117, 0)',
     },
     pressableText: {
         fontSize: 30,
