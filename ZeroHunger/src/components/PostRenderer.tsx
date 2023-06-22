@@ -28,6 +28,7 @@ export const PostRenderer = ({ type, navigation }) => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
 
+
     const { dispatch: alert } = useAlert()
     const { user, accessToken } = useContext(AuthContext);
 
