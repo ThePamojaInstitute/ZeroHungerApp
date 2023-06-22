@@ -7,8 +7,26 @@ import { FlashList } from "@shopify/flash-list";
 import { Button } from "react-native-paper";
 import { deletePost } from "../controllers/post";
 import { useFocusEffect } from "@react-navigation/native";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import {
+    useFonts,
+    PublicSans_600SemiBold,
+    PublicSans_500Medium,
+    PublicSans_400Regular
+} from '@expo-google-fonts/public-sans';
 
 export const PostRenderer = ({ type, navigation }) => {
+    const [loaded, setLoaded] = useState(false)
+    let [fontsLoaded] = useFonts({
+        PublicSans_400Regular,
+        PublicSans_500Medium,
+        PublicSans_600SemiBold
+    })
+
+    useEffect(() => {
+        setLoaded(fontsLoaded)
+    }, [fontsLoaded])
+    
     const { dispatch: alert } = useAlert()
     const { user, accessToken } = useContext(AuthContext);
 
@@ -149,11 +167,11 @@ export const PostRenderer = ({ type, navigation }) => {
                     }}
                 />
                 <View style={styles.subContainer}>
-                    <Text style={styles.titleText}>{title}</Text>
-                    <View style={{ padding: 0 }}>
+                    <Text style={globalStyles.H4}>{title}</Text>
+                    <View style={{ marginTop: 16 }}>
                         {/* Placeholder profile picture
                         <Image source={{uri: }}> */}
-                        <Text style={{ marginTop: 8 }}>{username}</Text>
+                        <Text style= {globalStyles.Small1}>{username}</Text>
                     </View>
                     {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                 </View>
@@ -184,7 +202,7 @@ export const PostRenderer = ({ type, navigation }) => {
     }
 
     return (
-        <View style={{ backgroundColor: '#F3F3F3', height: "80%" }}>
+        <View style={{ backgroundColor: Colors.Background, height: "80%" }}>
             {/* Temporary refresh button for web */}
             <TouchableOpacity onPress={loadPosts}>
                 <Text style={[styles.refreshBtnText]}>Refresh</Text>
@@ -215,16 +233,27 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         // marginBottom: 100,
-        padding: 10,
+        // padding: 10,
         flexDirection: 'row',
+        marginTop: 8,
+        marginBottom: 0,
+        marginLeft: 8, 
+        marginRight: 0,
+        borderRadius: 5,
+        overflow: 'hidden',
+        color: Colors.offWhite,
     },
     subContainer: {
         flex: 1,
-        padding: 10,
+        marginTop: 4,
+        marginBottom: 8,
+        marginLeft: 4, 
+        marginRight: 8,
+        color: Colors.offWhite,
     },
     image: {
-        width: 100,
-        height: 100,
+        width: 105,
+        height: 105,
         marginRight: 15,
     },
     titleText: {

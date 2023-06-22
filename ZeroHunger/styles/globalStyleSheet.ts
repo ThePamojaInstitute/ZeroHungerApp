@@ -188,7 +188,7 @@ export const globalStyles = StyleSheet.create({
     },
     H4: {
         fontFamily: 'PublicSans_600SemiBold',
-        fontSize: 28,
+        fontSize: 18,
         color: Colors.dark
     },
     H5: {
@@ -201,4 +201,9 @@ export const globalStyles = StyleSheet.create({
         fontSize:16,
         color: Colors.dark
     },
+    Small1: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 13,
+        color: Colors.dark
+    }
 })
