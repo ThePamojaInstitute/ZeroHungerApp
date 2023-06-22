@@ -23,6 +23,7 @@ import { NotificationContextProvider } from './src/context/ChatNotificationConte
 import { Colors } from './styles/globalStyleSheet';
 import { Ionicons } from '@expo/vector-icons'
 import BottomTab from './src/components/BottomTab';
+import DrawerTab from './src/components/DrawerTab';
 
 const Stack = createNativeStackNavigator();
 
@@ -103,14 +104,16 @@ export default function App() {
                     }}
                   /> */}
 
-                  <Stack.Screen
-                    name="Home"
+                  {/* <Stack.Screen
+                    name="BottomTab"
                     component={BottomTab}
                     options={{headerShown: false}}
+                  /> */}
+                  <Stack.Screen
+                    name="ZeroHunger"
+                    component={DrawerTab}
+                    options={{headerShown: false}}
                   />
-                  {/* <Drawer.Navigator>
-                    <Drawer.Screen name='test' component={LoginScreen}/>
-                  </Drawer.Navigator> */}
 
                 </Stack.Navigator>
                 <SnackBar />
