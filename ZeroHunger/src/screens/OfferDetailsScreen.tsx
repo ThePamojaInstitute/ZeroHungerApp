@@ -3,6 +3,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { useAlert } from "../context/Alert";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { ScrollView } from "react-native-gesture-handler";
 
 export const RequestDetailsScreen = () => {
     let route: RouteProp<{
@@ -26,7 +27,7 @@ export const RequestDetailsScreen = () => {
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }}>
             <Text style={styles.titleText}>{route.params.title}</Text>
             <Image
                 style={styles.image}
@@ -59,7 +60,7 @@ export const RequestDetailsScreen = () => {
                     </TouchableOpacity>
                 </>
             }
-        </View>
+        </ScrollView>
     )
 }
 

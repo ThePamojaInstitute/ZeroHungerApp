@@ -27,7 +27,7 @@ export const PostRenderer = ({ type, navigation }) => {
     useEffect(() => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
-    
+
     const { dispatch: alert } = useAlert()
     const { user, accessToken } = useContext(AuthContext);
 
@@ -36,10 +36,40 @@ export const PostRenderer = ({ type, navigation }) => {
     const [array, setArray] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [endReached, setEndReached] = useState(false)
+    const [requestsLength, setRequestsLength] = useState(0)
+    const [offersLength, setOffersLength] = useState(0)
+
+    const fetchLengths = async () => {
+        const res = await axiosInstance.get("posts/requestPostsForFeed")
+        setRequestsLength(res.data["r"])
+        setOffersLength(res.data["o"])
+    }
+
+    useEffect(() => {
+        fetchLengths()
+    }, [])
+
+    useEffect(() => {
+        if (type === "r" && postIndex > requestsLength) {
+            setPostIndex(requestsLength)
+        } else if (type === "o" && postIndex > offersLength) {
+            setPostIndex(offersLength)
+        }
+    }, [postIndex])
+
+    useEffect(() => {
+        if (type === "r" && postIndex > requestsLength) {
+            setPostIndex(requestsLength)
+        } else if (type === "o" && postIndex > offersLength) {
+            setPostIndex(offersLength)
+        }
+    }, [requestsLength, offersLength])
 
     const loadNumPosts = 5 //Change if number of posts to load changes
 
     const loadPosts = async () => {
+        if ((requestsLength <= array.length) && requestsLength != 0) return
+
         const json = JSON.stringify({ postIndex: postIndex, postType: type })
         await axiosInstance.post("posts/requestPostsForFeed", json, {
         }).then((res) => {
@@ -54,7 +84,6 @@ export const PostRenderer = ({ type, navigation }) => {
                 // alert!({ type: 'open', message: 'All posts displayed', alertType: 'info' })
             }
             else {
-
                 setIsLoading(true)
                 try {
                     setPostIndex(postIndex + loadNumPosts)
@@ -90,20 +119,24 @@ export const PostRenderer = ({ type, navigation }) => {
     }
 
     useEffect(() => {
-        console.log(postIndex);
-
-        if (array.length > postIndex) {
-            setArray(array.slice(0, -1))
-        } else if (array.length < postIndex) {
-            setPostIndex(array.length + 1)
+        if (type === "r" && (requestsLength <= array.length) && requestsLength != 0) {
+            array.pop()
+        } else if (type === "o" && (offersLength <= array.length) && offersLength != 0) {
+            array.pop()
         }
-    }, [array, postIndex])
+    }, [array])
 
     useFocusEffect(() => {
-        console.log("change");
-        if (endReached) loadPosts()
+        fetchLengths()
     })
 
+    useEffect(() => {
+        if (type === "r" && requestsLength > 0 && requestsLength != postIndex && endReached) {
+            loadPosts()
+        } else if (type === "o" && offersLength > 0 && offersLength != postIndex && endReached) {
+            loadPosts()
+        }
+    }, [requestsLength, offersLength])
 
     const handleDelete = (postId: Number) => {
         deletePost(type, postId, accessToken).then(res => {
@@ -168,20 +201,20 @@ export const PostRenderer = ({ type, navigation }) => {
                     }}
                 />
                 <View style={styles.subContainer}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                         <Text style={globalStyles.H4}>{title}</Text>
-                        <TouchableOpacity style={{marginLeft: 'auto'}}>
-                            <Ionicons 
-                                name='ellipsis-horizontal' 
-                                style={styles.postEllipsis} 
+                        <TouchableOpacity style={{ marginLeft: 'auto' }}>
+                            <Ionicons
+                                name='ellipsis-horizontal'
+                                style={styles.postEllipsis}
                                 width={20}
                                 height={12} />
                         </TouchableOpacity>
                     </View>
                     <View style={{ marginTop: 16 }}>
-                        <Text style= {globalStyles.Small1}>{username}</Text>
+                        <Text style={globalStyles.Small1}>{username}</Text>
                         <View style={{ flexDirection: 'row', marginTop: 4 }}>
-                            <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }}/>
+                            <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                             {/* Placeholder distance away */}
                             <Text style={globalStyles.Small1}>{1} km away</Text>
                         </View>
@@ -193,11 +226,11 @@ export const PostRenderer = ({ type, navigation }) => {
                     {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                 </View>
                 {/* <View> */}
-                    {/* <TouchableOpacity>
+                {/* <TouchableOpacity>
                         <Ionicons name='ellipsis-horizontal' style={styles.postEllipsis} width={20} />
                     </TouchableOpacity> */}
-                    {/* <Text style={styles.postedOnText}>Posted On: {postedOn}</Text> */}
-                    {/* {user && user['username'] === username &&
+                {/* <Text style={styles.postedOnText}>Posted On: {postedOn}</Text> */}
+                {/* {user && user['username'] === username &&
                         <Button buttonColor="red"
                             mode="contained"
                             onPress={() => handleDelete(postId)}
@@ -208,6 +241,8 @@ export const PostRenderer = ({ type, navigation }) => {
     }
 
     const renderItem = ({ item }) => {
+        if (!item) return
+
         return (
             <Post
                 title={item.title}
@@ -257,7 +292,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginTop: 12,
         marginBottom: 0,
-        marginLeft: 12, 
+        marginLeft: 12,
         marginRight: 10,
         borderRadius: 5,
         overflow: 'hidden',
@@ -267,7 +302,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: 8,
         marginBottom: 0,
-        marginLeft: 0, 
+        marginLeft: 0,
         marginRight: 8,
         color: Colors.offWhite,
         // flexDirection: 'row',

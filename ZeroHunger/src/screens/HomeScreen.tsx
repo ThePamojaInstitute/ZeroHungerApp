@@ -34,7 +34,7 @@ export const HomeScreen = ({ navigation }) => {
     })
 
     useEffect(() => {
-        setLoaded(fontsLoaded)  
+        setLoaded(fontsLoaded)
     }, [fontsLoaded])
 
     const { user, accessToken, dispatch } = useContext(AuthContext)
@@ -97,9 +97,10 @@ export const HomeScreen = ({ navigation }) => {
             }
         })
     }
-    
+
     return (
         <View style={styles.container}>
+            {!loaded && <Text>Loading...</Text>}
             {/* <View style={styles.landingPageText}>
                 <Text style={styles.text}>Temporary Landing Page</Text>
                 <Text>Good Morning {user ? user['username'] : "User"}</Text>
@@ -120,66 +121,68 @@ export const HomeScreen = ({ navigation }) => {
                         <Text style={styles.deleteBtnText}>Delete User</Text>
                     </TouchableOpacity>}
             </View> */}
-            <View style={{flexDirection: 'row', marginTop: 8, marginRight: 16, marginBottom: 4, marginLeft: 16 }}>
-                <View style={[
-                    {
-                        borderBottomColor: showRequests ? 'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                    },
-                    styles.pressable
-                ]}>
-                    <Pressable
-                        style={({ pressed }) => [
+            {loaded &&
+                <>
+                    <View style={{ flexDirection: 'row', marginTop: 8, marginRight: 16, marginBottom: 4, marginLeft: 16 }}>
+                        <View style={[
                             {
-                                // backgroundColor: showRequests ? '#F0F000' : '#FFFFFF',
+                                borderBottomColor: showRequests ? 'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
                             },
-                            styles.pressableText,
-                        ]}
-                        onPress={() => setShowRequests(true)}
-                    >
-                        <Text style={globalStyles.H3}>Requests</Text>
-                    </Pressable>
-                </View>
-                <View style={[
-                    {
-                        borderBottomColor: !showRequests ? 'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                    },
-                    styles.pressable
-                ]}>
-                    <Pressable
-                        style={({ pressed }) => [
+                            styles.pressable
+                        ]}>
+                            <Pressable
+                                style={({ pressed }) => [
+                                    {
+                                        // backgroundColor: showRequests ? '#F0F000' : '#FFFFFF',
+                                    },
+                                    styles.pressableText,
+                                ]}
+                                onPress={() => setShowRequests(true)}
+                            >
+                                <Text style={globalStyles.H3}>Requests</Text>
+                            </Pressable>
+                        </View>
+                        <View style={[
                             {
-                                // backgroundColor: !showRequests ? '#F0F000' : '#FFFFFF',
-                                // marginLeft: 24,
+                                borderBottomColor: !showRequests ? 'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
                             },
-                            styles.pressableText,
-                        ]}
-                        onPress={() => setShowRequests(false)}
-                    >
-                        <Text style={globalStyles.H3}>Offers</Text>
-                    </Pressable>
-                </View>
-            </View>
-            <View style={{marginTop: 8, marginRight: 16, marginBottom: 4, marginLeft: 16}}>
-                <FoodCategories />
-            </View>
-            {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
-            {!showRequests && <PostRenderer type={"o"} navigation={navigation} />} 
-            <TouchableOpacity testID="RequestFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
-                <Text style={styles.logOutBtn}>Add a Request</Text>
-            </TouchableOpacity>
-            <TouchableOpacity testID="OfferFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("OfferFormScreen")}>
-                <Text style={styles.logOutBtn}>Add an Offer</Text>
-            </TouchableOpacity>
-            {user &&
-                    <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
-                        <Text style={styles.logOutBtnText}>Log Out</Text>
-                    </TouchableOpacity>}
-            {user &&
-                <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
-                    <Text style={styles.deleteBtnText}>Delete User</Text>
-                </TouchableOpacity>}
-            {/* {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
-            {!showRequests && <PostRenderer type={"o"} navigation={navigation} />} */}
+                            styles.pressable
+                        ]}>
+                            <Pressable
+                                style={({ pressed }) => [
+                                    {
+                                        // backgroundColor: !showRequests ? '#F0F000' : '#FFFFFF',
+                                        // marginLeft: 24,
+                                    },
+                                    styles.pressableText,
+                                ]}
+                                onPress={() => setShowRequests(false)}
+                            >
+                                <Text style={globalStyles.H3}>Offers</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                    <View style={{ marginTop: 8, marginRight: 16, marginBottom: 4, marginLeft: 16 }}>
+                        <FoodCategories />
+                    </View>
+                    {/* <TouchableOpacity testID="RequestFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
+                        <Text style={styles.logOutBtn}>Add a Request</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity testID="OfferFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("OfferFormScreen")}>
+                        <Text style={styles.logOutBtn}>Add an Offer</Text>
+                    </TouchableOpacity>
+                    {user &&
+                        <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
+                            <Text style={styles.logOutBtnText}>Log Out</Text>
+                        </TouchableOpacity>}
+                    {user &&
+                        <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
+                            <Text style={styles.deleteBtnText}>Delete User</Text>
+                        </TouchableOpacity>} */}
+                    {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
+                    {!showRequests && <PostRenderer type={"o"} navigation={navigation} />}
+                </>
+            }
         </View>
     )
 }

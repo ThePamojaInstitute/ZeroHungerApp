@@ -86,8 +86,13 @@ class ChatConsumer(JsonWebsocketConsumer):
                     'title': f"New Message From {self.user['username']}",
                     'body': MessageSerializer(message).data['content'],
                 }
-                res = requests.post('https://exp.host/--/api/v2/push/send', json=push_message)
-                print(res)
+
+                try:
+                    res = requests.post('https://exp.host/--/api/v2/push/send', json=push_message)
+                    print(res)
+                except Exception as e:
+                    print(e)
+
 
             async_to_sync(self.channel_layer.group_send)(
                 notification_group_name,

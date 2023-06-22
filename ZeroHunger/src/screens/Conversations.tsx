@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, Dimensions } from "react-native";
+import { View, Text, Dimensions, TouchableOpacity, StyleSheet, GestureResponderEvent } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
@@ -7,9 +7,11 @@ import { axiosInstance } from "../../config";
 import { ConversationModel } from "../models/Conversation";
 import { Button, TextInput } from 'react-native-paper';
 import { FlashList } from "@shopify/flash-list";
+import { Colors } from "../../styles/globalStyleSheet";
+import { logOutUser } from "../controllers/auth";
 
 export const Conversations = ({ navigation }) => {
-    const { user, accessToken } = useContext(AuthContext);
+    const { user, accessToken, dispatch } = useContext(AuthContext);
     const { unreadFromUsers } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
 
@@ -62,6 +64,18 @@ export const Conversations = ({ navigation }) => {
         navigateToChat(user['username'], createGroup)
     }
 
+
+    const handleLogOut = (e: GestureResponderEvent) => {
+        logOutUser().then(() => {
+            dispatch({ type: "LOGOUT", payload: null })
+        }).then(() => {
+            alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
+            navigation.navigate('LoginScreen')
+        }).catch(() => {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+        })
+    }
+
     const renderItem = ({ item }) => {
         const namesAlph = [user['username'], item.other_user.username].sort();
 
@@ -100,6 +114,9 @@ export const Conversations = ({ navigation }) => {
                     estimatedItemSize={100}
                 />
             </View>
+            <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
+                <Text style={styles.logOutBtnText}>Log Out</Text>
+            </TouchableOpacity>
             <View style={{ marginTop: 20 }}>
                 <Text>Create Chat with:</Text>
                 <TextInput
@@ -116,3 +133,89 @@ export const Conversations = ({ navigation }) => {
 }
 
 export default Conversations
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: Colors.offWhite,
+        // marginBottom: 100,
+        // position: 'absolute',
+        // width: '100%',
+        // height: '100%',
+        // bottom: 100,
+        // alignItems: 'center',
+        // justifyContext: 'center',
+    },
+    landingPageText: {
+        // flex: 1,
+        marginTop: 10,
+        marginLeft: 25,
+        marginBottom: 60,
+        // alignItems: 'center',
+        // justifyContent: 'center',
+    },
+    text: {
+        fontSize: 50,
+        fontWeight: 'bold',
+    },
+    logOutBtn: {
+        width: "7%",
+        borderRadius: 25,
+        marginTop: 10,
+        height: 50,
+        alignItems: "center",
+        backgroundColor: "#6A6A6A",
+    },
+    logOutBtnText: {
+        color: "#FFFFFF",
+        padding: 15,
+        marginLeft: 10,
+        fontSize: 15,
+    },
+    deleteBtn: {
+        title: "Login",
+        width: "8%",
+        borderRadius: 25,
+        marginTop: 10,
+        height: 50,
+        alignItems: "center",
+        backgroundColor: "red",
+    },
+    deleteBtnText: {
+        color: "#FFFFFF",
+        padding: 15,
+        marginLeft: 10,
+        fontSize: 15,
+    },
+    pressable: {
+        flexDirection: 'row',
+        marginLeft: 4,
+        marginRight: 25,
+        borderBottomWidth: 4,
+        // borderBottomColor: 'rgba(48, 103, 117, 0)',
+    },
+    pressableText: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        justifyContent: 'center',
+    },
+    categoryText: {
+        marginTop: 20,
+        marginLeft: 25,
+        fontSize: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    item: {
+        backgroundColor: '#FFFFFF',
+        padding: 10,
+        marginVertical: 15,
+        marginHorizontal: 4,
+        borderRadius: 10,
+    },
+    feed: {
+        fontSize: 30,
+        marginTop: 35,
+        marginLeft: 25,
+    },
+})
