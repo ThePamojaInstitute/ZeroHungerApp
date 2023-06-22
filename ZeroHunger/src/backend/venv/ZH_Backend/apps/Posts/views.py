@@ -60,9 +60,9 @@ class requestPostsForFeed(APIView):
         counter = int(data['postIndex'])
 
         if(request.data['postType'] == "r"):
-            obj = RequestPost.objects.all()[counter:][:2]
+            obj = RequestPost.objects.all()[counter:][:5]
         elif(request.data['postType'] == "o"):
-            obj = OfferPost.objects.all()[counter:][:2]
+            obj = OfferPost.objects.all()[counter:][:5]
         
         data = serializers.serialize('json', obj)
         data = json.loads(data)

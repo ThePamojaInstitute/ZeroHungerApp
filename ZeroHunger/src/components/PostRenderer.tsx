@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, FlatList } from "react-native";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
 import { Button } from "react-native-paper";
 import { deletePost } from "../controllers/post";
+import { useFocusEffect } from "@react-navigation/native";
 
 export const PostRenderer = ({ type, navigation }) => {
     const { dispatch: alert } = useAlert()
@@ -13,10 +14,11 @@ export const PostRenderer = ({ type, navigation }) => {
 
     const [noPosts, setNoPosts] = useState(false)
     const [postIndex, setPostIndex] = useState(0)
-    const [loadNumPosts, setLoadNumPosts] = useState(1) //Change if number of posts to load changes
     const [array, setArray] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [endReached, setEndReached] = useState(false)
+
+    const loadNumPosts = 5 //Change if number of posts to load changes
 
     const loadPosts = async () => {
         const json = JSON.stringify({ postIndex: postIndex, postType: type })
@@ -33,11 +35,13 @@ export const PostRenderer = ({ type, navigation }) => {
                 // alert!({ type: 'open', message: 'All posts displayed', alertType: 'info' })
             }
             else {
+
                 setIsLoading(true)
                 try {
                     setPostIndex(postIndex + loadNumPosts)
 
                     for (let i = 0; i < loadNumPosts; i++) {
+                        if (!JSON.parse(res.data)[i]) return
                         const data = JSON.parse(res.data)[i].fields
                         // post's primary key | id
                         const pk = JSON.parse(res.data)[i].pk
@@ -61,8 +65,26 @@ export const PostRenderer = ({ type, navigation }) => {
                     console.log("Fewer than " + loadNumPosts + " new posts")
                 }
             }
-        }).finally(() => setIsLoading(false))
+        }).finally(() => {
+            setIsLoading(false)
+        })
     }
+
+    useEffect(() => {
+        console.log(postIndex);
+
+        if (array.length > postIndex) {
+            setArray(array.slice(0, -1))
+        } else if (array.length < postIndex) {
+            setPostIndex(array.length + 1)
+        }
+    }, [array, postIndex])
+
+    useFocusEffect(() => {
+        console.log("change");
+        if (endReached) loadPosts()
+    })
+
 
     const handleDelete = (postId: Number) => {
         deletePost(type, postId, accessToken).then(res => {
@@ -177,9 +199,14 @@ export const PostRenderer = ({ type, navigation }) => {
                     showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false}
                     estimatedItemSize={125}
+                    keyExtractor={(item, index) => item.postId}
                 />}
             {!endReached && isLoading && <Text>Loading...</Text>}
-            {endReached && <Text style={{ fontSize: 20 }}>End Reached</Text>}
+            {endReached && (
+                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 20 }}>End Reached</Text>
+                </View>
+            )}
         </View>
     )
 }

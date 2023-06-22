@@ -34,6 +34,7 @@ export const OfferFormScreen = ({ navigation }) => {
     const [images, setImages] = useState("")
     const [desc, setDesc] = useState("")
     const [errMsg, setErrMsg] = useState("")
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         navigation.setOptions({
@@ -53,7 +54,7 @@ export const OfferFormScreen = ({ navigation }) => {
                 </TouchableOpacity>
             )
         })
-    }, [title, images, desc])
+    }, [title, images, desc, loading])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
@@ -61,8 +62,11 @@ export const OfferFormScreen = ({ navigation }) => {
             alert!({ type: 'open', message: 'You are not logged in!', alertType: 'error' })
             navigation.navigate('LoginScreen')
             return
+        } else if (loading) {
+            return
         }
 
+        setLoading(true)
         try {
             createPost({
                 postData: {
@@ -83,7 +87,7 @@ export const OfferFormScreen = ({ navigation }) => {
                     // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
                     setErrMsg(res.msg ? res.msg : 'An error occured!')
                 }
-            })
+            }).finally(() => setLoading(false))
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
         }
@@ -91,7 +95,7 @@ export const OfferFormScreen = ({ navigation }) => {
 
     return (
         <ScrollView style={styles.container}>
-            {!loaded && <Text>Loading...</Text>}
+            {(!loaded || loading) && <Text>Loading...</Text>}
             {loaded &&
                 <>
                     <View>

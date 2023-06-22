@@ -29,6 +29,9 @@ export const Chat = ({ navigation, route }) => {
     const [messageHistory, setMessageHistory] = React.useState<object[]>([]);
     const [start, setStart] = useState(30)
     const [end, setEnd] = useState(40)
+    const [empty, setEmpty] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [endReached, setEndReached] = useState(false)
 
     const namesAlph = [route.params.user1, route.params.user2].sort();
     const conversationName = `${namesAlph[0]}__${namesAlph[1]}`
@@ -46,6 +49,7 @@ export const Chat = ({ navigation, route }) => {
 
     const loadMessages = () => {
         if (end) {
+            setLoading(true)
             sendJsonMessage({
                 type: `render__${start}_${end}`,
                 name: user['username']
@@ -73,14 +77,25 @@ export const Chat = ({ navigation, route }) => {
                     sendJsonMessage({ type: "read_messages" });
                     break;
                 case "last_30_messages":
+                    if (data.messages.length === 0) {
+                        setEmpty(true)
+                    }
                     setMessageHistory(data.messages);
                     break
                 case "render_x_to_y_messages":
                     setMessageHistory([...messageHistory, ...data.messages]);
+                    setLoading(false)
                     break
                 case "limit_reached":
-                    setMessageHistory([...messageHistory, ...data.messages]);
-                    setEnd(0)
+                    setLoading(false)
+                    if (!empty && !endReached) {
+                        const endMessage = {
+                            id: "end"
+                        }
+                        setMessageHistory([...messageHistory, ...data.messages, endMessage]);
+                        setEnd(0)
+                        setEndReached(true)
+                    }
                     break
                 default:
                     console.error("Unknown message type!");
@@ -105,14 +120,28 @@ export const Chat = ({ navigation, route }) => {
         }
     }, [connectionStatus, sendJsonMessage]);
 
-    const renderItem = ({ item }) => (
-        <Message key={item.id} message={item}></Message>
-    );
+    useEffect(() => {
+        if (messageHistory.length > 0) setEmpty(false)
+    }, [messageHistory])
+
+    const renderItem = ({ item }) => {
+        if (item.id === "end") {
+            return (
+                <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 20 }}>End Reached</Text>
+                </View>
+            )
+        }
+        return <Message key={item.id} message={item}></Message>
+    }
+
 
     return (
         <View style={{ flex: 1 }}>
             {!user && <Button onPress={() => { navigation.navigate('LoginScreen') }}>Login</Button>}
             <Text>The WebSocket is currently {connectionStatus}</Text>
+            {((!empty && messageHistory.length === 0) || loading) && <Text style={{ fontSize: 20 }}>Loading...</Text>}
+            {empty && !loading && <Text style={{ fontSize: 20 }}>No Messages</Text>}
             <FlashList
                 renderItem={renderItem}
                 data={messageHistory}

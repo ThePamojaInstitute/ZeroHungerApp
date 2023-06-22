@@ -15,6 +15,7 @@ export const Conversations = ({ navigation }) => {
 
     const [conversations, setActiveConversations] = useState<ConversationModel[]>([]);
     const [createGroup, setCreateGroup] = useState("")
+    const [empty, setEmpty] = useState(false)
 
     useEffect(() => {
         const getConversations = async () => {
@@ -24,7 +25,11 @@ export const Conversations = ({ navigation }) => {
                         Authorization: `${accessToken}`
                     }
                 });
-                setActiveConversations(res.data);
+                if (res.data.length === 0) {
+                    setEmpty(true)
+                } else {
+                    setActiveConversations(res.data);
+                }
             } catch (error) {
                 alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
             }
@@ -32,6 +37,10 @@ export const Conversations = ({ navigation }) => {
         }
         getConversations();
     }, [user, unreadFromUsers]);
+
+    useEffect(() => {
+        if (conversations.length > 0) setEmpty(false)
+    }, [conversations])
 
     const formatMessageTimestamp = (timestamp?: string) => {
         if (!timestamp) return;
@@ -81,7 +90,8 @@ export const Conversations = ({ navigation }) => {
 
     return (
         <View>
-            {!user && <Button onPress={() => { navigation.navigate('LoginScreen') }}>Login</Button>}
+            {!empty && conversations.length === 0 && <Text style={{ fontSize: 20 }}>Loading...</Text>}
+            {empty && <Text style={{ fontSize: 20 }}>No Conversations</Text>}
             <View style={{ height: Dimensions.get("screen").height - 350, width: Dimensions.get("screen").width }}>
                 <FlashList
                     data={conversations}
