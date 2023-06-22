@@ -5,12 +5,13 @@ import { TouchableOpacity } from "react-native"
 import Feedscreen from './src/screens/FeedScreen';
 import LoginScreen from './src/screens/Loginscreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
-import HomeScreen from './src/screens/HomeScreen';
+import LandingPageScreen from './src/screens/HomeScreen';
 import RequestDetailsScreen from './src/screens/RequestDetailsScreen';
 import OfferDetailsScreen from './src/screens/OfferDetailsScreen';
 import { AuthContextProvider } from './src/context/AuthContext';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RequestFormScreen } from './src/screens/RequestFormScreen';
 import { OfferFormScreen } from './src/screens/OfferFormScreen';
 import { AlertProvider } from './src/context/Alert';
@@ -20,23 +21,11 @@ import { Chat } from './src/components/Chat';
 import { Conversations } from './src/screens/Conversations';
 import { NotificationContextProvider } from './src/context/ChatNotificationContext';
 import { Colors } from './styles/globalStyleSheet';
-
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-
-// export default function App() {
-//   return (
-//     <AuthContextProvider>
-//       <View style={styles.container}>
-//         <LoginScreen />
-//         {/* <CreateAccountScreen /> */}
-//       </View>r
-//     </AuthContextProvider>
-//   );
-// }
+import { Ionicons } from '@expo/vector-icons'
+import BottomTab from './src/components/BottomTab';
+import DrawerTab from './src/components/DrawerTab';
 
 const Stack = createNativeStackNavigator();
-
-// const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
@@ -47,9 +36,9 @@ export default function App() {
             <AlertProvider>
               <>
                 <Stack.Navigator>
-                  <Stack.Screen
-                    name="HomeScreen"
-                    component={HomeScreen}
+                  {/* <Stack.Screen
+                    name="LandingPageScreenTemp"
+                    component={LandingPageScreen}
                     options={{
                       title: "Zero Hunger",
                       headerTitleAlign: 'center',
@@ -80,6 +69,14 @@ export default function App() {
                   <Stack.Screen
                     name="OfferFormScreen"
                     component={OfferFormScreen}
+                  /> 
+                  <Stack.Screen
+                    name="RequestDetailsScreen"
+                    component={RequestDetailsScreen}
+                  />
+                  <Stack.Screen
+                    name="OfferDetailsScreen"
+                    component={OfferDetailsScreen}
                   />
                   <Stack.Screen
                     name="LoginScreen"
@@ -105,15 +102,19 @@ export default function App() {
                         backgroundColor: Colors.Background
                       }
                     }}
-                  />
+                  /> */}
+
+                  {/* <Stack.Screen
+                    name="BottomTab"
+                    component={BottomTab}
+                    options={{headerShown: false}}
+                  /> */}
                   <Stack.Screen
-                    name="RequestDetailsScreen"
-                    component={RequestDetailsScreen}
+                    name="ZeroHunger"
+                    component={DrawerTab}
+                    options={{headerShown: false}}
                   />
-                  <Stack.Screen
-                    name="OfferDetailsScreen"
-                    component={OfferDetailsScreen}
-                  />
+
                 </Stack.Navigator>
                 <SnackBar />
               </>
