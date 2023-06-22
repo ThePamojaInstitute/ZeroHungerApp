@@ -34,7 +34,7 @@ export const HomeScreen = ({ navigation }) => {
     })
 
     useEffect(() => {
-        setLoaded(fontsLoaded)
+        setLoaded(fontsLoaded)  
     }, [fontsLoaded])
 
     const { user, accessToken, dispatch } = useContext(AuthContext)
@@ -162,6 +162,8 @@ export const HomeScreen = ({ navigation }) => {
             <View style={{marginTop: 8, marginRight: 16, marginBottom: 4, marginLeft: 16}}>
                 <FoodCategories />
             </View>
+            {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
+            {!showRequests && <PostRenderer type={"o"} navigation={navigation} />} 
             <TouchableOpacity testID="RequestFormNav.Button" style={styles.logOutBtnText} onPress={() => navigation.navigate("RequestFormScreen")}>
                 <Text style={styles.logOutBtn}>Add a Request</Text>
             </TouchableOpacity>
@@ -176,8 +178,8 @@ export const HomeScreen = ({ navigation }) => {
                 <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
                     <Text style={styles.deleteBtnText}>Delete User</Text>
                 </TouchableOpacity>}
-            {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
-            {!showRequests && <PostRenderer type={"o"} navigation={navigation} />}
+            {/* {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
+            {!showRequests && <PostRenderer type={"o"} navigation={navigation} />} */}
         </View>
     )
 }
@@ -188,6 +190,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.offWhite,
+        // marginBottom: 100,
+        // position: 'absolute',
+        // width: '100%',
+        // height: '100%',
+        // bottom: 100,
         // alignItems: 'center',
         // justifyContext: 'center',
     },
