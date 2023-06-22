@@ -34,8 +34,8 @@ const HomeStackNavigator = ({ navigation }) => {
 
     return (
         <Stack.Navigator>
-            <Stack.Screen 
-                name="HomeScreen" 
+            <Stack.Screen
+                name="HomeScreen"
                 component={LandingPageScreen}
                 options={{
                     title: "Zero Hunger",
@@ -45,30 +45,30 @@ const HomeStackNavigator = ({ navigation }) => {
                         backgroundColor: Colors.offWhite
                     },
                     headerLeft: () => (
-                        <Ionicons 
-                            style={{marginLeft:12, marginRight:21}}
-                            name="menu" 
+                        <Ionicons
+                            style={{ marginLeft: 12, marginRight: 21 }}
+                            name="menu"
                             size={24}
                             onPress={navigation.openDrawer}
                         />
                     ),
                     headerRight: () => (
-                        <View style={{flexDirection: 'row'}}>
+                        <View style={{ flexDirection: 'row' }}>
                             <Ionicons
-                            style={{padding:16}}
+                                style={{ padding: 16 }}
                                 name="md-search"
                                 size={22}
-                                onPress={() => {}}
+                                onPress={() => { }}
                             />
                             <Ionicons
-                                style={{padding:16}}
+                                style={{ padding: 16 }}
                                 name="notifications-sharp"
                                 size={22}
-                                onPress={() => {}}
+                                onPress={() => { }}
                             />
                         </View>
                     )
-                  }}
+                }}
             />
             <Stack.Screen
                 name="LoginScreen"
@@ -78,7 +78,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
                     headerStyle: {
-                      backgroundColor: Colors.Background,
+                        backgroundColor: Colors.Background,
                     },
                     headerLeft: () => (<></>),
                 }}
@@ -91,42 +91,56 @@ const HomeStackNavigator = ({ navigation }) => {
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
                     headerStyle: {
-                      backgroundColor: Colors.Background
+                        backgroundColor: Colors.Background
                     }
-                  }}
+                }}
             />
-            <Stack.Screen 
-                name="RequestFormScreen" 
+            <Stack.Screen
+                name="RequestFormScreen"
                 component={RequestFormScreen}
             />
-            <Stack.Screen 
-                name="RequestDetailsScreen" 
+            <Stack.Screen
+                name="RequestDetailsScreen"
                 component={RequestDetailsScreen}
             />
-            <Stack.Screen 
-                name="OfferFormScreen" 
+            <Stack.Screen
+                name="OfferFormScreen"
                 component={OfferFormScreen}
             />
-            <Stack.Screen 
-                name="OfferDetailsScreen" 
+            <Stack.Screen
+                name="OfferDetailsScreen"
                 component={OfferDetailsScreen}
             />
         </Stack.Navigator>
     )
-} 
+}
 
 const ChatStackNavigator = () => {
     return (
         <Stack.Navigator>
-            <Stack.Screen 
-                name="Conversations" 
+            <Stack.Screen
+                name="ConversationsNav"
                 component={Conversations}
-                options={{headerShown: false}} 
+                options={{
+                    headerShown: true,
+                    title: "Conversations",
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.Background,
+                    },
+                }}
             />
-            <Stack.Screen 
-                name="Chat" 
+            <Stack.Screen
+                name="Chat"
                 component={Chat}
-                options={{headerShown: false}} 
+                options={{
+                    headerShown: true,
+                    title: "Chat",
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.Background,
+                    },
+                }}
             />
         </Stack.Navigator>
     )
@@ -141,72 +155,73 @@ const openPostMenu = () => {
 
 const TabBarButton = () => {
     return (
-        <View style={{flex: 0, alignItems: "center", justifyContent: "center",}}>
+        <View style={{ flex: 0, alignItems: "center", justifyContent: "center", }}>
             <TouchableOpacity style={styles.postButton} onPress={openPostMenu}>
-                <Ionicons name="add-circle-outline" size={28} color={Colors.primary} style={{marginLeft: 3}}/>
+                <Ionicons name="add-circle-outline" size={28} color={Colors.primary} style={{ marginLeft: 3 }} />
                 <Text style={styles.bottomBarText}>Post</Text>
             </TouchableOpacity>
         </View>
     )
 }
 
-const PostComponent = () => {return null}
+const PostComponent = () => { return null }
 
 const BottomTab = () => {
     return (
-      <Tab.Navigator>
-        <Tab.Screen 
-          name="Home" 
-          component={HomeStackNavigator}
-          options={({ route }) => ({
-            headerShown: false,
-            tabBarIcon: ({ focused }) => (
-                <View style={{flex: 0, alignItems: "center", justifyContent: "center"}}>
-                    {focused
-                        ? <Ionicons name="home" size={24} color={Colors.primary} style={{marginBottom: -10}}/>
-                        : <Ionicons name="home-outline" size={24} color={Colors.primary} style={{marginBottom: -10}}/>
-                    }
-                </View>
-            ),
-            tabBarLabelPosition: "below-icon",
-            tabBarLabelStyle: styles.bottomBarText,
-            tabBarStyle: ((route) => {
-              const routeName = getFocusedRouteNameFromRoute(route) ?? ""
-              if (routeName === 'LoginScreen' || routeName === 'CreateAccountScreen') {
-                return { display: "none" }
-              }
-              return styles.bottomBarTab
-            })(route),
-          })}
-        />
-        <Tab.Screen
-          name="Post"
-        //   component={() => (null)}
-        component={PostComponent}
-          options={{
-            tabBarButton: TabBarButton 
-          }}
-        />
-        <Tab.Screen 
-          name="Conversations" 
-          component={ChatStackNavigator}
-          options={{
-            tabBarIcon: ({ focused }) => (
-                <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                    {focused
-                        ? <Ionicons name="chatbox-ellipses" size={24} color={Colors.primary} style={{marginBottom: -10}}/>
-                        : <Ionicons name="chatbox-ellipses-outline" size={24} color={Colors.primary} style={{marginBottom: -10}}/>
-                    }
-                </View>
-            ),
-            tabBarLabelPosition: "below-icon",
-            tabBarLabelStyle: styles.bottomBarText,
-            tabBarStyle: styles.bottomBarTab
-          }}
-        />
-      </Tab.Navigator>
+        <Tab.Navigator>
+            <Tab.Screen
+                name="Home"
+                component={HomeStackNavigator}
+                options={({ route }) => ({
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <View style={{ flex: 0, alignItems: "center", justifyContent: "center" }}>
+                            {focused
+                                ? <Ionicons name="home" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                                : <Ionicons name="home-outline" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                            }
+                        </View>
+                    ),
+                    tabBarLabelPosition: "below-icon",
+                    tabBarLabelStyle: styles.bottomBarText,
+                    tabBarStyle: ((route) => {
+                        const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+                        if (routeName === 'LoginScreen' || routeName === 'CreateAccountScreen') {
+                            return { display: "none" }
+                        }
+                        return styles.bottomBarTab
+                    })(route),
+                })}
+            />
+            <Tab.Screen
+                name="Post"
+                //   component={() => (null)}
+                component={PostComponent}
+                options={{
+                    tabBarButton: TabBarButton
+                }}
+            />
+            <Tab.Screen
+                name="Conversations"
+                component={ChatStackNavigator}
+                options={{
+                    tabBarIcon: ({ focused }) => (
+                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                            {focused
+                                ? <Ionicons name="chatbox-ellipses" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                                : <Ionicons name="chatbox-ellipses-outline" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                            }
+                        </View>
+                    ),
+                    tabBarLabelPosition: "below-icon",
+                    tabBarLabelStyle: styles.bottomBarText,
+                    tabBarStyle: styles.bottomBarTab,
+                    headerShown: false
+                }}
+            />
+        </Tab.Navigator>
     )
-  }
+}
 
 export default BottomTab
 
@@ -219,7 +234,7 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     bottomBarTab: {
-        height: 69, 
+        height: 69,
         backgroundColor: Colors.offWhite,
         borderTopWidth: 0,
     },

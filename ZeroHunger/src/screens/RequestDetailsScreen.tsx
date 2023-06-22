@@ -3,6 +3,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
+import { ScrollView } from "react-native-gesture-handler";
 
 export const RequestDetailsScreen = () => {
     let route: RouteProp<{
