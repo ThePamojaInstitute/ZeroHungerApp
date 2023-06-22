@@ -240,11 +240,11 @@ export const PostRenderer = ({ type, navigation }) => {
                     keyExtractor={(item, index) => item.postId}
                 />}
             {!endReached && isLoading && <Text>Loading...</Text>}
-            {endReached && (
+            {/* {endReached && (
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                     <Text style={{ fontSize: 20 }}>End Reached</Text>
                 </View>
-            )}
+            )} */}
         </View>
     )
 }
