@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useAlert } from "../context/Alert";
 import { useContext } from "react";
@@ -26,7 +26,7 @@ export const RequestDetailsScreen = () => {
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }}>
             <Text style={styles.titleText}>{route.params.title}</Text>
             <Image
                 style={styles.image}
@@ -59,7 +59,7 @@ export const RequestDetailsScreen = () => {
                     </TouchableOpacity>
                 </>
             }
-        </View>
+        </ScrollView>
     )
 }
 
