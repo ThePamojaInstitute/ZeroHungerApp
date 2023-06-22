@@ -36,8 +36,6 @@ const HomeStackNavigator = ({ navigation }) => {
         <Stack.Navigator>
             <Stack.Screen
                 name="HomeScreen"
-            <Stack.Screen
-                name="HomeScreen"
                 component={LandingPageScreen}
                 options={{
                     title: "Zero Hunger",
