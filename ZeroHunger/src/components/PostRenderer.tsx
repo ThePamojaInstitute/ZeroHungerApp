@@ -14,6 +14,7 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
+import { Ionicons } from '@expo/vector-icons';
 
 export const PostRenderer = ({ type, navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -167,22 +168,41 @@ export const PostRenderer = ({ type, navigation }) => {
                     }}
                 />
                 <View style={styles.subContainer}>
-                    <Text style={globalStyles.H4}>{title}</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={globalStyles.H4}>{title}</Text>
+                        <TouchableOpacity style={{marginLeft: 'auto'}}>
+                            <Ionicons 
+                                name='ellipsis-horizontal' 
+                                style={styles.postEllipsis} 
+                                width={20}
+                                height={12} />
+                        </TouchableOpacity>
+                    </View>
                     <View style={{ marginTop: 16 }}>
-                        {/* Placeholder profile picture
-                        <Image source={{uri: }}> */}
                         <Text style= {globalStyles.Small1}>{username}</Text>
+                        <View style={{ flexDirection: 'row', marginTop: 4 }}>
+                            <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }}/>
+                            {/* Placeholder distance away */}
+                            <Text style={globalStyles.Small1}>{1} km away</Text>
+                        </View>
+                    </View>
+                    <View style={styles.secondaryBtn}>
+                        {/* Placeholder need by date */}
+                        <Text style={styles.secondaryBtnLabel}>Need in {3} days</Text>
                     </View>
                     {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                 </View>
-                <View>
-                    <Text style={styles.postedOnText}>Posted On: {postedOn}</Text>
-                    {user && user['username'] === username &&
+                {/* <View> */}
+                    {/* <TouchableOpacity>
+                        <Ionicons name='ellipsis-horizontal' style={styles.postEllipsis} width={20} />
+                    </TouchableOpacity> */}
+                    {/* <Text style={styles.postedOnText}>Posted On: {postedOn}</Text> */}
+                    {/* {user && user['username'] === username &&
                         <Button buttonColor="red"
                             mode="contained"
                             onPress={() => handleDelete(postId)}
-                        >Delete Post</Button>}
-                </View>
+                        >Delete Post</Button>} */}
+                {/* </View> */}
             </TouchableOpacity>
         )
     }
@@ -204,9 +224,9 @@ export const PostRenderer = ({ type, navigation }) => {
     return (
         <View style={{ backgroundColor: Colors.Background, height: "80%" }}>
             {/* Temporary refresh button for web */}
-            <TouchableOpacity onPress={loadPosts}>
+            {/* <TouchableOpacity onPress={loadPosts}>
                 <Text style={[styles.refreshBtnText]}>Refresh</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             {noPosts ? <Text style={styles.noPostsText}>No posts available</Text> : <></>}
             {user &&
                 <FlashList
@@ -235,21 +255,23 @@ const styles = StyleSheet.create({
         // marginBottom: 100,
         // padding: 10,
         flexDirection: 'row',
-        marginTop: 8,
+        marginTop: 12,
         marginBottom: 0,
-        marginLeft: 8, 
-        marginRight: 0,
+        marginLeft: 12, 
+        marginRight: 10,
         borderRadius: 5,
         overflow: 'hidden',
-        color: Colors.offWhite,
+        backgroundColor: Colors.offWhite,
     },
     subContainer: {
         flex: 1,
-        marginTop: 4,
-        marginBottom: 8,
-        marginLeft: 4, 
+        marginTop: 8,
+        marginBottom: 0,
+        marginLeft: 0, 
         marginRight: 8,
         color: Colors.offWhite,
+        // flexDirection: 'row',
+        // flexDirection: 'row'
     },
     image: {
         width: 105,
@@ -277,7 +299,31 @@ const styles = StyleSheet.create({
         color: 'blue',
         fontSize: 24,
         padding: 15,
-    }
+    },
+    postEllipsis: {
+        alignSelf: 'flex-end',
+        padding: 8,
+        marginRight: 8
+    },
+    secondaryBtn: {
+        display: "flex",
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: "center",
+        paddingVertical: 4,
+        paddingHorizontal: 5,
+        alignSelf: 'flex-end',
+        borderRadius: 10,
+        marginBottom: 10,
+        backgroundColor: Colors.primaryLight,
+    },
+    secondaryBtnLabel: {
+        fontFamily: 'PublicSans_500Medium',
+        fontSize: 12,
+        display: 'flex',
+        alignItems: 'center',
+        color: Colors.dark,
+    },
 })
 
 export default PostRenderer
