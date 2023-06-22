@@ -5,4 +5,4 @@ services:
     image: zh-backend-testing:0.0.1
     build: .
     ports:
-     - 8001:8001
+     - 8000:8000
