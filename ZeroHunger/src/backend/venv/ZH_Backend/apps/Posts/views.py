@@ -80,3 +80,11 @@ class requestPostsForFeed(APIView):
                 return Response(err.__str__(), 500)
         
         return Response(json.dumps(data), status=201)
+     
+     def get(self, request):
+        length = {
+            "r": len(RequestPost.objects.all()),
+            "o": len(OfferPost.objects.all())
+        }
+
+        return Response(length, status=200)
