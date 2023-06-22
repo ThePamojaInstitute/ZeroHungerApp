@@ -26,7 +26,7 @@ export const PostRenderer = ({ type, navigation }) => {
     useEffect(() => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
-    
+
     const { dispatch: alert } = useAlert()
     const { user, accessToken } = useContext(AuthContext);
 
@@ -35,10 +35,40 @@ export const PostRenderer = ({ type, navigation }) => {
     const [array, setArray] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [endReached, setEndReached] = useState(false)
+    const [requestsLength, setRequestsLength] = useState(0)
+    const [offersLength, setOffersLength] = useState(0)
+
+    const fetchLengths = async () => {
+        const res = await axiosInstance.get("posts/requestPostsForFeed")
+        setRequestsLength(res.data["r"])
+        setOffersLength(res.data["o"])
+    }
+
+    useEffect(() => {
+        fetchLengths()
+    }, [])
+
+    useEffect(() => {
+        if (type === "r" && postIndex > requestsLength) {
+            setPostIndex(requestsLength)
+        } else if (type === "o" && postIndex > offersLength) {
+            setPostIndex(offersLength)
+        }
+    }, [postIndex])
+
+    useEffect(() => {
+        if (type === "r" && postIndex > requestsLength) {
+            setPostIndex(requestsLength)
+        } else if (type === "o" && postIndex > offersLength) {
+            setPostIndex(offersLength)
+        }
+    }, [requestsLength, offersLength])
 
     const loadNumPosts = 5 //Change if number of posts to load changes
 
     const loadPosts = async () => {
+        if ((requestsLength <= array.length) && requestsLength != 0) return
+
         const json = JSON.stringify({ postIndex: postIndex, postType: type })
         await axiosInstance.post("posts/requestPostsForFeed", json, {
         }).then((res) => {
@@ -53,7 +83,6 @@ export const PostRenderer = ({ type, navigation }) => {
                 // alert!({ type: 'open', message: 'All posts displayed', alertType: 'info' })
             }
             else {
-
                 setIsLoading(true)
                 try {
                     setPostIndex(postIndex + loadNumPosts)
@@ -89,20 +118,24 @@ export const PostRenderer = ({ type, navigation }) => {
     }
 
     useEffect(() => {
-        console.log(postIndex);
-
-        if (array.length > postIndex) {
-            setArray(array.slice(0, -1))
-        } else if (array.length < postIndex) {
-            setPostIndex(array.length + 1)
+        if (type === "r" && (requestsLength <= array.length) && requestsLength != 0) {
+            array.pop()
+        } else if (type === "o" && (offersLength <= array.length) && offersLength != 0) {
+            array.pop()
         }
-    }, [array, postIndex])
+    }, [array])
 
     useFocusEffect(() => {
-        console.log("change");
-        if (endReached) loadPosts()
+        fetchLengths()
     })
 
+    useEffect(() => {
+        if (type === "r" && requestsLength > 0 && requestsLength != postIndex && endReached) {
+            loadPosts()
+        } else if (type === "o" && offersLength > 0 && offersLength != postIndex && endReached) {
+            loadPosts()
+        }
+    }, [requestsLength, offersLength])
 
     const handleDelete = (postId: Number) => {
         deletePost(type, postId, accessToken).then(res => {
@@ -171,7 +204,7 @@ export const PostRenderer = ({ type, navigation }) => {
                     <View style={{ marginTop: 16 }}>
                         {/* Placeholder profile picture
                         <Image source={{uri: }}> */}
-                        <Text style= {globalStyles.Small1}>{username}</Text>
+                        <Text style={globalStyles.Small1}>{username}</Text>
                     </View>
                     {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                 </View>
@@ -188,6 +221,8 @@ export const PostRenderer = ({ type, navigation }) => {
     }
 
     const renderItem = ({ item }) => {
+        if (!item) return
+
         return (
             <Post
                 title={item.title}
@@ -204,27 +239,32 @@ export const PostRenderer = ({ type, navigation }) => {
     return (
         <View style={{ backgroundColor: Colors.Background, height: "80%" }}>
             {/* Temporary refresh button for web */}
-            <TouchableOpacity onPress={loadPosts}>
-                <Text style={[styles.refreshBtnText]}>Refresh</Text>
-            </TouchableOpacity>
-            {noPosts ? <Text style={styles.noPostsText}>No posts available</Text> : <></>}
-            {user &&
-                <FlashList
-                    renderItem={renderItem}
-                    data={array}
-                    onEndReached={loadPosts}
-                    onEndReachedThreshold={0.3}
-                    showsVerticalScrollIndicator={false}
-                    showsHorizontalScrollIndicator={false}
-                    estimatedItemSize={125}
-                    keyExtractor={(item, index) => item.postId}
-                />}
-            {!endReached && isLoading && <Text>Loading...</Text>}
-            {endReached && (
-                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 20 }}>End Reached</Text>
-                </View>
-            )}
+            {!loaded && <Text>Loading...</Text>}
+            {loaded &&
+                <>
+                    <TouchableOpacity onPress={fetchLengths}>
+                        <Text style={[styles.refreshBtnText]}>Refresh</Text>
+                    </TouchableOpacity>
+                    {noPosts ? <Text style={styles.noPostsText}>No posts available</Text> : <></>}
+                    {user &&
+                        <FlashList
+                            renderItem={renderItem}
+                            data={array}
+                            onEndReached={loadPosts}
+                            onEndReachedThreshold={0.3}
+                            showsVerticalScrollIndicator={false}
+                            showsHorizontalScrollIndicator={false}
+                            estimatedItemSize={125}
+                        // keyExtractor={(item, index) => item.postId}
+                        />}
+                    {!endReached && isLoading && <Text>Loading...</Text>}
+                    {endReached && (
+                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                            <Text style={{ fontSize: 20 }}>End Reached</Text>
+                        </View>
+                    )}
+                </>
+            }
         </View>
     )
 }
@@ -237,7 +277,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginTop: 8,
         marginBottom: 0,
-        marginLeft: 8, 
+        marginLeft: 8,
         marginRight: 0,
         borderRadius: 5,
         overflow: 'hidden',
@@ -247,7 +287,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: 4,
         marginBottom: 8,
-        marginLeft: 4, 
+        marginLeft: 4,
         marginRight: 8,
         color: Colors.offWhite,
     },

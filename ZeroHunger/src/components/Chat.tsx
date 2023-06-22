@@ -35,6 +35,12 @@ export const Chat = ({ navigation, route }) => {
 
     const namesAlph = [route.params.user1, route.params.user2].sort();
     const conversationName = `${namesAlph[0]}__${namesAlph[1]}`
+    const reciever = namesAlph[0] === user['username'] ?
+        namesAlph[1] : namesAlph[0]
+
+    navigation.setOptions({
+        title: reciever,
+    })
 
     const handleSend = () => {
         if (message) {
