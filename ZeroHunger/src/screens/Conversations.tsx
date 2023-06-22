@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, Dimensions } from "react-native";
+import { View, Text, Dimensions, ScrollView } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
@@ -89,7 +89,7 @@ export const Conversations = ({ navigation }) => {
     };
 
     return (
-        <View>
+        <ScrollView>
             {!empty && conversations.length === 0 && <Text style={{ fontSize: 20 }}>Loading...</Text>}
             {empty && <Text style={{ fontSize: 20 }}>No Conversations</Text>}
             <View style={{ height: Dimensions.get("screen").height - 350, width: Dimensions.get("screen").width }}>
@@ -111,7 +111,7 @@ export const Conversations = ({ navigation }) => {
                 />
                 <Button onPress={handleCreate}>Create</Button>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
