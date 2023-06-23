@@ -28,6 +28,7 @@ export const PostRenderer = ({ type, navigation }) => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
 
+
     const { dispatch: alert } = useAlert()
     const { user, accessToken } = useContext(AuthContext);
 
@@ -259,32 +260,27 @@ export const PostRenderer = ({ type, navigation }) => {
     return (
         <View style={{ backgroundColor: Colors.Background, height: "80%" }}>
             {/* Temporary refresh button for web */}
-            {!loaded && <Text>Loading...</Text>}
-            {loaded &&
-                <>
-                    <TouchableOpacity onPress={fetchLengths}>
-                        <Text style={[styles.refreshBtnText]}>Refresh</Text>
-                    </TouchableOpacity>
-                    {noPosts ? <Text style={styles.noPostsText}>No posts available</Text> : <></>}
-                    {user &&
-                        <FlashList
-                            renderItem={renderItem}
-                            data={array}
-                            onEndReached={loadPosts}
-                            onEndReachedThreshold={0.3}
-                            showsVerticalScrollIndicator={false}
-                            showsHorizontalScrollIndicator={false}
-                            estimatedItemSize={125}
-                        // keyExtractor={(item, index) => item.postId}
-                        />}
-                    {!endReached && isLoading && <Text>Loading...</Text>}
-                    {endReached && (
-                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Text style={{ fontSize: 20 }}>End Reached</Text>
-                        </View>
-                    )}
-                </>
-            }
+            {/* <TouchableOpacity onPress={loadPosts}>
+                <Text style={[styles.refreshBtnText]}>Refresh</Text>
+            </TouchableOpacity> */}
+            {noPosts ? <Text style={styles.noPostsText}>No posts available</Text> : <></>}
+            {user &&
+                <FlashList
+                    renderItem={renderItem}
+                    data={array}
+                    onEndReached={loadPosts}
+                    onEndReachedThreshold={0.3}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    estimatedItemSize={125}
+                    keyExtractor={(item, index) => item.postId}
+                />}
+            {!endReached && isLoading && <Text>Loading...</Text>}
+            {/* {endReached && (
+                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 20 }}>End Reached</Text>
+                </View>
+            )} */}
         </View>
     )
 }
