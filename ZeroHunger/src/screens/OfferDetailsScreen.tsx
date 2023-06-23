@@ -1,5 +1,7 @@
 import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import { Button } from "react-native-paper";
+import { deletePost } from "../controllers/post";
 import { useAlert } from "../context/Alert";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
@@ -20,7 +22,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
     }> = useRoute()
 
     const { dispatch: alert } = useAlert()
-    const { user } = useContext(AuthContext);
+    const { user, accessToken } = useContext(AuthContext);
 
     const [message, setMessage] = useState('')
 
@@ -65,6 +67,17 @@ export const RequestDetailsScreen = ({ navigation }) => {
                     <TouchableOpacity style={globalStyles.defaultBtn} onPress={sendMsg}>
                         <Text>Send</Text>
                     </TouchableOpacity>
+                </View>
+            }
+            {user && user['username'] === route.params.username &&
+                <View>
+                    <Button buttonColor="red"
+                        mode="contained"
+                        onPress={() => {
+                            deletePost("o", route.params.postId, accessToken)
+                            navigation.navigate("HomeScreen")
+                        }}
+                    >Delete Post</Button>
                 </View>
             }
         </ScrollView>
