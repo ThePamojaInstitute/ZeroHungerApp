@@ -61,6 +61,11 @@ export const Conversations = ({ navigation }) => {
     }
 
     const handleCreate = () => {
+        if (user['username'].toLowerCase() === createGroup.toLowerCase()) {
+            alert!({ type: 'open', message: 'The username you entered is your username', alertType: 'error' })
+        } else if (!user['username'] || !createGroup) {
+            alert!({ type: 'open', message: 'Please enter a username', alertType: 'error' })
+        }
         navigateToChat(user['username'], createGroup)
     }
 
@@ -113,7 +118,7 @@ export const Conversations = ({ navigation }) => {
         <View>
             {!empty && conversations.length === 0 && <Text style={{ fontSize: 20 }}>Loading...</Text>}
             {empty && <Text style={{ fontSize: 20 }}>No Conversations</Text>}
-            <View style={{ height: Dimensions.get("screen").height - 350, width: Dimensions.get("screen").width }}>
+            <View style={{ height: Dimensions.get("screen").height - 500, width: Dimensions.get("screen").width }}>
                 <FlashList
                     data={conversations}
                     renderItem={renderItem}

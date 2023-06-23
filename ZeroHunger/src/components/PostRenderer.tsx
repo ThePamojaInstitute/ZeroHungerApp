@@ -70,6 +70,7 @@ export const PostRenderer = ({ type, navigation }) => {
 
     const loadPosts = async () => {
         if ((requestsLength <= array.length) && requestsLength != 0) return
+        else if ((offersLength <= array.length) && offersLength != 0) return
 
         const json = JSON.stringify({ postIndex: postIndex, postType: type })
         await axiosInstance.post("posts/requestPostsForFeed", json, {
@@ -120,14 +121,16 @@ export const PostRenderer = ({ type, navigation }) => {
     }
 
     useEffect(() => {
-        if (type === "r" && (requestsLength <= array.length) && requestsLength != 0) {
+        if (type === "r" && (requestsLength < array.length) && requestsLength != 0) {
             array.pop()
-        } else if (type === "o" && (offersLength <= array.length) && offersLength != 0) {
+        } else if (type === "o" && (offersLength < array.length) && offersLength != 0) {
             array.pop()
         }
     }, [array])
 
     useFocusEffect(() => {
+        console.log(`change on ${type}`);
+
         fetchLengths()
     })
 
@@ -242,7 +245,7 @@ export const PostRenderer = ({ type, navigation }) => {
     }
 
     const renderItem = ({ item }) => {
-        if (!item) return
+        if (!item || !item.postId) return
 
         return (
             <Post
@@ -273,7 +276,7 @@ export const PostRenderer = ({ type, navigation }) => {
                     showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false}
                     estimatedItemSize={125}
-                    keyExtractor={(item, index) => item.postId}
+                // keyExtractor={(item, index) => item.postId}
                 />}
             {!endReached && isLoading && <Text>Loading...</Text>}
             {/* {endReached && (
