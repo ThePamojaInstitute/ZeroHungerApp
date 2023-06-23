@@ -27,6 +27,8 @@ export const Conversations = ({ navigation }) => {
                         Authorization: `${accessToken}`
                     }
                 });
+                console.log(res);
+
                 if (res.data.length === 0) {
                     setEmpty(true)
                 } else {
@@ -136,7 +138,7 @@ export const Conversations = ({ navigation }) => {
         <View style={{}}>
             {!empty && conversations.length === 0 && <Text style={{ fontSize: 20 }}>Loading...</Text>}
             {empty && <Text style={{ fontSize: 20 }}>No Conversations</Text>}
-            <View style={{ height: Dimensions.get("screen").height - 500, width: Dimensions.get("screen").width }}>
+            <View style={{ height: 400 }}>
                 <FlashList
                     data={conversations}
                     renderItem={renderItem}
@@ -144,7 +146,7 @@ export const Conversations = ({ navigation }) => {
                     estimatedItemSize={100}
                 />
             </View>
-            <View style={{ flexDirection: "row", marginTop: Dimensions.get("screen").height * 0.4 }}>
+            <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
                     <Text style={styles.logOutBtnText}>Log Out</Text>
                 </TouchableOpacity>
@@ -194,12 +196,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     logOutBtn: {
-        width: "7%",
+        width: "30%",
         borderRadius: 25,
         marginTop: 10,
         height: 50,
         alignItems: "center",
         backgroundColor: "#6A6A6A",
+        marginRight: 10
     },
     logOutBtnText: {
         color: "#FFFFFF",
@@ -209,7 +212,7 @@ const styles = StyleSheet.create({
     },
     deleteBtn: {
         title: "Login",
-        width: "8%",
+        width: "30%",
         borderRadius: 25,
         marginTop: 10,
         height: 50,
