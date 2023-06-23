@@ -273,7 +273,7 @@ export const PostRenderer = ({ type, navigation }) => {
                     showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false}
                     estimatedItemSize={125}
-                    keyExtractor={(item, index) => item.postId}
+                    // keyExtractor={(item, index) => item.postId}
                 />}
             {!endReached && isLoading && <Text>Loading...</Text>}
             {/* {endReached && (
