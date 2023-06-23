@@ -1,5 +1,7 @@
 import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import { Button } from "react-native-paper";
+import { deletePost } from "../controllers/post";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
@@ -19,7 +21,7 @@ export const RequestDetailsScreen = () => {
     }> = useRoute()
 
     const { dispatch: alert } = useAlert()
-    const { user } = useContext(AuthContext);
+    const { user, accessToken } = useContext(AuthContext);
 
     const sendMsg = () => {
         // Send msg function blocked until username/user id complete
@@ -59,6 +61,14 @@ export const RequestDetailsScreen = () => {
                         <Text>Send</Text>
                     </TouchableOpacity>
                 </>
+            }
+            {user && user['username'] === route.params.username &&
+                <View>
+                    <Button buttonColor="red"
+                        mode="contained"
+                        onPress={() => deletePost("r", route.params.postId, accessToken)}
+                    >Delete Post</Button>
+                </View>
             }
         </ScrollView>
     )
