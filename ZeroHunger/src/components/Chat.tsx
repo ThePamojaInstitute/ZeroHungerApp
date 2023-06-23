@@ -124,6 +124,16 @@ export const Chat = ({ navigation, route }) => {
                 type: "read_messages"
             });
         }
+
+        if (connectionStatus === "Open" && route.params.msg) {
+            const msg = route.params.msg
+            sendJsonMessage({
+                type: "chat_message",
+                message: msg,
+                name: user['username']
+            });
+            route.params.msg = ''
+        }
     }, [connectionStatus, sendJsonMessage]);
 
     useEffect(() => {

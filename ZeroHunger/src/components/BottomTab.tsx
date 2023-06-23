@@ -111,6 +111,18 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="OfferDetailsScreen"
                 component={OfferDetailsScreen}
             />
+            <Stack.Screen
+                name="Chat"
+                component={Chat}
+                options={{
+                    headerShown: true,
+                    title: "Chat",
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.Background,
+                    },
+                }}
+            />
         </Stack.Navigator>
     )
 }

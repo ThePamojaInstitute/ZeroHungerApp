@@ -47,9 +47,12 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     def get_other_user(self, obj):
         usernames = obj.name.split("__")
+       
         context = {}
         for username in usernames:
-            if username != self.context["user"].username:
+            if(username == 'undefined'):
+                return None
+            elif username != self.context["user"].username:
                 # This is the other participant
                 other_user = BasicUser.objects.get(username=username)
                 return UserSerializer(other_user, context=context).data

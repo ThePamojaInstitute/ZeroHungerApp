@@ -7,6 +7,7 @@ from collections import defaultdict
 from uuid import UUID
 import json
 import requests
+# from urllib import request, parse
 
 
 class UUIDEncoder(json.JSONEncoder):
@@ -88,10 +89,15 @@ class ChatConsumer(JsonWebsocketConsumer):
                 }
 
                 try:
-                    res = requests.post('https://exp.host/--/api/v2/push/send', json=push_message)
+                    res = requests.post('https://exp.host/--/api/v2/push/send', json=push_message, headers={'User-Agent': "python-requests/2.31.0"})
                     print(res)
                 except Exception as e:
                     print(e)
+
+                # data = parse.urlencode(push_message).encode()
+                # req =  request.Request('https://exp.host/--/api/v2/push/send', data=data)
+                # resp = request.urlopen(req)
+                # print(resp)
 
 
             async_to_sync(self.channel_layer.group_send)(

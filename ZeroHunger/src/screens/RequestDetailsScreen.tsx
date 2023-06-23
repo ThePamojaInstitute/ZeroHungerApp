@@ -4,10 +4,11 @@ import { Button } from "react-native-paper";
 import { deletePost } from "../controllers/post";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 
-export const RequestDetailsScreen = () => {
+export const RequestDetailsScreen = ({ navigation }) => {
     let route: RouteProp<{
         params: {
             title: string,
@@ -23,13 +24,16 @@ export const RequestDetailsScreen = () => {
     const { dispatch: alert } = useAlert()
     const { user, accessToken } = useContext(AuthContext);
 
+    const [message, setMessage] = useState('')
+
     const sendMsg = () => {
         // Send msg function blocked until username/user id complete
-        alert!({ type: 'open', message: 'Error: Message not sent!', alertType: 'error' })
+        // alert!({ type: 'open', message: 'Error: Message not sent!', alertType: 'error' })
+        navigation.navigate('Chat', { user1: user['username'], user2: route.params.username, msg: message })
     }
 
     return (
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView style={styles.container}>
             <Text style={styles.titleText}>{route.params.title}</Text>
             <Image
                 style={styles.image}
@@ -46,21 +50,24 @@ export const RequestDetailsScreen = () => {
             <Text style={styles.headerText}>Poster Information</Text>
             <Text style={styles.text}>{route.params.username === user['username'] ? 'You' : route.params.username}</Text>
             {user['username'] != route.params.username &&
-                <>
+                <View style={{ height: 500 }}>
                     <Text style={styles.headerText}>Have this item? Send {route.params.username} a message.</Text>
                     <View style={styles.messageInputView}>
                         <TextInput
+                            value={message}
+                            onChangeText={setMessage}
                             placeholder={"Hi " + route.params.username + ", I have " + route.params.title + " to share, would you like to meet?"}
                             placeholderTextColor="#000000"
                             style={styles.inputText}
                             multiline={true}
                             maxLength={1024}
+                            scrollEnabled={true}
                         />
                     </View>
-                    <TouchableOpacity style={styles.sendBtn} onPress={sendMsg}>
+                    <TouchableOpacity style={globalStyles.defaultBtn} onPress={sendMsg}>
                         <Text>Send</Text>
                     </TouchableOpacity>
-                </>
+                </View>
             }
             {user && user['username'] === route.params.username &&
                 <View>
@@ -76,7 +83,11 @@ export const RequestDetailsScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        // padding: 10,
+        // marginTop: 20,
+        backgroundColor: Colors.Background,
+        // textAlign: 'center',
     },
     titleText: {
         padding: 10,
@@ -84,9 +95,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     image: {
+        // flex: 1,
         resizeMode: 'cover',
-        width: '20%',
-        height: '40%',
+        width: '25%',
+        height: '25%',
         padding: 8,
         marginLeft: 8,
     },
@@ -103,25 +115,28 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         fontSize: 15,
         textAlignVertical: "top",
+        // height: 40,
     },
     messageInputView: {
+        // flex: 1,
         backgroundColor: "#D3D3D3",
         borderRadius: 30,
-        width: "30%",
+        width: "90%",
         height: 100,
-        marginBottom: 8,
+        // marginBottom: 8,
         marginTop: 10,
-        marginLeft: 8
+        marginLeft: 8,
     },
-    sendBtn: {
-        width: 75,
-        borderRadius: 25,
-        marginLeft: 500,
-        height: 50,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#E7E0EC",
-    },
+    // sendBtn: {
+    //     // flex: 1,
+    //     width: 75,
+    //     borderRadius: 25,
+    //     marginLeft: 500,
+    //     height: 50,
+    //     alignItems: "center",
+    //     justifyContent: "center",
+    //     backgroundColor: "#E7E0EC",
+    // },
 })
 
 export default RequestDetailsScreen

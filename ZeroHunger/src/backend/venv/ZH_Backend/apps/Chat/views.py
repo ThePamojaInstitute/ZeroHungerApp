@@ -20,8 +20,10 @@ class ConversationViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
             return ""
 
         queryset = Conversation.objects.filter(
-            Q(name__startswith=f"{decoded_token['username']}__") | 
-            Q(name__endswith=f"__{decoded_token['username']}")
+            (Q(name__startswith=f"{decoded_token['username']}__") | 
+            Q(name__endswith=f"__{decoded_token['username']}")) &
+            (~Q(name__startswith=f"undefined__") & 
+            ~Q(name__endswith=f"__undefined"))
         )
 
         return queryset

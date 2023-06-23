@@ -77,7 +77,14 @@ export const Conversations = ({ navigation }) => {
     }
 
     const renderItem = ({ item }) => {
-        const namesAlph = [user['username'], item.other_user.username].sort();
+        let namesAlph: string[]
+        try {
+            namesAlph = [user['username'], item.other_user.username].sort();
+        } catch (error) {
+            console.log(error);
+            return
+        }
+
 
         return (
             <View testID={`${namesAlph[0]}__${namesAlph[1]}`} key={item.other_user.username}>
