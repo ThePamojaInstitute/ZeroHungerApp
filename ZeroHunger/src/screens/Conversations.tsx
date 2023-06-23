@@ -8,7 +8,7 @@ import { ConversationModel } from "../models/Conversation";
 import { Button, TextInput } from 'react-native-paper';
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "../../styles/globalStyleSheet";
-import { logOutUser } from "../controllers/auth";
+import { logOutUser, deleteUser } from "../controllers/auth";
 
 export const Conversations = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext);
@@ -76,6 +76,24 @@ export const Conversations = ({ navigation }) => {
         })
     }
 
+    const handleDeleteUser = () => {
+        deleteUser(user['user_id'], accessToken).then(res => {
+            if (res === "success") {
+                logOutUser().then(() => {
+                    dispatch({ type: "LOGOUT", payload: null })
+                    alert!({ type: 'open', message: 'Account deleted successfully!', alertType: 'success' })
+                    navigation.navigate('LoginScreen')
+                }).catch(() => {
+                    alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+                    console.log("log out error");
+                })
+            } else {
+                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+                console.log(res);
+            }
+        })
+    }
+
     const renderItem = ({ item }) => {
         let namesAlph: string[]
         try {
@@ -110,10 +128,11 @@ export const Conversations = ({ navigation }) => {
     };
 
     return (
-        <View>
+        <View style={{}}>
             {!empty && conversations.length === 0 && <Text style={{ fontSize: 20 }}>Loading...</Text>}
             {empty && <Text style={{ fontSize: 20 }}>No Conversations</Text>}
-            <View style={{ height: Dimensions.get("screen").height - 350, width: Dimensions.get("screen").width }}>
+            {/* <View style={{ height: Dimensions.get("screen").height - 350, width: Dimensions.get("screen").width }}> */}
+            <View>
                 <FlashList
                     data={conversations}
                     renderItem={renderItem}
@@ -121,9 +140,14 @@ export const Conversations = ({ navigation }) => {
                     estimatedItemSize={100}
                 />
             </View>
-            <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
-                <Text style={styles.logOutBtnText}>Log Out</Text>
-            </TouchableOpacity>
+            <View style={{flexDirection: "row", marginTop: Dimensions.get("screen").height * 0.4}}>
+                <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
+                    <Text style={styles.logOutBtnText}>Log Out</Text>
+                </TouchableOpacity>
+                <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
+                    <Text style={styles.deleteBtnText}>Delete User</Text>
+                </TouchableOpacity>
+            </View>
             <View style={{ marginTop: 20 }}>
                 <Text>Create Chat with:</Text>
                 <TextInput
