@@ -73,7 +73,10 @@ export const RequestDetailsScreen = ({ navigation }) => {
                 <View>
                     <Button buttonColor="red"
                         mode="contained"
-                        onPress={() => deletePost("o", route.params.postId, accessToken)}
+                        onPress={() => {
+                            deletePost("o", route.params.postId, accessToken)
+                            navigation.navigate("HomeScreen")
+                        }}
                     >Delete Post</Button>
                 </View>
             }
