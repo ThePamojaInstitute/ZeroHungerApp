@@ -149,7 +149,7 @@ const ChatStackNavigator = () => {
 const PostComponent = () => null
 
 const BottomTab = () => {
-    const [modalVisible, setModalVisible] = useState(true)
+    const [modalVisible, setModalVisible] = useState(false)
     return (
       <Tab.Navigator>
         <Tab.Screen 
@@ -200,13 +200,13 @@ const BottomTab = () => {
                             swipeDirection={['down']}
                             style={styles.modal}
                         >
-                            <View style={{alignItems: "flex-end", marginRight: 16}}>
-                                <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
-                                    <Ionicons name="close" size={36}/>
-                                </TouchableOpacity>
-                            </View>
                             <View style={styles.modalContent}>
                                 <Text style={[globalStyles.H3, {}]}>What would you like to post?</Text>
+                            </View>
+                            <View style={{alignItems: "flex-end", marginRight: 16, marginTop: -34}}>
+                                <TouchableOpacity style={{alignItems: "flex-end", marginRight: 16}} onPress={() => setModalVisible(!modalVisible)}>
+                                    <Ionicons name="close" size={36}/>
+                                </TouchableOpacity>
                             </View>
                             <View style={{alignItems: "center"}}>
                                 <TouchableOpacity 
@@ -282,15 +282,11 @@ const styles = StyleSheet.create({
         marginTop: Dimensions.get('window').height * 0.7,
         backgroundColor: Colors.offWhite,
         borderRadius: 10,
-        // justifyContent: "flex-start",
-        // flexDirection: "row",
         elevation: 0,
       },
     modalContent: {
         flexDirection: "row",
-        // textAlign: "center",
         justifyContent: "center",
-        // alignContent: "center",  
         marginTop: -34
     }
 })
