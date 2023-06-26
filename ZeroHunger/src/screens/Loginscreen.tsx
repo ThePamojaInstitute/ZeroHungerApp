@@ -124,7 +124,7 @@ export const LoginScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View testID="Login.container" style={styles.container}>
       {!loaded && <Text>Loading...</Text>}
       {loaded &&
         <>
@@ -133,16 +133,19 @@ export const LoginScreen = ({ navigation }) => {
             <View>
               <Text style={[globalStyles.errorMsg, { fontSize: 16 }]}>{errMsg}</Text>
             </View>}
-          <View style={globalStyles.inputContainer}>
-            <Text style={[globalStyles.inputLabel,
+          <View testID="Login.usernameInputContainer" style={globalStyles.inputContainer}>
+            <Text testID="Login.usernameLabel" style={[globalStyles.inputLabel,
             { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}>Username</Text>
             <TextInput
-              nativeID="LogIn.usernameInput"
-              testID="LogIn.usernameInput"
+              nativeID="Login.usernameInput"
+              testID="Login.usernameInput"
               value={username}
               style={[globalStyles.input,
               { borderColor: `${(errField === 'username') ? Colors.alert2 : Colors.midLight}` }]}
-              onChangeText={setUsername}
+              onChangeText={newText => {
+                setUsername(newText)
+                setErrField('')
+              }}
               onChange={() => {
                 if (errField === 'username' || errField === 'general') {
                   setErrField('')
@@ -153,21 +156,24 @@ export const LoginScreen = ({ navigation }) => {
             />
           </View>
           {(errField === 'username') &&
-            <View style={globalStyles.errorMsgContainer}>
-              <Text style={globalStyles.errorMsg}>{errMsg}</Text>
+            <View testID="Login.usernameErrMsgContainer" style={globalStyles.errorMsgContainer}>
+              <Text testID="Login.usernameErrMsg" style={globalStyles.errorMsg}>{errMsg}</Text>
             </View>}
-          <View style={globalStyles.inputContainer}>
-            <Text style={[globalStyles.inputLabel,
+          <View testID="Login.passwordInputContainer" style={globalStyles.inputContainer}>
+            <Text testID="Login.passwordLabel" style={[globalStyles.inputLabel,
             { color: `${(errField === 'password') ? Colors.alert2 : Colors.dark}` }]}>Password</Text>
-            <View style={[globalStyles.passwordInputContainer,
+            <View testID="Login.innerPasswordInputContainer" style={[globalStyles.passwordInputContainer,
             { borderColor: `${(errField === 'password') ? Colors.alert2 : Colors.midLight}` }]}>
               <TextInput
-                nativeID="LogIn.passwordInput"
-                testID="LogIn.passwordInput"
+                nativeID="Login.passwordInput"
+                testID="Login.passwordInput"
                 value={password}
                 style={globalStyles.passwordInput}
                 secureTextEntry={hidePass}
-                onChangeText={setPassword}
+                onChangeText={newText => {
+                  setPassword(newText)
+                  setErrField('')
+                }}
                 onChange={() => {
                   if (errField === 'password' || errField === 'general') {
                     setErrField('')
@@ -177,25 +183,25 @@ export const LoginScreen = ({ navigation }) => {
                 blurOnSubmit={false}
                 onSubmitEditing={handleLogin}
               />
-              <Ionicons name={hidePass ? "eye-off-outline" : "eye-outline"} size={22} onPress={() => setHidePass(!hidePass)} style={{ padding: 9 }} />
+              <Ionicons testID="eyeIcon" name={hidePass ? "eye-off-outline" : "eye-outline"} size={22} onPress={() => setHidePass(!hidePass)} style={{ padding: 9 }} />
             </View>
           </View>
           {(errField === 'password') &&
-            <View style={globalStyles.errorMsgContainer}>
-              <Text style={globalStyles.errorMsg}>{errMsg}</Text>
+            <View testID="Login.passwordErrMsgContainer" style={globalStyles.errorMsgContainer}>
+              <Text testID="Login.passwordErrMsg" style={globalStyles.errorMsg}>{errMsg}</Text>
             </View>}
           <Pressable style={{ width: '90%' }} testID="passwordReset.Button" onPress={handlePasswordRecovery}>
-            <Text style={globalStyles.forgotPassword}>Forgot password?</Text>
+            <Text testID="Login.forgotPassword" style={globalStyles.forgotPassword}>Forgot password?</Text>
           </Pressable>
-          <TouchableOpacity testID="LogIn.Button" style={globalStyles.defaultBtn} onPress={handleLogin}>
-            <Text style={globalStyles.defaultBtnLabel}>Login</Text>
+          <TouchableOpacity testID="Login.Button" style={globalStyles.defaultBtn} onPress={handleLogin}>
+            <Text testID="Login.ButtonLabel" style={globalStyles.defaultBtnLabel}>Login</Text>
           </TouchableOpacity>
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
+          <View testID="divider" style={styles.divider}>
+            <View testID="dividerLine1" style={styles.dividerLine} />
             <View>
-              <Text style={styles.dividerText}>OR</Text>
+              <Text testID="dividerText" style={styles.dividerText}>OR</Text>
             </View>
-            <View style={styles.dividerLine} />
+            <View testID="dividerLine2" style={styles.dividerLine} />
           </View>
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.outlineBtn} onPress={() => {
             setErrField('')
@@ -204,7 +210,7 @@ export const LoginScreen = ({ navigation }) => {
             setPassword('')
             navigation.navigate("CreateAccountScreen")
           }}>
-            <Text style={globalStyles.outlineBtnLabel}>Sign Up</Text>
+            <Text testID="SignUp.ButtonLabel" style={globalStyles.outlineBtnLabel}>Sign Up</Text>
           </TouchableOpacity>
           {/* <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add a Request</Text>
@@ -212,7 +218,7 @@ export const LoginScreen = ({ navigation }) => {
           <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("OfferFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add an Offer</Text>
           </TouchableOpacity> */}
-          <NotificationsTest setExpoToken={setExpoPushToken} />
+          {/* <NotificationsTest setExpoToken={setExpoPushToken} /> */}
         </>
       }
       {/* <Button
