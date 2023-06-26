@@ -185,13 +185,27 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = "Users.BasicUser"
 
+		#"BACKEND": "channels.layers.InMemoryChannelLayer"
+redis_connection_string = client.get_secret("zh-backend-testing-redisconnectionstring").value
 CHANNEL_LAYERS = {
-	"default": {
-        # For production level, don’t use InMemoryChannelLayer use Redis channel instead
-		"BACKEND": "channels.layers.InMemoryChannelLayer"
-	}
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [redis_connection_string],
+        },
+    },
 }
 
+CACHES = {
+        "default": {  
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": redis_connection_string,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            },
+        }
+    }  
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
