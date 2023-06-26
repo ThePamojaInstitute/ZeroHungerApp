@@ -46,22 +46,22 @@ export const PostRenderer = ({ type, navigation }) => {
         setOffersLength(res.data["o"])
     }
 
+    // on component mount
     useEffect(() => {
         fetchLengths()
     }, [])
 
-    useEffect(() => {
-        if (type === "r" && postIndex > requestsLength) {
-            setPostIndex(requestsLength)
-        } else if (type === "o" && postIndex > offersLength) {
-            setPostIndex(offersLength)
-        }
-    }, [postIndex])
+    // on navigation change
+    useFocusEffect(() => {
+        fetchLengths()
+    })
 
     useEffect(() => {
-        if (type === "r" && postIndex > requestsLength) {
+        if (type === "r" &&
+            (postIndex < requestsLength || postIndex > requestsLength)) {
             setPostIndex(requestsLength)
-        } else if (type === "o" && postIndex > offersLength) {
+        } else if (type === "o" &&
+            (postIndex < offersLength || postIndex > offersLength)) {
             setPostIndex(offersLength)
         }
     }, [requestsLength, offersLength])
@@ -69,10 +69,10 @@ export const PostRenderer = ({ type, navigation }) => {
     const loadNumPosts = 5 //Change if number of posts to load changes
 
     const loadPosts = async () => {
-        if ((requestsLength <= array.length) && requestsLength != 0) return
-        else if ((offersLength <= array.length) && offersLength != 0) return
-
-        const json = JSON.stringify({ postIndex: postIndex, postType: type })
+        const json = JSON.stringify({
+            postIndex: (postIndex === 0 ? postIndex : postIndex - 1)
+            , postType: type
+        })
         await axiosInstance.post("posts/requestPostsForFeed", json, {
         }).then((res) => {
             if (res.data.length == 2 && postIndex == 0) {
@@ -121,37 +121,30 @@ export const PostRenderer = ({ type, navigation }) => {
     }
 
     useEffect(() => {
-        if (type === "r" && (requestsLength < array.length) && requestsLength != 0) {
-            array.pop()
-        } else if (type === "o" && (offersLength < array.length) && offersLength != 0) {
+        if ((type === "r" && (requestsLength < array.length) && requestsLength != 0) ||
+            (type === "o" && (offersLength < array.length) && offersLength != 0)) {
             array.pop()
         }
     }, [array])
 
-    useFocusEffect(() => {
-        console.log(`change on ${type}`);
-
-        fetchLengths()
-    })
-
     useEffect(() => {
-        if (type === "r" && requestsLength > 0 && requestsLength != postIndex && endReached) {
-            loadPosts()
-        } else if (type === "o" && offersLength > 0 && offersLength != postIndex && endReached) {
+        if ((type === "r" && requestsLength > 0 && endReached) ||
+            (type === "o" && offersLength > 0 && endReached)) {
             loadPosts()
         }
-    }, [requestsLength, offersLength])
+    }, [postIndex])
 
-    const handleDelete = (postId: Number) => {
-        deletePost(type, postId, accessToken).then(res => {
-            if (res.msg == "success") {
-                setArray(array.filter(item => item.postId != postId))
-                alert!({ type: 'open', message: res.res, alertType: 'success' })
-            } else {
-                alert!({ type: 'open', message: res.res, alertType: 'error' })
-            }
-        })
-    }
+
+    // const handleDelete = (postId: Number) => {
+    //     deletePost(type, postId, accessToken).then(res => {
+    //         if (res.msg == "success") {
+    //             setArray(array.filter(item => item.postId != postId))
+    //             alert!({ type: 'open', message: res.res, alertType: 'success' })
+    //         } else {
+    //             alert!({ type: 'open', message: res.res, alertType: 'error' })
+    //         }
+    //     })
+    // }
 
     const onPress = (title: string,
         imagesLink: string,
@@ -171,7 +164,9 @@ export const PostRenderer = ({ type, navigation }) => {
                 postedBy,
                 description,
                 postId,
-                username
+                username,
+                array,
+                setArray
             })
             :
             navigation.navigate('OfferDetailsScreen', {
@@ -181,7 +176,9 @@ export const PostRenderer = ({ type, navigation }) => {
                 postedBy,
                 description,
                 postId,
-                username
+                username,
+                array,
+                setArray
             })
     }
 
@@ -262,28 +259,33 @@ export const PostRenderer = ({ type, navigation }) => {
 
     return (
         <View style={{ backgroundColor: Colors.Background, height: "80%" }}>
-            {/* Temporary refresh button for web */}
-            {/* <TouchableOpacity onPress={loadPosts}>
-                <Text style={[styles.refreshBtnText]}>Refresh</Text>
-            </TouchableOpacity> */}
-            {noPosts ? <Text style={styles.noPostsText}>No posts available</Text> : <></>}
-            {user &&
-                <FlashList
-                    renderItem={renderItem}
-                    data={array}
-                    onEndReached={loadPosts}
-                    onEndReachedThreshold={0.3}
-                    showsVerticalScrollIndicator={false}
-                    showsHorizontalScrollIndicator={false}
-                    estimatedItemSize={125}
-                // keyExtractor={(item, index) => item.postId}
-                />}
-            {!endReached && isLoading && <Text>Loading...</Text>}
-            {/* {endReached && (
+            {!loaded && <Text>Loading...</Text>}
+            {loaded &&
+                <>
+                    {/* Temporary refresh button for web */}
+                    {/* <TouchableOpacity onPress={loadPosts}>
+                    <Text style={[styles.refreshBtnText]}>Refresh</Text>
+                    </TouchableOpacity> */}
+                    {noPosts ? <Text style={styles.noPostsText}>No posts available</Text> : <></>}
+                    {user &&
+                        <FlashList
+                            renderItem={renderItem}
+                            data={array}
+                            onEndReached={loadPosts}
+                            onEndReachedThreshold={0.3}
+                            showsVerticalScrollIndicator={false}
+                            showsHorizontalScrollIndicator={false}
+                            estimatedItemSize={125}
+                        // keyExtractor={(item, index) => item.postId}
+                        />}
+                    {!endReached && isLoading && <Text>Loading...</Text>}
+                    {/* {endReached && (
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                     <Text style={{ fontSize: 20 }}>End Reached</Text>
                 </View>
             )} */}
+                </>
+            }
         </View>
     )
 }
