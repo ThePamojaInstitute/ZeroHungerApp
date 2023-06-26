@@ -163,106 +163,107 @@ const PostComponent = () => null
 const BottomTab = () => {
     const [modalVisible, setModalVisible] = useState(false)
     return (
-      <Tab.Navigator>
-        <Tab.Screen 
-          name="Home" 
-          component={HomeStackNavigator}
-          options={({ route }) => ({
-            headerShown: false,
-            tabBarIcon: ({ focused }) => (
-                <View style={{flex: 0, alignItems: "center", justifyContent: "center"}}>
-                    {focused
-                        ? <Ionicons name="home" size={24} color={Colors.primary} style={{marginBottom: -10}}/>
-                        : <Ionicons name="home-outline" size={24} color={Colors.primary} style={{marginBottom: -10}}/>
-                    }
-                </View>
-            ),
-            tabBarLabelPosition: "below-icon",
-            tabBarLabelStyle: styles.bottomBarText,
-            tabBarStyle: ((route) => {
-              const routeName = getFocusedRouteNameFromRoute(route) ?? ""
-              if (routeName === 'LoginScreen' || routeName === 'CreateAccountScreen') {
-                return { display: "none" }
-              }
-              return styles.bottomBarTab
-            })(route),
-          })}
-        />
-        <Tab.Screen
-          name="Post"
-          component={PostComponent}
-          //Post button + modal
-          options={({ navigation }) => ({
-            tabBarButton: () => 
-                <View>
-                    <View>
-                        <TouchableOpacity style={styles.postButton} onPress={() => setModalVisible(!modalVisible)}>
-                            <Ionicons name="add-circle-outline" size={28} color={Colors.primary} style={{marginLeft: 3}}/>
-                            <Text style={styles.bottomBarText}>Post</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View>
-                        <Modal
-                            isVisible={modalVisible}
-                            animationIn="slideInUp"
-                            backdropOpacity={0.5}
-                            onBackButtonPress={() => setModalVisible(!modalVisible)}
-                            onBackdropPress={() => setModalVisible(!modalVisible)}
-                            onSwipeComplete={() => setModalVisible(!modalVisible)}
-                            swipeDirection={['down']}
-                            style={styles.modal}
-                        >
-                            <View style={styles.modalContent}>
-                                <Text style={[globalStyles.H3, {}]}>What would you like to post?</Text>
-                            </View>
-                            <View style={{alignItems: "flex-end", marginRight: 16, marginTop: -34}}>
-                                <TouchableOpacity style={{alignItems: "flex-end", marginRight: 16}} onPress={() => setModalVisible(!modalVisible)}>
-                                    <Ionicons name="close" size={36}/>
+        <Tab.Navigator>
+            <Tab.Screen
+                name="Home"
+                component={HomeStackNavigator}
+                options={({ route }) => ({
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <View style={{ flex: 0, alignItems: "center", justifyContent: "center" }}>
+                            {focused
+                                ? <Ionicons name="home" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                                : <Ionicons name="home-outline" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                            }
+                        </View>
+                    ),
+                    tabBarLabelPosition: "below-icon",
+                    tabBarLabelStyle: styles.bottomBarText,
+                    tabBarStyle: ((route) => {
+                        const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+                        if (routeName === 'LoginScreen' || routeName === 'CreateAccountScreen') {
+                            return { display: "none" }
+                        }
+                        return styles.bottomBarTab
+                    })(route),
+                })}
+            />
+            <Tab.Screen
+                name="Post"
+                component={PostComponent}
+                //Post button + modal
+                options={({ navigation }) => ({
+                    tabBarButton: () =>
+                        <View>
+                            <View>
+                                <TouchableOpacity style={styles.postButton} onPress={() => setModalVisible(!modalVisible)}>
+                                    <Ionicons name="add-circle-outline" size={28} color={Colors.primary} style={{ marginLeft: 3 }} />
+                                    <Text style={styles.bottomBarText}>Post</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{alignItems: "center"}}>
-                                <TouchableOpacity 
-                                    style={[globalStyles.defaultBtn, {marginTop: 24}]}
-                                    onPress={() => {
-                                        setModalVisible(false)
-                                        navigation.navigate("RequestFormScreen")
-                                    }}
+                            <View>
+                                <Modal
+                                    isVisible={modalVisible}
+                                    animationIn="slideInUp"
+                                    backdropOpacity={0.5}
+                                    onBackButtonPress={() => setModalVisible(!modalVisible)}
+                                    onBackdropPress={() => setModalVisible(!modalVisible)}
+                                    onSwipeComplete={() => setModalVisible(!modalVisible)}
+                                    swipeDirection={['down']}
+                                    style={styles.modal}
                                 >
-                                    <Text style={globalStyles.defaultBtnLabel}>A Request for Food</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity 
-                                    style={[globalStyles.secondaryBtn, {marginTop: 16}]} 
-                                    onPress={() => {
-                                        setModalVisible(false)
-                                        navigation.navigate("OfferFormScreen")
-                                    }}
-                                >
-                                    <Text style={globalStyles.secondaryBtnLabel}>An Offering of Food</Text>
-                                </TouchableOpacity>
+                                    <View style={styles.modalContent}>
+                                        <Text style={[globalStyles.H3, {}]}>What would you like to post?</Text>
+                                    </View>
+                                    <View style={{ alignItems: "flex-end", marginRight: 16, marginTop: -34 }}>
+                                        <TouchableOpacity style={{ alignItems: "flex-end", marginRight: 16 }} onPress={() => setModalVisible(!modalVisible)}>
+                                            <Ionicons name="close" size={36} />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={{ alignItems: "center" }}>
+                                        <TouchableOpacity
+                                            style={[globalStyles.defaultBtn, { marginTop: 24 }]}
+                                            onPress={() => {
+                                                setModalVisible(false)
+                                                navigation.navigate("RequestFormScreen")
+                                            }}
+                                        >
+                                            <Text style={globalStyles.defaultBtnLabel}>A Request for Food</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[globalStyles.secondaryBtn, { marginTop: 16 }]}
+                                            onPress={() => {
+                                                setModalVisible(false)
+                                                navigation.navigate("OfferFormScreen")
+                                            }}
+                                        >
+                                            <Text style={globalStyles.secondaryBtnLabel}>An Offering of Food</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </Modal>
                             </View>
-                        </Modal>
-                    </View>
-                </View>
-          })}
-        />
-        <Tab.Screen 
-          name="Conversations" 
-          component={ChatStackNavigator}
-          options={{
-            tabBarIcon: ({ focused }) => (
-                <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                    {focused
-                        ? <Ionicons name="chatbox-ellipses" size={24} color={Colors.primary} style={{marginBottom: -10}}/>
-                        : <Ionicons name="chatbox-ellipses-outline" size={24} color={Colors.primary} style={{marginBottom: -10}}/>
-                    }
-                </View>
-            ),
-            tabBarLabelPosition: "below-icon",
-            tabBarLabelStyle: styles.bottomBarText,
-            tabBarStyle: styles.bottomBarTab
-          }}
-        />
-      </Tab.Navigator>
+                        </View>
+                })}
+            />
+            <Tab.Screen
+                name="Conversation"
+                component={ChatStackNavigator}
+                options={{
+                    tabBarIcon: ({ focused }) => (
+                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                            {focused
+                                ? <Ionicons name="chatbox-ellipses" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                                : <Ionicons name="chatbox-ellipses-outline" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                            }
+                        </View>
+                    ),
+                    tabBarLabelPosition: "below-icon",
+                    tabBarLabelStyle: styles.bottomBarText,
+                    tabBarStyle: styles.bottomBarTab,
+                    headerShown: false
+                }}
+            />
+        </Tab.Navigator>
     )
 }
 
@@ -295,7 +296,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.offWhite,
         borderRadius: 10,
         elevation: 0,
-      },
+    },
     modalContent: {
         flexDirection: "row",
         justifyContent: "center",

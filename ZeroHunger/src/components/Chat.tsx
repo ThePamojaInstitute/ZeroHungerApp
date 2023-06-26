@@ -38,9 +38,11 @@ export const Chat = ({ navigation, route }) => {
     const reciever = namesAlph[0] === user['username'] ?
         namesAlph[1] : namesAlph[0]
 
-    navigation.setOptions({
-        title: reciever,
-    })
+    useEffect(() => {
+        navigation.setOptions({
+            title: reciever,
+        })
+    }, [])
 
     const handleSend = () => {
         if (message) {
