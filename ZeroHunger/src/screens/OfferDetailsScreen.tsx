@@ -18,6 +18,8 @@ export const RequestDetailsScreen = ({ navigation }) => {
             description: string,
             postId: Number,
             username: string,
+            array: object[],
+            setArray: React.Dispatch<React.SetStateAction<object[]>>
         }
     }> = useRoute()
 
@@ -30,6 +32,17 @@ export const RequestDetailsScreen = ({ navigation }) => {
         // Send msg function blocked until username/user id complete
         // alert!({ type: 'open', message: 'Error: Message not sent!', alertType: 'error' })
         navigation.navigate('Chat', { user1: user['username'], user2: route.params.username, msg: message })
+    }
+
+    const handleDelete = (postId: Number) => {
+        deletePost("o", postId, accessToken).then(res => {
+            if (res.msg == "success") {
+                route.params.setArray(route.params.array.filter(item => item['postId'] != postId))
+                alert!({ type: 'open', message: res.res, alertType: 'success' })
+            } else {
+                alert!({ type: 'open', message: res.res, alertType: 'error' })
+            }
+        }).then(() => navigation.navigate('HomeScreen'))
     }
 
     return (
@@ -70,13 +83,11 @@ export const RequestDetailsScreen = ({ navigation }) => {
                 </View>
             }
             {user && user['username'] === route.params.username &&
-                <View>
+                <View style={{ height: 300 }}>
                     <Button buttonColor="red"
                         mode="contained"
-                        onPress={() => {
-                            deletePost("o", route.params.postId, accessToken)
-                            navigation.navigate("HomeScreen")
-                        }}
+                        onPress={() => handleDelete(route.params.postId)}
+                        style={{ width: '80%' }}
                     >Delete Post</Button>
                 </View>
             }
