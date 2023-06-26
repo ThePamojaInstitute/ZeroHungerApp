@@ -27,7 +27,6 @@ export const Conversations = ({ navigation }) => {
                         Authorization: `${accessToken}`
                     }
                 });
-                console.log(res);
 
                 if (res.data.length === 0) {
                     setEmpty(true)
@@ -146,24 +145,26 @@ export const Conversations = ({ navigation }) => {
                     estimatedItemSize={100}
                 />
             </View>
-            <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
-                    <Text style={styles.logOutBtnText}>Log Out</Text>
-                </TouchableOpacity>
-                <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
-                    <Text style={styles.deleteBtnText}>Delete User</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={{ marginTop: 20 }}>
-                <Text>Create Chat with:</Text>
-                <TextInput
-                    value={createGroup}
-                    placeholder="Chat with(username)"
-                    placeholderTextColor="#000000"
-                    onChangeText={setCreateGroup}
-                    onSubmitEditing={handleCreate}
-                />
-                <Button onPress={handleCreate}>Create</Button>
+            <View style={{ marginTop: 'auto' }}>
+                <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
+                        <Text style={styles.logOutBtnText}>Log Out</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
+                        <Text style={styles.deleteBtnText}>Delete User</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{ marginTop: 20 }}>
+                    <Text>Create Chat with:</Text>
+                    <TextInput
+                        value={createGroup}
+                        placeholder="Chat with(username)"
+                        placeholderTextColor="#000000"
+                        onChangeText={setCreateGroup}
+                        onSubmitEditing={handleCreate}
+                    />
+                    <Button onPress={handleCreate}>Create</Button>
+                </View>
             </View>
         </View>
     );
