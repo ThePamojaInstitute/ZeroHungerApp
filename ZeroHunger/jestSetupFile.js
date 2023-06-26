@@ -28,4 +28,10 @@ jest.mock('@react-native-community/datetimepicker', () => {
     return Picker
 })
 
+jest.mock('@expo-google-fonts/public-sans', () => ({
+    useFonts: () => [true]
+}))
+
+jest.mock('jwt-decode', () => () => ({}))
+
 require("@shopify/flash-list/jestSetup");
