@@ -137,16 +137,17 @@ export const Conversations = ({ navigation }) => {
         <View style={{}}>
             {!empty && conversations.length === 0 && <Text style={{ fontSize: 20 }}>Loading...</Text>}
             {empty && <Text style={{ fontSize: 20 }}>No Conversations</Text>}
-            <View style={{ height: 400 }}>
-                <FlashList
-                    data={conversations}
-                    renderItem={renderItem}
-                    testID="conversationsList"
-                    estimatedItemSize={100}
-                />
-            </View>
+            {!empty &&
+                <View style={{ height: 400 }}>
+                    <FlashList
+                        data={conversations}
+                        renderItem={renderItem}
+                        testID="conversationsList"
+                        estimatedItemSize={100}
+                    />
+                </View>}
             <View style={{ marginTop: 'auto' }}>
-                <View style={{ flexDirection: 'row' }}>
+                <View style={{ flexDirection: 'column' }}>
                     <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
                         <Text style={styles.logOutBtnText}>Log Out</Text>
                     </TouchableOpacity>
@@ -154,7 +155,7 @@ export const Conversations = ({ navigation }) => {
                         <Text style={styles.deleteBtnText}>Delete User</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={{ marginTop: 20 }}>
+                {/* <View style={{ marginTop: 20 }}>
                     <Text>Create Chat with:</Text>
                     <TextInput
                         value={createGroup}
@@ -164,7 +165,7 @@ export const Conversations = ({ navigation }) => {
                         onSubmitEditing={handleCreate}
                     />
                     <Button onPress={handleCreate}>Create</Button>
-                </View>
+                </View> */}
             </View>
         </View>
     );
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     logOutBtn: {
-        width: "30%",
+        width: "50%",
         borderRadius: 25,
         marginTop: 10,
         height: 50,
@@ -213,9 +214,9 @@ const styles = StyleSheet.create({
     },
     deleteBtn: {
         title: "Login",
-        width: "30%",
+        width: "50%",
         borderRadius: 25,
-        marginTop: 10,
+        marginTop: 20,
         height: 50,
         alignItems: "center",
         backgroundColor: "red",
