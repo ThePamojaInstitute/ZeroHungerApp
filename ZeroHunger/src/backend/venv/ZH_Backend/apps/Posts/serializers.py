@@ -1,11 +1,14 @@
 from rest_framework import serializers
 from .models import RequestPost, OfferPost
+from apps.Users.models import BasicUser
+from apps.Users.serializers import UserSerializer
+from django.db import models
 
 class createRequestSerializer (serializers.ModelSerializer):
     title = serializers.CharField(max_length=128)
     images = serializers.CharField(max_length=256, required=False, allow_blank=True)
     postedOn = serializers.IntegerField(min_value = 1, max_value= 2147483647) #Checks the time value is within 32 bit integer limit and is not negative
-    postedBy = serializers.IntegerField() #User ID
+    postedBy = serializers.models.ForeignKey(BasicUser, on_delete=models.CASCADE)
     description = serializers.CharField(max_length=1024, required=False, allow_blank=True)
 
     class Meta:
@@ -24,7 +27,7 @@ class createOfferSerializer (serializers.ModelSerializer):
     title = serializers.CharField(max_length=128)
     images = serializers.CharField(max_length=256, required=False, allow_blank=True)
     postedOn = serializers.IntegerField(min_value = 1, max_value= 2147483647) #Checks the time value is within 32 bit integer limit and is not negative
-    postedBy = serializers.IntegerField() #User ID
+    postedBy = serializers.models.ForeignKey(BasicUser, on_delete=models.CASCADE)
     description = serializers.CharField(max_length=1024, required=False, allow_blank=True)
 
     class Meta:
