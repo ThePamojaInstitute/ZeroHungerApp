@@ -48,6 +48,7 @@ export const PostRenderer = ({ type, navigation }) => {
 
     // on component mount
     useEffect(() => {
+        if (!user) return
         fetchLengths()
     }, [])
 

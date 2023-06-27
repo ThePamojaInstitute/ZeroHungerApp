@@ -10,8 +10,14 @@ import { AlertContext, AlertContextFields, AlertContextType } from "../../src/co
 import { mock } from "jest-mock-extended";
 import { NavigationContext } from "@react-navigation/native"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import { useFonts } from '@expo-google-fonts/public-sans';
 
 window.alert = () => { }
+
+
+jest.mock('@expo-google-fonts/public-sans', () => ({
+    useFonts: jest.fn()
+}))
 
 const mockNavigation = {
     navigate: jest.fn(),
@@ -42,9 +48,18 @@ const spyCanOpenURL = jest.spyOn(Linking, 'canOpenURL')
 const spyOpenURL = jest.spyOn(Linking, 'openURL')
 
 afterEach(() => {
+    (useFonts as jest.Mock).mockImplementation(() => [true])
     jest.clearAllMocks()
 })
 
+const authContextValues = {
+    user: "",
+    accessToken: "",
+    refreshToken: "",
+    loading: false,
+    error: "",
+    dispatch: mockDispatch
+}
 const passwordResetURL = 'zh-backend-azure-webapp.azurewebsites.net/users/reset_password/'
 const styles = {
     container: {
@@ -78,42 +93,41 @@ const styles = {
     }
 }
 
+const testComponent = (
+    <AuthContext.Provider value={authContextValues}>
+        <AlertContext.Provider value={mockAlertValue}>
+            <NavigationContext.Provider value={navContext}>
+                <LoginScreen navigation={mockNavigation} />
+            </NavigationContext.Provider>
+        </AlertContext.Provider>
+    </AuthContext.Provider >
+)
+
 
 describe('on loading', () => {
-    jest.doMock('@expo-google-fonts/public-sans', () => ({
-        useFonts: () => [false]
-    }))
-    it('shows loading if fonts are loading', () => {
-        const { getAllByText } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: null }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider >
-        )
+    it('shows loading', () => {
+        (useFonts as jest.Mock).mockImplementation(() => [false])
+        const { getAllByText } = render(testComponent)
 
-        expect(getAllByText("Username").length).toBe(1)
-        expect(getAllByText("Password").length).toBe(1)
-        expect(getAllByText("Forgot password?").length).toBe(1)
-        expect(getAllByText("Login").length).toBe(1)
-        expect(getAllByText("OR").length).toBe(1)
-        expect(getAllByText("Sign Up").length).toBe(1)
-    });
+        expect(getAllByText('Loading...').length).toBe(1)
+    })
+
+    it('doesn\'t show default elements', () => {
+        (useFonts as jest.Mock).mockImplementation(() => [false])
+        const { queryAllByText } = render(testComponent)
+
+        expect(queryAllByText("Username").length).toBe(0)
+        expect(queryAllByText("Password").length).toBe(0)
+        expect(queryAllByText("Forgot password?").length).toBe(0)
+        expect(queryAllByText("Login").length).toBe(0)
+        expect(queryAllByText("OR").length).toBe(0)
+        expect(queryAllByText("Sign Up").length).toBe(0)
+    })
 })
 
 describe('on load', () => {
     it('renders default elements', () => {
-        const { getAllByText } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: null }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider >
-        )
+        const { getAllByText } = render(testComponent)
 
         expect(getAllByText("Username").length).toBe(1)
         expect(getAllByText("Password").length).toBe(1)
@@ -124,15 +138,7 @@ describe('on load', () => {
     });
 
     it('renders default styles', () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: null }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider >
-        )
+        const { getByTestId } = render(testComponent)
 
         const container = getByTestId('Login.container')
         const usernameInputContainer = getByTestId('Login.usernameInputContainer')
@@ -177,15 +183,7 @@ describe('on load', () => {
     });
 
     it('does not navigate to the home page if user is not logged in', () => {
-        render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: null }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        render(testComponent)
 
         expect(mockNavigation.navigate).not.toBeCalled()
     })
@@ -207,13 +205,7 @@ describe('on load', () => {
 
 describe('events on login button press', () => {
     it('calls preventDefault', async () => {
-        const { getByTestId } = render(
-            <AlertContext.Provider value={mockAlertValue}>
-                <NavigationContext.Provider value={navContext}>
-                    <LoginScreen navigation={mockNavigation} />
-                </NavigationContext.Provider>
-            </AlertContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
 
         await act(() => {
             fireEvent.press(getByTestId("Login.Button"), mockEvent)
@@ -224,20 +216,11 @@ describe('events on login button press', () => {
 
     describe('when not entering username', () => {
         it('shows error message', async () => {
-            const { getByTestId, queryAllByText } = render(
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            )
-
-            spyLogInUser.mockResolvedValue({ msg: "Please enter a username", res: null })
+            const { getByTestId, queryAllByText } = render(testComponent)
 
             await act(() => {
                 fireEvent.press(getByTestId("Login.Button"), mockEvent)
             })
-
 
             const usernameErrMsgContainer = getByTestId('Login.usernameErrMsgContainer')
             const usernameErrMsg = getByTestId('Login.usernameErrMsg')
@@ -249,15 +232,7 @@ describe('events on login button press', () => {
         })
 
         it('changes username label and text input\'s styles', async () => {
-            const { getByTestId } = render(
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            )
-
-            spyLogInUser.mockResolvedValue({ msg: "Please enter a username", res: null })
+            const { getByTestId } = render(testComponent)
 
             await act(() => {
                 fireEvent.press(getByTestId("Login.Button"), mockEvent)
@@ -271,14 +246,7 @@ describe('events on login button press', () => {
         })
 
         it('removes error message and styles when input value changes', async () => {
-            const { getByTestId, queryAllByText, getByText } = render(
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            )
-            spyLogInUser.mockResolvedValue({ msg: "Please enter a username", res: null })
+            const { getByTestId, queryAllByText } = render(testComponent)
             const usernameInput = getByTestId('Login.usernameInput')
             const usernameLabel = getByTestId('Login.usernameLabel')
 
@@ -302,17 +270,9 @@ describe('events on login button press', () => {
 
     describe('when entering username but not password', () => {
         it('shows error message', async () => {
-            const { getByTestId, queryAllByText } = render(
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            )
+            const { getByTestId, queryAllByText } = render(testComponent)
 
-            spyLogInUser.mockResolvedValue({ msg: "Please enter a password", res: null })
             const usernameInput = getByTestId("Login.usernameInput")
-
             fireEvent.changeText(usernameInput, 'username')
 
             await act(() => {
@@ -329,16 +289,9 @@ describe('events on login button press', () => {
         })
 
         it('changes password label and text input\'s styles', async () => {
-            const { getByTestId } = render(
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            )
-            spyLogInUser.mockResolvedValue({ msg: "Please enter a password", res: null })
-            const usernameInput = getByTestId("Login.usernameInput")
+            const { getByTestId } = render(testComponent)
 
+            const usernameInput = getByTestId("Login.usernameInput")
             fireEvent.changeText(usernameInput, 'username')
 
             await act(() => {
@@ -353,14 +306,11 @@ describe('events on login button press', () => {
         })
 
         it('removes error message and styles when input value changes', async () => {
-            const { getByTestId, queryAllByText } = render(
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            )
-            spyLogInUser.mockResolvedValue({ msg: "Please enter a password", res: null })
+            const { getByTestId, queryAllByText } = render(testComponent)
+
+            const usernameInput = getByTestId("Login.usernameInput")
+            fireEvent.changeText(usernameInput, 'username')
+
             const passwordLabel = getByTestId('Login.passwordLabel')
             const passwordInput = getByTestId('Login.passwordInput')
             const innerPasswordInputContainer = getByTestId('Login.innerPasswordInputContainer')
@@ -385,15 +335,7 @@ describe('events on login button press', () => {
     })
 
     it('calls dispatch function to LOGIN_START', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
         const usernameInput = getByTestId("Login.usernameInput")
         const passwordInput = getByTestId("Login.passwordInput")
 
@@ -409,15 +351,7 @@ describe('events on login button press', () => {
     })
 
     it('calls logInUser function', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
         const usernameInput = getByTestId("Login.usernameInput")
         const passwordInput = getByTestId("Login.passwordInput")
 
@@ -442,15 +376,7 @@ describe('events on login button press', () => {
 
 describe('logInUser function', () => {
     it('calls dispatch when the post requests resolves', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
         const usernameInput = getByTestId("Login.usernameInput")
         const passwordInput = getByTestId("Login.passwordInput")
 
@@ -474,42 +400,8 @@ describe('logInUser function', () => {
         expect(mockDispatch).toHaveBeenNthCalledWith(2, { "payload": { "token": { "access": "access_token", "refresh": "refresh_tokne" }, "user": {} }, "type": "LOGIN_SUCCESS" })
     })
 
-    // it('shows login successfull message when the post request resolves', async () => {
-    //     const { getByTestId } = render(
-    //         <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-    //             <AlertContext.Provider value={mockAlertValue}>
-    //                 <NavigationContext.Provider value={navContext}>
-    //                     <LoginScreen navigation={mockNavigation} />
-    //                 </NavigationContext.Provider>
-    //             </AlertContext.Provider>
-    //         </AuthContext.Provider>
-    //     )
-    //     const usernameInput = getByTestId("Login.usernameInput")
-    //     const passwordInput = getByTestId("Login.passwordInput")
-
-    //     spyLogInUser.mockResolvedValue({ msg: "success", res: null })
-    //     mockAxios.onPost('users/token/').reply(200, { refresh: 'refresh_tokne', access: 'access_token' })
-
-    //     fireEvent.changeText(usernameInput, 'username')
-    //     fireEvent.changeText(passwordInput, 'password')
-
-    //     await act(() => {
-    //         fireEvent.press(getByTestId("Login.Button"), mockEvent)
-    //     })
-
-    //     expect(mockAlertDispatch).toBeCalledWith({ "alertType": "success", "message": "You are logged in!", "type": "open" })
-    // })
-
     it('navigates the home page when the post request resolves', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
         const usernameInput = getByTestId("Login.usernameInput")
         const passwordInput = getByTestId("Login.passwordInput")
 
@@ -533,15 +425,7 @@ describe('logInUser function', () => {
     })
 
     it('calls dispatch with LOGIN_FAILURE when the response login fails', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
         const usernameInput = getByTestId("Login.usernameInput")
         const passwordInput = getByTestId("Login.passwordInput")
 
@@ -560,15 +444,7 @@ describe('logInUser function', () => {
     })
 
     it('shows invalid credentials alert when the response login fails', async () => {
-        const { getByTestId, queryAllByText } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId, queryAllByText } = render(testComponent)
         const usernameInput = getByTestId("Login.usernameInput")
         const passwordInput = getByTestId("Login.passwordInput")
 
@@ -587,13 +463,7 @@ describe('logInUser function', () => {
 
 describe('testing navigation', () => {
     it('navigates to CreateAccount screen when pressing Sign Up button', () => {
-        const { getByTestId } = render(
-            <AlertContext.Provider value={mockAlertValue}>
-                <NavigationContext.Provider value={navContext}>
-                    <LoginScreen navigation={mockNavigation} />
-                </NavigationContext.Provider>
-            </AlertContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
 
         const button = getByTestId("SignUp.Button")
         fireEvent.press(button)
@@ -604,15 +474,7 @@ describe('testing navigation', () => {
 
 describe('password recovery', () => {
     it('calls canOpenURL when pressing on the button', () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
 
         const button = getByTestId("passwordReset.Button")
         fireEvent.press(button)
@@ -621,15 +483,7 @@ describe('password recovery', () => {
     })
 
     it('opens url if supported', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
 
         spyCanOpenURL.mockResolvedValue(true)
         const button = getByTestId("passwordReset.Button")
@@ -642,15 +496,7 @@ describe('password recovery', () => {
     })
 
     it('doesnt open url if not supported', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
 
         spyCanOpenURL.mockResolvedValue(false)
         const button = getByTestId("passwordReset.Button")
@@ -665,30 +511,14 @@ describe('password recovery', () => {
 
 describe('password show/hide', () => {
     it('renders with eye-off icon', () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
         const eyeIcon = getByTestId('eyeIcon').parent.parent.parent
 
         expect(eyeIcon.props.name).toBe("eye-off-outline")
     })
 
     it('eye icon changes when pressed', () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
         const eyeIcon = getByTestId('eyeIcon').parent.parent.parent
 
         expect(eyeIcon.props.name).toBe("eye-off-outline")
@@ -699,15 +529,7 @@ describe('password show/hide', () => {
     })
 
     it('hides password when eye icon is off', () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
         const eyeIcon = getByTestId('eyeIcon').parent.parent.parent
         const passwordInput = getByTestId('Login.passwordInput')
 
@@ -716,15 +538,7 @@ describe('password show/hide', () => {
     })
 
     it('shows password when eye icon is not off', () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <AlertContext.Provider value={mockAlertValue}>
-                    <NavigationContext.Provider value={navContext}>
-                        <LoginScreen navigation={mockNavigation} />
-                    </NavigationContext.Provider>
-                </AlertContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
         const eyeIcon = getByTestId('eyeIcon').parent.parent.parent
         const passwordInput = getByTestId('Login.passwordInput')
 
