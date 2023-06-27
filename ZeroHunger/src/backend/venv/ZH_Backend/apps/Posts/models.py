@@ -18,6 +18,5 @@ class OfferPost(models.Model):
     postedOn = models.IntegerField(default=1) #Stores time as unix timestamp, defaults to UTC
     postedBy = models.ForeignKey(BasicUser, on_delete=models.CASCADE, related_name="offer_post_by")
     description = models.CharField(max_length=1024, blank=True)
-    description2 = models.CharField(max_length=1024, blank=True)
     def __str__(self):
         return self.title
