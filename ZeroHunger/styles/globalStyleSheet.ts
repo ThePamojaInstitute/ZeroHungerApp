@@ -192,12 +192,12 @@ export const globalStyles = StyleSheet.create({
         color: Colors.dark
     },
     H5: {
-        fontFamily: 'PublicSans_600Medium',
+        fontFamily: 'PublicSans_500Medium',
         fontSize: 15,
         color: Colors.dark
     },
     Body: {
-        fontFamily: 'PublicSans_600Regular',
+        fontFamily: 'PublicSans_400Regular',
         fontSize:16,
         color: Colors.dark
     },
