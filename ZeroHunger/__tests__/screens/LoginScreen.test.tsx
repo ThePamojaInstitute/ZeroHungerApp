@@ -10,7 +10,12 @@ import { AlertContext, AlertContextFields, AlertContextType } from "../../src/co
 import { mock } from "jest-mock-extended";
 import { NavigationContext } from "@react-navigation/native"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import { useFonts } from '@expo-google-fonts/public-sans';
 
+
+jest.mock('@expo-google-fonts/public-sans', () => ({
+    useFonts: jest.fn()
+}))
 
 const mockNavigation = {
     navigate: jest.fn(),
@@ -41,6 +46,7 @@ const spyCanOpenURL = jest.spyOn(Linking, 'canOpenURL')
 const spyOpenURL = jest.spyOn(Linking, 'openURL')
 
 afterEach(() => {
+    (useFonts as jest.Mock).mockImplementation(() => [true])
     jest.clearAllMocks()
 })
 
@@ -79,10 +85,8 @@ const styles = {
 
 
 describe('on loading', () => {
-    jest.doMock('@expo-google-fonts/public-sans', () => ({
-        useFonts: () => [false]
-    }))
-    it('shows loading if fonts are loading', () => {
+    it('shows loading', () => {
+        (useFonts as jest.Mock).mockImplementation(() => [false])
         const { getAllByText } = render(
             <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: null }}>
                 <AlertContext.Provider value={mockAlertValue}>
@@ -93,13 +97,28 @@ describe('on loading', () => {
             </AuthContext.Provider >
         )
 
-        expect(getAllByText("Username").length).toBe(1)
-        expect(getAllByText("Password").length).toBe(1)
-        expect(getAllByText("Forgot password?").length).toBe(1)
-        expect(getAllByText("Login").length).toBe(1)
-        expect(getAllByText("OR").length).toBe(1)
-        expect(getAllByText("Sign Up").length).toBe(1)
-    });
+        expect(getAllByText('Loading...').length).toBe(1)
+    })
+
+    it('doesn\'t show default elements', () => {
+        (useFonts as jest.Mock).mockImplementation(() => [false])
+        const { queryAllByText } = render(
+            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: null }}>
+                <AlertContext.Provider value={mockAlertValue}>
+                    <NavigationContext.Provider value={navContext}>
+                        <LoginScreen navigation={mockNavigation} />
+                    </NavigationContext.Provider>
+                </AlertContext.Provider>
+            </AuthContext.Provider >
+        )
+
+        expect(queryAllByText("Username").length).toBe(0)
+        expect(queryAllByText("Password").length).toBe(0)
+        expect(queryAllByText("Forgot password?").length).toBe(0)
+        expect(queryAllByText("Login").length).toBe(0)
+        expect(queryAllByText("OR").length).toBe(0)
+        expect(queryAllByText("Sign Up").length).toBe(0)
+    })
 })
 
 describe('on load', () => {
@@ -472,32 +491,6 @@ describe('logInUser function', () => {
         expect(mockDispatch).toBeCalledTimes(2)
         expect(mockDispatch).toHaveBeenNthCalledWith(2, { "payload": { "token": { "access": "access_token", "refresh": "refresh_tokne" }, "user": {} }, "type": "LOGIN_SUCCESS" })
     })
-
-    // it('shows login successfull message when the post request resolves', async () => {
-    //     const { getByTestId } = render(
-    //         <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-    //             <AlertContext.Provider value={mockAlertValue}>
-    //                 <NavigationContext.Provider value={navContext}>
-    //                     <LoginScreen navigation={mockNavigation} />
-    //                 </NavigationContext.Provider>
-    //             </AlertContext.Provider>
-    //         </AuthContext.Provider>
-    //     )
-    //     const usernameInput = getByTestId("Login.usernameInput")
-    //     const passwordInput = getByTestId("Login.passwordInput")
-
-    //     spyLogInUser.mockResolvedValue({ msg: "success", res: null })
-    //     mockAxios.onPost('users/token/').reply(200, { refresh: 'refresh_tokne', access: 'access_token' })
-
-    //     fireEvent.changeText(usernameInput, 'username')
-    //     fireEvent.changeText(passwordInput, 'password')
-
-    //     await act(() => {
-    //         fireEvent.press(getByTestId("Login.Button"), mockEvent)
-    //     })
-
-    //     expect(mockAlertDispatch).toBeCalledWith({ "alertType": "success", "message": "You are logged in!", "type": "open" })
-    // })
 
     it('navigates the home page when the post request resolves', async () => {
         const { getByTestId } = render(

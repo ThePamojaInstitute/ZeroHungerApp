@@ -183,7 +183,10 @@ export const LoginScreen = ({ navigation }) => {
                 blurOnSubmit={false}
                 onSubmitEditing={handleLogin}
               />
-              <Ionicons testID="eyeIcon" name={hidePass ? "eye-off-outline" : "eye-outline"} size={22} onPress={() => setHidePass(!hidePass)} style={{ padding: 9 }} />
+              <Ionicons testID="eyeIcon"
+                name={hidePass ? "eye-off-outline" : "eye-outline"}
+                size={22}
+                onPress={() => setHidePass(!hidePass)} style={{ padding: 9 }} />
             </View>
           </View>
           {(errField === 'password') &&
