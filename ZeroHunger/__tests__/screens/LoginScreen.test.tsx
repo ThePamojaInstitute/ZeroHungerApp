@@ -11,6 +11,7 @@ import { mock } from "jest-mock-extended";
 import { NavigationContext } from "@react-navigation/native"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 
+window.alert = () => { }
 
 const mockNavigation = {
     navigate: jest.fn(),
