@@ -221,7 +221,7 @@ export const LoginScreen = ({ navigation }) => {
           <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("OfferFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add an Offer</Text>
           </TouchableOpacity> */}
-          {/* <NotificationsTest setExpoToken={setExpoPushToken} /> */}
+          <NotificationsTest setExpoToken={setExpoPushToken} />
         </>
       }
       {/* <Button
