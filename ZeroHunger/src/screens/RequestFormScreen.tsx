@@ -37,6 +37,7 @@ export const RequestFormScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
+        if (!loaded) return
         navigation.setOptions({
             title: "Request Food",
             headerTitleAlign: 'center',
@@ -44,17 +45,17 @@ export const RequestFormScreen = ({ navigation }) => {
                 backgroundColor: Colors.Background
             },
             headerLeft: () => (
-                <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-                    <Text style={styles.cancelBtn}>Cancel</Text>
+                <TouchableOpacity testID="Request.cancelBtn" onPress={() => navigation.navigate('HomeScreen')}>
+                    <Text testID="Request.cancelBtnLabel" style={globalStyles.formCancelBtn}>Cancel</Text>
                 </TouchableOpacity>
             ),
             headerRight: () => (
-                <TouchableOpacity style={globalStyles.navDefaultBtn}>
-                    <Text testID="createPost.Button" onPress={handlePress} style={globalStyles.defaultBtnLabel}>Post</Text>
+                <TouchableOpacity onPress={handlePress} testID="Request.createBtn" style={globalStyles.navDefaultBtn}>
+                    <Text testID="Request.createBtnLabel" style={globalStyles.defaultBtnLabel}>Post</Text>
                 </TouchableOpacity>
             )
         })
-    }, [title, images, desc, loading])
+    }, [title, images, desc, loading, loaded])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
@@ -94,62 +95,68 @@ export const RequestFormScreen = ({ navigation }) => {
     }
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView testID="Request.formContainer" style={globalStyles.formContainer}>
             {(!loaded || loading) && <Text>Loading...</Text>}
             {loaded &&
                 <>
                     <View>
-                        <Text testID="reqTitle" style={[styles.titleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text style={styles.descText}>Create a descriptive title for your request</Text>
+                        <Text testID="Request.titleLabel" style={[globalStyles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Request.titleDesc" style={globalStyles.formDescText}>Create a descriptive title for your request</Text>
                     </View>
-                    <View style={styles.inputContainer}>
+                    <View testID="Request.formInputContainer" style={globalStyles.formInputContainer}>
                         <TextInput
-                            // value={title}
+                            value={title}
                             nativeID="title"
-                            testID="reqTitleInput"
+                            testID="Request.titleInput"
                             placeholder="Enter name of food"
                             placeholderTextColor="#656565"
-                            style={[styles.input, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
-                            onChangeText={setTitle}
+                            style={[globalStyles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                            onChangeText={newText => {
+                                setTitle(newText)
+                                setErrMsg("")
+                            }}
                             onChange={() => setErrMsg("")}
                             maxLength={100}
                         />
                     </View>
-                    {errMsg && <Text style={styles.errorMsg}>{errMsg}</Text>}
+                    {errMsg && <Text testID="Request.titleErrMsg" style={globalStyles.formErrorMsg}>{errMsg}</Text>}
                     <View>
-                        <Text style={styles.titleText}>Photo</Text>
-                        <Text style={styles.descText}>Optional: Add photo(s) to help community members understand what you are looking for!</Text>
+                        <Text testID="Request.photoLabel" style={globalStyles.formTitleText}>Photo</Text>
+                        <Text testID="Request.photoDesc" style={globalStyles.formDescText}>Optional: Add photo(s) to help community members understand what you are looking for!</Text>
                     </View>
                     <ImagePicker setImages={setImages} />
                     <View>
-                        <Text style={styles.titleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text style={styles.descText}>Please select all the food category type that applies</Text>
+                        <Text testID="Request.categoryLabel" style={globalStyles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Request.categoryDesc" style={globalStyles.formDescText}>Please select all the food category type that applies</Text>
                         <FoodCategories />
                     </View>
                     <View>
-                        <Text style={styles.titleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text style={styles.descText}>Please input the desired quantity of the food item you need</Text>
+                        <Text testID="Request.quantityLabel" style={globalStyles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Request.quantityDesc" style={globalStyles.formDescText}>Please input the desired quantity of the food item you need</Text>
                         <Quantity />
                     </View>
                     <View>
-                        <Text style={styles.titleText}>Need By Date</Text>
-                        <Text style={styles.descText}>Optional: Please select a date you would need this item by. Your post will expire at the end of this date.</Text>
+                        <Text testID="Request.dateLabel" style={globalStyles.formTitleText}>Need By Date</Text>
+                        <Text testID="Request.dateDesc" style={globalStyles.formDescText}>Optional: Please select a date you would need this item by. Your post will expire at the end of this date.</Text>
                         <DatePicker />
                     </View>
                     <View>
-                        <Text style={styles.titleText}>Description</Text>
-                        <Text style={styles.descText}>Optional: Describe your food request in detail</Text>
+                        <Text testID="Request.descTitle" style={globalStyles.formTitleText}>Description</Text>
+                        <Text testID="Request.descDesc" style={globalStyles.formDescText}>Optional: Describe your food request in detail</Text>
                     </View>
-                    <View style={styles.descriptionInputView}>
+                    <View style={globalStyles.formDescInputView}>
                         <TextInput
-                            // value={description}
+                            value={desc}
                             nativeID="desc"
-                            testID="reqDescInput"
+                            testID="Request.descInput"
                             placeholder="Enter Description"
                             placeholderTextColor="#656565"
-                            style={styles.inputText}
+                            style={globalStyles.formInputText}
                             multiline={true}
-                            onChangeText={setDesc}
+                            onChangeText={newText => {
+                                setDesc(newText)
+                                setErrMsg("")
+                            }}
                             maxLength={1024}
                         />
                     </View>
@@ -160,86 +167,3 @@ export const RequestFormScreen = ({ navigation }) => {
 }
 
 export default RequestFormScreen
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 10,
-        marginTop: 20,
-        backgroundColor: Colors.Background
-    },
-    titleText: {
-        fontFamily: 'PublicSans_600SemiBold',
-        fontSize: 18,
-        color: Colors.dark,
-        marginBottom: 3
-    },
-    descText: {
-        marginBottom: 5,
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        color: '#656565'
-    },
-    descriptionInputView: {
-        backgroundColor: "white",
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#D1D1D1',
-        width: "100%",
-        height: 120,
-        marginBottom: 25,
-        marginTop: 10,
-    },
-    inputText: {
-        flex: 1,
-        padding: 10,
-        marginLeft: 5,
-        fontSize: 16,
-        textAlignVertical: "top",
-        fontFamily: 'PublicSans_400Regular'
-    },
-    cancelBtn: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 16,
-        color: '#656565'
-    },
-    Label: {
-        fontFamily: 'PublicSans_600SemiBold',
-        fontSize: 18,
-        color: Colors.dark
-    },
-    inputContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 0,
-        gap: 9,
-        // width: "90%",
-        height: 40,
-        marginBottom: 10,
-        marginTop: 5,
-    },
-    input: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        width: '100%',
-        padding: 10,
-        gap: 10,
-        backgroundColor: Colors.white,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: Colors.midLight,
-        borderRadius: 10,
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 16,
-        paddingLeft: 10
-    },
-    errorMsg: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        color: Colors.alert2,
-        alignSelf: 'flex-start',
-        marginBottom: 10
-    }
-})
-
