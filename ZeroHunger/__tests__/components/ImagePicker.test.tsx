@@ -19,29 +19,26 @@ afterEach(() => {
     jest.clearAllMocks();
 })
 
+const TestComponent = (
+    <AlertContext.Provider value={mockAlertValue}>
+        <ImagePicker setImages={mockSetImages} />
+    </AlertContext.Provider>
+)
+
 describe('onload', () => {
     it('renders correctly', () => {
-        const { getByText, getByTestId } = render(
-            <AlertContext.Provider value={mockAlertValue}>
-                <ImagePicker setImages={mockSetImages} />
-            </AlertContext.Provider>
-        )
+        const { getByText, getByTestId } = render(TestComponent)
 
-        getByTestId("AccessCameraRoll.Button")
-        getByText("No Images")
+        getByTestId("ImagePicker.accessButton")
     })
 })
 
 describe("Access Camera Roll button", () => {
     it('calls pickImages when pressed', async () => {
-        const { getByTestId } = render(
-            <AlertContext.Provider value={mockAlertValue}>
-                <ImagePicker setImages={mockSetImages} />
-            </AlertContext.Provider>
-        )
+        const { getByTestId } = render(TestComponent)
 
         await act(() => {
-            fireEvent.press(getByTestId("AccessCameraRoll.Button"))
+            fireEvent.press(getByTestId("ImagePicker.accessButton"))
         })
 
         expect(spyLaunchImageLibrary).toBeCalled()
@@ -50,11 +47,7 @@ describe("Access Camera Roll button", () => {
 
 describe('pickImages function on web', () => {
     it('shows image when only one image is selected', async () => {
-        const { queryAllByText, getByTestId } = render(
-            <AlertContext.Provider value={mockAlertValue}>
-                <ImagePicker setImages={mockSetImages} />
-            </AlertContext.Provider>
-        )
+        const { queryAllByText, getByTestId } = render(TestComponent)
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets: [
@@ -63,19 +56,14 @@ describe('pickImages function on web', () => {
         })
 
         await act(() => {
-            fireEvent.press(getByTestId("AccessCameraRoll.Button"))
+            fireEvent.press(getByTestId("ImagePicker.accessButton"))
         })
 
-        expect(queryAllByText("No Images").length).toBe(0)
         getByTestId('image1')
     })
 
     it('shows images when more than one image is selected', async () => {
-        const { queryAllByText, getByTestId } = render(
-            <AlertContext.Provider value={mockAlertValue}>
-                <ImagePicker setImages={mockSetImages} />
-            </AlertContext.Provider>
-        )
+        const { queryAllByText, getByTestId } = render(TestComponent)
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets:
@@ -85,21 +73,16 @@ describe('pickImages function on web', () => {
         })
 
         await act(() => {
-            fireEvent.press(getByTestId("AccessCameraRoll.Button"))
+            fireEvent.press(getByTestId("ImagePicker.accessButton"))
         })
 
-        expect(queryAllByText("No Images").length).toBe(0)
         getByTestId('image1')
         getByTestId('image2')
         getByTestId('image3')
     })
 
     it('doesnt show limit message when 5 images are selected', async () => {
-        const { getByTestId } = render(
-            <AlertContext.Provider value={mockAlertValue}>
-                <ImagePicker setImages={mockSetImages} />
-            </AlertContext.Provider>
-        )
+        const { getByTestId } = render(TestComponent)
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets: [
@@ -112,18 +95,14 @@ describe('pickImages function on web', () => {
         })
 
         await act(() => {
-            fireEvent.press(getByTestId("AccessCameraRoll.Button"))
+            fireEvent.press(getByTestId("ImagePicker.accessButton"))
         })
 
         expect(mockAlertDispatch).not.toBeCalled()
     })
 
     it('shows limit message when more than 5 images are selected', async () => {
-        const { getByTestId } = render(
-            <AlertContext.Provider value={mockAlertValue}>
-                <ImagePicker setImages={mockSetImages} />
-            </AlertContext.Provider>
-        )
+        const { getByTestId } = render(TestComponent)
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets: [
@@ -137,7 +116,7 @@ describe('pickImages function on web', () => {
         })
 
         await act(() => {
-            fireEvent.press(getByTestId("AccessCameraRoll.Button"))
+            fireEvent.press(getByTestId("ImagePicker.accessButton"))
         })
 
         expect(mockAlertDispatch).toBeCalledWith({
@@ -148,11 +127,7 @@ describe('pickImages function on web', () => {
     })
 
     it('shows only 5 images when more than 5 images are selected', async () => {
-        const { getByText, getByTestId, queryByTestId } = render(
-            <AlertContext.Provider value={mockAlertValue}>
-                <ImagePicker setImages={mockSetImages} />
-            </AlertContext.Provider>
-        )
+        const { getByText, getByTestId, queryByTestId } = render(TestComponent)
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets: [
@@ -166,7 +141,7 @@ describe('pickImages function on web', () => {
         })
 
         await act(() => {
-            fireEvent.press(getByTestId("AccessCameraRoll.Button"))
+            fireEvent.press(getByTestId("ImagePicker.accessButton"))
         })
 
         getByTestId('image1')
@@ -183,11 +158,7 @@ describe('pickImages function on web', () => {
     })
 
     it('deletes an image when the delete button is pressed', async () => {
-        const { queryByTestId, getByTestId } = render(
-            <AlertContext.Provider value={mockAlertValue}>
-                <ImagePicker setImages={mockSetImages} />
-            </AlertContext.Provider>
-        )
+        const { queryByTestId, getByTestId } = render(TestComponent)
 
         spyLaunchImageLibrary.mockResolvedValue({
             canceled: false, assets: [
@@ -199,7 +170,7 @@ describe('pickImages function on web', () => {
         })
 
         await act(() => {
-            fireEvent.press(getByTestId("AccessCameraRoll.Button"))
+            fireEvent.press(getByTestId("ImagePicker.accessButton"))
         })
 
         fireEvent.press(getByTestId("image3.DeleteButton"))
