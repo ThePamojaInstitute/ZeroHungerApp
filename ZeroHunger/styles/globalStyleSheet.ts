@@ -171,6 +171,159 @@ export const globalStyles = StyleSheet.create({
         color: Colors.alert2,
         alignSelf: 'flex-start',
     },
+    authContainer: {
+        backgroundColor: "#EFF1F7",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 20
+    },
+    termsAndCondContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 0,
+        gap: 9,
+        width: "90%",
+        marginTop: 5,
+    },
+    termsAndCondText: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 13,
+        color: '#656565'
+    },
+    termsAndCondAcceptText: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 16,
+        color: Colors.dark,
+        marginLeft: 5
+    },
+    divider: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '90%',
+        padding: 0,
+        gap: 10,
+        marginTop: 20,
+        marginBottom: -10
+    },
+    dividerLine: {
+        height: 1,
+        flex: 1,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: '#B8B8B8',
+    },
+    dividerText: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 13,
+        display: 'flex',
+        alignItems: 'center',
+        color: Colors.dark
+    },
+    formContainer: {
+        flex: 1,
+        padding: 10,
+        marginTop: 20,
+        backgroundColor: Colors.Background
+    },
+    formTitleText: {
+        fontFamily: 'PublicSans_600SemiBold',
+        fontSize: 18,
+        color: Colors.dark,
+        marginBottom: 3
+    },
+    formDescText: {
+        marginBottom: 5,
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 13,
+        color: '#656565'
+    },
+    formDescInputView: {
+        backgroundColor: "white",
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#D1D1D1',
+        width: "100%",
+        height: 120,
+        marginBottom: 25,
+        marginTop: 10,
+    },
+    formInputText: {
+        flex: 1,
+        padding: 10,
+        marginLeft: 5,
+        fontSize: 16,
+        textAlignVertical: "top",
+        fontFamily: 'PublicSans_400Regular'
+    },
+    formCancelBtn: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 16,
+        color: '#656565'
+    },
+    formLabel: {
+        fontFamily: 'PublicSans_600SemiBold',
+        fontSize: 18,
+        color: Colors.dark
+    },
+    formInputContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 0,
+        gap: 9,
+        // width: "90%",
+        height: 40,
+        marginBottom: 10,
+        marginTop: 5,
+    },
+    formInput: {
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        width: '100%',
+        padding: 10,
+        gap: 10,
+        backgroundColor: Colors.white,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: Colors.midLight,
+        borderRadius: 10,
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 16,
+        paddingLeft: 10
+    },
+    formErrorMsg: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 13,
+        color: Colors.alert2,
+        alignSelf: 'flex-start',
+        marginBottom: 10
+    },
+    datePickerContainer: {
+        backgroundColor: Colors.white,
+        borderWidth: 1,
+        borderColor: '#D1D1D1',
+        borderRadius: 10,
+        width: '38%',
+        padding: 5,
+        flexDirection: 'row',
+        marginBottom: 15,
+        marginTop: 10
+    },
+    datePickerImg: {
+        marginLeft: -5,
+        marginRight: 4,
+        marginTop: 0,
+        marginVertical: 2,
+        width: '30%',
+        height: '100%',
+        resizeMode: 'contain'
+    },
+    datePickerDate: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 13,
+        color: '#656565',
+        marginTop: 2
+    },
     H1: {
         fontFamily: 'PublicSans_600SemiBold',
         fontSize: 28,
@@ -198,7 +351,7 @@ export const globalStyles = StyleSheet.create({
     },
     Body: {
         fontFamily: 'PublicSans_600Regular',
-        fontSize:16,
+        fontSize: 16,
         color: Colors.dark
     },
     Small1: {

@@ -102,7 +102,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   }
 
   return (
-    <View testID="SignUp.container" style={styles.container}>
+    <View testID="SignUp.container" style={globalStyles.authContainer}>
       {!loaded && <Text>Loading...</Text>}
       {loaded &&
         <>
@@ -219,10 +219,10 @@ export const CreateAccountScreen = ({ navigation }) => {
             <View testID="SignUp.confPasswordErrMsgContainer" style={globalStyles.errorMsgContainer}>
               <Text testID="SignUp.confPasswordErrMsg" style={globalStyles.errorMsg}>{errMsg}</Text>
             </View>}
-          <View testID="SignUp.termsAndCondContainer" style={styles.termsAndCondContainer}>
+          <View testID="SignUp.termsAndCondContainer" style={globalStyles.termsAndCondContainer}>
             <Text testID="SignUp.termsInputLabel" style={[globalStyles.inputLabel,
             { color: `${(errField === 'terms') ? Colors.alert2 : Colors.dark}` }]}>Terms and Conditions</Text>
-            <Text testID="SignUp.termsAndCondText" style={styles.termsAndCondText}>Read our <Text testID="SignUp.termsAndCondLink" style={{ textDecorationLine: 'underline' }}
+            <Text testID="SignUp.termsAndCondText" style={globalStyles.termsAndCondText}>Read our <Text testID="SignUp.termsAndCondLink" style={{ textDecorationLine: 'underline' }}
               onPress={() => console.log("terms and conditions")}
             >terms and conditions.</Text></Text>
             {(errField === 'terms') &&
@@ -239,7 +239,7 @@ export const CreateAccountScreen = ({ navigation }) => {
                   if (errField === 'terms') setErrField('')
                   setIsAccepted(!isAccepted)
                 }} />
-              <Text testID="SignUp.termsAndCondAcceptText" style={styles.termsAndCondAcceptText}>I accept</Text>
+              <Text testID="SignUp.termsAndCondAcceptText" style={globalStyles.termsAndCondAcceptText}>I accept</Text>
             </View>
           </View>
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={handleSignUp}>
@@ -252,31 +252,3 @@ export const CreateAccountScreen = ({ navigation }) => {
 }
 
 export default CreateAccountScreen
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#EFF1F7",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20
-  },
-  termsAndCondContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: 0,
-    gap: 9,
-    width: "90%",
-    marginTop: 5,
-  },
-  termsAndCondText: {
-    fontFamily: 'PublicSans_400Regular',
-    fontSize: 13,
-    color: '#656565'
-  },
-  termsAndCondAcceptText: {
-    fontFamily: 'PublicSans_400Regular',
-    fontSize: 16,
-    color: Colors.dark,
-    marginLeft: 5
-  },
-});
