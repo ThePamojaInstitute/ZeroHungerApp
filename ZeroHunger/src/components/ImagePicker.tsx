@@ -61,16 +61,18 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
         //     </View>
         //     {images.length == 0 && <Text>No Images</Text>}
         // </View>
-        <View style={{ marginBottom: 20 }}>
+        <View testID="ImagePicker.container" style={{ marginBottom: 20 }}>
             <Pressable
-                testID="AccessCameraRoll.Button"
+                testID="ImagePicker.accessButton"
                 onPress={pickImages}>
                 <Image
+                    testID="ImagePicker.image"
                     style={[styles.imgInput, { width: Platform.OS === 'web' ? 370 : '100%' }]}
                     source={require('../../assets/Photo_Input.png')} />
             </Pressable>
-            <View style={{ marginLeft: 20 }}>
+            <View testID="ImagePicker.imagesContainer" style={{ marginLeft: 20 }}>
                 <FlatList
+                    testID="ImagePicker.imagesList"
                     data={images}
                     renderItem={renderItem}
                     horizontal
@@ -84,21 +86,6 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
 export default ImagePicker
 
 const styles = StyleSheet.create({
-    logOutBtn: {
-        title: "Login",
-        width: "25%",
-        borderRadius: 25,
-        marginTop: 10,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "#6A6A6A",
-    },
-    logOutBtnText: {
-        color: "#FFFFFF",
-        padding: 15,
-        marginLeft: 10,
-        fontSize: 15,
-    },
     Img: {
         marginTop: 20,
         marginLeft: 20,

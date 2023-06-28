@@ -68,12 +68,13 @@ const Quantity = () => {
     // }
 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity style={[styles.button, { opacity: min ? 0.2 : 1 }]} onPress={onPressSub}>
+        <View testID="Quantity.container" style={styles.container}>
+            <TouchableOpacity testID="Quantity.subBtn" style={[styles.button, { opacity: min ? 0.2 : 1 }]} onPress={onPressSub}>
                 <Ionicons name="remove-outline" size={26} color="black" />
                 {/* <Text style={styles.buttonText}>-</Text> */}
             </TouchableOpacity>
             <TextInput
+                testID="Quantity.input"
                 nativeID="quantity"
                 style={styles.input}
                 keyboardType='numeric'
@@ -81,7 +82,7 @@ const Quantity = () => {
                 value={count.toString()}
                 onChangeText={value => handleChange(value)}
             />
-            <TouchableOpacity style={[styles.button, { opacity: max ? 0.2 : 1 }]} onPress={onPressAdd}>
+            <TouchableOpacity testID="Quantity.addBtn" style={[styles.button, { opacity: max ? 0.2 : 1 }]} onPress={onPressAdd}>
                 <Ionicons name="add-outline" size={26} color="black" />
                 {/* <Text style={styles.buttonText}>+</Text> */}
             </TouchableOpacity>
@@ -91,6 +92,7 @@ const Quantity = () => {
             <Option option='Piece' />
             <Option option='Measurement' /> */}
             <DropDownPicker
+                testID="Quantity.dropDownPicker"
                 open={open}
                 value={measurement}
                 items={measurements}

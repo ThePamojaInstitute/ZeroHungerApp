@@ -18,7 +18,7 @@ const DatePicker = () => {
     }
 
     return (
-        <View>
+        <View testID="DatePickerWeb.container">
             <ReactDatePicker
                 portalId="id"
                 id="datePicker"
@@ -27,7 +27,7 @@ const DatePicker = () => {
                 minDate={minDate}
                 maxDate={maxDate}
             />
-            <Text>{selected && `selected: ${date.toLocaleDateString()}`}</Text>
+            <Text testID="DatePickerWeb.date">{selected && `selected: ${date.toLocaleDateString()}`}</Text>
         </View>
     );
 };
