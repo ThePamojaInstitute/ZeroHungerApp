@@ -102,13 +102,13 @@ export const CreateAccountScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View testID="SignUp.container" style={styles.container}>
       {!loaded && <Text>Loading...</Text>}
       {loaded &&
         <>
           <Text>{loading && "Loading..."}</Text>
-          <View style={globalStyles.inputContainer}>
-            <Text style={[globalStyles.inputLabel,
+          <View testID="SignUp.usernameInputContainer" style={globalStyles.inputContainer}>
+            <Text testID="SignUp.usernameLabel" style={[globalStyles.inputLabel,
             { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}
             >Username</Text>
             <TextInput
@@ -116,7 +116,10 @@ export const CreateAccountScreen = ({ navigation }) => {
               testID="SignUp.usernameInput"
               style={[globalStyles.input,
               { borderColor: `${(errField === 'username') ? Colors.alert2 : Colors.midLight}` }]}
-              onChangeText={setUsername}
+              onChangeText={newText => {
+                setUsername(newText)
+                setErrField('')
+              }}
               onChange={() => { if (errField === 'username') setErrField('') }}
               blurOnSubmit={false}
               onSubmitEditing={() => email_input.current?.focus()}
@@ -124,11 +127,11 @@ export const CreateAccountScreen = ({ navigation }) => {
             />
           </View>
           {(errField === 'username') &&
-            <View style={globalStyles.errorMsgContainer}>
-              <Text style={globalStyles.errorMsg}>{errMsg}</Text>
+            <View testID="SignUp.usernameErrMsgContainer" style={globalStyles.errorMsgContainer}>
+              <Text testID="SignUp.usernameErrMsg" style={globalStyles.errorMsg}>{errMsg}</Text>
             </View>}
-          <View style={globalStyles.inputContainer}>
-            <Text style={[globalStyles.inputLabel,
+          <View testID="SignUp.emailInputContainer" style={globalStyles.inputContainer}>
+            <Text testID="SignUp.emailLabel" style={[globalStyles.inputLabel,
             { color: `${(errField === 'email') ? Colors.alert2 : Colors.dark}` }]}
             >Email Address</Text>
             <TextInput
@@ -136,7 +139,10 @@ export const CreateAccountScreen = ({ navigation }) => {
               testID="SignUp.emailInput"
               style={[globalStyles.input, { borderColor: `${(errField === 'email') ? Colors.alert2 : Colors.midLight}` }]}
               secureTextEntry={false}
-              onChangeText={setEmail}
+              onChangeText={newText => {
+                setEmail(newText)
+                setErrField('')
+              }}
               onChange={() => { if (errField === 'email') setErrField('') }}
               ref={email_input}
               blurOnSubmit={false}
@@ -144,21 +150,24 @@ export const CreateAccountScreen = ({ navigation }) => {
             />
           </View>
           {(errField === 'email') &&
-            <View style={globalStyles.errorMsgContainer}>
-              <Text style={globalStyles.errorMsg}>{errMsg}</Text>
+            <View testID="SignUp.emailErrMsgContainer" style={globalStyles.errorMsgContainer}>
+              <Text testID="SignUp.emailErrMsg" style={globalStyles.errorMsg}>{errMsg}</Text>
             </View>}
-          <View style={globalStyles.inputContainer}>
-            <Text style={[globalStyles.inputLabel,
+          <View testID="SignUp.passwordInputContainer" style={globalStyles.inputContainer}>
+            <Text testID="SignUp.passwordLabel" style={[globalStyles.inputLabel,
             { color: `${(errField === 'password') ? Colors.alert2 : Colors.dark}` }]}
             >Password</Text>
-            <View style={[globalStyles.passwordInputContainer,
+            <View testID="SignUp.innerPasswordInputContainer" style={[globalStyles.passwordInputContainer,
             { borderColor: `${(errField === 'password') ? Colors.alert2 : Colors.midLight}` }]}>
               <TextInput
                 nativeID="SignUp.passwordInput"
                 testID="SignUp.passwordInput"
                 style={globalStyles.passwordInput}
                 secureTextEntry={hidePass}
-                onChangeText={setPassword}
+                onChangeText={newText => {
+                  setPassword(newText)
+                  setErrField('')
+                }}
                 onChange={() => { if (errField === 'password') setErrField('') }}
                 ref={password_input}
                 blurOnSubmit={false}
@@ -166,6 +175,7 @@ export const CreateAccountScreen = ({ navigation }) => {
                 maxLength={64}
               />
               <Ionicons
+                testID="eyeIcon"
                 name={hidePass ? "eye-off-outline" : "eye-outline"}
                 size={22}
                 onPress={() => setHidePass(!hidePass)}
@@ -173,21 +183,24 @@ export const CreateAccountScreen = ({ navigation }) => {
             </View>
           </View>
           {(errField === 'password') &&
-            <View style={globalStyles.errorMsgContainer}>
-              <Text style={globalStyles.errorMsg}>{errMsg}</Text>
+            <View testID="SignUp.passwordErrMsgContainer" style={globalStyles.errorMsgContainer}>
+              <Text testID="SignUp.passwordErrMsg" style={globalStyles.errorMsg}>{errMsg}</Text>
             </View>}
-          <View style={globalStyles.inputContainer}>
-            <Text style={[globalStyles.inputLabel,
+          <View testID="SignUp.confPasswordInputContainer" style={globalStyles.inputContainer}>
+            <Text testID="SignUp.confPasswordLabel" style={[globalStyles.inputLabel,
             { color: `${(errField === 'confPass') ? Colors.alert2 : Colors.dark}` }]}
             >Confirm Password</Text>
-            <View style={[globalStyles.passwordInputContainer,
+            <View testID="SignUp.innerconfPasswordInputContainer" style={[globalStyles.passwordInputContainer,
             { borderColor: `${(errField === 'confPass') ? Colors.alert2 : Colors.midLight}` }]}>
               <TextInput
                 nativeID="SignUp.confPasswordInput"
                 testID="SignUp.confPasswordInput"
                 style={globalStyles.passwordInput}
                 secureTextEntry={hideConfPass}
-                onChangeText={setConfPass}
+                onChangeText={newText => {
+                  setConfPass(newText)
+                  setErrField('')
+                }}
                 onChange={() => { if (errField === 'confPass') setErrField('') }}
                 ref={confPassword_input}
                 blurOnSubmit={false}
@@ -195,6 +208,7 @@ export const CreateAccountScreen = ({ navigation }) => {
                 maxLength={64}
               />
               <Ionicons
+                testID="confEyeIcon"
                 name={hideConfPass ? "eye-off-outline" : "eye-outline"}
                 size={22}
                 onPress={() => setHideConfPass(!hideConfPass)}
@@ -202,28 +216,30 @@ export const CreateAccountScreen = ({ navigation }) => {
             </View>
           </View>
           {(errField === 'confPass') &&
-            <View style={globalStyles.errorMsgContainer}>
-              <Text style={globalStyles.errorMsg}>{errMsg}</Text>
+            <View testID="SignUp.confPasswordErrMsgContainer" style={globalStyles.errorMsgContainer}>
+              <Text testID="SignUp.confPasswordErrMsg" style={globalStyles.errorMsg}>{errMsg}</Text>
             </View>}
-          <View style={styles.termsAndCondContainer}>
-            <Text style={[globalStyles.inputLabel,
+          <View testID="SignUp.termsAndCondContainer" style={styles.termsAndCondContainer}>
+            <Text testID="SignUp.termsInputLabel" style={[globalStyles.inputLabel,
             { color: `${(errField === 'terms') ? Colors.alert2 : Colors.dark}` }]}>Terms and Conditions</Text>
-            <Text style={styles.termsAndCondText}>Read our <Text style={{ textDecorationLine: 'underline' }}
+            <Text testID="SignUp.termsAndCondText" style={styles.termsAndCondText}>Read our <Text testID="SignUp.termsAndCondLink" style={{ textDecorationLine: 'underline' }}
               onPress={() => console.log("terms and conditions")}
             >terms and conditions.</Text></Text>
             {(errField === 'terms') &&
-              <Text style={{
-                fontFamily: 'PublicSans_400Regular',
-                fontSize: 13,
-                color: Colors.alert2
-              }}>Please accept terms and conditions</Text>}
-            <View style={{ flexDirection: 'row' }}>
-              <MaterialCommunityIcons name={isAccepted ? "checkbox-marked" : "checkbox-blank-outline"} size={22}
+              <Text
+                testID="SignUp.termsAndCondErrMsg"
+                style={{
+                  fontFamily: 'PublicSans_400Regular',
+                  fontSize: 13,
+                  color: Colors.alert2
+                }}>Please accept terms and conditions</Text>}
+            <View testID="SignUp.checkboxContainer" style={{ flexDirection: 'row' }}>
+              <MaterialCommunityIcons testID="SignUp.checkbox" name={isAccepted ? "checkbox-marked" : "checkbox-blank-outline"} size={22}
                 onPress={() => {
                   if (errField === 'terms') setErrField('')
                   setIsAccepted(!isAccepted)
                 }} />
-              <Text style={styles.termsAndCondAcceptText}>I accept</Text>
+              <Text testID="SignUp.termsAndCondAcceptText" style={styles.termsAndCondAcceptText}>I accept</Text>
             </View>
           </View>
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={handleSignUp}>
