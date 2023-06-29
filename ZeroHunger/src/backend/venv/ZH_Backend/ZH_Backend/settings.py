@@ -187,22 +187,28 @@ AUTH_USER_MODEL = "Users.BasicUser"
 
 		#"BACKEND": "channels.layers.InMemoryChannelLayer"
 redis_connection_string = client.get_secret("zh-backend-testing-redisconnectionstring").value
+azure_redis_password = client.get_secret("AZURE-REDIS-PASSWORD").value
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [redis_connection_string],
+            "hosts": [ "rediss://:"+azure_redis_password+"@zhbackendtest.redis.cache.windows.net:6380/0"],
         },
     },
 }
 
+#            f"redis://zhbackendtest.redis.cache.windows.net:6380,password={azure_redis_password},ssl=True,abortConnect=False"
 CACHES = {
         "default": {  
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": redis_connection_string,
+            "LOCATION": 'rediss://zhbackendtest.redis.cache.windows.net:6380',
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "PASSWORD": azure_redis_password,
+                'SSL': True,
                 "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+
             },
         }
     }  
