@@ -177,7 +177,7 @@ export const globalStyles = StyleSheet.create({
         color: Colors.dark
     },
     H2: {
-        fontFamily: 'PublicSans600_SemiBold',
+        fontFamily: 'PublicSans_600SemiBold',
         fontSize: 22,
         color: Colors.dark
     },
