@@ -37,7 +37,6 @@ export const RequestDetailsScreen = ({ navigation }) => {
     const [message, setMessage] = useState('')
 
     const sendMsg = () => {
-        // Send msg function blocked until username/user id complete
         // alert!({ type: 'open', message: 'Error: Message not sent!', alertType: 'error' })
         navigation.navigate('Chat', { user1: user['username'], user2: route.params.username, msg: message })
     }

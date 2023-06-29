@@ -107,6 +107,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         <Ionicons 
                             name="ellipsis-horizontal" 
                             size={24}
+                            style={{paddingRight: 16}}
                             onPress={() => {}}
                         />
                     )
