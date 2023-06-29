@@ -205,5 +205,10 @@ export const globalStyles = StyleSheet.create({
         fontFamily: 'PublicSans_400Regular',
         fontSize: 13,
         color: Colors.dark
+    },
+    Small2: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 11,
+        color: Colors.dark
     }
 })
