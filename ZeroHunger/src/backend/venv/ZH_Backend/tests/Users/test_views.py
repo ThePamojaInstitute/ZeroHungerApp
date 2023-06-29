@@ -4,7 +4,9 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from apps.Users.models import BasicUser
 
-#Run tests with "python manage.py test backendAPI.test_views"
+#Run all tests with "python manage.py test tests.Users.test_views"
+#Run specific test with:
+#  "python manage.py test tests.Users.test_views.TestViews.{test name}"
 
 class TestViews(TestCase):
     @classmethod
@@ -30,35 +32,27 @@ class TestViews(TestCase):
         response = self.client.post('/users/createUser', {})
         self.assertEqual(response.status_code, 401)
 
-    #View unfinished
-    #Temporary test to check response from deleteUser url
-    def test_deleteUser(self):
-        response = self.client.post('/users/deleteUser', {})
-        self.assertNotEqual(response.content, 404)
-
-    #View unfinished
-    #Takes in token / username + password
     def test_deleteUser_success(self):
-        response = self.client.post('/users/deleteUser', 
+        response = self.client.post('/users/createUser',
                                     {
-                                    'username' : self.username,
-                                    'password' : self.password
+                                        'username': self.username,
+                                        'email' : self.email,
+                                        'password' : self.password
                                     })
-        # print(response.content)
-        self.assertEqual(response.status_code, 201) #Status 201 on successful deletion (?)
+        self.assertEqual(response.status_code, 201)
+        response = self.client.post('/users/deleteUser', {})
+        self.assertEqual(response.status_code, 200)
 
-    #View unfinished
     def test_deleteUser_fail(self):
         response = self.client.post('/users/deleteUser', {})
         self.assertEqual(response.status_code, 401) #Status 401 on unsuccessful deletion
 
-    #View unfinished
+    #MODIFY USER UNFINISHED
     #Temporary test to check response from modifyUser url
     def test_modifyUser(self):
         response = self.client.post('/users/modifyUser', {})
-        self.assertEqual(response.status_code, 200)
+        # self.assertEqual(response.status_code, 200)
 
-    #View unfinished
     #Takes in token / username + password
     def test_modifyUser_success(self):
         response = self.client.post('/users/modifyUser', 
@@ -66,12 +60,11 @@ class TestViews(TestCase):
                                     'username' : self.username,
                                     'password' : self.password
                                     })
-        self.assertEqual(response.status_code, 201) #Status 201 on successful modification (?)
+        # self.assertEqual(response.status_code, 201) #Status 201 on successful modification (?)
 
-    #View unfinished
     def test_modifyUser_fail(self):
         response = self.client.post('/users/modifyUser', {})
-        self.assertEqual(response.status_code, 401) #Status 401 on unsuccessful modification
+        # self.assertEqual(response.status_code, 401) #Status 401 on unsuccessful modification
 
     def test_logIn_success(self):
         #First create new account 

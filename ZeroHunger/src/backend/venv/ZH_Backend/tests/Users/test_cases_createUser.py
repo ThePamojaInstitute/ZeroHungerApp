@@ -1,7 +1,11 @@
 from django.test import TestCase
 from django.test import Client
+import string
+import random
 
-#Run with python manage.py test tests.test_cases_createUser
+#Run with python manage.py test tests.Users.test_cases_createUser
+#Run individual test with:
+# "python manage.py test tests.Users.test_cases_createUser.TestCasesCreateUser.{test name}"
 
 class TestCasesCreateUser(TestCase):
     @classmethod
@@ -57,6 +61,7 @@ class TestCasesCreateUser(TestCase):
                                     })
         self.assertEqual(response.status_code, 401)
 
+    #Discuss if spaced username ok
     def test_username_with_spaces(self):
         response = self.client.post(self.url,
                                     {
@@ -171,9 +176,42 @@ class TestCasesCreateUser(TestCase):
                                     })
         self.assertEqual(response.status_code, 401)
 
-    #Password and confirm password fields match test
-
     #Extremely long username/email/password test
+    def test_extremely_long_username(self):
+        #1000 character long username
+        username = ''.join(random.choice(string.ascii_letters) for i in range(1000))
+        response = self.client.post(self.url,
+                                    {
+                                        'username' : username,
+                                        'email' : 'test@test.com',
+                                        'password' : 'testtest'
+                                    })
+        self.assertEqual(response.status_code, 401)
+
+    #Extremely long email test
+    def test_extremely_long_email(self):
+        #1000 character long email
+        email = ''.join(random.choice(string.ascii_letters) for i in range(1000))
+        email = email.join('@xyz.com')
+        response = self.client.post(self.url,
+                                    {
+                                        'username' : 'test',
+                                        'email' : email,
+                                        'password' : 'testtest'
+                                    })
+        self.assertEqual(response.status_code, 401)
+
+    #Extremely long password test
+    def test_extremely_long_password(self):
+        #1000 character long password
+        password = ''.join(random.choice(string.ascii_letters) for i in range(1000))
+        response = self.client.post(self.url,
+                                    {
+                                        'username' : 'test',
+                                        'email' : 'test@test.com',
+                                        'password' : password
+                                    })
+        self.assertEqual(response.status_code, 401)
 
     #SQL injection test
 
