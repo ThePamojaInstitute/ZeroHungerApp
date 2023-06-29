@@ -27,12 +27,6 @@ const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
 const HomeStackNavigator = ({ navigation }) => {
-    // let [fontsLoaded] = useFonts({
-    //     PublicSans_400Regular,
-    //     PublicSans_500Medium,
-    //     PublicSans_600SemiBold
-    // })
-
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -135,6 +129,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         <Ionicons 
                             name="ellipsis-horizontal" 
                             size={24}
+                            style={{paddingRight: 16}}
                             onPress={() => {}}
                         />
                     )
@@ -227,6 +222,7 @@ const BottomTab = () => {
                     tabBarStyle: ((route) => {
                         const routeName = getFocusedRouteNameFromRoute(route) ?? ""
                         if (routeName === 'LoginScreen' || routeName === 'CreateAccountScreen') {
+                        // if (routeName !== 'HomeScreen') {
                             return { display: "none" }
                         }
                         return styles.bottomBarTab
