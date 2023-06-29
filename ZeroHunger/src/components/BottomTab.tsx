@@ -10,6 +10,7 @@ import RequestDetailsScreen from '../screens/RequestDetailsScreen';
 import OfferFormScreen from '../screens/OfferFormScreen';
 import OfferDetailsScreen from '../screens/OfferDetailsScreen';
 import Conversations from '../screens/Conversations';
+import AccountSettingsScreen from '../screens/AccountSettingsScreen';
 import Chat from './Chat';
 import {
     useFonts,
@@ -123,6 +124,10 @@ const HomeStackNavigator = ({ navigation }) => {
                     },
                 }}
             />
+            <Stack.Screen
+                name="AccountSettingsScreen"
+                component={AccountSettingsScreen}
+            />
         </Stack.Navigator>
     )
 }
@@ -165,7 +170,7 @@ const BottomTab = () => {
     return (
         <Tab.Navigator>
             <Tab.Screen
-                name="Home"
+                name="HomeNav"
                 component={HomeStackNavigator}
                 options={({ route }) => ({
                     headerShown: false,

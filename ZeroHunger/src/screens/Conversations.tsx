@@ -147,14 +147,14 @@ export const Conversations = ({ navigation }) => {
                     />
                 </View>}
             <View style={{ marginTop: 'auto' }}>
-                <View style={{ flexDirection: 'column' }}>
+                {/* <View style={{ flexDirection: 'column' }}>
                     <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
                         <Text style={styles.logOutBtnText}>Log Out</Text>
                     </TouchableOpacity>
                     <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
                         <Text style={styles.deleteBtnText}>Delete User</Text>
                     </TouchableOpacity>
-                </View>
+                </View> */}
                 {/* <View style={{ marginTop: 20 }}>
                     <Text>Create Chat with:</Text>
                     <TextInput
