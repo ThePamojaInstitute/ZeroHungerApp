@@ -124,7 +124,7 @@ export const LoginScreen = ({ navigation }) => {
   }
 
   return (
-    <View testID="Login.container" style={styles.container}>
+    <View testID="Login.container" style={globalStyles.authContainer}>
       {!loaded && <Text>Loading...</Text>}
       {loaded &&
         <>
@@ -199,12 +199,12 @@ export const LoginScreen = ({ navigation }) => {
           <TouchableOpacity testID="Login.Button" style={globalStyles.defaultBtn} onPress={handleLogin}>
             <Text testID="Login.ButtonLabel" style={globalStyles.defaultBtnLabel}>Login</Text>
           </TouchableOpacity>
-          <View testID="divider" style={styles.divider}>
-            <View testID="dividerLine1" style={styles.dividerLine} />
+          <View testID="divider" style={globalStyles.divider}>
+            <View testID="dividerLine1" style={globalStyles.dividerLine} />
             <View>
-              <Text testID="dividerText" style={styles.dividerText}>OR</Text>
+              <Text testID="dividerText" style={globalStyles.dividerText}>OR</Text>
             </View>
-            <View testID="dividerLine2" style={styles.dividerLine} />
+            <View testID="dividerLine2" style={globalStyles.dividerLine} />
           </View>
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.outlineBtn} onPress={() => {
             setErrField('')
@@ -234,36 +234,3 @@ export const LoginScreen = ({ navigation }) => {
   );
 }
 export default LoginScreen
-
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#EFF1F7",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '90%',
-    padding: 0,
-    gap: 10,
-    marginTop: 20,
-    marginBottom: -10
-  },
-  dividerLine: {
-    height: 1,
-    flex: 1,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: '#B8B8B8',
-  },
-  dividerText: {
-    fontFamily: 'PublicSans_400Regular',
-    fontSize: 13,
-    display: 'flex',
-    alignItems: 'center',
-    color: Colors.dark
-  }
-});

@@ -61,37 +61,6 @@ const authContextValues = {
     dispatch: mockDispatch
 }
 const passwordResetURL = 'zh-backend-azure-webapp.azurewebsites.net/users/reset_password/'
-const styles = {
-    container: {
-        backgroundColor: "#EFF1F7",
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 20
-    },
-    divider: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '90%',
-        padding: 0,
-        gap: 10,
-        marginTop: 20,
-        marginBottom: -10
-    },
-    dividerLine: {
-        height: 1,
-        flex: 1,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: '#B8B8B8',
-    },
-    dividerText: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        display: 'flex',
-        alignItems: 'center',
-        color: Colors.dark
-    }
-}
 
 const testComponent = (
     <AuthContext.Provider value={authContextValues}>
@@ -137,7 +106,7 @@ describe('on load', () => {
         expect(getAllByText("Sign Up").length).toBe(1)
     });
 
-    it('renders default styles', () => {
+    it('renders default globalStyles', () => {
         const { getByTestId } = render(testComponent)
 
         const container = getByTestId('Login.container')
@@ -158,7 +127,7 @@ describe('on load', () => {
         const dividerLine2 = getByTestId('dividerLine2')
         const dividerText = getByTestId('dividerText')
 
-        expect(container.props.style).toStrictEqual(styles.container)
+        expect(container.props.style).toBe(globalStyles.authContainer)
         expect(usernameInputContainer.props.style).toBe(globalStyles.inputContainer)
         expect(usernameLabel.props.style[0]).toBe(globalStyles.inputLabel)
         expect(usernameLabel.props.style[1].color).toBe(Colors.dark)
@@ -176,10 +145,10 @@ describe('on load', () => {
         expect(loginButtonLabel.props.style).toBe(globalStyles.defaultBtnLabel)
         expect(SignUpButton.parent.parent.props.style[0]).toBe(globalStyles.outlineBtn)
         expect(SignUpButtonLabel.props.style).toBe(globalStyles.outlineBtnLabel)
-        expect(divider.props.style).toStrictEqual(styles.divider)
-        expect(dividerLine1.props.style).toStrictEqual(styles.dividerLine)
-        expect(dividerLine2.props.style).toStrictEqual(styles.dividerLine)
-        expect(dividerText.props.style).toStrictEqual(styles.dividerText)
+        expect(divider.props.style).toBe(globalStyles.divider)
+        expect(dividerLine1.props.style).toBe(globalStyles.dividerLine)
+        expect(dividerLine2.props.style).toBe(globalStyles.dividerLine)
+        expect(dividerText.props.style).toBe(globalStyles.dividerText)
     });
 
     it('does not navigate to the home page if user is not logged in', () => {
@@ -231,7 +200,7 @@ describe('events on login button press', () => {
             expect(usernameErrMsg.props.style).toBe(globalStyles.errorMsg)
         })
 
-        it('changes username label and text input\'s styles', async () => {
+        it('changes username label and text input\'s globalStyles', async () => {
             const { getByTestId } = render(testComponent)
 
             await act(() => {
@@ -245,7 +214,7 @@ describe('events on login button press', () => {
             expect(usernameInput.props.style[1].borderColor).toBe(Colors.alert2)
         })
 
-        it('removes error message and styles when input value changes', async () => {
+        it('removes error message and globalStyles when input value changes', async () => {
             const { getByTestId, queryAllByText } = render(testComponent)
             const usernameInput = getByTestId('Login.usernameInput')
             const usernameLabel = getByTestId('Login.usernameLabel')
@@ -288,7 +257,7 @@ describe('events on login button press', () => {
             expect(passwordErrMsg.props.style).toBe(globalStyles.errorMsg)
         })
 
-        it('changes password label and text input\'s styles', async () => {
+        it('changes password label and text input\'s globalStyles', async () => {
             const { getByTestId } = render(testComponent)
 
             const usernameInput = getByTestId("Login.usernameInput")
@@ -305,7 +274,7 @@ describe('events on login button press', () => {
             expect(innerPasswordInputContainer.props.style[1].borderColor).toBe(Colors.alert2)
         })
 
-        it('removes error message and styles when input value changes', async () => {
+        it('removes error message and globalStyles when input value changes', async () => {
             const { getByTestId, queryAllByText } = render(testComponent)
 
             const usernameInput = getByTestId("Login.usernameInput")

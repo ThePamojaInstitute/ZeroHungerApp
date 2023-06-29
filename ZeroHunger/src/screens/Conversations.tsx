@@ -9,6 +9,7 @@ import { Button, TextInput } from 'react-native-paper';
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "../../styles/globalStyleSheet";
 import { logOutUser, deleteUser } from "../controllers/auth";
+import moment, { months } from 'moment';
 
 export const Conversations = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext);
@@ -109,6 +110,28 @@ export const Conversations = ({ navigation }) => {
             return
         }
 
+        const now = moment.utc().local()
+        let timeAgo = item.last_message ?
+            moment.utc(item.last_message.timestamp).local().startOf('seconds').fromNow()
+            : ""
+
+        if (timeAgo) {
+            if (timeAgo.includes('second')) {
+                timeAgo = 'now'
+            } else if (timeAgo.includes('minute')) {
+                const time = timeAgo.split(' ')
+                timeAgo = `${time[0]}m`
+            } else if (timeAgo.includes('hour')) {
+                const time = timeAgo.split(' ')
+                timeAgo = `${time[0]}h`
+            } else if (timeAgo.includes('day')) {
+                const time = timeAgo.split(' ')
+                timeAgo = `${time[0]}d`
+            } else {
+                const diff = moment.duration(now.diff(item.last_message.timestamp))
+                timeAgo = `${Math.floor(diff.asWeeks()).toString()}w`
+            }
+        }
 
         return (
             <View testID={`${namesAlph[0]}__${namesAlph[1]}`} key={item.other_user.username}>
@@ -125,8 +148,12 @@ export const Conversations = ({ navigation }) => {
                         {unreadFromUsers.includes(item.other_user.username) &&
                             <Text style={{ color: 'red' }}>You have unread messages</Text>
                         }
-                        <Text >Last message: {item.last_message?.content}</Text>
-                        <Text>{formatMessageTimestamp(item.last_message?.timestamp)}</Text>
+                        {item.last_message &&
+                            <>
+                                <Text >Last message: {item.last_message?.content}</Text>
+                                <Text>{timeAgo}</Text>
+                            </>
+                        }
                     </View>
                 </View>)}
             </View>

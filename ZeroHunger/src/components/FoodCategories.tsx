@@ -94,8 +94,9 @@ const FoodCategories = () => {
     );
 
     return (
-        <View>
+        <View testID="FoodCategories.container">
             <FlatList
+                testID="FoodCategories.list"
                 data={foods}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.name}

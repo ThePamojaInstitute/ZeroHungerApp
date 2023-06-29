@@ -17,6 +17,7 @@ const ReadyState = {
 
 const mockNavigation = {
     navigate: jest.fn(),
+    setOptions: jest.fn()
 }
 const mockSendJsonMessage = jest.fn()
 const mockGetWebSocket = jest.fn()
@@ -59,13 +60,24 @@ beforeEach(() => {
     jest.clearAllMocks()
 })
 
+const TestComponent = (
+    <AuthContext.Provider value={{ ...mockAuthContextValues, user: '' }}>
+        <NotificationContext.Provider value={mockNotificationContextValues}>
+            <Chat route={mockRoute} navigation={mockNavigation} />
+        </NotificationContext.Provider>
+    </AuthContext.Provider>
+)
+const TestComponentLoggedIn = (
+    <AuthContext.Provider value={mockAuthContextValues}>
+        <NotificationContext.Provider value={mockNotificationContextValues}>
+            <Chat route={mockRoute} navigation={mockNavigation} />
+        </NotificationContext.Provider>
+    </AuthContext.Provider>
+)
+
 describe('onload', () => {
     it('renders default element correctly', () => {
-        const { getByText, getByPlaceholderText } = render(
-            <AuthContext.Provider value={{ ...mockAuthContextValues, user: '' }}>
-                <Chat route={mockRoute} navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
+        const { getByText, getByPlaceholderText } = render(TestComponent)
 
         getByText('Send')
         getByPlaceholderText("Message")
@@ -74,23 +86,13 @@ describe('onload', () => {
 
 describe('Chat functionality', () => {
     it('navigates to LoginScreen if user is not logged in', async () => {
-        render(
-            <AuthContext.Provider value={{ ...mockAuthContextValues, user: '' }}>
-                <Chat route={mockRoute} navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
+        render(TestComponent)
 
         expect(mockNavigation.navigate).toBeCalledWith("LoginScreen")
     })
 
     it('opens chat on mount and closes chat on unmount', () => {
-        const { unmount } = render(
-            <AuthContext.Provider value={mockAuthContextValues}>
-                <NotificationContext.Provider value={mockNotificationContextValues}>
-                    <Chat route={mockRoute} navigation={mockNavigation} />
-                </NotificationContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { unmount } = render(TestComponentLoggedIn)
 
         expect(mockSetChatIsOpen).toHaveBeenCalledTimes(1)
         expect(mockSetChatIsOpen).toHaveBeenCalledWith(true)
@@ -102,13 +104,7 @@ describe('Chat functionality', () => {
     })
 
     it('sends read_messages when WebSocket connection is open', async () => {
-        render(
-            <AuthContext.Provider value={mockAuthContextValues}>
-                <NotificationContext.Provider value={mockNotificationContextValues}>
-                    <Chat route={mockRoute} navigation={mockNavigation} />
-                </NotificationContext.Provider>
-            </AuthContext.Provider>
-        );
+        render(TestComponentLoggedIn);
 
         // Wait for WebSocket connection to be open
         await waitFor(() => {
@@ -124,13 +120,7 @@ describe('Chat functionality', () => {
     })
 
     it('sends chat message when send button is pressed', () => {
-        const { getByPlaceholderText, getByTestId } = render(
-            <AuthContext.Provider value={mockAuthContextValues}>
-                <NotificationContext.Provider value={mockNotificationContextValues}>
-                    <Chat route={mockRoute} navigation={mockNavigation} />
-                </NotificationContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByPlaceholderText, getByTestId } = render(TestComponentLoggedIn)
 
         const messageInput = getByPlaceholderText('Message')
         fireEvent.changeText(messageInput, 'Test message')
@@ -152,13 +142,7 @@ describe('Chat functionality', () => {
     })
 
     it('loads more messages when reaching the end of the list', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={mockAuthContextValues}>
-                <NotificationContext.Provider value={mockNotificationContextValues}>
-                    <Chat route={mockRoute} navigation={mockNavigation} />
-                </NotificationContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(TestComponentLoggedIn)
 
         const messagesList = getByTestId('messagesList')
         fireEvent(messagesList, 'onEndReached')

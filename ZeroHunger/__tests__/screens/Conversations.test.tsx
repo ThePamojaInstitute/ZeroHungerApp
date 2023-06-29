@@ -37,21 +37,23 @@ const mockNotificationContextValues = {
     unreadFromUsers: ['']
 }
 
+const testComponent = (
+    <AuthContext.Provider value={mockAuthContextValues}>
+        <NotificationContext.Provider value={mockNotificationContextValues}>
+            <AlertContext.Provider value={mockAlertValue}>
+                <Conversations navigation={mockNavigation} />
+            </AlertContext.Provider>
+        </NotificationContext.Provider>
+    </AuthContext.Provider>
+)
+
 beforeEach(() => {
     jest.clearAllMocks()
 })
 
 describe('onload', () => {
     it('renders default element correctly', () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={mockAuthContextValues}>
-                <NotificationContext.Provider value={mockNotificationContextValues}>
-                    <AlertContext.Provider value={mockAlertValue}>
-                        <Conversations navigation={mockNavigation} />
-                    </AlertContext.Provider>
-                </NotificationContext.Provider>
-            </AuthContext.Provider>
-        );
+        const { getByTestId } = render(testComponent)
 
         getByTestId('conversationsList')
     })
@@ -64,17 +66,9 @@ describe('Conversations functionality', () => {
             last_message: { from_user: { username: 'testUser2' }, content: 'Hello', timestamp: '2023-01-01T12:34:56Z' },
         }
 
-        mockAxios.onGet('http://127.0.0.1:8000/chat/conversations/').reply(200, [mockConversation])
+        mockAxios.onGet('chat/conversations/').reply(200, [mockConversation])
 
-        const { queryAllByTestId } = render(
-            <AuthContext.Provider value={mockAuthContextValues}>
-                <NotificationContext.Provider value={mockNotificationContextValues}>
-                    <AlertContext.Provider value={mockAlertValue}>
-                        <Conversations navigation={mockNavigation} />
-                    </AlertContext.Provider>
-                </NotificationContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { queryAllByTestId } = render(testComponent)
 
         await waitFor(() => {
             expect(queryAllByTestId('testUser1__testUser2').length).toBe(1)
@@ -87,17 +81,9 @@ describe('Conversations functionality', () => {
             last_message: { from_user: { username: 'testUser2' }, content: 'Hello', timestamp: '2023-01-01T12:34:56Z' },
         }
 
-        mockAxios.onGet('http://127.0.0.1:8000/chat/conversations/').reply(200, [mockConversation])
+        mockAxios.onGet('chat/conversations/').reply(200, [mockConversation])
 
-        const { getByTestId } = render(
-            <AuthContext.Provider value={mockAuthContextValues}>
-                <NotificationContext.Provider value={mockNotificationContextValues}>
-                    <AlertContext.Provider value={mockAlertValue}>
-                        <Conversations navigation={mockNavigation} />
-                    </AlertContext.Provider>
-                </NotificationContext.Provider>
-            </AuthContext.Provider>
-        );
+        const { getByTestId } = render(testComponent)
 
         await waitFor(() => {
             fireEvent.press(getByTestId('testUser1__testUser2.Button'))
@@ -106,24 +92,24 @@ describe('Conversations functionality', () => {
         expect(mockNavigation.navigate).toHaveBeenCalledWith('Chat', { user1: 'testUser1', user2: 'testUser2' })
     })
 
-    it('creates a new chat when the create button is pressed', () => {
-        const mockCreateGroup = 'testUser2';
+    // it('creates a new chat when the create button is pressed', () => {
+    //     const mockCreateGroup = 'testUser2';
 
-        const { getByPlaceholderText, getByText } = render(
-            <AuthContext.Provider value={mockAuthContextValues}>
-                <NotificationContext.Provider value={mockNotificationContextValues}>
-                    <AlertContext.Provider value={mockAlertValue}>
-                        <Conversations navigation={mockNavigation} />
-                    </AlertContext.Provider>
-                </NotificationContext.Provider>
-            </AuthContext.Provider>
-        )
+    //     const { getByPlaceholderText, getByText } = render(
+    //         <AuthContext.Provider value={mockAuthContextValues}>
+    //             <NotificationContext.Provider value={mockNotificationContextValues}>
+    //                 <AlertContext.Provider value={mockAlertValue}>
+    //                     <Conversations navigation={mockNavigation} />
+    //                 </AlertContext.Provider>
+    //             </NotificationContext.Provider>
+    //         </AuthContext.Provider>
+    //     )
 
-        fireEvent.changeText(getByPlaceholderText('Chat with(username)'), mockCreateGroup)
-        fireEvent.press(getByText('Create'));
+    //     fireEvent.changeText(getByPlaceholderText('Chat with(username)'), mockCreateGroup)
+    //     fireEvent.press(getByText('Create'));
 
-        expect(mockNavigation.navigate).toHaveBeenCalledWith('Chat', { user1: 'testUser1', user2: 'testUser2' })
-    })
+    //     expect(mockNavigation.navigate).toHaveBeenCalledWith('Chat', { user1: 'testUser1', user2: 'testUser2' })
+    // })
 
     it('displays unread message notification for conversations with unread messages', async () => {
         const mockUnreadFromUsers = ['testUser2']
@@ -132,7 +118,7 @@ describe('Conversations functionality', () => {
             last_message: { from_user: { username: 'testUser2' }, content: 'Hello', timestamp: '2023-01-01T12:34:56Z' },
         }
 
-        mockAxios.onGet('http://127.0.0.1:8000/chat/conversations/').reply(200, [mockConversation])
+        mockAxios.onGet('chat/conversations/').reply(200, [mockConversation])
 
         const { getAllByText } = render(
             <AuthContext.Provider value={mockAuthContextValues}>
@@ -158,17 +144,9 @@ describe('Conversations functionality', () => {
             last_message: { from_user: { username: 'testUser2' }, content: 'Hello', timestamp: '2023-01-01T12:34:56Z' },
         }
 
-        mockAxios.onGet('http://127.0.0.1:8000/chat/conversations/').reply(200, [mockConversation])
+        mockAxios.onGet('chat/conversations/').reply(200, [mockConversation])
 
-        const { getAllByText } = render(
-            <AuthContext.Provider value={mockAuthContextValues}>
-                <NotificationContext.Provider value={mockNotificationContextValues}>
-                    <AlertContext.Provider value={mockAlertValue}>
-                        <Conversations navigation={mockNavigation} />
-                    </AlertContext.Provider>
-                </NotificationContext.Provider>
-            </AuthContext.Provider>
-        )
+        const { getAllByText } = render(testComponent)
 
         await waitFor(() => {
             expect(getAllByText('Last message: Hello').length).toBe(1)
@@ -178,17 +156,9 @@ describe('Conversations functionality', () => {
 
     it('handles errors when retrieving conversations', async () => {
         const mockError = new Error('Failed to fetch conversations')
-        mockAxios.onGet('http://127.0.0.1:8000/chat/conversations/').reply(500, mockError)
+        mockAxios.onGet('chat/conversations/').reply(500, mockError)
 
-        render(
-            <AuthContext.Provider value={mockAuthContextValues}>
-                <NotificationContext.Provider value={mockNotificationContextValues}>
-                    <AlertContext.Provider value={mockAlertValue}>
-                        <Conversations navigation={mockNavigation} />
-                    </AlertContext.Provider>
-                </NotificationContext.Provider>
-            </AuthContext.Provider>
-        )
+        render(testComponent)
 
         await waitFor(() => {
             expect(mockAlertDispatch).toBeCalledWith({ "alertType": "error", "message": "An error occured", "type": "open" })

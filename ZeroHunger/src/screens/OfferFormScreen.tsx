@@ -37,6 +37,7 @@ export const OfferFormScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
+        if (!loaded) return
         navigation.setOptions({
             title: "Offer Food",
             headerTitleAlign: 'center',
@@ -44,17 +45,17 @@ export const OfferFormScreen = ({ navigation }) => {
                 backgroundColor: Colors.Background
             },
             headerLeft: () => (
-                <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-                    <Text style={styles.cancelBtn}>Cancel</Text>
+                <TouchableOpacity testID="Offer.cancelBtn" onPress={() => navigation.navigate('HomeScreen')}>
+                    <Text testID="Offer.cancelBtnLabel" style={globalStyles.formCancelBtn}>Cancel</Text>
                 </TouchableOpacity>
             ),
             headerRight: () => (
-                <TouchableOpacity style={globalStyles.navDefaultBtn}>
-                    <Text testID="createPost.Button" onPress={handlePress} style={globalStyles.defaultBtnLabel}>Post</Text>
+                <TouchableOpacity testID="Offer.createBtn" onPress={handlePress} style={globalStyles.navDefaultBtn}>
+                    <Text testID="Offer.createBtnLabel" style={globalStyles.defaultBtnLabel}>Post</Text>
                 </TouchableOpacity>
             )
         })
-    }, [title, images, desc, loading])
+    }, [title, images, desc, loading, loaded])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
@@ -79,7 +80,7 @@ export const OfferFormScreen = ({ navigation }) => {
                 postType: 'o'
             }).then(res => {
                 if (res.msg === "success") {
-                    alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
+                    alert!({ type: 'open', message: 'Offer posted successfully!', alertType: 'success' })
                     navigation.navigate('HomeScreen')
                 } else if (res.msg === "failure") {
                     alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
@@ -94,41 +95,44 @@ export const OfferFormScreen = ({ navigation }) => {
     }
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView testID="Offer.formContainer" style={globalStyles.formContainer}>
             {(!loaded || loading) && <Text>Loading...</Text>}
             {loaded &&
                 <>
                     <View>
-                        <Text testID="offerTitle" style={[styles.titleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text style={styles.descText}>Create a descriptive title for the food you are offering</Text>
+                        <Text testID="Offer.titleLabel" style={[globalStyles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Offer.titleDesc" style={globalStyles.formDescText}>Create a descriptive title for the food you are offering</Text>
                     </View>
-                    <View style={styles.inputContainer}>
+                    <View testID="Offer.formInputContainer" style={globalStyles.formInputContainer}>
                         <TextInput
-                            // value={title}
+                            value={title}
                             nativeID="title"
-                            testID="offerTitleInput"
+                            testID="Offer.titleInput"
                             placeholder="Enter name of food offering"
                             placeholderTextColor="#656565"
-                            style={[styles.input, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
-                            onChangeText={setTitle}
+                            style={[globalStyles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                            onChangeText={newText => {
+                                setTitle(newText)
+                                setErrMsg("")
+                            }}
                             onChange={() => setErrMsg("")}
                             maxLength={100}
                         />
                     </View>
-                    {errMsg && <Text style={styles.errorMsg}>{errMsg}</Text>}
+                    {errMsg && <Text testID="Offer.titleErrMsg" style={globalStyles.formErrorMsg}>{errMsg}</Text>}
                     <View>
-                        <Text style={styles.titleText}>Photo</Text>
-                        <Text style={styles.descText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
+                        <Text testID="Offer.photoLabel" style={globalStyles.formTitleText}>Photo</Text>
+                        <Text testID="Offer.photoDesc" style={globalStyles.formDescText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
                     </View>
                     <ImagePicker setImages={setImages} />
                     <View>
-                        <Text style={styles.titleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text style={styles.descText}>Please select all the food category type that applies</Text>
+                        <Text testID="Offer.categoryLabel" style={globalStyles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Offer.categoryDesc" style={globalStyles.formDescText}>Please select all the food category type that applies</Text>
                         <FoodCategories />
                     </View>
                     <View>
-                        <Text style={styles.titleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text style={styles.descText}>Please input the quantity of the food you are giving away</Text>
+                        <Text testID="Offer.quantityLabel" style={globalStyles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Offer.quantityDesc" style={globalStyles.formDescText}>Please input the quantity of the food you are giving away</Text>
                         <Quantity />
                     </View>
                     {/* <View>
@@ -137,19 +141,22 @@ export const OfferFormScreen = ({ navigation }) => {
                 <DatePicker />
             </View> */}
                     <View>
-                        <Text style={styles.titleText}>Description</Text>
-                        <Text style={styles.descText}>Optional: Describe your offer in detail</Text>
+                        <Text testID="Offer.descTitle" style={globalStyles.formTitleText}>Description</Text>
+                        <Text testID="Offer.descDesc" style={globalStyles.formDescText}>Optional: Describe your offer in detail</Text>
                     </View>
-                    <View style={styles.descriptionInputView}>
+                    <View style={globalStyles.formDescInputView}>
                         <TextInput
-                            // value={description}
+                            value={desc}
                             nativeID="desc"
-                            testID="offerDescInput"
+                            testID="Offer.descInput"
                             placeholder="Enter Description"
                             placeholderTextColor="#656565"
-                            style={styles.inputText}
+                            style={globalStyles.formInputText}
                             multiline={true}
-                            onChangeText={setDesc}
+                            onChangeText={newText => {
+                                setDesc(newText)
+                                setErrMsg("")
+                            }}
                             maxLength={1024}
                         />
                     </View>
@@ -160,85 +167,3 @@ export const OfferFormScreen = ({ navigation }) => {
 }
 
 export default OfferFormScreen
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 10,
-        marginTop: 20,
-        backgroundColor: Colors.Background
-    },
-    titleText: {
-        fontFamily: 'PublicSans_600SemiBold',
-        fontSize: 18,
-        color: Colors.dark,
-        marginBottom: 3
-    },
-    descText: {
-        marginBottom: 5,
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        color: '#656565'
-    },
-    descriptionInputView: {
-        backgroundColor: "white",
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#D1D1D1',
-        width: "100%",
-        height: 120,
-        marginBottom: 25,
-        marginTop: 10,
-    },
-    inputText: {
-        flex: 1,
-        padding: 10,
-        marginLeft: 5,
-        fontSize: 16,
-        textAlignVertical: "top",
-        fontFamily: 'PublicSans_400Regular'
-    },
-    cancelBtn: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 16,
-        color: '#656565'
-    },
-    Label: {
-        fontFamily: 'PublicSans_600SemiBold',
-        fontSize: 18,
-        color: Colors.dark
-    },
-    inputContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 0,
-        gap: 9,
-        // width: "90%",
-        height: 40,
-        marginBottom: 10,
-        marginTop: 5,
-    },
-    input: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        width: '100%',
-        padding: 10,
-        gap: 10,
-        backgroundColor: Colors.white,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: Colors.midLight,
-        borderRadius: 10,
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 16,
-        paddingLeft: 10
-    },
-    errorMsg: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        color: Colors.alert2,
-        alignSelf: 'flex-start',
-        marginBottom: 10
-    }
-})

@@ -47,6 +47,7 @@
     "install": "^0.13.0",
     "jest-expo": "^48.0.2",
     "jwt-decode": "^3.1.2",
+    "moment": "^2.29.4",
     "npm": "^9.4.2",
     "react": "18.2.0",
     "react-datepicker": "^4.11.0",

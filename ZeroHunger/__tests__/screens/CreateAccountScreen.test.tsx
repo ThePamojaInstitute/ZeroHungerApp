@@ -56,34 +56,6 @@ afterEach(() => {
     (useFonts as jest.Mock).mockImplementation(() => [true])
 })
 
-const styles = {
-    container: {
-        backgroundColor: "#EFF1F7",
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 20
-    },
-    termsAndCondContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 0,
-        gap: 9,
-        width: "90%",
-        marginTop: 5,
-    },
-    termsAndCondText: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        color: '#656565'
-    },
-    termsAndCondAcceptText: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 16,
-        color: Colors.dark,
-        marginLeft: 5
-    },
-}
-
 const testComponent = (
     <AuthContext.Provider value={authContextValues}>
         <AlertContext.Provider value={mockAlertValue}>
@@ -156,7 +128,7 @@ describe('on load', () => {
         const termsAndCondAcceptText = getByTestId('SignUp.termsAndCondAcceptText')
         const checkboxContainer = getByTestId('SignUp.checkboxContainer')
 
-        expect(container.props.style).toStrictEqual(styles.container)
+        expect(container.props.style).toBe(globalStyles.authContainer)
         expect(usernameInputContainer.props.style).toBe(globalStyles.inputContainer)
         expect(usernameLabel.props.style[0]).toBe(globalStyles.inputLabel)
         expect(usernameLabel.props.style[1].color).toBe(Colors.dark)
@@ -179,13 +151,13 @@ describe('on load', () => {
         expect(innerconfPasswordInputContainer.props.style[0]).toBe(globalStyles.passwordInputContainer)
         expect(innerconfPasswordInputContainer.props.style[1].borderColor).toBe(Colors.midLight)
         expect(confPasswordInput.props.style).toBe(globalStyles.passwordInput)
-        expect(termsAndCondContainer.props.style).toStrictEqual(styles.termsAndCondContainer)
+        expect(termsAndCondContainer.props.style).toBe(globalStyles.termsAndCondContainer)
         expect(termsInputLabel.props.style[0]).toBe(globalStyles.inputLabel)
         expect(termsInputLabel.props.style[1].color).toBe(Colors.dark)
-        expect(termsAndCondText.props.style).toStrictEqual(styles.termsAndCondText)
+        expect(termsAndCondText.props.style).toBe(globalStyles.termsAndCondText)
         expect(termsAndCondLink.props.style).toStrictEqual({ textDecorationLine: 'underline' })
         expect(checkboxContainer.props.style).toStrictEqual({ flexDirection: 'row' })
-        expect(termsAndCondAcceptText.props.style).toStrictEqual(styles.termsAndCondAcceptText)
+        expect(termsAndCondAcceptText.props.style).toBe(globalStyles.termsAndCondAcceptText)
     });
 
     it('does not navigate to the home page if user is not logged in', () => {

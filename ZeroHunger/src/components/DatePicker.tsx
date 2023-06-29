@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Colors } from "../../styles/globalStyleSheet";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 
 
 const DatePicker = () => {
@@ -38,20 +38,21 @@ const DatePicker = () => {
     }
 
     return (
-        <View>
+        <View testID="DatePicker.container">
             {/* <Button style={styles.logOutBtn} onPress={() => setShow(true)} title="Show date picker!" /> */}
             {/* <Ionicons name="calendar-outline" size={50} onPress={() => setShow(true)} title="Show date picker!" testID="ShowDatePicker.Button" />
             <Text>{selected && `selected: ${date.toLocaleDateString()}`}</Text> */}
             <Pressable
-                style={styles.container}
+                testID="DatePicker.showBtn"
+                style={globalStyles.datePickerContainer}
                 onPress={() => setShow(true)}
             >
-                <Image style={styles.img} source={require('../../assets/calendar.png')} />
-                <Text style={styles.date}>{selected ? toStringDate(date) : 'MM/DD/YYYY'}</Text>
+                <Image testID="DatePicker.calendarImg" style={globalStyles.datePickerImg} source={require('../../assets/calendar.png')} />
+                <Text testID="DatePicker.selectedDate" style={globalStyles.datePickerDate}>{selected ? toStringDate(date) : 'MM/DD/YYYY'}</Text>
             </Pressable>
             {show && (
                 <DateTimePicker
-                    testID="dateTimePicker"
+                    testID="DatePicker.dateTimePicker"
                     value={date}
                     mode={"date"}
                     onChange={handleChange}
@@ -64,32 +65,3 @@ const DatePicker = () => {
 };
 
 export default DatePicker
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: Colors.white,
-        borderWidth: 1,
-        borderColor: '#D1D1D1',
-        borderRadius: 10,
-        width: '38%',
-        padding: 5,
-        flexDirection: 'row',
-        marginBottom: 15,
-        marginTop: 10
-    },
-    img: {
-        marginLeft: -5,
-        marginRight: 4,
-        marginTop: 0,
-        marginVertical: 2,
-        width: '30%',
-        height: '100%',
-        resizeMode: 'contain'
-    },
-    date: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        color: '#656565',
-        marginTop: 2
-    }
-})
