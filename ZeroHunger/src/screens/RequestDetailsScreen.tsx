@@ -85,6 +85,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                 data={images}
                 horizontal={true}
                 estimatedItemSize={166}
+                // contentContainerStyle={{paddingLeft: 12}}
             />
             <View>
                 <Text style={[globalStyles.H2, {paddingTop: 12}]}>{route.params.title}</Text>
@@ -284,8 +285,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     information: {
-        padding: 12,
-        paddingBottom: 8,
+        // padding: 12,
+        paddingTop: 12,
+        paddingBottom: 20,
+        // paddingBottom: 8,
+        paddingRight: 12,
         borderBottomWidth: 1,
         borderBottomColor: Colors.midLight
     },
@@ -301,7 +305,8 @@ const styles = StyleSheet.create({
         // marginBottom: 12,
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 12
+        marginBottom: 12,
+        // marginLeft: 12
     },
     needBy: {
         backgroundColor: Colors.primaryLight,

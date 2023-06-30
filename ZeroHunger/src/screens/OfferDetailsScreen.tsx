@@ -277,8 +277,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     information: {
-        padding: 12,
-        paddingBottom: 8,
+        // padding: 12,
+        paddingTop: 12,
+        paddingBottom: 20,
+        // paddingBottom: 8,
+        paddingRight: 12,
         borderBottomWidth: 1,
         borderBottomColor: Colors.midLight
     },
