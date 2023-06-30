@@ -330,7 +330,7 @@ export const globalStyles = StyleSheet.create({
         color: Colors.dark
     },
     H2: {
-        fontFamily: 'PublicSans600_SemiBold',
+        fontFamily: 'PublicSans_600SemiBold',
         fontSize: 22,
         color: Colors.dark
     },
@@ -357,6 +357,21 @@ export const globalStyles = StyleSheet.create({
     Small1: {
         fontFamily: 'PublicSans_400Regular',
         fontSize: 13,
+        color: Colors.dark
+    },
+    Small2: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 11,
+        color: Colors.dark
+    },
+    Button: {
+        fontFamily: 'PublicSans_600Semibold',
+        fontSize: 17,
+        color: Colors.dark
+    },
+    Tag: {
+        fontFamily: 'PublicSans_500Medium',
+        fontSize: 12,
         color: Colors.dark
     }
 })

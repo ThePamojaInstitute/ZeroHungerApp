@@ -9,8 +9,8 @@ import RequestFormScreen from '../screens/RequestFormScreen';
 import RequestDetailsScreen from '../screens/RequestDetailsScreen';
 import OfferFormScreen from '../screens/OfferFormScreen';
 import OfferDetailsScreen from '../screens/OfferDetailsScreen';
-import Conversations from '../screens/Conversations';
 import AccountSettingsScreen from '../screens/AccountSettingsScreen';
+import Conversations from '../screens/Conversations';
 import Chat from './Chat';
 import {
     useFonts,
@@ -27,12 +27,6 @@ const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
 const HomeStackNavigator = ({ navigation }) => {
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -103,6 +97,21 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="RequestDetailsScreen"
                 component={RequestDetailsScreen}
+                options={{
+                    title: "Request",
+                    headerTitleAlign: "center",
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                    headerRight: () => (
+                        <Ionicons 
+                            name="ellipsis-horizontal" 
+                            size={24}
+                            style={{paddingRight: 16}}
+                            onPress={() => {}}
+                        />
+                    )
+                }}
             />
             <Stack.Screen
                 name="OfferFormScreen"
@@ -111,6 +120,21 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="OfferDetailsScreen"
                 component={OfferDetailsScreen}
+                options={{
+                    title: "Offer",
+                    headerTitleAlign: "center",
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                    headerRight: () => (
+                        <Ionicons 
+                            name="ellipsis-horizontal" 
+                            size={24}
+                            style={{paddingRight: 16}}
+                            onPress={() => {}}
+                        />
+                    )
+                }}
             />
             <Stack.Screen
                 name="Chat"
@@ -166,11 +190,23 @@ const ChatStackNavigator = () => {
 const PostComponent = () => null
 
 const BottomTab = () => {
+    const [loaded, setLoaded] = useState(false)
+    let [fontsLoaded] = useFonts({
+      PublicSans_400Regular,
+      PublicSans_500Medium,
+      PublicSans_600SemiBold
+    })
+  
+    useEffect(() => {
+      setLoaded(fontsLoaded)
+    }, [fontsLoaded])
+
     const [modalVisible, setModalVisible] = useState(false)
+    
     return (
         <Tab.Navigator>
             <Tab.Screen
-                name="HomeNav"
+                name="Home"
                 component={HomeStackNavigator}
                 options={({ route }) => ({
                     headerShown: false,
@@ -187,6 +223,7 @@ const BottomTab = () => {
                     tabBarStyle: ((route) => {
                         const routeName = getFocusedRouteNameFromRoute(route) ?? ""
                         if (routeName === 'LoginScreen' || routeName === 'CreateAccountScreen') {
+                        // if (routeName !== 'HomeScreen') {
                             return { display: "none" }
                         }
                         return styles.bottomBarTab
@@ -297,7 +334,7 @@ const styles = StyleSheet.create({
     },
     modal: {
         margin: 0,
-        marginTop: Dimensions.get('window').height * 0.7,
+        marginTop: Dimensions.get('window').height * 0.65,
         backgroundColor: Colors.offWhite,
         borderRadius: 10,
         elevation: 0,

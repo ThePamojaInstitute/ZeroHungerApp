@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useFocusEffect, DrawerActions } from '@react-navigation/native';
 import { View, Image, Text, TouchableOpacity, StyleSheet, GestureResponderEvent } from "react-native"
@@ -18,11 +18,16 @@ import { logOutUser, deleteUser } from "../controllers/auth";
 const Drawer = createDrawerNavigator()
 
 const CustomDrawer = (props) => {
+    const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
         PublicSans_400Regular,
         PublicSans_500Medium,
         PublicSans_600SemiBold
     })
+
+    useEffect(() => {
+        setLoaded(fontsLoaded)
+    }, [fontsLoaded])
 
     const { user, dispatch } = useContext(AuthContext)
 
@@ -40,58 +45,61 @@ const CustomDrawer = (props) => {
 
     return (
         <DrawerContentScrollView {...props}>
-            <View style={{flexDirection: "row", marginTop: 12, marginLeft: 12, marginRight: 8, marginBottom: 32, justifyContent: "space-between" }}>
-                {/* Temporary default profile picture */}
-                <Ionicons name="person-circle-sharp" color="#B8B8B8" size={64}/>
-                <View style={{padding: 4, marginLeft: -8}}>
-                    <Text style={[globalStyles.H2, {paddingBottom: 8}]}>{user ? user['username'] : "User"}</Text>
-                    <TouchableOpacity onPress={() => props.navigation.navigate("AccountSettingsScreen")}>
-                        <Text style={globalStyles.Body}>Account Settings    </Text>
-                    </TouchableOpacity>
+            {!loaded && <Text>Loading...</Text>}
+            {loaded && <>
+                <View style={{flexDirection: "row", marginTop: 12, marginLeft: 12, marginRight: 8, marginBottom: 32, justifyContent: "space-between" }}>
+                    {/* Temporary default profile picture */}
+                    <Ionicons name="person-circle-sharp" color="#B8B8B8" size={64}/>
+                    <View style={{padding: 4, marginLeft: -8}}>
+                        <Text style={[globalStyles.H2, {paddingBottom: 8}]}>{user ? user['username'] : "User"}</Text>
+                        <TouchableOpacity onPress={() => props.navigation.navigate("AccountSettingsScreen")}>
+                            <Text style={globalStyles.Body}>Account Settings    </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ }}>
+                        <TouchableOpacity onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}>
+                            <Ionicons name="close" size={31} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View style={{ }}>
-                    <TouchableOpacity onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}>
-                        <Ionicons name="close" size={31} />
-                    </TouchableOpacity>
-                </View>
-            </View>
 
-            <DrawerItem
-                label={() => <Text style={globalStyles.Body}>Request & Offer History</Text>}
-                icon={() => <MaterialCommunityIcons name="history" size={24}/> }
-                onPress={() => {}}
-            />
-            <DrawerItem
-                label={() => <Text style={globalStyles.Body}>Dietary Restrictions</Text>}
-                icon={() => <MaterialCommunityIcons name="silverware-fork-knife" size={24}/> }
-                onPress={() => {}}
-            />  
-            <DrawerItem
-                label={() => <Text style={globalStyles.Body}>Notifications Settings</Text>}
-                icon={() => <Ionicons name="md-cog-outline" size={24}/> }
-                onPress={() => {}}
-            />     
-            <DrawerItem
-                label={() => <Text style={globalStyles.Body}>FAQ</Text>}
-                icon={() => <Ionicons name="help-circle-outline" size={24}/> }
-                onPress={() => {}}
-            />  
-            <DrawerItem
-                label={() => <Text style={globalStyles.Body}>Terms and Conditions</Text>}
-                icon={() => <Ionicons name="document-text-outline" size={24}/> }
-                onPress={() => {}}
-            />              
-            <DrawerItem
-                label={() => <Text style={globalStyles.Body}>Privacy Policy</Text>}
-                icon={() => <MaterialCommunityIcons name="shield-lock-outline" size={24}/> }
-                onPress={() => {}}
-            />    
+                <DrawerItem
+                    label={() => <Text style={globalStyles.Body}>Request & Offer History</Text>}
+                    icon={() => <MaterialCommunityIcons name="history" size={24}/> }
+                    onPress={() => {}}
+                />
+                <DrawerItem
+                    label={() => <Text style={globalStyles.Body}>Dietary Restrictions</Text>}
+                    icon={() => <MaterialCommunityIcons name="silverware-fork-knife" size={24}/> }
+                    onPress={() => {}}
+                />  
+                <DrawerItem
+                    label={() => <Text style={globalStyles.Body}>Notifications Settings</Text>}
+                    icon={() => <Ionicons name="md-cog-outline" size={24}/> }
+                    onPress={() => {}}
+                />     
+                <DrawerItem
+                    label={() => <Text style={globalStyles.Body}>FAQ</Text>}
+                    icon={() => <Ionicons name="help-circle-outline" size={24}/> }
+                    onPress={() => {}}
+                />  
+                <DrawerItem
+                    label={() => <Text style={globalStyles.Body}>Terms and Conditions</Text>}
+                    icon={() => <Ionicons name="document-text-outline" size={24}/> }
+                    onPress={() => {}}
+                />              
+                <DrawerItem
+                    label={() => <Text style={globalStyles.Body}>Privacy Policy</Text>}
+                    icon={() => <MaterialCommunityIcons name="shield-lock-outline" size={24}/> }
+                    onPress={() => {}}
+                />    
 
-            <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
-                <Text style={styles.logOutBtnText}>Log Out</Text>
-            </TouchableOpacity>
+                <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
+                    <Text style={styles.logOutBtnText}>Log Out</Text>
+                </TouchableOpacity>
 
-            <DrawerItemList {...props}/>
+                <DrawerItemList {...props}/>
+            </> }
         </DrawerContentScrollView>
     )
 }
