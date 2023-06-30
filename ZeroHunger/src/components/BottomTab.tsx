@@ -104,11 +104,11 @@ const HomeStackNavigator = ({ navigation }) => {
                         backgroundColor: Colors.offWhite,
                     },
                     headerRight: () => (
-                        <Ionicons 
-                            name="ellipsis-horizontal" 
+                        <Ionicons
+                            name="ellipsis-horizontal"
                             size={24}
-                            style={{paddingRight: 16}}
-                            onPress={() => {}}
+                            style={{ paddingRight: 16 }}
+                            onPress={() => { }}
                         />
                     )
                 }}
@@ -127,11 +127,11 @@ const HomeStackNavigator = ({ navigation }) => {
                         backgroundColor: Colors.offWhite,
                     },
                     headerRight: () => (
-                        <Ionicons 
-                            name="ellipsis-horizontal" 
+                        <Ionicons
+                            name="ellipsis-horizontal"
                             size={24}
-                            style={{paddingRight: 16}}
-                            onPress={() => {}}
+                            style={{ paddingRight: 16 }}
+                            onPress={() => { }}
                         />
                     )
                 }}
@@ -164,11 +164,12 @@ const ChatStackNavigator = () => {
                 component={Conversations}
                 options={{
                     headerShown: true,
-                    title: "Conversations",
+                    title: "Messages",
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.Background,
                     },
+                    contentStyle: { backgroundColor: Colors.Background }
                 }}
             />
             <Stack.Screen
@@ -192,17 +193,17 @@ const PostComponent = () => null
 const BottomTab = () => {
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
-      PublicSans_400Regular,
-      PublicSans_500Medium,
-      PublicSans_600SemiBold
+        PublicSans_400Regular,
+        PublicSans_500Medium,
+        PublicSans_600SemiBold
     })
-  
+
     useEffect(() => {
-      setLoaded(fontsLoaded)
+        setLoaded(fontsLoaded)
     }, [fontsLoaded])
 
     const [modalVisible, setModalVisible] = useState(false)
-    
+
     return (
         <Tab.Navigator>
             <Tab.Screen
@@ -222,8 +223,9 @@ const BottomTab = () => {
                     tabBarLabelStyle: styles.bottomBarText,
                     tabBarStyle: ((route) => {
                         const routeName = getFocusedRouteNameFromRoute(route) ?? ""
-                        if (routeName === 'LoginScreen' || routeName === 'CreateAccountScreen') {
-                        // if (routeName !== 'HomeScreen') {
+                        if (routeName === 'LoginScreen' ||
+                            routeName === 'CreateAccountScreen' ||
+                            routeName === 'Chat') {
                             return { display: "none" }
                         }
                         return styles.bottomBarTab
@@ -288,9 +290,9 @@ const BottomTab = () => {
                 })}
             />
             <Tab.Screen
-                name="Conversation"
+                name="Messages"
                 component={ChatStackNavigator}
-                options={{
+                options={({ route }) => ({
                     tabBarIcon: ({ focused }) => (
                         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
                             {focused
@@ -301,9 +303,15 @@ const BottomTab = () => {
                     ),
                     tabBarLabelPosition: "below-icon",
                     tabBarLabelStyle: styles.bottomBarText,
-                    tabBarStyle: styles.bottomBarTab,
+                    tabBarStyle: ((route) => {
+                        const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+                        if (routeName === 'Chat') {
+                            return { display: "none" }
+                        }
+                        return styles.bottomBarTab
+                    })(route),
                     headerShown: false
-                }}
+                })}
             />
         </Tab.Navigator>
     )
@@ -330,7 +338,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         // position: "absolute",
         // zIndex: 100,
-        // width: "33%"
+        // width: "70%"
+        paddingHorizontal: 40,
     },
     modal: {
         margin: 0,
