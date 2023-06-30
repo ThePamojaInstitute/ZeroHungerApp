@@ -2,9 +2,11 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { View, Text, Dimensions, TouchableOpacity, StyleSheet, GestureResponderEvent } from "react-native";
 import { logOutUser, deleteUser } from "../controllers/auth";
+import { useAlert } from "../context/Alert";
 
 export const AccountSettingsScreen = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext);
+    const { dispatch: alert } = useAlert()
 
     const handleDeleteUser = () => {
         deleteUser(user['user_id'], accessToken).then(res => {

@@ -1,23 +1,39 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, Dimensions, TouchableOpacity, StyleSheet, GestureResponderEvent } from "react-native";
+import { View, Text, Dimensions, StyleSheet, Image, TouchableHighlight, TextInput } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
 import { axiosInstance } from "../../config";
 import { ConversationModel } from "../models/Conversation";
-import { Button, TextInput } from 'react-native-paper';
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "../../styles/globalStyleSheet";
-import { logOutUser, deleteUser } from "../controllers/auth";
-import moment, { months } from 'moment';
+import moment from 'moment';
+import {
+    useFonts,
+    PublicSans_600SemiBold,
+    PublicSans_500Medium,
+    PublicSans_400Regular
+} from '@expo-google-fonts/public-sans';
+import { MaterialIcons } from "@expo/vector-icons";
 
 export const Conversations = ({ navigation }) => {
-    const { user, accessToken, dispatch } = useContext(AuthContext);
+    const [loaded, setLoaded] = useState(false)
+    let [fontsLoaded] = useFonts({
+        PublicSans_400Regular,
+        PublicSans_500Medium,
+        PublicSans_600SemiBold
+    })
+
+    useEffect(() => {
+        setLoaded(fontsLoaded)
+    }, [fontsLoaded])
+
+    const { user, accessToken } = useContext(AuthContext);
     const { unreadFromUsers } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
 
     const [conversations, setActiveConversations] = useState<ConversationModel[]>([]);
-    const [createGroup, setCreateGroup] = useState("")
+    // const [createGroup, setCreateGroup] = useState("")
     const [empty, setEmpty] = useState(false)
 
     useEffect(() => {
@@ -46,60 +62,18 @@ export const Conversations = ({ navigation }) => {
         if (conversations.length > 0) setEmpty(false)
     }, [conversations])
 
-    const formatMessageTimestamp = (timestamp?: string) => {
-        if (!timestamp) return;
-
-        let date = new Date(timestamp).toLocaleTimeString().slice(0, 5)
-
-        if (date.at(date.length - 1) === ":") {
-            date = date.slice(0, date.length - 1)
-        }
-
-        return date
-    }
-
     const navigateToChat = (firstUser: string, secondUser: string) => {
         navigation.navigate('Chat', { user1: firstUser, user2: secondUser })
     }
 
-    const handleCreate = () => {
-        if (user['username'].toLowerCase() === createGroup.toLowerCase()) {
-            alert!({ type: 'open', message: 'The username you entered is your username', alertType: 'error' })
-        } else if (!user['username'] || !createGroup) {
-            alert!({ type: 'open', message: 'Please enter a username', alertType: 'error' })
-        }
-        navigateToChat(user['username'], createGroup)
-    }
-
-
-    const handleLogOut = (e: GestureResponderEvent) => {
-        logOutUser().then(() => {
-            dispatch({ type: "LOGOUT", payload: null })
-        }).then(() => {
-            alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
-            navigation.navigate('LoginScreen')
-        }).catch(() => {
-            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-        })
-    }
-
-    const handleDeleteUser = () => {
-        deleteUser(user['user_id'], accessToken).then(res => {
-            if (res === "success") {
-                logOutUser().then(() => {
-                    dispatch({ type: "LOGOUT", payload: null })
-                    alert!({ type: 'open', message: 'Account deleted successfully!', alertType: 'success' })
-                    navigation.navigate('LoginScreen')
-                }).catch(() => {
-                    alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                    console.log("log out error");
-                })
-            } else {
-                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                console.log(res);
-            }
-        })
-    }
+    // const handleCreate = () => {
+    //     if (user['username'].toLowerCase() === createGroup.toLowerCase()) {
+    //         alert!({ type: 'open', message: 'The username you entered is your username', alertType: 'error' })
+    //     } else if (!user['username'] || !createGroup) {
+    //         alert!({ type: 'open', message: 'Please enter a username', alertType: 'error' })
+    //     }
+    //     navigateToChat(user['username'], createGroup)
+    // }
 
     const renderItem = ({ item }) => {
         let namesAlph: string[]
@@ -111,61 +85,97 @@ export const Conversations = ({ navigation }) => {
         }
 
         const now = moment.utc().local()
-        let timeAgo = item.last_message ?
+        let timestamp = item.last_message ?
             moment.utc(item.last_message.timestamp).local().startOf('seconds').fromNow()
             : ""
 
-        if (timeAgo) {
-            if (timeAgo.includes('second')) {
-                timeAgo = 'now'
-            } else if (timeAgo.includes('minute')) {
-                const time = timeAgo.split(' ')
-                timeAgo = `${time[0]}m`
-            } else if (timeAgo.includes('hour')) {
-                const time = timeAgo.split(' ')
-                timeAgo = `${time[0]}h`
-            } else if (timeAgo.includes('day')) {
-                const time = timeAgo.split(' ')
-                timeAgo = `${time[0]}d`
+        if (timestamp) {
+            if (timestamp.includes('second')) {
+                timestamp = 'now'
+            } else if (timestamp.includes('minute')) {
+                const time = timestamp.split(' ')
+                if (timestamp.startsWith("a")) {
+                    timestamp = `1m`
+                } else {
+                    timestamp = `${time[0]}m`
+                }
+            } else if (timestamp.includes('hour')) {
+                if (timestamp.startsWith("a")) {
+                    timestamp = `1h`
+                } else {
+                    const time = timestamp.split(' ')
+                    timestamp = `${time[0]}h`
+                }
+            } else if (timestamp.includes('day')) {
+                if (timestamp.startsWith("a")) {
+                    timestamp = `1d`
+                } else {
+                    const time = timestamp.split(' ')
+                    timestamp = `${time[0]}d`
+                }
             } else {
                 const diff = moment.duration(now.diff(item.last_message.timestamp))
-                timeAgo = `${Math.floor(diff.asWeeks()).toString()}w`
+                timestamp = `${Math.floor(diff.asWeeks()).toString()}w`
             }
         }
 
+        const isUnread = unreadFromUsers.includes(item.other_user.username)
+
         return (
-            <View testID={`${namesAlph[0]}__${namesAlph[1]}`} key={item.other_user.username}>
-                <Button onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}
-                    testID={`${namesAlph[0]}__${namesAlph[1]}.Button`}
-                >
-                    {`${namesAlph[0]}__${namesAlph[1]}`}
-                </Button>
-                {item.last_message && (<View style={{ marginLeft: 10 }}>
-                    <Text>From {item.last_message.from_user.username === user['username']
-                        ? `Me` : item.last_message.from_user.username}
-                    </Text>
-                    <View>
-                        {unreadFromUsers.includes(item.other_user.username) &&
-                            <Text style={{ color: 'red' }}>You have unread messages</Text>
-                        }
-                        {item.last_message &&
-                            <>
-                                <Text >Last message: {item.last_message?.content}</Text>
-                                <Text>{timeAgo}</Text>
-                            </>
-                        }
-                    </View>
-                </View>)}
-            </View>
+            <TouchableHighlight
+                onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}
+                testID={`${namesAlph[0]}__${namesAlph[1]}.Button`}
+            >
+                <>
+                    {!loaded && <Text>Loading...</Text>}
+                    {loaded &&
+                        <View testID={`${namesAlph[0]}__${namesAlph[1]}`}
+                            key={item.other_user.username}
+                            style={styles.conversation}
+                        >
+                            <View style={styles.info}>
+                                <Image
+                                    style={styles.profileImg}
+                                    source={require('../../assets/Profile.png')}
+                                />
+                                <View style={styles.content}>
+                                    <Text
+                                        style={isUnread ? styles.usernameUnread : styles.username}
+                                    >{item.other_user.username}</Text>
+                                    <Text ellipsizeMode="tail"
+                                        numberOfLines={2}
+                                        style={isUnread ? styles.lastMessageUnread : styles.lastMessage}
+                                    >{item?.last_message?.content}</Text>
+                                </View>
+                            </View>
+                            <View>
+                                {isUnread &&
+                                    <View style={styles.ellipseFrame}>
+                                        <View style={styles.ellipse}></View>
+                                    </View>}
+                                <Text style={styles.timestamp}>{timestamp ? timestamp : ''}</Text>
+                            </View>
+                        </View>}
+                </>
+            </TouchableHighlight>
         )
     };
 
     return (
-        <View style={{}}>
+        <View style={{ backgroundColor: Colors.Background }}>
             {!empty && conversations.length === 0 && <Text style={{ fontSize: 20 }}>Loading...</Text>}
             {empty && <Text style={{ fontSize: 20 }}>No Conversations</Text>}
             {!empty &&
-                <View style={{ height: 400 }}>
+                <View style={{ height: Dimensions.get('window').height - 130 }}>
+                    <View style={styles.searchContainer}>
+                        <View style={styles.searchInputContainer}>
+                            <MaterialIcons style={styles.searchIcon} name="search" size={24} color="black" />
+                            <TextInput
+                                placeholder="Search messages"
+                                style={styles.searchInput}
+                            />
+                        </View>
+                    </View>
                     <FlashList
                         data={conversations}
                         renderItem={renderItem}
@@ -173,27 +183,6 @@ export const Conversations = ({ navigation }) => {
                         estimatedItemSize={100}
                     />
                 </View>}
-            <View style={{ marginTop: 'auto' }}>
-                {/* <View style={{ flexDirection: 'column' }}>
-                    <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
-                        <Text style={styles.logOutBtnText}>Log Out</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
-                        <Text style={styles.deleteBtnText}>Delete User</Text>
-                    </TouchableOpacity>
-                </View> */}
-                {/* <View style={{ marginTop: 20 }}>
-                    <Text>Create Chat with:</Text>
-                    <TextInput
-                        value={createGroup}
-                        placeholder="Chat with(username)"
-                        placeholderTextColor="#000000"
-                        onChangeText={setCreateGroup}
-                        onSubmitEditing={handleCreate}
-                    />
-                    <Button onPress={handleCreate}>Create</Button>
-                </View> */}
-            </View>
         </View>
     );
 }
@@ -201,88 +190,135 @@ export const Conversations = ({ navigation }) => {
 export default Conversations
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.offWhite,
-        // marginBottom: 100,
-        // position: 'absolute',
-        // width: '100%',
-        // height: '100%',
-        // bottom: 100,
-        // alignItems: 'center',
-        // justifyContext: 'center',
-    },
-    landingPageText: {
-        // flex: 1,
-        marginTop: 10,
-        marginLeft: 25,
-        marginBottom: 60,
-        // alignItems: 'center',
-        // justifyContent: 'center',
-    },
-    text: {
-        fontSize: 50,
-        fontWeight: 'bold',
-    },
-    logOutBtn: {
-        width: "50%",
-        borderRadius: 25,
-        marginTop: 10,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "#6A6A6A",
-        marginRight: 10
-    },
-    logOutBtnText: {
-        color: "#FFFFFF",
-        padding: 15,
-        marginLeft: 10,
-        fontSize: 15,
-    },
-    deleteBtn: {
-        title: "Login",
-        width: "50%",
-        borderRadius: 25,
-        marginTop: 20,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "red",
-    },
-    deleteBtnText: {
-        color: "#FFFFFF",
-        padding: 15,
-        marginLeft: 10,
-        fontSize: 15,
-    },
-    pressable: {
+    conversation: {
+        alignItems: 'flex-start',
+        display: 'flex',
         flexDirection: 'row',
-        marginLeft: 4,
-        marginRight: 25,
-        borderBottomWidth: 4,
-        // borderBottomColor: 'rgba(48, 103, 117, 0)',
+        gap: 20,
+        padding: 12,
+        position: 'relative',
+        width: '95%'
     },
-    pressableText: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        justifyContent: 'center',
+    info: {
+        alignItems: 'flex-start',
+        display: 'flex',
+        flex: 1,
+        gap: 12,
+        position: 'relative',
+        flexDirection: 'row'
     },
-    categoryText: {
-        marginTop: 20,
-        marginLeft: 25,
+    profileImg: {
+        resizeMode: 'cover',
+        width: 48,
+        height: 48,
+        position: 'relative'
+    },
+    content: {
+        alignItems: 'flex-start',
+        display: 'flex',
+        flex: 1,
+        flexDirection: 'column',
+        gap: 1,
+        position: 'relative',
+    },
+    username: {
+        alignSelf: 'stretch',
+        color: Colors.dark,
         fontSize: 15,
-        alignItems: 'center',
-        justifyContent: 'center',
+        letterSpacing: 0,
+        lineHeight: 18,
+        marginTop: -1,
+        position: 'relative',
+        fontFamily: 'PublicSans_500Medium'
     },
-    item: {
-        backgroundColor: '#FFFFFF',
-        padding: 10,
-        marginVertical: 15,
-        marginHorizontal: 4,
+    usernameUnread: {
+        alignSelf: 'stretch',
+        color: Colors.dark,
+        fontSize: 15,
+        letterSpacing: 0,
+        lineHeight: 18,
+        marginTop: -1,
+        position: 'relative',
+        fontFamily: 'PublicSans_600SemiBold'
+    },
+    lastMessage: {
+        alignSelf: 'stretch',
+        color: Colors.dark,
+        fontSize: 13,
+        letterSpacing: 0,
+        lineHeight: 15.6,
+        position: 'relative',
+        fontFamily: 'PublicSans_400Regular'
+    },
+    lastMessageUnread: {
+        alignSelf: 'stretch',
+        color: Colors.dark,
+        fontSize: 13,
+        letterSpacing: 0,
+        lineHeight: 15.6,
+        position: 'relative',
+        fontFamily: 'PublicSans_600SemiBold'
+    },
+    ellipseFrame: {
+        alignItems: 'flex-start',
+        display: 'flex',
+        gap: 10,
+        right: 0,
+        top: 0,
+        paddingVertical: 2,
+        paddingHorizontal: 0,
+        position: 'absolute',
+    },
+    ellipse: {
+        backgroundColor: '#306775',
+        borderRadius: 4,
+        height: 8,
+        minWidth: 8,
+        position: 'relative',
+        marginTop: 5,
+        marginRight: 35
+    },
+    timestamp: {
+        left: -15,
+        top: 0,
+        marginRight: 10,
+        paddingVertical: 2,
+        paddingHorizontal: 0,
+        position: 'absolute',
+        color: Colors.dark,
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 13.2
+    },
+    searchContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 0,
+        width: "100%",
+        height: 45,
+        marginBottom: 10,
+        marginTop: 5,
+        paddingHorizontal: 10,
+    },
+    searchInputContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor: Colors.white,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: Colors.midLight,
         borderRadius: 10,
+        paddingLeft: 7,
     },
-    feed: {
-        fontSize: 30,
-        marginTop: 35,
-        marginLeft: 25,
+    searchInput: {
+        backgroundColor: Colors.white,
+        color: '#646464',
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 16,
+        lineHeight: 20.8,
+        width: '50%'
     },
+    searchIcon: {
+        paddingTop: 10,
+        paddingRight: 5
+    }
 })
