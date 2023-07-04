@@ -4,12 +4,26 @@ from rest_framework.parsers import JSONParser
 from django.core import serializers
 from django.conf import settings
 
+
+from django.http import JsonResponse
+import uuid
+from azure.storage.blob import BlobServiceClient
+
 import json
 import jwt
 
 from .models import OfferPost, RequestPost
 from .serializers import createOfferSerializer, createRequestSerializer
 from apps.Users.models import BasicUser
+
+import os
+from azure.identity import EnvironmentCredential
+from azure.keyvault.secrets import SecretClient
+from azure.storage.blob import ContainerClient
+VAULT_URL = os.environ["VAULT_URL"]
+envcredential = EnvironmentCredential()
+client = SecretClient(vault_url=VAULT_URL, credential=envcredential)
+connection_string = client.get_secret("zh-backend-testing-image-storage-connection-string").value 
 
 
 class createPost(APIView):
@@ -88,3 +102,30 @@ class requestPostsForFeed(APIView):
         }
 
         return Response(length, status=200)
+
+
+class ImageUploader(APIView):
+  
+     def post(self,request):
+         try:
+             container_client = ContainerClient.from_connection_string(connection_string, "zh-post-images")
+             local_path = "./data"
+             #os.mkdir(local_path)
+
+             # Create a file in the local data directory to upload and download
+             local_file_name = "testfile.txt"
+             upload_file_path = os.path.join(local_path, local_file_name)
+
+             # Write text to the file
+             file = open(file=upload_file_path, mode='r')
+
+            
+             blob_client = container_client.get_blob_client(file.name)
+
+
+             blob_client.upload_blob(data=file.read().encode('utf-8'), overwrite=True)
+
+             return Response("Uploaded file")
+         except Exception as ex:
+             return Response(str(ex), status=401)
+    

@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from .views import createPost, requestPostsForFeed, deletePost
+from .views import createPost, requestPostsForFeed, deletePost, ImageUploader
 
 urlpatterns = [
     path('createPost', createPost.as_view(), name='create_post'),
     path('deletePost', deletePost.as_view(), name='delete_post'),
     path('requestPostsForFeed', requestPostsForFeed.as_view(), name='request_posts_for_feed'),
+    path('testBlobImage', ImageUploader.as_view(), name="ImageUploader")
 ]

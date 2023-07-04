@@ -123,6 +123,10 @@ export const LoginScreen = ({ navigation }) => {
     })  //replace this with actual URL later
   }
 
+
+  const TestBlobUpload = () => {
+    axiosInstance.post("posts/testBlobImage")
+  }
   return (
     <View testID="Login.container" style={globalStyles.authContainer}>
       {!loaded && <Text>Loading...</Text>}
@@ -222,6 +226,8 @@ export const LoginScreen = ({ navigation }) => {
             <Text style={globalStyles.secondaryBtnLabel}>Add an Offer</Text>
           </TouchableOpacity> */}
           <NotificationsTest setExpoToken={setExpoPushToken} />
+
+          <TouchableOpacity onPress={TestBlobUpload}> </TouchableOpacity>
         </>
       }
       {/* <Button
