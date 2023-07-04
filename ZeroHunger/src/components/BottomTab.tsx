@@ -184,6 +184,44 @@ const ChatStackNavigator = () => {
                     },
                 }}
             />
+            <Stack.Screen
+                name="RequestDetailsScreen"
+                component={RequestDetailsScreen}
+                options={{
+                    title: "Request",
+                    headerTitleAlign: "center",
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                    headerRight: () => (
+                        <Ionicons
+                            name="ellipsis-horizontal"
+                            size={24}
+                            style={{ paddingRight: 16 }}
+                            onPress={() => { }}
+                        />
+                    )
+                }}
+            />
+            <Stack.Screen
+                name="OfferDetailsScreen"
+                component={OfferDetailsScreen}
+                options={{
+                    title: "Offer",
+                    headerTitleAlign: "center",
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                    headerRight: () => (
+                        <Ionicons
+                            name="ellipsis-horizontal"
+                            size={24}
+                            style={{ paddingRight: 16 }}
+                            onPress={() => { }}
+                        />
+                    )
+                }}
+            />
         </Stack.Navigator>
     )
 }
@@ -226,6 +264,7 @@ const BottomTab = () => {
                         if (routeName === 'LoginScreen' ||
                             routeName === 'CreateAccountScreen' ||
                             routeName === 'Chat') {
+
                             return { display: "none" }
                         }
                         return styles.bottomBarTab

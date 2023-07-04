@@ -135,13 +135,15 @@ async function registerForPushNotificationsAsync() {
 
             finalStatus = status;
         }
-        if (finalStatus !== 'granted') {
+        if (finalStatus !== 'granted' && Platform.OS !== 'web') {
             alert('Failed to get push token for push notification!');
             return;
         }
         token = (await Notifications.getExpoPushTokenAsync()).data;
     } else {
-        alert('Must use physical device for Push Notifications');
+        if (Platform.OS !== 'web') {
+            alert('Must use physical device for Push Notifications');
+        }
     }
 
     return token;
