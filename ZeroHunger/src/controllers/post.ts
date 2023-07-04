@@ -50,6 +50,6 @@ export const deletePost = async (postType: Char, postId: Number, token: string) 
         }
     } catch (error) {
         console.log(error);
-        return { msg: "failure", res: error }
+        return { msg: "failure", res: 'An error occured' }
     }
 }
