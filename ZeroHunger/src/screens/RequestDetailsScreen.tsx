@@ -34,11 +34,21 @@ export const RequestDetailsScreen = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
     const { user, accessToken } = useContext(AuthContext);
 
-    const [message, setMessage] = useState('')
+    const [message, setMessage] = useState("Hi " + route.params.username + ", do you still need this? I have some to share")
+    const [inputHeight, setInputHeight] = useState(0)
 
     const sendMsg = () => {
-        // alert!({ type: 'open', message: 'Error: Message not sent!', alertType: 'error' })
-        navigation.navigate('Chat', { user1: user['username'], user2: route.params.username, msg: message })
+        const post = {
+            title: route.params.title,
+            images: route.params.imagesLink,
+            postedOn: route.params.postedOn,
+            postedBy: route.params.postedBy,
+            description: route.params.description,
+            postId: route.params.postId,
+            username: route.params.username,
+            type: "r"
+        }
+        navigation.navigate('Chat', { user1: user['username'], user2: route.params.username, msg: message, post: JSON.stringify(post) })
     }
 
     const handleDelete = (postId: Number) => {
@@ -55,9 +65,9 @@ export const RequestDetailsScreen = ({ navigation }) => {
     const renderItem = ({ item }) => {
         return (
             <TouchableOpacity>
-                <Image 
-                    style={{height: 200, width: 200}}
-                    source={{uri: item.imagesLink}}
+                <Image
+                    style={{ height: 200, width: 200 }}
+                    source={{ uri: item.imagesLink }}
                 />
             </TouchableOpacity>
         )
@@ -85,15 +95,15 @@ export const RequestDetailsScreen = ({ navigation }) => {
                 data={images}
                 horizontal={true}
                 estimatedItemSize={166}
-                // contentContainerStyle={{paddingLeft: 12}}
+            // contentContainerStyle={{paddingLeft: 12}}
             />
             <View>
-                <Text style={[globalStyles.H2, {paddingTop: 12}]}>{route.params.title}</Text>
+                <Text style={[globalStyles.H2, { paddingTop: 12 }]}>{route.params.title}</Text>
 
                 {/* Your post */}
                 {user['username'] == route.params.username && <>
                     <View style={styles.yourPost}>
-                        <View style={{flexDirection: "row"}}>
+                        <View style={{ flexDirection: "row" }}>
                             <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                             {/* Placeholder postal code */}
                             <Text style={globalStyles.Small2}>XXXXXX</Text>
@@ -101,18 +111,18 @@ export const RequestDetailsScreen = ({ navigation }) => {
 
                         {/* TODO: Implement edit posts */}
                         <View>
-                            <TouchableOpacity style={styles.secondaryBtn} onPress={() => {}}>
-                                <MaterialCommunityIcons name="pencil-box-outline" size={21}/>
+                            <TouchableOpacity style={styles.secondaryBtn} onPress={() => { }}>
+                                <MaterialCommunityIcons name="pencil-box-outline" size={21} />
                                 <Text style={globalStyles.secondaryBtnLabel}>Edit</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </>}
-                
+
                 {/* Send message option if posted by other user */}
                 {user['username'] != route.params.username && <>
                     <View style={styles.yourPost}>
-                        <View style={{flexDirection: 'row', marginTop: 4, marginBottom: 12}}>
+                        <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
                             <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                             {/* Placeholder distance away */}
                             <Text style={globalStyles.Small2}>{1} km away</Text>
@@ -125,42 +135,48 @@ export const RequestDetailsScreen = ({ navigation }) => {
                     </View>
 
                     <View style={styles.sendMessage}>
-                        <Text style={[globalStyles.H4, {padding: 12}]}>Send a message</Text>
+                        <Text style={[globalStyles.H4, { padding: 12 }]}>Send a message</Text>
                         <TextInput
                             value={message}
                             onChangeText={setMessage}
-                            placeholder={"Hi " + route.params.username + ", is this still available?"}
+                            placeholder={"Type a message"}
                             placeholderTextColor={Colors.midDark}
-                            style={styles.inputText}
-                            multiline={false}
+                            style={[styles.inputText, { maxHeight: inputHeight }]}
+                            multiline={true}
+                            numberOfLines={2}
                             maxLength={1024}
                             scrollEnabled={false}
+                            onContentSizeChange={event => {
+                                setInputHeight(event.nativeEvent.contentSize.height);
+                            }}
                         />
-                        <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
+                        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
                             <TouchableOpacity style={styles.defaultBtn} onPress={sendMsg}>
                                 <Text style={globalStyles.defaultBtnLabel}>Send</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
-                </> }
-                
+                </>}
+
                 <View style={styles.information}>
-                    <Text style={[globalStyles.H4, {paddingBottom: 12, paddingTop: 20}]}>Description</Text>
-                    <View style={{paddingBottom: 12}}>
+                    <Text style={[globalStyles.H4, { paddingBottom: 12, paddingTop: 20 }]}>Description</Text>
+                    <View style={{ paddingBottom: 12 }}>
                         <Text style={globalStyles.Body}>
                             {route.params.description == "" ? "No Description" : route.params.description}
                         </Text>
                     </View>
                 </View>
                 <View style={styles.information}>
-                    <Text style={[globalStyles.H4, {paddingBottom: 12}]}>Poster Information</Text>
-                    <View style={{flexDirection: "row", marginRight: 12}}>
-                        <Ionicons name="person-circle-sharp" color="#B8B8B8" size={40}/>
+                    <Text style={[globalStyles.H4, { paddingBottom: 12 }]}>Poster Information</Text>
+                    <View style={{ flexDirection: "row", marginRight: 12 }}>
+                        <Ionicons name="person-circle-sharp" color="#B8B8B8" size={40} />
                         <View>
                             <Text style={[
-                                globalStyles.H5, 
-                                {marginLeft: 3,
-                                marginTop: 2}]}
+                                globalStyles.H5,
+                                {
+                                    marginLeft: 3,
+                                    marginTop: 2
+                                }]}
                             >{route.params.username}</Text>
                             <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
                                 <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
@@ -171,30 +187,30 @@ export const RequestDetailsScreen = ({ navigation }) => {
                     </View>
                 </View>
                 <View style={styles.information}>
-                    <Text style={[globalStyles.H4, {paddingBottom: 12}]}>Request Details</Text>
-                    <View style={{flexDirection: "row"}}>
-                        <View style={{marginRight: 24}}>
-                            <Text style={[styles.Small1, {marginBottom: 8}]}>Food category</Text>
-                            <Text style={[styles.Small1, {marginBottom: 8}]}>Quantity</Text>
+                    <Text style={[globalStyles.H4, { paddingBottom: 12 }]}>Request Details</Text>
+                    <View style={{ flexDirection: "row" }}>
+                        <View style={{ marginRight: 24 }}>
+                            <Text style={[styles.Small1, { marginBottom: 8 }]}>Food category</Text>
+                            <Text style={[styles.Small1, { marginBottom: 8 }]}>Quantity</Text>
                             <Text style={styles.Small1}>Dietary Requirements</Text>
                         </View>
                         {/* Temporary details values */}
                         <View>
-                            <Text style={[globalStyles.Small1, {marginBottom: 8}]}>N/A</Text>
-                            <Text style={[globalStyles.Small1, {marginBottom: 8}]}>N/A</Text>
+                            <Text style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
+                            <Text style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
                             <Text style={[globalStyles.Small1]}>N/A</Text>
                         </View>
                     </View>
                 </View>
                 <View style={styles.information}>
-                    <Text style={[globalStyles.H4, {paddingBottom: 12}]}>Meeting Preferences</Text>
-                    <View style={{flexDirection: "row"}}>
-                        <View style={{marginRight: 24}}>
-                            <Text style={[styles.Small1, {marginBottom: 8}]}>Pick Up or Delivery Preference</Text>
+                    <Text style={[globalStyles.H4, { paddingBottom: 12 }]}>Meeting Preferences</Text>
+                    <View style={{ flexDirection: "row" }}>
+                        <View style={{ marginRight: 24 }}>
+                            <Text style={[styles.Small1, { marginBottom: 8 }]}>Pick Up or Delivery Preference</Text>
                             <Text style={styles.Small1}>Postal Code</Text>
                         </View>
                         <View>
-                            <Text style={[globalStyles.Small1, {marginBottom: 8}]}>Pick Up, Delivery</Text>
+                            <Text style={[globalStyles.Small1, { marginBottom: 8 }]}>Pick Up, Delivery</Text>
                             <Text style={[globalStyles.Small1]}>XXXXXX</Text>
                         </View>
                     </View>
@@ -232,15 +248,13 @@ const styles = StyleSheet.create({
     },
     inputText: {
         flex: 1,
-        // padding: 10,
         backgroundColor: Colors.white,
         marginLeft: 12,
         marginRight: 12,
         padding: 10,
         borderRadius: 5,
         fontSize: 16,
-        // textAlignVertical: "top",
-        // height: 40,
+        height: 60,
     },
     messageInputView: {
         backgroundColor: "#D3D3D3",
