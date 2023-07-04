@@ -104,11 +104,11 @@ const HomeStackNavigator = ({ navigation }) => {
                         backgroundColor: Colors.offWhite,
                     },
                     headerRight: () => (
-                        <Ionicons 
-                            name="ellipsis-horizontal" 
+                        <Ionicons
+                            name="ellipsis-horizontal"
                             size={24}
-                            style={{paddingRight: 16}}
-                            onPress={() => {}}
+                            style={{ paddingRight: 16 }}
+                            onPress={() => { }}
                         />
                     )
                 }}
@@ -127,11 +127,11 @@ const HomeStackNavigator = ({ navigation }) => {
                         backgroundColor: Colors.offWhite,
                     },
                     headerRight: () => (
-                        <Ionicons 
-                            name="ellipsis-horizontal" 
+                        <Ionicons
+                            name="ellipsis-horizontal"
                             size={24}
-                            style={{paddingRight: 16}}
-                            onPress={() => {}}
+                            style={{ paddingRight: 16 }}
+                            onPress={() => { }}
                         />
                     )
                 }}
@@ -183,6 +183,44 @@ const ChatStackNavigator = () => {
                     },
                 }}
             />
+            <Stack.Screen
+                name="RequestDetailsScreen"
+                component={RequestDetailsScreen}
+                options={{
+                    title: "Request",
+                    headerTitleAlign: "center",
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                    headerRight: () => (
+                        <Ionicons
+                            name="ellipsis-horizontal"
+                            size={24}
+                            style={{ paddingRight: 16 }}
+                            onPress={() => { }}
+                        />
+                    )
+                }}
+            />
+            <Stack.Screen
+                name="OfferDetailsScreen"
+                component={OfferDetailsScreen}
+                options={{
+                    title: "Offer",
+                    headerTitleAlign: "center",
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                    headerRight: () => (
+                        <Ionicons
+                            name="ellipsis-horizontal"
+                            size={24}
+                            style={{ paddingRight: 16 }}
+                            onPress={() => { }}
+                        />
+                    )
+                }}
+            />
         </Stack.Navigator>
     )
 }
@@ -192,17 +230,17 @@ const PostComponent = () => null
 const BottomTab = () => {
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
-      PublicSans_400Regular,
-      PublicSans_500Medium,
-      PublicSans_600SemiBold
+        PublicSans_400Regular,
+        PublicSans_500Medium,
+        PublicSans_600SemiBold
     })
-  
+
     useEffect(() => {
-      setLoaded(fontsLoaded)
+        setLoaded(fontsLoaded)
     }, [fontsLoaded])
 
     const [modalVisible, setModalVisible] = useState(false)
-    
+
     return (
         <Tab.Navigator>
             <Tab.Screen
@@ -223,7 +261,7 @@ const BottomTab = () => {
                     tabBarStyle: ((route) => {
                         const routeName = getFocusedRouteNameFromRoute(route) ?? ""
                         if (routeName === 'LoginScreen' || routeName === 'CreateAccountScreen') {
-                        // if (routeName !== 'HomeScreen') {
+                            // if (routeName !== 'HomeScreen') {
                             return { display: "none" }
                         }
                         return styles.bottomBarTab

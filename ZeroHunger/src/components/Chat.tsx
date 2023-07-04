@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState, } from 'react'
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Image, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { NotificationContext } from '../context/ChatNotificationContext';
 import { Message } from './Message';
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { FlashList } from "@shopify/flash-list";
 import { Entypo, Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../styles/globalStyleSheet';
+import { Colors, globalStyles } from '../../styles/globalStyleSheet';
+import { Char } from '../../types';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -131,6 +132,15 @@ export const Chat = ({ navigation, route }) => {
         }
 
         if (connectionStatus === "Open" && route.params.msg) {
+            if (route.params.post) {
+                sendJsonMessage({
+                    type: "chat_message",
+                    message: route.params.post,
+                    name: user['username']
+                });
+                route.params.post = ''
+            }
+
             const msg = route.params.msg
             sendJsonMessage({
                 type: "chat_message",
@@ -145,6 +155,94 @@ export const Chat = ({ navigation, route }) => {
         if (messageHistory.length > 0) setEmpty(false)
     }, [messageHistory])
 
+    const handlePress = (
+        title: string,
+        imagesLink: string,
+        postedOn: Number,
+        postedBy: Number,
+        description: string,
+        postId: Number,
+        username: string,
+        type: Char
+    ) => {
+        //Placeholder image
+        imagesLink = imagesLink ? imagesLink :
+            "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
+
+        type === "r" ?
+            navigation.navigate('RequestDetailsScreen', {
+                title,
+                imagesLink,
+                postedOn,
+                postedBy,
+                description,
+                postId,
+                username,
+            })
+            :
+            navigation.navigate('OfferDetailsScreen', {
+                title,
+                imagesLink,
+                postedOn,
+                postedBy,
+                description,
+                postId,
+                username,
+            })
+    }
+
+    const Post = ({ item }) => {
+        const content = JSON.parse(item.content)
+
+        return (
+            <TouchableOpacity onPress={() => handlePress(
+                content.title,
+                content.images,
+                content.postedOn,
+                content.postedBy,
+                content.description,
+                content.postId,
+                content.username,
+                content.type
+            )}>
+                <View style={user['username'] === item.to_user['username'] ? styles.postMsgContainerIn : styles.postMsgContainerOut}>
+                    <View
+                        style={user['username'] === item.to_user['username'] ? styles.postMsgIn : styles.postMsgOut}>
+                        <View style={styles.postMsgCont}>
+                            <Image
+                                style={styles.postMsgImg}
+                                source={{ uri: content.images }}
+                            />
+                            <View style={styles.postMsgSubCont}>
+                                <Text style={[styles.postMsgTitle, {
+                                    color: user['username'] === item.to_user['username'] ?
+                                        Colors.dark : Colors.white
+                                }]}>{content.title}</Text>
+                                <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
+                                    <Ionicons name='location-outline' size={13}
+                                        style={{
+                                            marginRight: 4,
+                                            color: user['username'] === item.to_user['username'] ?
+                                                Colors.dark : Colors.white
+                                        }} />
+                                    {/* Placeholder distance away */}
+                                    <Text style={[globalStyles.Small2,
+                                    {
+                                        color: user['username'] === item.to_user['username'] ?
+                                            Colors.dark : Colors.white
+                                    }]}>{1}km away</Text>
+                                </View>
+                                <View style={styles.postMsgNeedBy}>
+                                    <Text style={globalStyles.Tag}>Need in {3} days</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
     const renderItem = ({ item }) => {
         if (item.id === "end") {
             return (
@@ -152,7 +250,13 @@ export const Chat = ({ navigation, route }) => {
                     <Text style={{ fontSize: 20 }}>End Reached</Text>
                 </View>
             )
+        } else if (item.content.startsWith('{')) {
+            try {
+                JSON.parse(item.content)
+                return <Post item={item} />
+            } catch (error) { }
         }
+
         return <Message key={item.id} message={item}></Message>
     }
 
@@ -272,5 +376,77 @@ const styles = StyleSheet.create({
         marginTop: 4.5,
         top: 0,
         bottom: 0
+    },
+    postMsgCont: {
+        flexDirection: 'row',
+        marginVertical: -11
+    },
+    postMsgSubCont: {
+        marginVertical: 10,
+        marginRight: 65,
+        marginLeft: 5
+    },
+    postMsgImg: {
+        height: 90,
+        width: 90,
+        resizeMode: 'cover',
+        marginLeft: -10,
+        borderTopLeftRadius: 10,
+        borderBottomLeftRadius: 10,
+        marginRight: 5
+    },
+    postMsgTitle: {
+        color: Colors.dark,
+        fontFamily: 'PublicSans_500Medium',
+        fontSize: 15
+    },
+    postMsgNeedBy: {
+        backgroundColor: Colors.primaryLight,
+        paddingLeft: 8,
+        paddingRight: 8,
+        paddingTop: 4,
+        paddingBottom: 4,
+        borderRadius: 4,
+        marginTop: -3,
+        marginBottom: -10
+    },
+    postMsgIn: {
+        position: 'relative',
+        left: 0,
+        backgroundColor: Colors.primaryLightest,
+        borderRadius: 10,
+        alignItems: 'flex-start',
+        gap: 4,
+        overflow: 'hidden',
+        padding: 10,
+        minWidth: '5%',
+        maxWidth: '75%',
+        marginleft: 20,
+        marginBottom: 20
+    },
+    postMsgOut: {
+        position: 'relative',
+        left: 0,
+        backgroundColor: Colors.primary,
+        borderRadius: 10,
+        alignItems: 'flex-start',
+        gap: 4,
+        overflow: 'hidden',
+        padding: 10,
+        minWidth: '5%',
+        maxWidth: '75%',
+        marginRight: 20,
+        marginBottom: 20
+    },
+    postMsgContainerIn: {
+        marginTop: 1,
+        marginBottom: 1,
+        flexDirection: 'row',
+        marginLeft: 20
+    },
+    postMsgContainerOut: {
+        marginTop: 1,
+        marginBottom: 1,
+        flexDirection: 'row-reverse',
     }
 });

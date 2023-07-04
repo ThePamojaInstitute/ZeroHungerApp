@@ -147,7 +147,8 @@ export const PostRenderer = ({ type, navigation }) => {
     //     })
     // }
 
-    const onPress = (title: string,
+    const handlePress = (
+        title: string,
         imagesLink: string,
         postedOn: Number,
         postedBy: Number,
@@ -185,7 +186,7 @@ export const PostRenderer = ({ type, navigation }) => {
 
     const Post = ({ title, imagesLink, postedOn, postedBy, description, postId, username }) => {
         return (
-            <TouchableOpacity style={styles.container} onPress={() => onPress(
+            <TouchableOpacity style={styles.container} onPress={() => handlePress(
                 title,
                 imagesLink,
                 postedOn,
