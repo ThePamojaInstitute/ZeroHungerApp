@@ -79,7 +79,11 @@ class ChatConsumer(JsonWebsocketConsumer):
 
             notification_group_name = self.get_receiver().username + "__notifications"
 
+            print(f'Number of clients in {self.conversation_name}: {self.room_connection_counts[self.conversation_name]}')
+
             if(self.room_connection_counts[self.conversation_name] <= 1):
+                receiver = BasicUser.objects.get(username=self.get_receiver().username)
+                print(f'Reciever\'s expo token is: {receiver.get_expo_push_token()}')
                 try:
                     # if the message is a post object
                     json.loads(MessageSerializer(message).data['content'])
@@ -90,14 +94,14 @@ class ChatConsumer(JsonWebsocketConsumer):
                 if(is_json): 
                     return
 
-                receiver = BasicUser.objects.get(username=self.get_receiver().username)
-
                 push_message = {
                     'to': receiver.get_expo_push_token(),
                     'sound': 'default',
                     'title': f"New Message From {self.user['username']}",
                     'body': MessageSerializer(message).data['content'],
                 }
+
+                print(f'Push message: {push_message}')
 
                 try:
                     res = requests.post('https://exp.host/--/api/v2/push/send', json=push_message, headers={'User-Agent': "python-requests/2.31.0"})
