@@ -324,6 +324,25 @@ export const globalStyles = StyleSheet.create({
         color: '#656565',
         marginTop: 2
     },
+    postTag: {
+        borderRadius: 4,
+        gap: 10,
+        backgroundColor: Colors.primaryLightest,
+        display: "flex",
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: "center",
+        paddingVertical: 4,
+        paddingHorizontal: 5,
+        alignSelf: 'flex-end',
+        marginBottom: 10,
+    },
+    postTagLabel: {
+        color: Colors.dark,
+        fontFamily: 'PublicSans_500Medium',
+        fontSize: 12,
+        alignItems: 'center'
+    },
     H1: {
         fontFamily: 'PublicSans_600SemiBold',
         fontSize: 28,

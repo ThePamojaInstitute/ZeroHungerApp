@@ -242,9 +242,9 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                                 <Text style={globalStyles.Small1}>{1} km away</Text>
                             </View>
                         </View>
-                        <View style={styles.secondaryBtn}>
+                        <View style={globalStyles.postTag}>
                             {/* Placeholder need by date */}
-                            <Text style={styles.secondaryBtnLabel}>Need in {3} days</Text>
+                            <Text style={globalStyles.postTagLabel}>Need in {3} days</Text>
                         </View>
                         {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                     </View>
@@ -375,25 +375,6 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         padding: 8,
         marginRight: 8
-    },
-    secondaryBtn: {
-        display: "flex",
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: "center",
-        paddingVertical: 4,
-        paddingHorizontal: 5,
-        alignSelf: 'flex-end',
-        borderRadius: 10,
-        marginBottom: 10,
-        backgroundColor: Colors.primaryLight,
-    },
-    secondaryBtnLabel: {
-        fontFamily: 'PublicSans_500Medium',
-        fontSize: 12,
-        display: 'flex',
-        alignItems: 'center',
-        color: Colors.dark,
     },
 })
 
