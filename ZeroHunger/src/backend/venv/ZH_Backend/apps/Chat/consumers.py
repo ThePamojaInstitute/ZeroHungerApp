@@ -80,7 +80,18 @@ class ChatConsumer(JsonWebsocketConsumer):
             notification_group_name = self.get_receiver().username + "__notifications"
 
             if(self.room_connection_counts[self.conversation_name] <= 1):
+                try:
+                    # if the message is a post object
+                    json.loads(MessageSerializer(message).data['content'])
+                    is_json = True
+                except ValueError as e:
+                    is_json = False
+
+                if(is_json): 
+                    return
+
                 receiver = BasicUser.objects.get(username=self.get_receiver().username)
+
                 push_message = {
                     'to': receiver.get_expo_push_token(),
                     'sound': 'default',
@@ -93,12 +104,6 @@ class ChatConsumer(JsonWebsocketConsumer):
                     print(res)
                 except Exception as e:
                     print(e)
-
-                # data = parse.urlencode(push_message).encode()
-                # req =  request.Request('https://exp.host/--/api/v2/push/send', data=data)
-                # resp = request.urlopen(req)
-                # print(resp)
-
 
             async_to_sync(self.channel_layer.group_send)(
                 notification_group_name,
