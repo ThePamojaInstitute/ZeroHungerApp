@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
 import LoginScreen from '../screens/Loginscreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen'
-import LandingPageScreen from '../screens/HomeScreen';
+import HomeScreen from '../screens/HomeScreen';
 import RequestFormScreen from '../screens/RequestFormScreen';
 import RequestDetailsScreen from '../screens/RequestDetailsScreen';
 import OfferFormScreen from '../screens/OfferFormScreen';
@@ -31,7 +31,7 @@ const HomeStackNavigator = ({ navigation }) => {
         <Stack.Navigator>
             <Stack.Screen
                 name="HomeScreen"
-                component={LandingPageScreen}
+                component={HomeScreen}
                 options={{
                     title: "Zero Hunger",
                     headerTitleAlign: 'left',
