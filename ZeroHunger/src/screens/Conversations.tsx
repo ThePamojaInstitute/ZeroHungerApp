@@ -49,7 +49,14 @@ export const Conversations = ({ navigation }) => {
             if (res.data.length === 0) {
                 setEmpty(true)
             } else {
-                setActiveConversations(res.data);
+                const orderedConversations: ConversationModel[] = res.data
+                orderedConversations.sort((a, b) => {
+                    const aTime = new Date(a.last_message.timestamp)
+                    const bTime = new Date(b.last_message.timestamp)
+
+                    return bTime.getTime() - aTime.getTime()
+                })
+                setActiveConversations(orderedConversations);
             }
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
