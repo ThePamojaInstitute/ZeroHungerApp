@@ -80,7 +80,7 @@ class logIn(APIView):
             except Exception as e:
                 print(e)
                 pass
-            print(user.get_expo_push_token())
+            # print(user.get_expo_push_token())
             return serializer.logIn()
         else:
             return Response({"Error logging in", 401})
