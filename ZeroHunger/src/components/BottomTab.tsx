@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
     },
     modal: {
         margin: 0,
-        marginTop: Dimensions.get('window').height * 0.65,
+        marginTop: Dimensions.get('window').height * 0.7,
         backgroundColor: Colors.offWhite,
         borderRadius: 10,
         elevation: 0,
@@ -390,6 +390,6 @@ const styles = StyleSheet.create({
     modalContent: {
         flexDirection: "row",
         justifyContent: "center",
-        marginTop: -34
+        // marginTop: -34
     }
 })
