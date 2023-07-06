@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, Dimensions, StyleSheet, Image, TouchableHighlight, TextInput } from "react-native";
+import { View, Text, Dimensions, StyleSheet, Image, TouchableHighlight, TextInput, RefreshControl, ActivityIndicator } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
@@ -35,27 +35,38 @@ export const Conversations = ({ navigation }) => {
     const [conversations, setActiveConversations] = useState<ConversationModel[]>([]);
     // const [createGroup, setCreateGroup] = useState("")
     const [empty, setEmpty] = useState(false)
+    const [refreshing, setRefreshing] = useState(false)
+    const [firstLoad, setFirstLoad] = useState(true)
+
+    const getConversations = async () => {
+        try {
+            const res = await axiosInstance.get("chat/conversations/", {
+                headers: {
+                    Authorization: `${accessToken}`
+                }
+            });
+
+            if (res.data.length === 0) {
+                setEmpty(true)
+            } else {
+                const orderedConversations: ConversationModel[] = res.data
+                orderedConversations.sort((a, b) => {
+                    const aTime = new Date(a.last_message.timestamp)
+                    const bTime = new Date(b.last_message.timestamp)
+
+                    return bTime.getTime() - aTime.getTime()
+                })
+                setActiveConversations(orderedConversations);
+            }
+        } catch (error) {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+        }
+
+    }
 
     useEffect(() => {
-        const getConversations = async () => {
-            try {
-                const res = await axiosInstance.get("chat/conversations/", {
-                    headers: {
-                        Authorization: `${accessToken}`
-                    }
-                });
-
-                if (res.data.length === 0) {
-                    setEmpty(true)
-                } else {
-                    setActiveConversations(res.data);
-                }
-            } catch (error) {
-                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-            }
-
-        }
         getConversations();
+        setFirstLoad(false)
     }, [user, unreadFromUsers]);
 
     useEffect(() => {
@@ -64,6 +75,10 @@ export const Conversations = ({ navigation }) => {
 
     const navigateToChat = (firstUser: string, secondUser: string) => {
         navigation.navigate('Chat', { user1: firstUser, user2: secondUser })
+    }
+
+    const refresh = () => {
+        getConversations()
     }
 
     // const handleCreate = () => {
@@ -163,26 +178,36 @@ export const Conversations = ({ navigation }) => {
 
     return (
         <View style={{ backgroundColor: Colors.Background }}>
-            {!empty && conversations.length === 0 && <Text style={{ fontSize: 20 }}>Loading...</Text>}
-            {empty && <Text style={{ fontSize: 20 }}>No Conversations</Text>}
-            {!empty &&
-                <View style={{ height: Dimensions.get('window').height - 130 }}>
-                    <View style={styles.searchContainer}>
-                        <View style={styles.searchInputContainer}>
-                            <MaterialIcons style={styles.searchIcon} name="search" size={24} color="black" />
-                            <TextInput
-                                placeholder="Search messages"
-                                style={styles.searchInput}
-                            />
-                        </View>
+            {empty && <Text style={{ fontSize: 20, alignSelf: 'center', marginTop: 10 }}>No Messages</Text>}
+            {!empty && <View style={{ height: Dimensions.get('window').height - 130 }}>
+                <View style={styles.searchContainer}>
+                    <View style={styles.searchInputContainer}>
+                        <MaterialIcons style={styles.searchIcon} name="search" size={24} color="black" />
+                        <TextInput
+                            placeholder="Search messages"
+                            style={styles.searchInput}
+                        />
                     </View>
-                    <FlashList
-                        data={conversations}
-                        renderItem={renderItem}
-                        testID="conversationsList"
-                        estimatedItemSize={100}
-                    />
-                </View>}
+                </View>
+                {conversations.length === 0 && <ActivityIndicator animating size="large" color={Colors.primary} />}
+                <FlashList
+                    data={conversations}
+                    renderItem={renderItem}
+                    testID="conversationsList"
+                    estimatedItemSize={100}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[Colors.primary, Colors.primaryLight]} />
+                    }
+                    ListEmptyComponent={() => {
+                        if (empty) {
+                            return <Text style={{ fontSize: 20 }}>No posts available</Text>
+                        }
+                        else if (firstLoad) {
+                            return <ActivityIndicator animating size="large" color={Colors.primary} />
+                        }
+                    }}
+                />
+            </View>}
         </View>
     );
 }

@@ -114,11 +114,12 @@ export const LoginScreen = ({ navigation }) => {
   }
 
   const handlePasswordRecovery = () => {
-    Linking.canOpenURL("zh-backend-azure-webapp.azurewebsites.net/users/reset_password/").then(supported => {
+    const URL = "https://zh-backend-azure-webapp.azurewebsites.net/users/reset_password/"
+    Linking.canOpenURL(URL).then(supported => {
       if (supported) {
-        Linking.openURL("zh-backend-azure-webapp.azurewebsites.net/users/reset_password/");
+        Linking.openURL(URL);
       } else {
-        console.log("Cannot open URL: " + "zh-backend-azure-webapp.azurewebsites.net/users/password-reset/");
+        console.log(`Cannot open URL: ${URL}`);
       }
     })  //replace this with actual URL later
   }
