@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
 import LoginScreen from '../screens/Loginscreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen'
-import LandingPageScreen from '../screens/HomeScreen';
+import HomeScreen from '../screens/HomeScreen';
 import RequestFormScreen from '../screens/RequestFormScreen';
 import RequestDetailsScreen from '../screens/RequestDetailsScreen';
 import OfferFormScreen from '../screens/OfferFormScreen';
@@ -31,7 +31,7 @@ const HomeStackNavigator = ({ navigation }) => {
         <Stack.Navigator>
             <Stack.Screen
                 name="HomeScreen"
-                component={LandingPageScreen}
+                component={HomeScreen}
                 options={{
                     title: "Zero Hunger",
                     headerTitleAlign: 'left',
@@ -295,23 +295,23 @@ const BottomTab = () => {
                                     swipeDirection={['down']}
                                     style={styles.modal}
                                 >
-                                    <View style={styles.modalContent}>
-                                        <Text style={[globalStyles.H3, {}]}>What would you like to post?</Text>
-                                    </View>
-                                    <View style={{ alignItems: "flex-end", marginRight: 16, marginTop: -34 }}>
-                                        <TouchableOpacity style={{ alignItems: "flex-end", marginRight: 16 }} onPress={() => setModalVisible(!modalVisible)}>
-                                            <Ionicons name="close" size={36} />
+                                    <View style={{ marginBottom: 30 }}>
+                                        <View style={styles.modalContent}>
+                                            <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>What would you like to post?</Text>
+                                        </View>
+                                        <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0, marginRight: 10 }} onPress={() => setModalVisible(!modalVisible)}>
+                                            <Ionicons name="close" size={30} />
                                         </TouchableOpacity>
                                     </View>
                                     <View style={{ alignItems: "center" }}>
                                         <TouchableOpacity
-                                            style={[globalStyles.defaultBtn, { marginTop: 24 }]}
+                                            style={[globalStyles.defaultBtn, { marginTop: 10 }]}
                                             onPress={() => {
                                                 setModalVisible(false)
                                                 navigation.navigate("RequestFormScreen")
                                             }}
                                         >
-                                            <Text style={globalStyles.defaultBtnLabel}>A Request for Food</Text>
+                                            <Text style={[globalStyles.defaultBtnLabel, { color: '#E8E3D9' }]}>A Request for Food</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={[globalStyles.secondaryBtn, { marginTop: 16 }]}
@@ -320,7 +320,7 @@ const BottomTab = () => {
                                                 navigation.navigate("OfferFormScreen")
                                             }}
                                         >
-                                            <Text style={globalStyles.secondaryBtnLabel}>An Offering of Food</Text>
+                                            <Text style={[globalStyles.secondaryBtnLabel, { color: Colors.primaryDark }]}>An Offering of Food</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </Modal>
@@ -382,14 +382,14 @@ const styles = StyleSheet.create({
     },
     modal: {
         margin: 0,
-        marginTop: Dimensions.get('window').height * 0.65,
+        marginTop: Dimensions.get('window').height * 0.74,
         backgroundColor: Colors.offWhite,
         borderRadius: 10,
         elevation: 0,
     },
     modalContent: {
-        flexDirection: "row",
-        justifyContent: "center",
-        marginTop: -34
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
     }
 })

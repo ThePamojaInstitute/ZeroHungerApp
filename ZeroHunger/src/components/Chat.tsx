@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, } from 'react'
-import { StyleSheet, Text, View, TextInput, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { NotificationContext } from '../context/ChatNotificationContext';
 import { Message } from './Message';
@@ -55,7 +55,7 @@ export const Chat = ({ navigation, route }) => {
                 name: user['username']
             });
             setMessage("");
-            setInputHeight(0)
+            setInputHeight(30)
         }
     }
 
@@ -101,10 +101,6 @@ export const Chat = ({ navigation, route }) => {
                 case "limit_reached":
                     setLoading(false)
                     if (!empty && !endReached) {
-                        const endMessage = {
-                            id: "end"
-                        }
-                        setMessageHistory([...messageHistory, ...data.messages, endMessage]);
                         setEnd(0)
                         setEndReached(true)
                     }
@@ -244,19 +240,12 @@ export const Chat = ({ navigation, route }) => {
     }
 
     const renderItem = ({ item }) => {
-        if (item.id === "end") {
-            return (
-                <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 20 }}>End Reached</Text>
-                </View>
-            )
-        } else if (item.content.startsWith('{')) {
+        if (item.content.startsWith('{')) {
             try {
                 JSON.parse(item.content)
                 return <Post item={item} />
             } catch (error) { }
         }
-
         return <Message key={item.id} message={item}></Message>
     }
 
@@ -264,8 +253,8 @@ export const Chat = ({ navigation, route }) => {
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             <Text>The WebSocket is currently {connectionStatus}</Text>
-            {((!empty && messageHistory.length === 0) || loading) && <Text style={{ fontSize: 20 }}>Loading...</Text>}
-            {empty && !loading && <Text style={{ fontSize: 20 }}>No Messages</Text>}
+            {((!empty && messageHistory.length === 0)) && <ActivityIndicator animating size="large" color={Colors.dark} />}
+            {empty && !loading && <Text style={{ fontSize: 20, alignSelf: 'center', marginTop: 10 }}>No Messages</Text>}
             <FlashList
                 renderItem={renderItem}
                 data={messageHistory}
@@ -274,6 +263,9 @@ export const Chat = ({ navigation, route }) => {
                 inverted={true}
                 estimatedItemSize={100}
                 testID='messagesList'
+                ListFooterComponent={endReached ?
+                    <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 10 }}
+                    >End Reached</Text> : <></>}
             />
             <View style={[styles.chatBar, inputHeight > 50 ? { height: 69 + (inputHeight - 69 + 25) } : { height: 69 }]}>
                 <Entypo name="camera" size={26} color="black" style={styles.chatCameraIcom} />

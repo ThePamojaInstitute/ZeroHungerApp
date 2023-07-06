@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity, LogBox } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { Button } from "react-native-paper";
 import { deletePost } from "../controllers/post";
@@ -15,6 +15,8 @@ import {
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+
+LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
 export const RequestDetailsScreen = ({ navigation }) => {
     let route: RouteProp<{
