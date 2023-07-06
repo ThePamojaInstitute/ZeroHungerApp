@@ -54,5 +54,9 @@ class ConversationSerializer(serializers.ModelSerializer):
                 return None
             elif username != self.context["user"].username:
                 # This is the other participant
-                other_user = BasicUser.objects.get(username=username)
-                return UserSerializer(other_user, context=context).data
+                try:
+                    other_user = BasicUser.objects.get(username=username)
+                    return UserSerializer(other_user, context=context).data
+                except Exception as e:
+                    print(e)
+                    return None

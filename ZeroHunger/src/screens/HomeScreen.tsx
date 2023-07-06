@@ -3,11 +3,8 @@ import {
     StyleSheet,
     Text,
     View,
-    TouchableOpacity,
     Pressable,
-    FlatList,
     GestureResponderEvent,
-    ScrollView
 } from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../context/AuthContext";
@@ -99,6 +96,7 @@ export const HomeScreen = ({ navigation }) => {
     }
 
     return (
+
         <View style={styles.container}>
             {!loaded && <Text>Loading...</Text>}
             {/* <View style={styles.landingPageText}>
@@ -179,8 +177,8 @@ export const HomeScreen = ({ navigation }) => {
                         <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
                             <Text style={styles.deleteBtnText}>Delete User</Text>
                         </TouchableOpacity>} */}
-                    {showRequests && <PostRenderer type={"r"} navigation={navigation} />}
-                    {!showRequests && <PostRenderer type={"o"} navigation={navigation} />}
+                    {showRequests && <PostRenderer type={"r"} navigation={navigation} setShowRequests={setShowRequests} />}
+                    {!showRequests && <PostRenderer type={"o"} navigation={navigation} setShowRequests={setShowRequests} />}
                 </>
             }
         </View>

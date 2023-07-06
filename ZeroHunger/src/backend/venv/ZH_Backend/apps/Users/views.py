@@ -12,6 +12,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 from .models import BasicUser
+from apps.Chat.models import Conversation
+from django.db.models import Q
 from .managers import CustomUserManager
 from .serializers import RegistrationSerializer, LoginSerializer
 
@@ -58,8 +60,17 @@ class deleteUser(APIView):
 
         try:
             user = BasicUser.objects.get(pk=decoded_token['user_id'])
+            username = user.username
             user.delete()
 
+            try:
+                Conversation.objects.filter(
+                    (Q(name__startswith=f"{username}__") | 
+                    Q(name__endswith=f"__{username}"))).delete()
+            except Exception as e:
+                print(e)
+                return Response({"Error while deleting conversations"}, 500)
+            
             return Response({"User deleted"}, 200)
         except:
             return Response(status=204)
@@ -80,7 +91,6 @@ class logIn(APIView):
             except Exception as e:
                 print(e)
                 pass
-            print(user.get_expo_push_token())
             return serializer.logIn()
         else:
             return Response({"Error logging in", 401})

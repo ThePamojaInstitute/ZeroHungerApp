@@ -73,7 +73,7 @@ export default function NotificationsTest({ setExpoToken }) {
                 alignItems: 'center',
                 justifyContent: 'space-around',
             }}>
-            <Text>Your expo push token: {expoPushToken}</Text>
+            {/* <Text>Your expo push token: {expoPushToken}</Text>
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                 <Text>Title: {notification && notification.request.content.title} </Text>
                 <Text>Body: {notification && notification.request.content.body}</Text>
@@ -90,7 +90,7 @@ export default function NotificationsTest({ setExpoToken }) {
                 onPress={async () => {
                     await sendPushNotification(expoPushToken);
                 }}
-            />
+            /> */}
         </View>
     );
 }
@@ -135,13 +135,15 @@ async function registerForPushNotificationsAsync() {
 
             finalStatus = status;
         }
-        if (finalStatus !== 'granted') {
+        if (finalStatus !== 'granted' && Platform.OS !== 'web') {
             alert('Failed to get push token for push notification!');
             return;
         }
         token = (await Notifications.getExpoPushTokenAsync()).data;
     } else {
-        alert('Must use physical device for Push Notifications');
+        if (Platform.OS !== 'web') {
+            alert('Must use physical device for Push Notifications');
+        }
     }
 
     return token;

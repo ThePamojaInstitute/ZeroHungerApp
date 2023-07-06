@@ -1,10 +1,9 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, FlatList } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, RefreshControl, ActivityIndicator } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
-import { Button } from "react-native-paper";
 import { deletePost } from "../controllers/post";
 import { useFocusEffect } from "@react-navigation/native";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
@@ -15,8 +14,9 @@ import {
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
 import { Ionicons } from '@expo/vector-icons';
+import GestureRecognizer from 'react-native-swipe-gestures';
 
-export const PostRenderer = ({ type, navigation }) => {
+export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
         PublicSans_400Regular,
@@ -39,11 +39,13 @@ export const PostRenderer = ({ type, navigation }) => {
     const [endReached, setEndReached] = useState(false)
     const [requestsLength, setRequestsLength] = useState(0)
     const [offersLength, setOffersLength] = useState(0)
+    const [refreshing, setRefreshing] = useState(false)
+    const [firstLoad, setFirstLoad] = useState(true)
 
     const fetchLengths = async () => {
         const res = await axiosInstance.get("posts/requestPostsForFeed")
-        setRequestsLength(res.data["r"])
-        setOffersLength(res.data["o"])
+        if (res.data["r"] !== requestsLength) setRequestsLength(res.data["r"])
+        else if (res.data["o"] !== offersLength) setOffersLength(res.data["o"])
     }
 
     // on component mount
@@ -71,7 +73,7 @@ export const PostRenderer = ({ type, navigation }) => {
 
     const loadPosts = async () => {
         const json = JSON.stringify({
-            postIndex: (postIndex === 0 ? postIndex : postIndex - 1)
+            postIndex: (postIndex === 0 ? postIndex : postIndex)
             , postType: type
         })
         await axiosInstance.post("posts/requestPostsForFeed", json, {
@@ -82,7 +84,7 @@ export const PostRenderer = ({ type, navigation }) => {
                 alert!({ type: 'open', message: 'No posts available', alertType: 'info' })
             }
             else if (res.data.length == 2 && postIndex > 0) {
-                console.log('All posts displayed')
+                // console.log('All posts displayed')
                 setEndReached(true)
                 // alert!({ type: 'open', message: 'All posts displayed', alertType: 'info' })
             }
@@ -94,6 +96,7 @@ export const PostRenderer = ({ type, navigation }) => {
                     for (let i = 0; i < loadNumPosts; i++) {
                         if (!JSON.parse(res.data)[i]) return
                         const data = JSON.parse(res.data)[i].fields
+
                         // post's primary key | id
                         const pk = JSON.parse(res.data)[i].pk
                         const username = JSON.parse(res.data)[i].username
@@ -117,6 +120,7 @@ export const PostRenderer = ({ type, navigation }) => {
                 }
             }
         }).finally(() => {
+            setFirstLoad(false)
             setIsLoading(false)
         })
     }
@@ -135,6 +139,14 @@ export const PostRenderer = ({ type, navigation }) => {
         }
     }, [postIndex])
 
+    const refresh = () => {
+        if (refreshing) return
+
+        setRefreshing(true)
+        setArray([])
+        setPostIndex(0)
+        setTimeout(() => setRefreshing(false), 2500)
+    }
 
     // const handleDelete = (postId: Number) => {
     //     deletePost(type, postId, accessToken).then(res => {
@@ -147,7 +159,8 @@ export const PostRenderer = ({ type, navigation }) => {
     //     })
     // }
 
-    const onPress = (title: string,
+    const handlePress = (
+        title: string,
         imagesLink: string,
         postedOn: Number,
         postedBy: Number,
@@ -185,60 +198,69 @@ export const PostRenderer = ({ type, navigation }) => {
 
     const Post = ({ title, imagesLink, postedOn, postedBy, description, postId, username }) => {
         return (
-            <TouchableOpacity style={styles.container} onPress={() => onPress(
-                title,
-                imagesLink,
-                postedOn,
-                postedBy,
-                description,
-                postId,
-                username)}>
-                <Image
-                    style={styles.image}
-                    source={{
-                        uri:
-                            imagesLink ?
-                                imagesLink :
-                                "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
-                    }}
-                />
-                <View style={styles.subContainer}>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text style={globalStyles.H4}>{title}</Text>
-                        <TouchableOpacity style={{ marginLeft: 'auto' }}>
-                            <Ionicons
-                                name='ellipsis-horizontal'
-                                style={styles.postEllipsis}
-                                width={20}
-                                height={12} />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{ marginTop: 16 }}>
-                        <Text style={globalStyles.Small1}>{username}</Text>
-                        <View style={{ flexDirection: 'row', marginTop: 4 }}>
-                            <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
-                            {/* Placeholder distance away */}
-                            <Text style={globalStyles.Small1}>{1} km away</Text>
+            <GestureRecognizer
+                onSwipeRight={() => setShowRequests(true)}
+                onSwipeLeft={() => setShowRequests(false)}
+                style={{ backgroundColor: Colors.Background }}
+            >
+                <TouchableOpacity style={styles.container}
+                    onPress={() => handlePress(
+                        title,
+                        imagesLink,
+                        postedOn,
+                        postedBy,
+                        description,
+                        postId,
+                        username)}
+                    activeOpacity={0.6}
+                >
+                    <Image
+                        style={styles.image}
+                        source={{
+                            uri:
+                                imagesLink ?
+                                    imagesLink :
+                                    "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
+                        }}
+                    />
+                    <View style={styles.subContainer}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={globalStyles.H4}>{title}</Text>
+                            <TouchableOpacity style={{ marginLeft: 'auto' }}>
+                                <Ionicons
+                                    name='ellipsis-horizontal'
+                                    style={styles.postEllipsis}
+                                    width={20}
+                                    height={12} />
+                            </TouchableOpacity>
                         </View>
+                        <View style={{ marginTop: 16 }}>
+                            <Text style={globalStyles.Small1}>{username}</Text>
+                            <View style={{ flexDirection: 'row', marginTop: 4 }}>
+                                <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
+                                {/* Placeholder distance away */}
+                                <Text style={globalStyles.Small1}>{1} km away</Text>
+                            </View>
+                        </View>
+                        <View style={globalStyles.postTag}>
+                            {/* Placeholder need by date */}
+                            <Text style={globalStyles.postTagLabel}>Need in {3} days</Text>
+                        </View>
+                        {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                     </View>
-                    <View style={styles.secondaryBtn}>
-                        {/* Placeholder need by date */}
-                        <Text style={styles.secondaryBtnLabel}>Need in {3} days</Text>
-                    </View>
-                    {/* <Text style={styles.quantityText}>Quantity: </Text> */}
-                </View>
-                {/* <View> */}
-                {/* <TouchableOpacity>
+                    {/* <View> */}
+                    {/* <TouchableOpacity>
                         <Ionicons name='ellipsis-horizontal' style={styles.postEllipsis} width={20} />
                     </TouchableOpacity> */}
-                {/* <Text style={styles.postedOnText}>Posted On: {postedOn}</Text> */}
-                {/* {user && user['username'] === username &&
+                    {/* <Text style={styles.postedOnText}>Posted On: {postedOn}</Text> */}
+                    {/* {user && user['username'] === username &&
                         <Button buttonColor="red"
                             mode="contained"
                             onPress={() => handleDelete(postId)}
                         >Delete Post</Button>} */}
-                {/* </View> */}
-            </TouchableOpacity>
+                    {/* </View> */}
+                </TouchableOpacity>
+            </GestureRecognizer>
         )
     }
 
@@ -254,40 +276,47 @@ export const PostRenderer = ({ type, navigation }) => {
                 description={item.description}
                 postId={item.postId}
                 username={item.username}
+                key={item.postId}
             />
         )
     }
 
     return (
-        <View style={{ backgroundColor: Colors.Background, height: "80%" }}>
+        <>
             {!loaded && <Text>Loading...</Text>}
             {loaded &&
                 <>
-                    {/* Temporary refresh button for web */}
-                    {/* <TouchableOpacity onPress={loadPosts}>
-                    <Text style={[styles.refreshBtnText]}>Refresh</Text>
-                    </TouchableOpacity> */}
-                    {noPosts ? <Text style={styles.noPostsText}>No posts available</Text> : <></>}
+                    {noPosts && <Text style={styles.noPostsText}>No posts available</Text>}
                     {user &&
-                        <FlashList
-                            renderItem={renderItem}
-                            data={array}
-                            onEndReached={loadPosts}
-                            onEndReachedThreshold={0.3}
-                            showsVerticalScrollIndicator={false}
-                            showsHorizontalScrollIndicator={false}
-                            estimatedItemSize={125}
-                        // keyExtractor={(item, index) => item.postId}
-                        />}
+                        <>
+                            {
+                                <FlashList
+                                    renderItem={renderItem}
+                                    data={array}
+                                    onEndReached={loadPosts}
+                                    onEndReachedThreshold={0.7}
+                                    showsVerticalScrollIndicator={false}
+                                    showsHorizontalScrollIndicator={false}
+                                    estimatedItemSize={125}
+                                    refreshControl={
+                                        <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[Colors.primary, Colors.primaryLight]} />
+                                    }
+                                    ListEmptyComponent={() => {
+                                        if (noPosts) {
+                                            return <Text style={styles.noPostsText}>No posts available</Text>
+                                        }
+                                        else if (firstLoad) {
+                                            return <ActivityIndicator animating size="large" color={Colors.primary} />
+                                        }
+                                    }}
+                                    extraData={(type === "r" ? requestsLength : offersLength)}
+                                />}
+                        </>
+                    }
                     {!endReached && isLoading && <Text>Loading...</Text>}
-                    {/* {endReached && (
-                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 20 }}>End Reached</Text>
-                </View>
-            )} */}
                 </>
             }
-        </View>
+        </>
     )
 }
 
@@ -346,25 +375,6 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         padding: 8,
         marginRight: 8
-    },
-    secondaryBtn: {
-        display: "flex",
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: "center",
-        paddingVertical: 4,
-        paddingHorizontal: 5,
-        alignSelf: 'flex-end',
-        borderRadius: 10,
-        marginBottom: 10,
-        backgroundColor: Colors.primaryLight,
-    },
-    secondaryBtnLabel: {
-        fontFamily: 'PublicSans_500Medium',
-        fontSize: 12,
-        display: 'flex',
-        alignItems: 'center',
-        color: Colors.dark,
     },
 })
 

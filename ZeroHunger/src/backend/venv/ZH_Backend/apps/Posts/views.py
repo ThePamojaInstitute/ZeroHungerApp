@@ -50,12 +50,12 @@ class deletePost(APIView):
             if(request.data['postType'] == "r"):
                 obj = RequestPost.objects.get(pk=request.data['postId'])
             elif(request.data['postType'] == "o"):
-                    obj = OfferPost.objects.get(pk=request.data['postId'])
+                obj = OfferPost.objects.get(pk=request.data['postId'])
         except:
             return Response("Post not found", 404)
         
         # if user is the owner of the post
-        if(decoded_token['user_id'] == obj.postedBy):
+        if(decoded_token['username'] == obj.postedBy.username):
             try:
                 obj.delete()
 
