@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent } from "react-native";
+import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent, Button } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import FoodCategories from "../components/FoodCategories";
@@ -14,6 +14,7 @@ import {
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import { axiosInstance } from "../../config";
 
 export const RequestFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -94,6 +95,10 @@ export const RequestFormScreen = ({ navigation }) => {
         }
     }
 
+    //https://stackoverflow.com/questions/42521679/how-can-i-upload-a-photo-with-expo
+    
+    
+    
     return (
         <ScrollView testID="Request.formContainer" style={globalStyles.formContainer}>
             {(!loaded || loading) && <Text>Loading...</Text>}
@@ -125,6 +130,7 @@ export const RequestFormScreen = ({ navigation }) => {
                         <Text testID="Request.photoDesc" style={globalStyles.formDescText}>Optional: Add photo(s) to help community members understand what you are looking for!</Text>
                     </View>
                     <ImagePicker setImages={setImages} />
+                    <Button title="Test Image Upload" onPress={handleImageUpload} />
                     <View>
                         <Text testID="Request.categoryLabel" style={globalStyles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
                         <Text testID="Request.categoryDesc" style={globalStyles.formDescText}>Please select all the food category type that applies</Text>

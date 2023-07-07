@@ -108,22 +108,23 @@ class ImageUploader(APIView):
   
      def post(self,request):
          try:
-             container_client = ContainerClient.from_connection_string(connection_string, "zh-post-images")
-             local_path = "./data"
+            # container_client = ContainerClient.from_connection_string(connection_string, "zh-post-images")
+             #local_path = "./data"
              #os.mkdir(local_path)
 
              # Create a file in the local data directory to upload and download
-             local_file_name = "testfile.txt"
-             upload_file_path = os.path.join(local_path, local_file_name)
+             #local_file_name = "testfile.txt"
+             #upload_file_path = os.path.join(local_path, "TestImageName")
 
              # Write text to the file
-             file = open(file=upload_file_path, mode='r')
+             #file = open(file=upload_file_path, mode='r')
 
             
-             blob_client = container_client.get_blob_client(file.name)
+             #blob_client = container_client.get_blob_client("TestImageName")
 
+            
+             #blob_client.upload_blob(data=request.data["ImageData"], overwrite=True)
 
-             blob_client.upload_blob(data=file.read().encode('utf-8'), overwrite=True)
 
              return Response("Uploaded file")
          except Exception as ex:
