@@ -7,7 +7,6 @@ from django.conf import settings
 
 from django.http import JsonResponse
 import uuid
-from azure.storage.blob import BlobServiceClient
 
 import json
 import jwt
@@ -15,11 +14,11 @@ import jwt
 from .models import OfferPost, RequestPost
 from .serializers import createOfferSerializer, createRequestSerializer
 from apps.Users.models import BasicUser
-
+from datetime import datetime, timedelta
 import os
 from azure.identity import EnvironmentCredential
 from azure.keyvault.secrets import SecretClient
-from azure.storage.blob import ContainerClient
+from azure.storage.blob import BlobClient, generate_account_sas, ResourceTypes, AccountSasPermissions, ContainerClient
 #VAULT_URL = os.environ["VAULT_URL"]
 #envcredential = EnvironmentCredential()
 #client = SecretClient(vault_url=VAULT_URL, credential=envcredential)
@@ -108,26 +107,30 @@ class ImageUploader(APIView):
   
      def post(self,request):
          try:
+            local_path = "./data"
+            local_file_name = "android_scrollup.png"
+            upload_file_path = os.path.join(local_path, local_file_name)
+            file = open(file=upload_file_path, mode='r')
+            file_upload_name = str(uuid.uuid4()) + file.name
+
+            sas_token = generate_account_sas(
+    account_name="devstoreaccount1",                                                                        #These keys need to be replaced with azure keyvault for production
+    account_key="Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==>", #these are the already well-known azurite keys, do not need to be hidden
+    resource_types=ResourceTypes(service=True),
+    permission=AccountSasPermissions(read=True),
+    expiry=datetime.utcnow() + timedelta(hours=1)
+)
+
+            connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+            container_client = ContainerClient.from_connection_string(conn_str=connection_string, container_name="mycontainer")
+           # container_client.create_container()
+            blob_service_client = BlobClient.from_connection_string(conn_str=connection_string, container_name="mycontainer", blob_name=file_upload_name)
             
-            container_client = ContainerClient.from_connection_string(connection_string, "zh-post-images")
-             #local_path = "./data"
-             #os.mkdir(local_path)
+            with open (upload_file_path, "rb") as data:
+                blob_service_client.upload_blob(data)
 
-             # Create a file in the local data directory to upload and download
-             #local_file_name = "testfile.txt"
-             #upload_file_path = os.path.join(local_path, "TestImageName")
-
-             # Write text to the file
-             #file = open(file=upload_file_path, mode='r')
-
-            
-             #blob_client = container_client.get_blob_client("TestImageName")
-
-            
-             #blob_client.upload_blob(data=request.data["ImageData"], overwrite=True)
-
-
-            return Response("Uploaded file")
+            return Response("File Uploaded Successfully") 
          except Exception as ex:
              return Response(str(ex), status=401)
-    
+
+#  
