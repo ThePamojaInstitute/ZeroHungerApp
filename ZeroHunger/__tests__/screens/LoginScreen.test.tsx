@@ -2,7 +2,7 @@ import React from "react";
 import { Linking } from "react-native";
 import LoginScreen from "../../src/screens/Loginscreen";
 import * as Utils from "../../src/controllers/auth";
-import { axiosInstance } from "../../config";
+import { axiosInstance, passwordResetURL } from "../../config";
 import { AuthContext } from "../../src/context/AuthContext";
 import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import MockAdapter from "axios-mock-adapter"
@@ -11,8 +11,6 @@ import { mock } from "jest-mock-extended";
 import { NavigationContext } from "@react-navigation/native"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useFonts } from '@expo-google-fonts/public-sans';
-
-window.alert = () => { }
 
 
 jest.mock('@expo-google-fonts/public-sans', () => ({
@@ -60,7 +58,6 @@ const authContextValues = {
     error: "",
     dispatch: mockDispatch
 }
-const passwordResetURL = 'zh-backend-azure-webapp.azurewebsites.net/users/reset_password/'
 
 const testComponent = (
     <AuthContext.Provider value={authContextValues}>

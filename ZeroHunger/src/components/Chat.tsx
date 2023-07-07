@@ -8,6 +8,7 @@ import { FlashList } from "@shopify/flash-list";
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { Char } from '../../types';
+import { BaseURL } from '../../config';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -71,7 +72,7 @@ export const Chat = ({ navigation, route }) => {
         } else console.log("end!!");
     }
 
-    const { readyState, sendJsonMessage } = useWebSocket(user ? `ws://zh-backend-azure-webapp.azurewebsites.net/chats/${conversationName}/` : null, {
+    const { readyState, sendJsonMessage } = useWebSocket(user ? `ws://${BaseURL}/chats/${conversationName}/` : null, {
         queryParams: {
             token: user ? accessToken : ""
         },

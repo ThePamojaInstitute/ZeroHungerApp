@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
-  StyleSheet,
   Text,
   View,
   TextInput,
@@ -16,7 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
-import { axiosInstance } from "../../config";
+import { axiosInstance, passwordResetURL } from "../../config";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import jwt_decode from "jwt-decode";
 import {
@@ -84,42 +83,48 @@ export const LoginScreen = ({ navigation }) => {
     e.preventDefault()
     Keyboard.dismiss()
     dispatch({ type: "LOGIN_START", payload: null })
-    logInUser({ "username": username, "password": password, "expo_push_token": expoPushToken }).then(async res => {
-      if (res.msg === "success") {
-        await axiosInstance.post("users/token/", { "username": username, "password": password }).then(resp => {
-          dispatch({
-            type: "LOGIN_SUCCESS", payload: {
-              "user": jwt_decode(resp.data['access']),
-              "token": resp.data
-            }
-          })
-        }).then(() => {
+    logInUser({
+      "username": username,
+      "password": password,
+      "expo_push_token": expoPushToken
+    })
+      .then(async res => {
+        if (res.msg === "success") {
+          await axiosInstance.post("users/token/",
+            { "username": username, "password": password })
+            .then(resp => {
+              dispatch({
+                type: "LOGIN_SUCCESS", payload: {
+                  "user": jwt_decode(resp.data['access']),
+                  "token": resp.data
+                }
+              })
+            }).then(() => {
+              setUsername("")
+              setPassword("")
+              // alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
+              navigation.navigate('HomeScreen')
+            })
+        } else if (res.msg === "failure") {
+          dispatch({ type: "LOGIN_FAILURE", payload: res.res })
+          handleErrorMessage('Invalid credentials')
+          // alert!({ type: 'open', message: 'Invalid credentials', alertType: 'error' })
           setUsername("")
           setPassword("")
-          // alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
-          navigation.navigate('HomeScreen')
-        })
-      } else if (res.msg === "failure") {
-        dispatch({ type: "LOGIN_FAILURE", payload: res.res })
-        handleErrorMessage('Invalid credentials')
-        // alert!({ type: 'open', message: 'Invalid credentials', alertType: 'error' })
-        setUsername("")
-        setPassword("")
-      } else {
-        dispatch({ type: "LOGIN_FAILURE", payload: res.res })
-        const error = res.msg ? res.msg : "An error occurred"
-        handleErrorMessage(error)
-      }
-    })
+        } else {
+          dispatch({ type: "LOGIN_FAILURE", payload: res.res })
+          const error = res.msg ? res.msg : "An error occurred"
+          handleErrorMessage(error)
+        }
+      })
   }
 
   const handlePasswordRecovery = () => {
-    const URL = "https://zh-backend-azure-webapp.azurewebsites.net/users/reset_password/"
-    Linking.canOpenURL(URL).then(supported => {
+    Linking.canOpenURL(passwordResetURL).then(supported => {
       if (supported) {
-        Linking.openURL(URL);
+        Linking.openURL(passwordResetURL);
       } else {
-        console.log(`Cannot open URL: ${URL}`);
+        console.log(`Cannot open URL: ${passwordResetURL}`);
       }
     })  //replace this with actual URL later
   }
