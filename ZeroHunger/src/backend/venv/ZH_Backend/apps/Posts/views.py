@@ -20,12 +20,12 @@ import os
 from azure.identity import EnvironmentCredential
 from azure.keyvault.secrets import SecretClient
 from azure.storage.blob import ContainerClient
-VAULT_URL = os.environ["VAULT_URL"]
-envcredential = EnvironmentCredential()
-client = SecretClient(vault_url=VAULT_URL, credential=envcredential)
-connection_string = client.get_secret("zh-backend-testing-image-storage-connection-string").value 
-
-
+#VAULT_URL = os.environ["VAULT_URL"]
+#envcredential = EnvironmentCredential()
+#client = SecretClient(vault_url=VAULT_URL, credential=envcredential)
+connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+#https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=npm
+#Install Azurite on your local machine using this ^ guide before trying to use this
 class createPost(APIView):
     def post(self, request, format=JSONParser):
         if (request.data['postType'] == "r"): 
@@ -108,7 +108,8 @@ class ImageUploader(APIView):
   
      def post(self,request):
          try:
-            # container_client = ContainerClient.from_connection_string(connection_string, "zh-post-images")
+            
+            container_client = ContainerClient.from_connection_string(connection_string, "zh-post-images")
              #local_path = "./data"
              #os.mkdir(local_path)
 
@@ -126,7 +127,7 @@ class ImageUploader(APIView):
              #blob_client.upload_blob(data=request.data["ImageData"], overwrite=True)
 
 
-             return Response("Uploaded file")
+            return Response("Uploaded file")
          except Exception as ex:
              return Response(str(ex), status=401)
     
