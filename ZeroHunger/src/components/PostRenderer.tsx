@@ -69,54 +69,66 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         }
     }, [requestsLength, offersLength])
 
+    const isJson = (str: string) => {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+    const createPostObj = (fields: object, pk: number, username: string) => {
+        const postedOnDate = new Date(fields['postedOn'] * 1000).toLocaleDateString('en-US')
+        const newPost = {
+            title: fields['title'],
+            imagesLink: fields['images'],
+            postedOn: postedOnDate,
+            postedBy: fields['postedBy'],
+            description: fields['description'],
+            postId: pk,
+            username: username
+        }
+
+        return newPost
+    }
+
     const loadNumPosts = 5 //Change if number of posts to load changes
 
     const loadPosts = async () => {
         const json = JSON.stringify({
-            postIndex: (postIndex === 0 ? postIndex : postIndex)
+            postIndex: postIndex
             , postType: type
         })
         await axiosInstance.post("posts/requestPostsForFeed", json, {
         }).then((res) => {
-            if (res.data.length == 2 && postIndex == 0) {
-                console.log('No posts available')
-                setNoPosts(true)
-                alert!({ type: 'open', message: 'No posts available', alertType: 'info' })
-            }
-            else if (res.data.length == 2 && postIndex > 0) {
-                // console.log('All posts displayed')
-                setEndReached(true)
-                // alert!({ type: 'open', message: 'All posts displayed', alertType: 'info' })
+            if (((isJson(res.data) && JSON.parse(res.data).length === 0) ||
+                (Object.keys(res.data).length === 0))) {
+                if (postIndex === 0) {
+                    console.log('No posts available')
+                    setNoPosts(true)
+                } else if (postIndex > 0) {
+                    console.log('All posts displayed')
+                    setEndReached(true)
+                }
             }
             else {
                 setIsLoading(true)
                 try {
-                    setPostIndex(postIndex + loadNumPosts)
+                    setPostIndex((postIndex + loadNumPosts))
 
-                    for (let i = 0; i < loadNumPosts; i++) {
-                        if (!JSON.parse(res.data)[i]) return
-                        const data = JSON.parse(res.data)[i].fields
+                    let data: object[]
+                    if (isJson(res.data)) data = JSON.parse(res.data)
+                    else if (res.data) data = res.data
+                    else return
 
-                        // post's primary key | id
-                        const pk = JSON.parse(res.data)[i].pk
-                        const username = JSON.parse(res.data)[i].username
-
-                        const postedOnDate = new Date(data.postedOn * 1000).toLocaleDateString('en-US')
-
-                        let newPost = {
-                            title: data.title,
-                            imagesLink: data.images,
-                            postedOn: postedOnDate,
-                            postedBy: data.postedBy,
-                            description: data.description,
-                            postId: pk,
-                            username: username
-                        }
+                    data.forEach((post: object) => {
+                        const newPost = createPostObj(post['fields'], post['pk'], post['username'])
                         setArray(arr => [...arr, newPost])
-                    }
+                    })
                 }
                 catch (e) {
-                    console.log("Fewer than " + loadNumPosts + " new posts")
+                    console.log(e)
                 }
             }
         }).finally(() => {
@@ -204,6 +216,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                 style={{ backgroundColor: Colors.Background }}
             >
                 <TouchableOpacity style={styles.container}
+                    testID="Posts.btn"
                     onPress={() => handlePress(
                         title,
                         imagesLink,
@@ -215,6 +228,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                     activeOpacity={0.6}
                 >
                     <Image
+                        testID="Posts.Img"
                         style={styles.image}
                         source={{
                             uri:
@@ -223,10 +237,10 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                                     "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
                         }}
                     />
-                    <View style={styles.subContainer}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={globalStyles.H4}>{title}</Text>
-                            <TouchableOpacity style={{ marginLeft: 'auto' }}>
+                    <View testID="Posts.subContainer" style={styles.subContainer}>
+                        <View testID="Posts.contentCont" style={{ flexDirection: 'row' }}>
+                            <Text testID="Posts.title" style={globalStyles.H4}>{title}</Text>
+                            <TouchableOpacity testID="Posts.ellipsis" style={{ marginLeft: 'auto' }}>
                                 <Ionicons
                                     name='ellipsis-horizontal'
                                     style={styles.postEllipsis}
@@ -235,16 +249,16 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                             </TouchableOpacity>
                         </View>
                         <View style={{ marginTop: 16 }}>
-                            <Text style={globalStyles.Small1}>{username}</Text>
-                            <View style={{ flexDirection: 'row', marginTop: 4 }}>
-                                <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
+                            <Text testID="Posts.username" style={globalStyles.Small1}>{username}</Text>
+                            <View testID="Posts.locationCont" style={styles.locationCont}>
+                                <Ionicons testID="Posts.locationIcon" name='location-outline' size={13} style={{ marginRight: 4 }} />
                                 {/* Placeholder distance away */}
-                                <Text style={globalStyles.Small1}>{1} km away</Text>
+                                <Text testID="Posts.locationText" style={globalStyles.Small1}>{1} km away</Text>
                             </View>
                         </View>
-                        <View style={globalStyles.postTag}>
+                        <View testID="Posts.tag" style={globalStyles.postTag}>
                             {/* Placeholder need by date */}
-                            <Text style={globalStyles.postTagLabel}>Need in {3} days</Text>
+                            <Text testID="Posts.tagLabel" style={globalStyles.postTagLabel}>Need in {3} days</Text>
                         </View>
                         {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                     </View>
@@ -286,11 +300,12 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
             {!loaded && <Text>Loading...</Text>}
             {loaded &&
                 <>
-                    {noPosts && <Text style={styles.noPostsText}>No posts available</Text>}
+                    {noPosts && <Text testID="Posts.noPostsText" style={styles.noPostsText}>No {type === "r" ? 'requests' : 'offers'} available</Text>}
                     {user &&
                         <>
                             {
                                 <FlashList
+                                    testID="Posts.list"
                                     renderItem={renderItem}
                                     data={array}
                                     onEndReached={loadPosts}
@@ -302,10 +317,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                                         <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[Colors.primary, Colors.primaryLight]} />
                                     }
                                     ListEmptyComponent={() => {
-                                        if (noPosts) {
-                                            return <Text style={styles.noPostsText}>No posts available</Text>
-                                        }
-                                        else if (firstLoad) {
+                                        if (firstLoad) {
                                             return <ActivityIndicator animating size="large" color={Colors.primary} />
                                         }
                                     }}
@@ -349,33 +361,37 @@ const styles = StyleSheet.create({
         height: 105,
         marginRight: 15,
     },
-    titleText: {
-        fontWeight: 'bold',
-        fontSize: 24,
-    },
-    quantityText: {
-        fontSize: 14,
-    },
-    postedOnText: {
-        flex: 1,
-        textAlign: 'right',
-        alignSelf: 'flex-end',
-        marginTop: 62
-    },
+    // titleText: {
+    //     fontWeight: 'bold',
+    //     fontSize: 24,
+    // },
+    // quantityText: {
+    //     fontSize: 14,
+    // },
+    // postedOnText: {
+    //     flex: 1,
+    //     textAlign: 'right',
+    //     alignSelf: 'flex-end',
+    //     marginTop: 62
+    // },
     noPostsText: {
         fontSize: 36,
         padding: 15,
     },
-    refreshBtnText: {
-        color: 'blue',
-        fontSize: 24,
-        padding: 15,
-    },
+    // refreshBtnText: {
+    //     color: 'blue',
+    //     fontSize: 24,
+    //     padding: 15,
+    // },
     postEllipsis: {
         alignSelf: 'flex-end',
         padding: 8,
         marginRight: 8
     },
+    locationCont: {
+        flexDirection: 'row',
+        marginTop: 4
+    }
 })
 
 export default PostRenderer
