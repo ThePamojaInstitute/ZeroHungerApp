@@ -32,7 +32,7 @@ export const RequestFormScreen = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
 
     const [title, setTitle] = useState("")
-    const [images, setImages] = useState("")
+    const [images, setImages] = useState([])
     const [desc, setDesc] = useState("")
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
@@ -96,13 +96,12 @@ export const RequestFormScreen = ({ navigation }) => {
     }
 
     //https://stackoverflow.com/questions/42521679/how-can-i-upload-a-photo-with-expo
-    const handleImageUpload = () =>
-    { //test function for image uploads
+    const handleImageUpload = () => { //test function for image uploads
         console.log(images.length) //gives 0 in the web browser console
-        axiosInstance.post("posts/testBlobImage", {"IMAGE":images.toString}); //Empty in the backend log
+        axiosInstance.post("posts/testBlobImage", { "IMAGE": images.toString }); //Empty in the backend log
     };
-    
-    
+
+
     return (
         <ScrollView testID="Request.formContainer" style={globalStyles.formContainer}>
             {(!loaded || loading) && <Text>Loading...</Text>}
@@ -133,7 +132,7 @@ export const RequestFormScreen = ({ navigation }) => {
                         <Text testID="Request.photoLabel" style={globalStyles.formTitleText}>Photo</Text>
                         <Text testID="Request.photoDesc" style={globalStyles.formDescText}>Optional: Add photo(s) to help community members understand what you are looking for!</Text>
                     </View>
-                    <ImagePicker setImages={setImages} />
+                    <ImagePicker images={images} setImages={setImages} />
                     <Button title="Test Image Upload" onPress={handleImageUpload} />
                     <View>
                         <Text testID="Request.categoryLabel" style={globalStyles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>

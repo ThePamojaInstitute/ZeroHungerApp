@@ -5,7 +5,7 @@ import { Char } from "../../types";
 export const createPost = async (obj: {
     postData: {
         title: string
-        images: string,
+        images: string[],
         postedBy: Number,
         postedOn: Number,
         description: string
