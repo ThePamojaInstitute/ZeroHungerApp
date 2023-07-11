@@ -22,17 +22,23 @@ export function Message({ message }: { message: MessageModel }) {
     }
 
     return (
-        <View style={user['username'] === message.to_user['username'] ? styles.containerIn : styles.containerOut}>
+        <View
+            testID="Message.container"
+            style={user['username'] === message.to_user['username'] ?
+                styles.containerIn : styles.containerOut}>
             <View
-                style={user['username'] === message.to_user['username'] ? styles.msgIn : styles.msgOut}>
-                <View style={styles.subCont}>
-                    <Text style={[styles.messageText,
+                testID="Message.msg"
+                style={user['username'] === message.to_user['username'] ?
+                    styles.msgIn : styles.msgOut}>
+                <View testID="Message.subContainer" style={styles.subCont}>
+                    <Text testID="Message.text" style={[styles.messageText,
                     {
                         color: user['username'] === message.to_user['username']
                             ? Colors.dark : Colors.white
                     }
                     ]}>{message.content}</Text>
                     <Text
+                        testID="Message.timestamp"
                         style={[styles.timestamp,
                         {
                             color: user['username'] === message.to_user['username']

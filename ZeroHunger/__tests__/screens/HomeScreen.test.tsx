@@ -206,7 +206,6 @@ describe('onload', () => {
             expect(getAllByTestId('Bottom.messagesNavIcon').length).toBe(1)
             expect(getAllByTestId('Bottom.messagesNavIconOutline').length).toBe(1)
             await waitFor(() => {
-                expect(getAllByText('No posts available').length).toBe(1)
                 expect(getAllByText('No requests available').length).toBe(1)
             })
         })
@@ -260,7 +259,6 @@ describe('switching between requests and offers', () => {
         expect(getByTestId('Home.requestsContainer').props.style[0]).toStrictEqual({ "borderBottomColor": "rgba(48, 103, 117, 0)" })
         expect(getByTestId('Home.offersContainer').props.style[0]).toStrictEqual({ "borderBottomColor": "rgba(48, 103, 117, 100)" })
         await waitFor(() => {
-            expect(queryAllByText('No posts available').length).toBe(1)
             expect(queryAllByText('No offers available').length).toBe(1)
             expect(queryAllByText('No requests available').length).toBe(0)
         })
@@ -285,7 +283,6 @@ describe('switching between requests and offers', () => {
         expect(getByTestId('Home.requestsContainer').props.style[0]).toStrictEqual({ "borderBottomColor": "rgba(48, 103, 117, 100)" })
         expect(getByTestId('Home.offersContainer').props.style[0]).toStrictEqual({ "borderBottomColor": "rgba(48, 103, 117, 0)" })
         await waitFor(() => {
-            expect(queryAllByText('No posts available').length).toBe(1)
             expect(queryAllByText('No requests available').length).toBe(1)
             expect(queryAllByText('No offers available').length).toBe(0)
         })

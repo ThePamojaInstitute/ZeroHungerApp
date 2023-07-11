@@ -1,25 +1,11 @@
 import { render } from "@testing-library/react-native"
 import { Message } from "../../src/components/Message"
 import { AuthContext } from "../../src/context/AuthContext"
-import '@testing-library/jest-dom'
+import { Colors } from "../../styles/globalStyleSheet"
+import moment from "moment"
 
-const message = {
-    id: "1",
-    room: "testRoom",
-    from_user: {
-        username: "fromUserTest",
-        token: "fromUserToken"
-    },
-    to_user: {
-        username: "toUserTest",
-        token: "toUserToken"
-    },
-    content: "testContent",
-    timestamp: "2023-06-01T14:53:33.965885Z",
-    read: true
-}
-const AuthContextValues = {
-    user: { username: "toUserTest" },
+const mockAuthContextValues = {
+    user: { username: "testUser1" },
     accessToken: "",
     refreshToken: "",
     loading: false,
@@ -27,25 +13,201 @@ const AuthContextValues = {
     dispatch: null
 }
 
-describe('onload', () => {
-    it('renders correctly', () => {
-        const { queryAllByText } = render(
-            <AuthContext.Provider value={AuthContextValues}>
-                <Message message={message} />
-            </AuthContext.Provider>
-        )
+const now = moment.now()
+const fromMeMessage = {
+    id: "1",
+    room: "testUser1__testUser2",
+    from_user: {
+        username: "testUser1",
+        token: "testUser1"
+    },
+    to_user: {
+        username: "testUser2",
+        token: "testUser2"
+    },
+    content: "testContent1",
+    timestamp: moment(now).toDate().toString(),
+    read: true
+}
+const toMeMessage = {
+    id: "1",
+    room: "testUser1__testUser2",
+    from_user: {
+        username: "testUser2",
+        token: "testUser2"
+    },
+    to_user: {
+        username: "testUser1",
+        token: "testUser1"
+    },
+    content: "testContent2",
+    timestamp: moment(now).subtract(12, 'h').toDate().toString(),
+    read: true
+}
 
-        expect(queryAllByText('testContent').length).toBe(1)
-        expect(queryAllByText('10:53').length).toBe(1)
+const styles = {
+    containerIn: {
+        marginTop: 1,
+        marginBottom: 1,
+        flexDirection: 'row',
+        marginLeft: 20
+    },
+    containerOut: {
+        marginTop: 1,
+        marginBottom: 1,
+        flexDirection: 'row-reverse',
+    },
+    msgIn: {
+        position: 'relative',
+        left: 0,
+        backgroundColor: Colors.primaryLightest,
+        borderRadius: 10,
+        alignItems: 'flex-start',
+        gap: 4,
+        overflow: 'hidden',
+        padding: 10,
+        minWidth: '5%',
+        maxWidth: '75%',
+        marginleft: 20,
+        marginBottom: 20
+    },
+    msgOut: {
+        position: 'relative',
+        left: 0,
+        backgroundColor: Colors.primary,
+        borderRadius: 10,
+        alignItems: 'flex-start',
+        gap: 4,
+        overflow: 'hidden',
+        padding: 10,
+        minWidth: '5%',
+        maxWidth: '75%',
+        marginRight: 20,
+        marginBottom: 20
+    },
+    subCont: {
+        display: 'flex',
+        alignItems: 'flex-end',
+    },
+    messageText: {
+        fontSize: 15,
+        fontFamily: 'PublicSans_400Regular',
+        color: Colors.white,
+        marginBottom: 15,
+        marginRight: 35,
+        alignItems: 'flex-start',
+        left: 0
+    },
+    timestamp: {
+        right: 0,
+        position: 'absolute',
+        alignSelf: 'flex-end',
+        bottom: 0,
+        fontSize: 11,
+        fontFamily: 'PublicSans_400Regular',
+        color: Colors.white,
+        lineHeight: 13.2,
+    }
+}
+
+const TestComponentFromMe = (
+    <AuthContext.Provider value={mockAuthContextValues}>
+        <Message message={fromMeMessage} />
+    </AuthContext.Provider>
+)
+const TestComponentToMe = (
+    <AuthContext.Provider value={mockAuthContextValues}>
+        <Message message={toMeMessage} />
+    </AuthContext.Provider>
+)
+
+const formatMessageTimestamp = (timestamp: string) => {
+    let date = new Date(timestamp).toLocaleTimeString()
+    const dateLength = date.length
+    let time = date.slice(0, 5)
+
+    if (time.at(time.length - 1) === ":") {
+        time = time.slice(0, time.length - 1)
+    }
+    time = `${time} ${date.slice(dateLength - 2, dateLength)}`
+
+    return time
+}
+
+describe('onload', () => {
+    describe('message from me', () => {
+        it('renders default elements', () => {
+            const { queryAllByTestId } = render(TestComponentFromMe)
+
+            expect(queryAllByTestId('Message.container').length).toBe(1)
+            expect(queryAllByTestId('Message.msg').length).toBe(1)
+            expect(queryAllByTestId('Message.subContainer').length).toBe(1)
+            expect(queryAllByTestId('Message.text').length).toBe(1)
+            expect(queryAllByTestId('Message.timestamp').length).toBe(1)
+        })
+
+        it('renders default styles', () => {
+            const { getByTestId } = render(TestComponentFromMe)
+
+            expect(getByTestId('Message.container').props.style).toStrictEqual(styles.containerOut)
+            expect(getByTestId('Message.msg').props.style).toStrictEqual(styles.msgOut)
+            expect(getByTestId('Message.subContainer').props.style).toStrictEqual(styles.subCont)
+            expect(getByTestId('Message.text').props.style[0]).toStrictEqual(styles.messageText)
+            expect(getByTestId('Message.text').props.style[1]).toStrictEqual({ color: Colors.white })
+            expect(getByTestId('Message.timestamp').props.style[0]).toStrictEqual(styles.timestamp)
+            expect(getByTestId('Message.timestamp').props.style[1]).toStrictEqual({ color: Colors.white })
+        })
+
+        it('renders the message text', () => {
+            const { queryAllByText } = render(TestComponentFromMe)
+
+            expect(queryAllByText('testContent1').length).toBe(1)
+        })
     })
 
-    it('shows invalid if timestamp is invalid', () => {
-        const { getByText } = render(
-            <AuthContext.Provider value={AuthContextValues}>
-                <Message message={{ ...message, timestamp: "invalidTimestamp" }} />
-            </AuthContext.Provider>
-        )
+    describe('message to me', () => {
+        it('renders default elements', () => {
+            const { queryAllByTestId } = render(TestComponentToMe)
 
-        getByText('Inval')
+            expect(queryAllByTestId('Message.container').length).toBe(1)
+            expect(queryAllByTestId('Message.msg').length).toBe(1)
+            expect(queryAllByTestId('Message.subContainer').length).toBe(1)
+            expect(queryAllByTestId('Message.text').length).toBe(1)
+            expect(queryAllByTestId('Message.timestamp').length).toBe(1)
+        })
+
+        it('renders default styles', () => {
+            const { getByTestId } = render(TestComponentToMe)
+
+            expect(getByTestId('Message.container').props.style).toStrictEqual(styles.containerIn)
+            expect(getByTestId('Message.msg').props.style).toStrictEqual(styles.msgIn)
+            expect(getByTestId('Message.subContainer').props.style).toStrictEqual(styles.subCont)
+            expect(getByTestId('Message.text').props.style[0]).toStrictEqual(styles.messageText)
+            expect(getByTestId('Message.text').props.style[1]).toStrictEqual({ color: Colors.dark })
+            expect(getByTestId('Message.timestamp').props.style[0]).toStrictEqual(styles.timestamp)
+            expect(getByTestId('Message.timestamp').props.style[1]).toStrictEqual({ color: Colors.dark })
+        })
+
+        it('renders the message text', () => {
+            const { queryAllByText } = render(TestComponentToMe)
+
+            expect(queryAllByText('testContent2').length).toBe(1)
+        })
+    })
+})
+
+describe('formats the timestamp correctly', () => {
+    it('from me message', () => {
+        const { getByTestId } = render(TestComponentFromMe)
+
+        const timestamp = formatMessageTimestamp(fromMeMessage.timestamp)
+        expect(getByTestId('Message.timestamp').props.children).toBe(timestamp)
+    })
+
+    it('to me message', () => {
+        const { getByTestId } = render(TestComponentToMe)
+
+        const timestamp = formatMessageTimestamp(toMeMessage.timestamp)
+        expect(getByTestId('Message.timestamp').props.children).toBe(timestamp)
     })
 })
