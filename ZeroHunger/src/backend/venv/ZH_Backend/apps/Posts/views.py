@@ -129,7 +129,7 @@ class ImageUploader(APIView):
             imageInBase64 = request.data['IMAGE']
             blob_service_client.upload_blob(base64.decodebytes(bytes(imageInBase64, 'utf-8')))
             print(blob_service_client.url)
-            return Response("File Uploaded Successfully") 
+            return Response(blob_service_client.url, status=201) 
          except Exception as ex:
              return Response(str(ex), status=401)
 
