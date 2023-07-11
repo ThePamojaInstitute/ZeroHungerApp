@@ -11,8 +11,8 @@ const ImagePicker = (props: { images: string[], setImages: React.Dispatch<React.
     const { dispatch: alert } = useAlert()
 
     const pickImages = async () => {
-        if (props.images.length >= 5) {
-            alert!({ type: 'open', message: 'The limit is 5 images per post', alertType: 'error' })
+        if (props.images.length >= 1) {
+            alert!({ type: 'open', message: 'The limit is 1 image per post', alertType: 'error' })
             return
         }
         let result = await ExpoImagePicker.launchImageLibraryAsync({
@@ -20,12 +20,12 @@ const ImagePicker = (props: { images: string[], setImages: React.Dispatch<React.
             aspect: [4, 3],
             quality: 0.3, //  compression, from 0 to 1
             allowsMultipleSelection: true,
-            selectionLimit: 5 // only for ios 14+
+            selectionLimit: 1 // only for ios 14+
         });
 
         if (!result.canceled && result.assets) {
-            if (result.assets.length + props.images.length > 5) {
-                alert!({ type: 'open', message: 'The limit is 5 images per post', alertType: 'error' })
+            if (result.assets.length + props.images.length > 1) {
+                alert!({ type: 'open', message: 'The limit is 1 image per post', alertType: 'error' })
             }
             result.assets.slice(0, 5 - props.images.length).forEach((img: { uri: string; }) => {
                 props.setImages(oldArr => [...oldArr, img.uri])
