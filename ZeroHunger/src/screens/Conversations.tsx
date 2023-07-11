@@ -1,5 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, Dimensions, StyleSheet, Image, TouchableHighlight, TextInput, RefreshControl, ActivityIndicator } from "react-native";
+import {
+    View, Text, Dimensions, StyleSheet, Image,
+    TouchableHighlight, TextInput, RefreshControl, ActivityIndicator
+} from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
@@ -33,7 +36,6 @@ export const Conversations = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
 
     const [conversations, setActiveConversations] = useState<ConversationModel[]>([]);
-    // const [createGroup, setCreateGroup] = useState("")
     const [empty, setEmpty] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
     const [firstLoad, setFirstLoad] = useState(true)
@@ -61,7 +63,6 @@ export const Conversations = ({ navigation }) => {
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
         }
-
     }
 
     useEffect(() => {
@@ -80,15 +81,6 @@ export const Conversations = ({ navigation }) => {
     const refresh = () => {
         getConversations()
     }
-
-    // const handleCreate = () => {
-    //     if (user['username'].toLowerCase() === createGroup.toLowerCase()) {
-    //         alert!({ type: 'open', message: 'The username you entered is your username', alertType: 'error' })
-    //     } else if (!user['username'] || !createGroup) {
-    //         alert!({ type: 'open', message: 'Please enter a username', alertType: 'error' })
-    //     }
-    //     navigateToChat(user['username'], createGroup)
-    // }
 
     const renderItem = ({ item }) => {
         let namesAlph: string[]
@@ -139,75 +131,104 @@ export const Conversations = ({ navigation }) => {
         return (
             <TouchableHighlight
                 onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}
-                testID={`${namesAlph[0]}__${namesAlph[1]}.Button`}
+                testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}`}
             >
-                <>
-                    {!loaded && <Text>Loading...</Text>}
-                    {loaded &&
-                        <View testID={`${namesAlph[0]}__${namesAlph[1]}`}
-                            key={item.other_user.username}
-                            style={styles.conversation}
-                        >
-                            <View style={styles.info}>
-                                <Image
-                                    style={styles.profileImg}
-                                    source={require('../../assets/Profile.png')}
-                                />
-                                <View style={styles.content}>
-                                    <Text
-                                        style={isUnread ? styles.usernameUnread : styles.username}
-                                    >{item.other_user.username}</Text>
-                                    <Text ellipsizeMode="tail"
-                                        numberOfLines={2}
-                                        style={isUnread ? styles.lastMessageUnread : styles.lastMessage}
-                                    >{item?.last_message?.content}</Text>
-                                </View>
-                            </View>
-                            <View>
-                                {isUnread &&
-                                    <View style={styles.ellipseFrame}>
-                                        <View style={styles.ellipse}></View>
-                                    </View>}
-                                <Text style={styles.timestamp}>{timestamp ? timestamp : ''}</Text>
-                            </View>
-                        </View>}
-                </>
+                <View
+                    testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}Cont`}
+                    key={item.other_user.username}
+                    style={styles.conversation}
+                >
+                    <View testID="Conversation.info" style={styles.info}>
+                        <Image
+                            testID="Conversation.profileImg"
+                            style={styles.profileImg}
+                            source={require('../../assets/Profile.png')}
+                        />
+                        <View testID="Conversation.content" style={styles.content}>
+                            <Text
+                                testID="Conversation.username"
+                                style={isUnread ? styles.usernameUnread : styles.username}
+                            >{item.other_user.username}</Text>
+                            <Text
+                                testID="Conversation.lastMsg"
+                                ellipsizeMode="tail"
+                                numberOfLines={2}
+                                style={isUnread ? styles.lastMessageUnread : styles.lastMessage}
+                            >{item?.last_message?.content}</Text>
+                        </View>
+                    </View>
+                    <View>
+                        {isUnread &&
+                            <View testID="Conversation.ellipseFrame" style={styles.ellipseFrame}>
+                                <View testID="Conversation.ellipse" style={styles.ellipse}></View>
+                            </View>}
+                        <Text
+                            testID="Conversation.timestamp"
+                            style={styles.timestamp}
+                        >{timestamp ? timestamp : ''}</Text>
+                    </View>
+                </View>
             </TouchableHighlight>
         )
     };
 
     return (
-        <View style={{ backgroundColor: Colors.Background }}>
-            {empty && <Text style={{ fontSize: 20, alignSelf: 'center', marginTop: 10 }}>No Messages</Text>}
-            {!empty && <View style={{ height: Dimensions.get('window').height - 130 }}>
-                <View style={styles.searchContainer}>
-                    <View style={styles.searchInputContainer}>
-                        <MaterialIcons style={styles.searchIcon} name="search" size={24} color="black" />
-                        <TextInput
-                            placeholder="Search messages"
-                            style={styles.searchInput}
+        <View testID="Conversations.container" style={{ backgroundColor: Colors.Background }}>
+            {!loaded && <Text>Loading...</Text>}
+            {loaded &&
+                <>
+                    {empty && <Text testID="Conversations.noMsgs" style={styles.noMsgs}>No Messages</Text>}
+                    {!empty && <View
+                        testID="Conversations.subContainer"
+                        style={{ height: Dimensions.get('window').height - 130 }}>
+                        <View
+                            testID="Conversations.searchContainer"
+                            style={styles.searchContainer}>
+                            <View
+                                testID="Conversations.searchInputContainer"
+                                style={styles.searchInputContainer}>
+                                <MaterialIcons
+                                    style={styles.searchIcon}
+                                    name="search"
+                                    size={24}
+                                    color="black" />
+                                <TextInput
+                                    testID="Conversations.searchInput"
+                                    placeholder="Search messages"
+                                    style={styles.searchInput}
+                                />
+                            </View>
+                        </View>
+                        {conversations.length === 0 &&
+                            <ActivityIndicator animating size="large" color={Colors.primary} />}
+                        <FlashList
+                            data={conversations}
+                            renderItem={renderItem}
+                            testID="Conversations.List"
+                            estimatedItemSize={100}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={refreshing}
+                                    onRefresh={refresh}
+                                    colors={[Colors.primary, Colors.primaryLight]}
+                                />
+                            }
+                            ListEmptyComponent={() => {
+                                if (empty) {
+                                    return <Text style={{ fontSize: 20 }}>No posts available</Text>
+                                }
+                                else if (firstLoad) {
+                                    return <ActivityIndicator
+                                        animating
+                                        size="large"
+                                        color={Colors.primary}
+                                    />
+                                }
+                            }}
                         />
-                    </View>
-                </View>
-                {conversations.length === 0 && <ActivityIndicator animating size="large" color={Colors.primary} />}
-                <FlashList
-                    data={conversations}
-                    renderItem={renderItem}
-                    testID="conversationsList"
-                    estimatedItemSize={100}
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[Colors.primary, Colors.primaryLight]} />
-                    }
-                    ListEmptyComponent={() => {
-                        if (empty) {
-                            return <Text style={{ fontSize: 20 }}>No posts available</Text>
-                        }
-                        else if (firstLoad) {
-                            return <ActivityIndicator animating size="large" color={Colors.primary} />
-                        }
-                    }}
-                />
-            </View>}
+                    </View>}
+                </>
+            }
         </View>
     );
 }
@@ -345,5 +366,10 @@ const styles = StyleSheet.create({
     searchIcon: {
         paddingTop: 10,
         paddingRight: 5
+    },
+    noMsgs: {
+        fontSize: 20,
+        alignSelf: 'center',
+        marginTop: 10
     }
 })
