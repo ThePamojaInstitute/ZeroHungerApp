@@ -11,7 +11,8 @@ jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper')
 global.console = {
     ...console,
     log: jest.fn(),
-    error: jest.fn()
+    error: jest.fn(),
+    warn: jest.fn()
 };
 
 jest.mock('@expo/vector-icons/Ionicons', () => 'Icon')
