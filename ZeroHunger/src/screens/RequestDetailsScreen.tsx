@@ -38,8 +38,14 @@ export const RequestDetailsScreen = ({ navigation }) => {
 
     const [message, setMessage] = useState("Hi " + route.params.username + ", do you still need this? I have some to share")
     const [inputHeight, setInputHeight] = useState(0)
+    const [alertMsg, setAlertMsg] = useState('')
 
     const sendMsg = () => {
+        if (!message) {
+            setAlertMsg("Please enter a message")
+            return
+        }
+
         const post = {
             title: route.params.title,
             images: route.params.imagesLink,
@@ -91,59 +97,74 @@ export const RequestDetailsScreen = ({ navigation }) => {
     }, [fontsLoaded])
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView testID="ReqDet.container" style={styles.container}>
             <FlashList
                 renderItem={renderItem}
                 data={images}
                 horizontal={true}
                 estimatedItemSize={166}
-            // contentContainerStyle={{paddingLeft: 12}}
+                testID="ReqDet.imgsList"
             />
             <View>
-                <Text style={[globalStyles.H2, { paddingTop: 12 }]}>{route.params.title}</Text>
-
+                <Text testID="ReqDet.title" style={[globalStyles.H2, { paddingTop: 12 }]}>{route.params.title}</Text>
                 {/* Your post */}
-                {user['username'] == route.params.username && <>
-                    <View style={styles.yourPost}>
-                        <View style={{ flexDirection: "row" }}>
-                            <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
-                            {/* Placeholder postal code */}
-                            <Text style={globalStyles.Small2}>XXXXXX</Text>
+                {user['username'] == route.params.username &&
+                    <>
+                        <View testID="ReqDet.subContainer" style={styles.subContainer}>
+                            <View testID="ReqDet.location" style={{ flexDirection: "row" }}>
+                                <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
+                                {/* Placeholder postal code */}
+                                <Text testID="ReqDet.locationText" style={globalStyles.Small2}>XXXXXX</Text>
+                            </View>
+                            {/* TODO: Implement edit posts */}
+                            <View>
+                                <TouchableOpacity
+                                    testID="ReqDet.editBtn"
+                                    style={[globalStyles.secondaryBtn, {
+                                        marginTop: 0,
+                                        width: 'auto',
+                                        padding: 10
+                                    }]}
+                                    onPress={() => { }}
+                                >
+                                    <MaterialCommunityIcons name="pencil-box-outline" size={21} />
+                                    <Text testID="ReqDet.editBtnLabel" style={globalStyles.secondaryBtnLabel}>Edit</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-
-                        {/* TODO: Implement edit posts */}
-                        <View>
-                            <TouchableOpacity style={styles.secondaryBtn} onPress={() => { }}>
-                                <MaterialCommunityIcons name="pencil-box-outline" size={21} />
-                                <Text style={globalStyles.secondaryBtnLabel}>Edit</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </>}
+                    </>
+                }
 
                 {/* Send message option if posted by other user */}
                 {user['username'] != route.params.username && <>
-                    <View style={styles.yourPost}>
-                        <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
+                    <View testID="ReqDet.subContainer" style={styles.subContainer}>
+                        <View testID="ReqDet.location" style={styles.location}>
                             <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                             {/* Placeholder distance away */}
-                            <Text style={globalStyles.Small2}>{1} km away</Text>
+                            <Text testID="ReqDet.distanceText" style={globalStyles.Small2}>{1} km away</Text>
                         </View>
 
                         {/* Temporary need by date */}
-                        <View style={styles.needBy}>
-                            <Text style={globalStyles.Tag}>Need in {3} days</Text>
+                        <View testID="ReqDet.needBy" style={styles.needBy}>
+                            <Text testID="ReqDet.needByTag" style={globalStyles.Tag}>Need in {3} days</Text>
                         </View>
                     </View>
 
-                    <View style={styles.sendMessage}>
-                        <Text style={[globalStyles.H4, { padding: 12 }]}>Send a message</Text>
+                    <View testID="ReqDet.sendMsgCont" style={styles.sendMessage}>
+                        <Text testID="ReqDet.sendMsgLabel" style={[globalStyles.H4, { padding: 12 }]}>Send a message</Text>
                         <TextInput
+                            testID="ReqDet.msgInput"
                             value={message}
-                            onChangeText={setMessage}
+                            onChangeText={newText => {
+                                setMessage(newText)
+                                setAlertMsg('')
+                            }}
+                            onChange={() => setAlertMsg('')}
                             placeholder={"Type a message"}
                             placeholderTextColor={Colors.midDark}
-                            style={[styles.inputText, { maxHeight: inputHeight }]}
+                            style={[styles.inputText,
+                            (alertMsg ? { maxHeight: inputHeight + 1, borderWidth: 1, borderColor: Colors.alert2 } :
+                                { maxHeight: inputHeight })]}
                             multiline={true}
                             numberOfLines={2}
                             maxLength={1024}
@@ -152,68 +173,75 @@ export const RequestDetailsScreen = ({ navigation }) => {
                                 setInputHeight(event.nativeEvent.contentSize.height);
                             }}
                         />
-                        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                            <TouchableOpacity style={styles.defaultBtn} onPress={sendMsg}>
-                                <Text style={globalStyles.defaultBtnLabel}>Send</Text>
+                        {alertMsg && <Text testID="ReqDet.alertMsg" style={styles.alertMsg}>{alertMsg}</Text>}
+                        <View testID="ReqDet.sendMsgBtnCont" style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+                            <TouchableOpacity
+                                testID="ReqDet.sendMsgBtn"
+                                style={[globalStyles.defaultBtn, styles.defaultBtn]}
+                                onPress={sendMsg}
+                            >
+                                <Text testID="ReqDet.sendMsgBtnLabel" style={globalStyles.defaultBtnLabel}>Send</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </>}
 
-                <View style={styles.information}>
-                    <Text style={[globalStyles.H4, { paddingBottom: 12, paddingTop: 20 }]}>Description</Text>
+                <View testID="ReqDet.description" style={styles.information}>
+                    <Text testID="ReqDet.discLabel" style={[globalStyles.H4, { paddingBottom: 12, paddingTop: 20 }]}>Description</Text>
                     <View style={{ paddingBottom: 12 }}>
-                        <Text style={globalStyles.Body}>
-                            {route.params.description == "" ? "No Description" : route.params.description}
+                        <Text testID="ReqDet.discBody" style={globalStyles.Body}>
+                            {route.params.description ? route.params.description : "No Description"}
                         </Text>
                     </View>
                 </View>
-                <View style={styles.information}>
-                    <Text style={[globalStyles.H4, { paddingBottom: 12 }]}>Poster Information</Text>
-                    <View style={{ flexDirection: "row", marginRight: 12 }}>
+                <View testID="ReqDet.posterInfo" style={styles.information}>
+                    <Text testID="ReqDet.posterInfoLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Poster Information</Text>
+                    <View testID="ReqDet.posterInfoCont" style={{ flexDirection: "row", marginRight: 12 }}>
                         <Ionicons name="person-circle-sharp" color="#B8B8B8" size={40} />
                         <View>
-                            <Text style={[
-                                globalStyles.H5,
-                                {
-                                    marginLeft: 3,
-                                    marginTop: 2
-                                }]}
+                            <Text
+                                testID="ReqDet.posterUsername"
+                                style={[
+                                    globalStyles.H5,
+                                    {
+                                        marginLeft: 3,
+                                        marginTop: 2
+                                    }]}
                             >{route.params.username}</Text>
-                            <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
+                            <View testID="ReqDet.locationDet" style={styles.location}>
                                 <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                                 {/* Placeholder postal code */}
-                                <Text style={globalStyles.Small2}>XXXXXX</Text>
+                                <Text testID="ReqDet.locationDetText" style={globalStyles.Small2}>XXXXXX</Text>
                             </View>
                         </View>
                     </View>
                 </View>
-                <View style={styles.information}>
-                    <Text style={[globalStyles.H4, { paddingBottom: 12 }]}>Request Details</Text>
-                    <View style={{ flexDirection: "row" }}>
+                <View testID="ReqDet.details" style={styles.information}>
+                    <Text testID="ReqDet.detailsLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Request Details</Text>
+                    <View testID="ReqDet.detailsSub" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
-                            <Text style={[styles.Small1, { marginBottom: 8 }]}>Food category</Text>
-                            <Text style={[styles.Small1, { marginBottom: 8 }]}>Quantity</Text>
-                            <Text style={styles.Small1}>Dietary Requirements</Text>
+                            <Text testID="ReqDet.detailCat" style={[globalStyles.Small1, styles.smallText]}>Food category</Text>
+                            <Text testID="ReqDet.detailsQuant" style={[globalStyles.Small1, styles.smallText]}>Quantity</Text>
+                            <Text testID="ReqDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary Requirements</Text>
                         </View>
                         {/* Temporary details values */}
                         <View>
-                            <Text style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
-                            <Text style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
-                            <Text style={[globalStyles.Small1]}>N/A</Text>
+                            <Text testID="ReqDet.detailCatVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
+                            <Text testID="ReqDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
+                            <Text testID="ReqDet.detailsReqVal" style={globalStyles.Small1}>N/A</Text>
                         </View>
                     </View>
                 </View>
-                <View style={styles.information}>
-                    <Text style={[globalStyles.H4, { paddingBottom: 12 }]}>Meeting Preferences</Text>
-                    <View style={{ flexDirection: "row" }}>
+                <View testID="ReqDet.meetPref" style={styles.information}>
+                    <Text testID="ReqDet.meetPrefLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Meeting Preferences</Text>
+                    <View testID="ReqDet.meetPrefSubCont" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
-                            <Text style={[styles.Small1, { marginBottom: 8 }]}>Pick Up or Delivery Preference</Text>
-                            <Text style={styles.Small1}>Postal Code</Text>
+                            <Text testID="ReqDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick Up or Delivery Preference</Text>
+                            <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal Code</Text>
                         </View>
                         <View>
-                            <Text style={[globalStyles.Small1, { marginBottom: 8 }]}>Pick Up, Delivery</Text>
-                            <Text style={[globalStyles.Small1]}>XXXXXX</Text>
+                            <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>Pick Up, Delivery</Text>
+                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>XXXXXX</Text>
                         </View>
                     </View>
                 </View>
@@ -241,13 +269,13 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.offWhite
         // textAlign: 'center',
     },
-    headerText: {
-        fontSize: 24,
-        padding: 8,
-    },
-    text: {
-        padding: 8,
-    },
+    // headerText: {
+    //     fontSize: 24,
+    //     padding: 8,
+    // },
+    // text: {
+    //     padding: 8,
+    // },
     inputText: {
         flex: 1,
         backgroundColor: Colors.white,
@@ -258,44 +286,42 @@ const styles = StyleSheet.create({
         fontSize: 16,
         height: 60,
     },
-    messageInputView: {
-        backgroundColor: "#D3D3D3",
-        borderRadius: 30,
-        width: "90%",
-        height: 100,
-        // marginBottom: 8,
-        marginTop: 10,
-        marginLeft: 8,
-    },
-    defaultBtn: {
-        display: "flex",
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: "center",
-        width: "40%",
-        gap: 10,
-        position: 'relative',
-        marginTop: 11,
-        marginBottom: 16,
-        marginRight: 11,
-        height: 42,
-        borderRadius: 100,
-        backgroundColor: Colors.primary,
-    },
-    secondaryBtn: {
-        display: "flex",
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: "center",
-        // width: "15%",
-        padding: 10,
-        gap: 10,
-        position: 'relative',
-        // marginTop: 30,
-        height: 42,
-        borderRadius: 100,
-        backgroundColor: Colors.primaryMid,
-    },
+    // messageInputView: {
+    //     backgroundColor: "#D3D3D3",
+    //     borderRadius: 30,
+    //     width: "90%",
+    //     height: 100,
+    //     // marginBottom: 8,
+    //     marginTop: 10,
+    //     marginLeft: 8,
+    // },
+    // defaultBtn: {
+    //     display: "flex",
+    //     flexDirection: 'row',
+    //     justifyContent: 'center',
+    //     alignItems: "center",
+    //     width: "40%",
+    //     gap: 10,
+    //     position: 'relative',
+    //     marginTop: 11,
+    //     marginBottom: 16,
+    //     marginRight: 11,
+    //     height: 42,
+    //     borderRadius: 100,
+    //     backgroundColor: Colors.primary,
+    // },
+    // secondaryBtn: {
+    //     display: "flex",
+    //     flexDirection: 'row',
+    //     justifyContent: 'center',
+    //     alignItems: "center",
+    //     padding: 10,
+    //     gap: 10,
+    //     position: 'relative',
+    //     height: 42,
+    //     borderRadius: 100,
+    //     backgroundColor: Colors.primaryMid,
+    // },
     sendMessage: {
         backgroundColor: Colors.Background,
         borderRadius: 10,
@@ -309,13 +335,13 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: Colors.midLight
     },
-    Small1: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        color: Colors.midDark,
-        marginBottom: 8
-    },
-    yourPost: {
+    // Small1: {
+    //     fontFamily: 'PublicSans_400Regular',
+    //     fontSize: 13,
+    //     color: Colors.midDark,
+    //     marginBottom: 8
+    // },
+    subContainer: {
         flexDirection: "row",
         marginTop: 4,
         // marginBottom: 12,
@@ -331,7 +357,27 @@ const styles = StyleSheet.create({
         paddingTop: 4,
         paddingBottom: 4,
         borderRadius: 4
-    }
+    },
+    location: {
+        flexDirection: 'row',
+        marginTop: 4,
+        marginBottom: 12
+    },
+    smallText: {
+        color: Colors.midDark,
+        marginBottom: 8
+    },
+    defaultBtn: {
+        width: "40%",
+        marginTop: 11,
+        marginBottom: 16,
+        marginRight: 11,
+    },
+    alertMsg: {
+        marginLeft: 15,
+        marginTop: 5,
+        color: Colors.alert2
+    },
 })
 
 export default RequestDetailsScreen
