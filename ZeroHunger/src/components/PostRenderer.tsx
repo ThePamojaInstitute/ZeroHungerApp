@@ -54,11 +54,6 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         fetchLengths()
     }, [])
 
-    // on navigation change
-    useFocusEffect(() => {
-        fetchLengths()
-    })
-
     useEffect(() => {
         if (type === "r" &&
             (postIndex < requestsLength || postIndex > requestsLength)) {
@@ -96,6 +91,8 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     const loadNumPosts = 5 //Change if number of posts to load changes
 
     const loadPosts = async () => {
+        if (endReached) return
+
         const json = JSON.stringify({
             postIndex: postIndex
             , postType: type
