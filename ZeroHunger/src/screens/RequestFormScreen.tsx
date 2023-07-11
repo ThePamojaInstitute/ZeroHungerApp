@@ -97,8 +97,10 @@ export const RequestFormScreen = ({ navigation }) => {
 
     //https://stackoverflow.com/questions/42521679/how-can-i-upload-a-photo-with-expo
     const handleImageUpload = () => { //test function for image uploads
-        console.log(images.length) //gives 0 in the web browser console
-        axiosInstance.post("posts/testBlobImage", { "IMAGE": images.toString }); //Empty in the backend log
+        var imageString = images[0];
+        imageString = imageString.substring(imageString.indexOf(",") + 1);
+        console.log(imageString);
+        axiosInstance.post("posts/testBlobImage", { "IMAGE":imageString}); 
     };
 
 
