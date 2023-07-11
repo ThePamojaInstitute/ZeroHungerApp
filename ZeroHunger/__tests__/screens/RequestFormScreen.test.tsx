@@ -1,5 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react-native"
-import { NavigationContainer, NavigationContext } from "@react-navigation/native";
+import { act, fireEvent, render } from "@testing-library/react-native"
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RequestFormScreen } from "../../src/screens/RequestFormScreen";
 import * as Utils from "../../src/controllers/post";
@@ -12,7 +12,6 @@ import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useFonts } from '@expo-google-fonts/public-sans';
 import LoginScreen from "../../src/screens/Loginscreen";
 
-window.alert = () => { }
 
 jest.mock('@expo-google-fonts/public-sans', () => ({
     useFonts: jest.fn()
