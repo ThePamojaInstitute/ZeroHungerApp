@@ -36,6 +36,7 @@ export const Chat = ({ navigation, route }) => {
     const [loading, setLoading] = useState(false)
     const [endReached, setEndReached] = useState(false)
     const [inputHeight, setInputHeight] = useState(0)
+    const [initiated, setInitiated] = useState(false)
 
     const namesAlph = [route.params.user1, route.params.user2].sort();
     const conversationName = `${namesAlph[0]}__${namesAlph[1]}`
@@ -61,6 +62,8 @@ export const Chat = ({ navigation, route }) => {
     }
 
     const loadMessages = () => {
+        if (!initiated) return
+
         if (end) {
             setLoading(true)
             sendJsonMessage({
@@ -90,10 +93,10 @@ export const Chat = ({ navigation, route }) => {
                     sendJsonMessage({ type: "read_messages" });
                     break;
                 case "last_30_messages":
+                    setInitiated(true)
                     if (data.messages.length === 0) {
                         setEmpty(true)
-                    }
-                    setMessageHistory(data.messages);
+                    } else setMessageHistory(data.messages);
                     break
                 case "render_x_to_y_messages":
                     setMessageHistory([...messageHistory, ...data.messages]);
@@ -192,7 +195,7 @@ export const Chat = ({ navigation, route }) => {
         const content = JSON.parse(item.content)
 
         return (
-            <TouchableOpacity onPress={() => handlePress(
+            <TouchableOpacity testID='Chat.postPrev' onPress={() => handlePress(
                 content.title,
                 content.images,
                 content.postedOn,
@@ -202,35 +205,39 @@ export const Chat = ({ navigation, route }) => {
                 content.username,
                 content.type
             )}>
-                <View style={user['username'] === item.to_user['username'] ? styles.postMsgContainerIn : styles.postMsgContainerOut}>
+                <View testID='Chat.postCont' style={user['username'] === item.to_user['username'] ? styles.postMsgContainerIn : styles.postMsgContainerOut}>
                     <View
-                        style={user['username'] === item.to_user['username'] ? styles.postMsgIn : styles.postMsgOut}>
-                        <View style={styles.postMsgCont}>
+                        testID='Chat.postMsg'
+                        style={user['username'] === item.to_user['username'] ?
+                            styles.postMsgIn : styles.postMsgOut}>
+                        <View testID='Chat.postMsgCont' style={styles.postMsgCont}>
                             <Image
+                                testID='Chat.postMsgImg'
                                 style={styles.postMsgImg}
                                 source={{ uri: content.images }}
                             />
-                            <View style={styles.postMsgSubCont}>
-                                <Text style={[styles.postMsgTitle, {
+                            <View testID='Chat.postMsgSubCont' style={styles.postMsgSubCont}>
+                                <Text testID='Chat.postMsgTitle' style={[styles.postMsgTitle, {
                                     color: user['username'] === item.to_user['username'] ?
                                         Colors.dark : Colors.white
                                 }]}>{content.title}</Text>
-                                <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
+                                <View testID='Chat.postMsgLocation' style={styles.postMsgLocation}>
                                     <Ionicons name='location-outline' size={13}
+                                        testID='Chat.postMsgLocationIcon'
                                         style={{
                                             marginRight: 4,
                                             color: user['username'] === item.to_user['username'] ?
                                                 Colors.dark : Colors.white
                                         }} />
                                     {/* Placeholder distance away */}
-                                    <Text style={[globalStyles.Small2,
+                                    <Text testID='Chat.postMsgDistance' style={[globalStyles.Small2,
                                     {
                                         color: user['username'] === item.to_user['username'] ?
                                             Colors.dark : Colors.white
                                     }]}>{1}km away</Text>
                                 </View>
-                                <View style={styles.postMsgNeedBy}>
-                                    <Text style={globalStyles.Tag}>Need in {3} days</Text>
+                                <View testID='Chat.postMsgNeedBy' style={styles.postMsgNeedBy}>
+                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>Need in {3} days</Text>
                                 </View>
                             </View>
                         </View>
@@ -252,10 +259,10 @@ export const Chat = ({ navigation, route }) => {
 
 
     return (
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <View testID='Chat.container' style={{ flex: 1, backgroundColor: 'white' }}>
             <Text>The WebSocket is currently {connectionStatus}</Text>
-            {((!empty && messageHistory.length === 0)) && <ActivityIndicator animating size="large" color={Colors.dark} />}
-            {empty && !loading && <Text style={{ fontSize: 20, alignSelf: 'center', marginTop: 10 }}>No Messages</Text>}
+            {(!empty && messageHistory.length === 0) && <ActivityIndicator animating size="large" color={Colors.dark} />}
+            {empty && !loading && <Text testID='Chat.noMsgs' style={styles.noMsgs}>No Messages</Text>}
             <FlashList
                 renderItem={renderItem}
                 data={messageHistory}
@@ -263,15 +270,16 @@ export const Chat = ({ navigation, route }) => {
                 onEndReachedThreshold={0.3}
                 inverted={true}
                 estimatedItemSize={100}
-                testID='messagesList'
+                testID='Chat.messagesList'
                 ListFooterComponent={endReached ?
                     <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 10 }}
                     >End Reached</Text> : <></>}
             />
-            <View style={[styles.chatBar, inputHeight > 50 ? { height: 69 + (inputHeight - 69 + 25) } : { height: 69 }]}>
-                <Entypo name="camera" size={26} color="black" style={styles.chatCameraIcom} />
-                <View style={styles.chatInputContainer}>
+            <View testID='Chat.chatBar' style={[styles.chatBar, inputHeight > 50 ? { height: 69 + (inputHeight - 69 + 25) } : { height: 69 }]}>
+                <Entypo testID='Chat.chatCameraIcon' name="camera" size={26} color="black" style={styles.chatCameraIcon} />
+                <View testID='Chat.chatInputContainer' style={styles.chatInputContainer}>
                     <TextInput
+                        testID='Chat.chatInput'
                         value={message}
                         style={[styles.chatInput, { height: inputHeight }]}
                         placeholder="Type a message"
@@ -285,7 +293,9 @@ export const Chat = ({ navigation, route }) => {
                         }}
                         numberOfLines={3}
                     />
-                    <Ionicons name="send"
+                    <Ionicons
+                        testID='Chat.chatSendIcon'
+                        name="send"
                         size={22}
                         color="black"
                         style={styles.chatSendIcon}
@@ -358,7 +368,7 @@ const styles = StyleSheet.create({
         maxHeight: 70,
         width: '93%'
     },
-    chatCameraIcom: {
+    chatCameraIcon: {
         marginBottom: 11,
         marginLeft: 5,
     },
@@ -441,5 +451,15 @@ const styles = StyleSheet.create({
         marginTop: 1,
         marginBottom: 1,
         flexDirection: 'row-reverse',
+    },
+    postMsgLocation: {
+        flexDirection: 'row',
+        marginTop: 4,
+        marginBottom: 12
+    },
+    noMsgs: {
+        fontSize: 20,
+        alignSelf: 'center',
+        marginTop: 10
     }
 });

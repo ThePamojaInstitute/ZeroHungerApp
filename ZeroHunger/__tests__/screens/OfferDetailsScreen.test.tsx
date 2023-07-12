@@ -531,7 +531,7 @@ describe('send message', () => {
         })
         fireEvent.press(getByTestId('OffDet.sendMsgBtn'))
 
-        expect(mockSendJsonMessage).toHaveBeenNthCalledWith(3, { "message": "{\"title\":\"offer2\",\"images\":\"https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600\",\"postedOn\":\"12/31/1969\",\"postedBy\":2,\"description\":\"test desc\",\"postId\":2,\"username\":\"testUser\",\"type\":\"o\"}", "name": "test", "type": "chat_message" })
+        expect(mockSendJsonMessage).toHaveBeenNthCalledWith(2, { "message": "{\"title\":\"offer2\",\"images\":\"https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600\",\"postedOn\":\"12/31/1969\",\"postedBy\":2,\"description\":\"test desc\",\"postId\":2,\"username\":\"testUser\",\"type\":\"o\"}", "name": "test", "type": "chat_message" })
     })
 
     it('sends the other message', async () => {
@@ -543,7 +543,7 @@ describe('send message', () => {
         })
         fireEvent.press(getByTestId('OffDet.sendMsgBtn'))
 
-        expect(mockSendJsonMessage).toHaveBeenNthCalledWith(4, {
+        expect(mockSendJsonMessage).toHaveBeenNthCalledWith(3, {
             "message": "Hi testUser, is this still available?",
             "name": "test",
             "type": "chat_message",
