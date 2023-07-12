@@ -1,5 +1,6 @@
 import { useContext } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
+import styles from "../../styles/screens/accountSettingsStyleSheet"
 import { AuthContext } from "../context/AuthContext";
 import { logOutUser, deleteUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
@@ -44,21 +45,3 @@ export const AccountSettingsScreen = ({ navigation }) => {
 }
 
 export default AccountSettingsScreen
-
-const styles = StyleSheet.create({
-    deleteUserBtn: {
-        title: "Login",
-        width: "50%",
-        borderRadius: 25,
-        marginTop: 20,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "red",
-    },
-    deleteUserBtnText: {
-        color: "#FFFFFF",
-        padding: 15,
-        marginLeft: 10,
-        fontSize: 15,
-    },
-})

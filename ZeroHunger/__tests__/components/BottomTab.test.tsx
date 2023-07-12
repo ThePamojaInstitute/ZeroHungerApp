@@ -1,4 +1,6 @@
 import React from "react";
+import styles from "../../styles/components/bottomTabStyleSheet"
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import HomeScreen from "../../src/screens/HomeScreen";
 import { axiosInstance } from "../../config";
 import { AuthContext } from "../../src/context/AuthContext";
@@ -8,7 +10,6 @@ import { AlertContext, AlertContextFields, AlertContextType } from "../../src/co
 import { mock } from "jest-mock-extended";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useFonts } from '@expo-google-fonts/public-sans';
 import BottomTab from "../../src/components/BottomTab";
 import DrawerTab from "../../src/components/DrawerTab";
@@ -42,54 +43,6 @@ afterEach(() => {
     (useFonts as jest.Mock).mockImplementation(() => [true])
     jest.clearAllMocks()
 })
-
-const styles = {
-    bottomBarText: {
-        fontSize: 11,
-        color: Colors.primary,
-        marginBottom: 14,
-        textAlign: "center"
-    },
-    bottomBarTab: {
-        height: 69,
-        backgroundColor: Colors.offWhite,
-        borderTopWidth: 0,
-    },
-    homeButton: {
-        flex: 0,
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    postButton: {
-        marginTop: 9,
-        alignItems: "center",
-        justifyContent: "center",
-        paddingHorizontal: 40,
-    },
-    messagesButton: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    modal: {
-        margin: 0,
-        // marginTop: Dimensions.get('window').height * 0.74,
-        backgroundColor: Colors.offWhite,
-        borderRadius: 10,
-        elevation: 0,
-    },
-    modalContent: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-    },
-    modalClose: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        marginRight: 10
-    }
-}
 
 const TestComponent = () => {
     const Stack = createNativeStackNavigator();

@@ -1,3 +1,4 @@
+import styles from "../../styles/screens/accountSettingsStyleSheet"
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthContext } from "../../src/context/AuthContext";
 import { NavigationContainer } from "@react-navigation/native";

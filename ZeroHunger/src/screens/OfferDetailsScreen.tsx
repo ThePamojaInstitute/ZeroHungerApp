@@ -1,4 +1,6 @@
-import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity, LogBox } from "react-native";
+import { View, Text, Image, TextInput, TouchableOpacity, LogBox } from "react-native";
+import styles from "../../styles/screens/postDetailsStyleSheet"
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { Button } from "react-native-paper";
 import { deletePost } from "../controllers/post";
@@ -6,7 +8,6 @@ import { useAlert } from "../context/Alert";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { FlashList } from "@shopify/flash-list";
 import {
     useFonts,
@@ -252,125 +253,5 @@ export const OfferDetailsScreen = ({ navigation }) => {
         </ScrollView>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 12,
-        // marginTop: 20,
-        // backgroundColor: Colors.Background,
-        backgroundColor: Colors.offWhite
-        // textAlign: 'center',
-    },
-    // headerText: {
-    //     fontSize: 24,
-    //     padding: 8,
-    // },
-    // text: {
-    //     padding: 8,
-    // },
-    inputText: {
-        flex: 1,
-        backgroundColor: Colors.white,
-        marginLeft: 12,
-        marginRight: 12,
-        padding: 10,
-        borderRadius: 5,
-        fontSize: 16,
-        height: 60,
-    },
-    // messageInputView: {
-    //     backgroundColor: "#D3D3D3",
-    //     borderRadius: 30,
-    //     width: "90%",
-    //     height: 100,
-    //     // marginBottom: 8,
-    //     marginTop: 10,
-    //     marginLeft: 8,
-    // },
-    // defaultBtn: {
-    //     display: "flex",
-    //     flexDirection: 'row',
-    //     justifyContent: 'center',
-    //     alignItems: "center",
-    //     width: "40%",
-    //     gap: 10,
-    //     position: 'relative',
-    //     marginTop: 11,
-    //     marginBottom: 16,
-    //     marginRight: 11,
-    //     height: 42,
-    //     borderRadius: 100,
-    //     backgroundColor: Colors.primary,
-    // },
-    // secondaryBtn: {
-    //     display: "flex",
-    //     flexDirection: 'row',
-    //     justifyContent: 'center',
-    //     alignItems: "center",
-    //     padding: 10,
-    //     gap: 10,
-    //     position: 'relative',
-    //     height: 42,
-    //     borderRadius: 100,
-    //     backgroundColor: Colors.primaryMid,
-    // },
-    sendMessage: {
-        backgroundColor: Colors.Background,
-        borderRadius: 10,
-    },
-    information: {
-        // padding: 12,
-        paddingTop: 12,
-        paddingBottom: 20,
-        // paddingBottom: 8,
-        paddingRight: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.midLight
-    },
-    // Small1: {
-    //     fontFamily: 'PublicSans_400Regular',
-    //     fontSize: 13,
-    //     color: Colors.midDark,
-    //     marginBottom: 8
-    // },
-    subContainer: {
-        flexDirection: "row",
-        marginTop: 4,
-        // marginBottom: 12,
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 12,
-        // marginLeft: 12
-    },
-    needBy: {
-        backgroundColor: Colors.primaryLight,
-        paddingLeft: 8,
-        paddingRight: 8,
-        paddingTop: 4,
-        paddingBottom: 4,
-        borderRadius: 4
-    },
-    location: {
-        flexDirection: 'row',
-        marginTop: 4,
-        marginBottom: 12
-    },
-    smallText: {
-        color: Colors.midDark,
-        marginBottom: 8
-    },
-    defaultBtn: {
-        width: "40%",
-        marginTop: 11,
-        marginBottom: 16,
-        marginRight: 11,
-    },
-    alertMsg: {
-        marginLeft: 15,
-        marginTop: 5,
-        color: Colors.alert2
-    },
-})
 
 export default OfferDetailsScreen

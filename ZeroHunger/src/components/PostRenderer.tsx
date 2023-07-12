@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, RefreshControl, ActivityIndicator } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity, RefreshControl, ActivityIndicator } from "react-native";
+import styles from "../../styles/components/postRendererStyleSheet"
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
 import { deletePost } from "../controllers/post";
-import { useFocusEffect } from "@react-navigation/native";
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -253,9 +253,9 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                                 <Text testID="Posts.locationText" style={globalStyles.Small1}>{1} km away</Text>
                             </View>
                         </View>
-                        <View testID="Posts.tag" style={globalStyles.postTag}>
+                        <View testID="Posts.tag" style={styles.postTag}>
                             {/* Placeholder need by date */}
-                            <Text testID="Posts.tagLabel" style={globalStyles.postTagLabel}>Need in {3} days</Text>
+                            <Text testID="Posts.tagLabel" style={styles.postTagLabel}>Need in {3} days</Text>
                         </View>
                         {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                     </View>
@@ -328,67 +328,5 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        // marginBottom: 100,
-        // padding: 10,
-        flexDirection: 'row',
-        marginTop: 12,
-        marginBottom: 0,
-        marginLeft: 12,
-        marginRight: 10,
-        borderRadius: 5,
-        overflow: 'hidden',
-        backgroundColor: Colors.offWhite,
-    },
-    subContainer: {
-        flex: 1,
-        marginTop: 8,
-        marginBottom: 0,
-        marginLeft: 0,
-        marginRight: 8,
-        color: Colors.offWhite,
-        // flexDirection: 'row',
-        // flexDirection: 'row'
-    },
-    image: {
-        width: 105,
-        height: 105,
-        marginRight: 15,
-    },
-    // titleText: {
-    //     fontWeight: 'bold',
-    //     fontSize: 24,
-    // },
-    // quantityText: {
-    //     fontSize: 14,
-    // },
-    // postedOnText: {
-    //     flex: 1,
-    //     textAlign: 'right',
-    //     alignSelf: 'flex-end',
-    //     marginTop: 62
-    // },
-    noPostsText: {
-        fontSize: 36,
-        padding: 15,
-    },
-    // refreshBtnText: {
-    //     color: 'blue',
-    //     fontSize: 24,
-    //     padding: 15,
-    // },
-    postEllipsis: {
-        alignSelf: 'flex-end',
-        padding: 8,
-        marginRight: 8
-    },
-    locationCont: {
-        flexDirection: 'row',
-        marginTop: 4
-    }
-})
 
 export default PostRenderer

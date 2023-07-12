@@ -8,7 +8,8 @@ import DrawerTab from "../../src/components/DrawerTab";
 import { axiosInstance } from "../../config";
 import MockAdapter from "axios-mock-adapter";
 import { useFonts } from "@expo-google-fonts/public-sans";
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import styles from "../../styles/components/postRendererStyleSheet"
+import { globalStyles } from "../../styles/globalStyleSheet";
 
 
 jest.mock('@expo-google-fonts/public-sans', () => ({
@@ -107,47 +108,6 @@ const offerPosts = [
         }
     }
 ]
-
-const styles = {
-    container: {
-        flex: 1,
-        flexDirection: 'row',
-        marginTop: 12,
-        marginBottom: 0,
-        marginLeft: 12,
-        marginRight: 10,
-        borderRadius: 5,
-        overflow: 'hidden',
-        backgroundColor: Colors.offWhite,
-    },
-    subContainer: {
-        flex: 1,
-        marginTop: 8,
-        marginBottom: 0,
-        marginLeft: 0,
-        marginRight: 8,
-        color: Colors.offWhite,
-    },
-    image: {
-        width: 105,
-        height: 105,
-        marginRight: 15,
-    },
-    noPostsText: {
-        fontSize: 36,
-        padding: 15,
-    },
-    postEllipsis: {
-        alignSelf: 'flex-end',
-        padding: 8,
-        marginRight: 8
-    },
-    locationCont: {
-        flexDirection: 'row',
-        marginTop: 4
-    }
-}
-
 
 const TestComponent = () => {
     const Stack = createNativeStackNavigator();
@@ -301,8 +261,8 @@ describe('rendering requests elements', () => {
             expect(getByTestId('Posts.username').props.style).toStrictEqual(globalStyles.Small1)
             expect(getByTestId('Posts.locationCont').props.style).toStrictEqual(styles.locationCont)
             expect(getByTestId('Posts.locationText').props.style).toStrictEqual(globalStyles.Small1)
-            expect(getByTestId('Posts.tag').props.style).toStrictEqual(globalStyles.postTag)
-            expect(getByTestId('Posts.tagLabel').props.style).toStrictEqual(globalStyles.postTagLabel)
+            expect(getByTestId('Posts.tag').props.style).toStrictEqual(styles.postTag)
+            expect(getByTestId('Posts.tagLabel').props.style).toStrictEqual(styles.postTagLabel)
         })
     })
 })
@@ -422,8 +382,8 @@ describe('rendering offers elements', () => {
             expect(getByTestId('Posts.username').props.style).toStrictEqual(globalStyles.Small1)
             expect(getByTestId('Posts.locationCont').props.style).toStrictEqual(styles.locationCont)
             expect(getByTestId('Posts.locationText').props.style).toStrictEqual(globalStyles.Small1)
-            expect(getByTestId('Posts.tag').props.style).toStrictEqual(globalStyles.postTag)
-            expect(getByTestId('Posts.tagLabel').props.style).toStrictEqual(globalStyles.postTagLabel)
+            expect(getByTestId('Posts.tag').props.style).toStrictEqual(styles.postTag)
+            expect(getByTestId('Posts.tagLabel').props.style).toStrictEqual(styles.postTagLabel)
         })
     })
 })

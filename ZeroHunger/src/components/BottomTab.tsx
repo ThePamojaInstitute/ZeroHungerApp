@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from "react-native";
+import { View, TouchableOpacity, Text, Dimensions } from "react-native";
+import styles from "../../styles/components/bottomTabStyleSheet"
+import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
 import LoginScreen from '../screens/Loginscreen';
@@ -18,7 +20,6 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
-import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
@@ -320,7 +321,8 @@ const BottomTab = () => {
                                     onBackdropPress={() => setModalVisible(!modalVisible)}
                                     onSwipeComplete={() => setModalVisible(!modalVisible)}
                                     swipeDirection={['down']}
-                                    style={styles.modal}
+                                    style={[styles.modal,
+                                    { marginTop: Dimensions.get('window').height * 0.74 }]}
                                 >
                                     <View style={{ marginBottom: 30 }}>
                                         <View
@@ -416,51 +418,3 @@ const BottomTab = () => {
 }
 
 export default BottomTab
-
-const styles = StyleSheet.create({
-    bottomBarText: {
-        fontSize: 11,
-        color: Colors.primary,
-        marginBottom: 14,
-        textAlign: "center"
-    },
-    bottomBarTab: {
-        height: 69,
-        backgroundColor: Colors.offWhite,
-        borderTopWidth: 0,
-    },
-    homeButton: {
-        flex: 0,
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    postButton: {
-        marginTop: 9,
-        alignItems: "center",
-        justifyContent: "center",
-        paddingHorizontal: 40,
-    },
-    messagesButton: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    modal: {
-        margin: 0,
-        marginTop: Dimensions.get('window').height * 0.74,
-        backgroundColor: Colors.offWhite,
-        borderRadius: 10,
-        elevation: 0,
-    },
-    modalContent: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-    },
-    modalClose: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        marginRight: 10
-    }
-})

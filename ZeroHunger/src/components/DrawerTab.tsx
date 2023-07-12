@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, GestureResponderEvent } from "react-native"
+import { View, Text, TouchableOpacity, GestureResponderEvent } from "react-native"
+import styles from "../../styles/components/drawerTabStyleSheet"
+import { globalStyles } from "../../styles/globalStyleSheet";
 import { DrawerActions } from '@react-navigation/native';
 import {
     createDrawerNavigator,
@@ -19,7 +21,6 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { globalStyles } from "../../styles/globalStyleSheet";
 import { logOutUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
 
@@ -137,30 +138,3 @@ const DrawerTab = () => {
 }
 
 export default DrawerTab
-
-const styles = StyleSheet.create({
-    drawerContainer: {
-        flexDirection: "row",
-        marginTop: 12,
-        marginLeft: 12,
-        marginRight: 8,
-        marginBottom: 32,
-        justifyContent: "space-between"
-    },
-    logOutBtn: {
-        width: "50%",
-        borderRadius: 25,
-        marginTop: 10,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "#6A6A6A",
-        marginRight: 10,
-        marginLeft: 12
-    },
-    logOutBtnText: {
-        color: "#FFFFFF",
-        padding: 15,
-        marginLeft: 10,
-        fontSize: 15,
-    },
-})
