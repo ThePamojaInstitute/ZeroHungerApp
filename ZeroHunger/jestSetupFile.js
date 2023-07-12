@@ -1,3 +1,7 @@
+import 'react-native-gesture-handler/jestSetup';
+
+window.alert = () => { }
+
 jest.mock('@react-native-async-storage/async-storage', () =>
     require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
@@ -7,7 +11,8 @@ jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper')
 global.console = {
     ...console,
     log: jest.fn(),
-    error: jest.fn()
+    error: jest.fn(),
+    warn: jest.fn()
 };
 
 jest.mock('@expo/vector-icons/Ionicons', () => 'Icon')
@@ -35,3 +40,10 @@ jest.mock('@expo-google-fonts/public-sans', () => ({
 jest.mock('jwt-decode', () => () => ({}))
 
 require("@shopify/flash-list/jestSetup");
+
+jest.mock('react-native-reanimated', () => {
+    const Reanimated = require('react-native-reanimated/mock');
+    Reanimated.default.call = () => { };
+
+    return Reanimated;
+});

@@ -1,5 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react-native"
-import { NavigationContainer, NavigationContext } from "@react-navigation/native";
+import { act, fireEvent, render } from "@testing-library/react-native"
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RequestFormScreen } from "../../src/screens/RequestFormScreen";
 import * as Utils from "../../src/controllers/post";
@@ -8,11 +8,12 @@ import { AuthContext } from "../../src/context/AuthContext"
 import { AlertContext, AlertContextFields, AlertContextType } from "../../src/context/Alert"
 import { mock } from "jest-mock-extended";
 import MockAdapter from "axios-mock-adapter";
+import styles from "../../styles/screens/postFormStyleSheet"
+import datePickerStyles from "../../styles/components/datePickerStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useFonts } from '@expo-google-fonts/public-sans';
 import LoginScreen from "../../src/screens/Loginscreen";
 
-window.alert = () => { }
 
 jest.mock('@expo-google-fonts/public-sans', () => ({
     useFonts: jest.fn()
@@ -144,27 +145,27 @@ describe('onload', () => {
         it('renders default styles', () => {
             const { getByTestId } = render(<TestComponent />)
 
-            expect(getByTestId('Request.cancelBtnLabel').props.style).toBe(globalStyles.formCancelBtn)
+            expect(getByTestId('Request.cancelBtnLabel').props.style).toBe(styles.formCancelBtn)
             expect(getByTestId('Request.createBtn').parent.parent.props.style[0]).toBe(globalStyles.navDefaultBtn)
             expect(getByTestId('Request.createBtnLabel').props.style).toBe(globalStyles.defaultBtnLabel)
-            expect(getByTestId('Request.formContainer').props.style).toBe(globalStyles.formContainer)
-            expect(getByTestId('Request.titleLabel').props.style[0]).toBe(globalStyles.formTitleText)
+            expect(getByTestId('Request.formContainer').props.style).toBe(styles.formContainer)
+            expect(getByTestId('Request.titleLabel').props.style[0]).toBe(styles.formTitleText)
             expect(getByTestId('Request.titleLabel').props.style[1].color).toBe(Colors.dark)
-            expect(getByTestId('Request.titleDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Request.formInputContainer').props.style).toBe(globalStyles.formInputContainer)
-            expect(getByTestId('Request.titleInput').props.style[0]).toBe(globalStyles.formInput)
+            expect(getByTestId('Request.titleDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Request.formInputContainer').props.style).toBe(styles.formInputContainer)
+            expect(getByTestId('Request.titleInput').props.style[0]).toBe(styles.formInput)
             expect(getByTestId('Request.titleInput').props.style[1].borderColor).toBe(Colors.midLight)
-            expect(getByTestId('Request.photoLabel').props.style).toBe(globalStyles.formTitleText)
-            expect(getByTestId('Request.photoDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Request.categoryLabel').props.style).toBe(globalStyles.formTitleText)
-            expect(getByTestId('Request.categoryDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Request.quantityLabel').props.style).toBe(globalStyles.formTitleText)
-            expect(getByTestId('Request.quantityDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Request.dateLabel').props.style).toBe(globalStyles.formTitleText)
-            expect(getByTestId('Request.dateDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Request.descTitle').props.style).toBe(globalStyles.formTitleText)
-            expect(getByTestId('Request.descDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Request.descInput').props.style).toBe(globalStyles.formInputText)
+            expect(getByTestId('Request.photoLabel').props.style).toBe(styles.formTitleText)
+            expect(getByTestId('Request.photoDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Request.categoryLabel').props.style).toBe(styles.formTitleText)
+            expect(getByTestId('Request.categoryDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Request.quantityLabel').props.style).toBe(styles.formTitleText)
+            expect(getByTestId('Request.quantityDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Request.dateLabel').props.style).toBe(styles.formTitleText)
+            expect(getByTestId('Request.dateDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Request.descTitle').props.style).toBe(styles.formTitleText)
+            expect(getByTestId('Request.descDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Request.descInput').props.style).toBe(styles.formInputText)
         })
     })
 
@@ -224,9 +225,9 @@ describe('onload', () => {
         it('renders default styles', () => {
             const { getByTestId } = render(<TestComponent />)
 
-            expect(getByTestId('DatePicker.showBtn').props.style).toBe(globalStyles.datePickerContainer)
-            expect(getByTestId('DatePicker.calendarImg').props.style).toBe(globalStyles.datePickerImg)
-            expect(getByTestId('DatePicker.selectedDate').props.style).toBe(globalStyles.datePickerDate)
+            expect(getByTestId('DatePicker.showBtn').props.style).toBe(datePickerStyles.datePickerContainer)
+            expect(getByTestId('DatePicker.calendarImg').props.style).toBe(datePickerStyles.datePickerImg)
+            expect(getByTestId('DatePicker.selectedDate').props.style).toBe(datePickerStyles.datePickerDate)
         })
     })
 
@@ -270,7 +271,7 @@ describe('on post submit', () => {
             const titleErrMsg = getByTestId('Request.titleErrMsg')
 
             expect(queryAllByText('Please enter a title to your request').length).toBe(1)
-            expect(titleErrMsg.props.style).toBe(globalStyles.formErrorMsg)
+            expect(titleErrMsg.props.style).toBe(styles.formErrorMsg)
         })
 
         it('changes username label and text input\'s styles', async () => {
@@ -330,7 +331,7 @@ describe('on post submit', () => {
             const titleErrMsg = getByTestId('Request.titleErrMsg')
 
             expect(queryAllByText('Title should be at most 100 characters').length).toBe(1)
-            expect(titleErrMsg.props.style).toBe(globalStyles.formErrorMsg)
+            expect(titleErrMsg.props.style).toBe(styles.formErrorMsg)
         })
 
         it('changes username label and text input\'s styles', async () => {

@@ -1,4 +1,6 @@
-import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity, LogBox } from "react-native";
+import { View, Text, Image, TextInput, TouchableOpacity, LogBox } from "react-native";
+import styles from "../../styles/screens/postDetailsStyleSheet"
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { Button } from "react-native-paper";
 import { deletePost } from "../controllers/post";
@@ -6,7 +8,6 @@ import { useAlert } from "../context/Alert";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { FlashList } from "@shopify/flash-list";
 import {
     useFonts,
@@ -18,7 +19,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
-export const RequestDetailsScreen = ({ navigation }) => {
+export const OfferDetailsScreen = ({ navigation }) => {
     let route: RouteProp<{
         params: {
             title: string,
@@ -38,8 +39,14 @@ export const RequestDetailsScreen = ({ navigation }) => {
 
     const [message, setMessage] = useState("Hi " + route.params.username + ", is this still available?")
     const [inputHeight, setInputHeight] = useState(0)
+    const [alertMsg, setAlertMsg] = useState('')
 
     const sendMsg = () => {
+        if (!message) {
+            setAlertMsg("Please enter a message")
+            return
+        }
+
         const post = {
             title: route.params.title,
             images: route.params.imagesLink,
@@ -91,30 +98,37 @@ export const RequestDetailsScreen = ({ navigation }) => {
     }, [fontsLoaded])
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView testID="OffDet.container" style={styles.container}>
             <FlashList
                 renderItem={renderItem}
                 data={images}
                 horizontal={true}
                 estimatedItemSize={166}
+                testID="OffDet.imgsList"
             />
             <View>
-                <Text style={[globalStyles.H2, { paddingTop: 12 }]}>{route.params.title}</Text>
-
+                <Text testID="OffDet.title" style={[globalStyles.H2, { paddingTop: 12 }]}>{route.params.title}</Text>
                 {/* Your post */}
                 {user['username'] == route.params.username && <>
-                    <View style={styles.yourPost}>
-                        <View style={{ flexDirection: "row" }}>
+                    <View testID="OffDet.subContainer" style={styles.subContainer}>
+                        <View testID="OffDet.location" style={{ flexDirection: "row" }}>
                             <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                             {/* Placeholder postal code */}
-                            <Text style={globalStyles.Small2}>XXXXXX</Text>
+                            <Text testID="OffDet.locationText" style={globalStyles.Small2}>XXXXXX</Text>
                         </View>
-
                         {/* TODO: Implement edit posts */}
                         <View>
-                            <TouchableOpacity style={styles.secondaryBtn} onPress={() => { }}>
+                            <TouchableOpacity
+                                testID="OffDet.editBtn"
+                                style={[globalStyles.secondaryBtn, {
+                                    marginTop: 0,
+                                    width: 'auto',
+                                    padding: 10
+                                }]}
+                                onPress={() => { }}
+                            >
                                 <MaterialCommunityIcons name="pencil-box-outline" size={21} />
-                                <Text style={globalStyles.secondaryBtnLabel}>Edit</Text>
+                                <Text testID="OffDet.editBtnLabel" style={globalStyles.secondaryBtnLabel}>Edit</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -122,20 +136,29 @@ export const RequestDetailsScreen = ({ navigation }) => {
 
                 {/* Send message option if posted by other user */}
                 {user['username'] != route.params.username && <>
-                    <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
-                        <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
-                        {/* Placeholder distance away */}
-                        <Text style={globalStyles.Small2}>{1} km away</Text>
+                    <View testID="OffDet.subContainer" style={styles.subContainer}>
+                        <View testID="OffDet.location" style={styles.location}>
+                            <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
+                            {/* Placeholder distance away */}
+                            <Text testID="OffDet.distanceText" style={globalStyles.Small2}>{1} km away</Text>
+                        </View>
                     </View>
 
-                    <View style={styles.sendMessage}>
-                        <Text style={[globalStyles.H4, { padding: 12 }]}>Send a message</Text>
+                    <View testID="OffDet.sendMsgCont" style={styles.sendMessage}>
+                        <Text testID="OffDet.sendMsgLabel" style={[globalStyles.H4, { padding: 12 }]}>Send a message</Text>
                         <TextInput
+                            testID="OffDet.msgInput"
                             value={message}
-                            onChangeText={setMessage}
+                            onChangeText={newText => {
+                                setMessage(newText)
+                                setAlertMsg('')
+                            }}
+                            onChange={() => setAlertMsg('')}
                             placeholder={"Type a message"}
                             placeholderTextColor={Colors.midDark}
-                            style={[styles.inputText, { maxHeight: inputHeight }]}
+                            style={[styles.inputText,
+                            (alertMsg ? { maxHeight: inputHeight + 1, borderWidth: 1, borderColor: Colors.alert2 } :
+                                { maxHeight: inputHeight })]}
                             multiline={true}
                             numberOfLines={2}
                             maxLength={1024}
@@ -144,68 +167,75 @@ export const RequestDetailsScreen = ({ navigation }) => {
                                 setInputHeight(event.nativeEvent.contentSize.height);
                             }}
                         />
-                        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                            <TouchableOpacity style={styles.defaultBtn} onPress={sendMsg}>
-                                <Text style={globalStyles.defaultBtnLabel}>Send</Text>
+                        {alertMsg && <Text testID="OffDet.alertMsg" style={styles.alertMsg}>{alertMsg}</Text>}
+                        <View testID="OffDet.sendMsgBtnCont" style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+                            <TouchableOpacity
+                                testID="OffDet.sendMsgBtn"
+                                style={[globalStyles.defaultBtn, styles.defaultBtn]}
+                                onPress={sendMsg}
+                            >
+                                <Text testID="OffDet.sendMsgBtnLabel" style={globalStyles.defaultBtnLabel}>Send</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </>}
 
-                <View style={styles.information}>
-                    <Text style={[globalStyles.H4, { paddingBottom: 12, paddingTop: 20 }]}>Description</Text>
+                <View testID="OffDet.description" style={styles.information}>
+                    <Text testID="OffDet.discLabel" style={[globalStyles.H4, { paddingBottom: 12, paddingTop: 20 }]}>Description</Text>
                     <View style={{ paddingBottom: 12 }}>
-                        <Text style={globalStyles.Body}>
-                            {route.params.description == "" ? "No Description" : route.params.description}
+                        <Text testID="OffDet.discBody" style={globalStyles.Body}>
+                            {route.params.description ? route.params.description : "No Description"}
                         </Text>
                     </View>
                 </View>
-                <View style={styles.information}>
-                    <Text style={[globalStyles.H4, { paddingBottom: 12 }]}>Poster Information</Text>
-                    <View style={{ flexDirection: "row", marginRight: 12 }}>
+                <View testID="OffDet.posterInfo" style={styles.information}>
+                    <Text testID="OffDet.posterInfoLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Poster Information</Text>
+                    <View testID="OffDet.posterInfoCont" style={{ flexDirection: "row", marginRight: 12 }}>
                         <Ionicons name="person-circle-sharp" color="#B8B8B8" size={40} />
                         <View>
-                            <Text style={[
-                                globalStyles.H5,
-                                {
-                                    marginLeft: 3,
-                                    marginTop: 2
-                                }]}
+                            <Text
+                                testID="OffDet.posterUsername"
+                                style={[
+                                    globalStyles.H5,
+                                    {
+                                        marginLeft: 3,
+                                        marginTop: 2
+                                    }]}
                             >{route.params.username}</Text>
-                            <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
+                            <View testID="OffDet.locationDet" style={styles.location}>
                                 <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                                 {/* Placeholder postal code */}
-                                <Text style={globalStyles.Small2}>XXXXXX</Text>
+                                <Text testID="OffDet.locationDetText" style={globalStyles.Small2}>XXXXXX</Text>
                             </View>
                         </View>
                     </View>
                 </View>
-                <View style={styles.information}>
-                    <Text style={[globalStyles.H4, { paddingBottom: 12 }]}>Request Details</Text>
-                    <View style={{ flexDirection: "row" }}>
+                <View testID="OffDet.details" style={styles.information}>
+                    <Text testID="OffDet.detailsLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Offer Details</Text>
+                    <View testID="OffDet.detailsSub" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
-                            <Text style={[styles.Small1, { marginBottom: 8 }]}>Food category</Text>
-                            <Text style={[styles.Small1, { marginBottom: 8 }]}>Quantity</Text>
-                            <Text style={styles.Small1}>Dietary Requirements</Text>
+                            <Text testID="OffDet.detailCat" style={[globalStyles.Small1, styles.smallText]}>Food category</Text>
+                            <Text testID="OffDet.detailsQuant" style={[globalStyles.Small1, styles.smallText]}>Quantity</Text>
+                            <Text testID="OffDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary Requirements</Text>
                         </View>
                         {/* Temporary details values */}
                         <View>
-                            <Text style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
-                            <Text style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
-                            <Text style={[globalStyles.Small1]}>N/A</Text>
+                            <Text testID="OffDet.detailCatVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
+                            <Text testID="OffDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
+                            <Text testID="OffDet.detailsReqVal" style={globalStyles.Small1}>N/A</Text>
                         </View>
                     </View>
                 </View>
-                <View style={styles.information}>
-                    <Text style={[globalStyles.H4, { paddingBottom: 12 }]}>Meeting Preferences</Text>
-                    <View style={{ flexDirection: "row" }}>
+                <View testID="OffDet.meetPref" style={styles.information}>
+                    <Text testID="OffDet.meetPrefLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Meeting Preferences</Text>
+                    <View testID="OffDet.meetPrefSubCont" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
-                            <Text style={[styles.Small1, { marginBottom: 8 }]}>Pick Up or Delivery Preference</Text>
-                            <Text style={styles.Small1}>Postal Code</Text>
+                            <Text testID="OffDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick Up or Delivery Preference</Text>
+                            <Text testID="OffDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal Code</Text>
                         </View>
                         <View>
-                            <Text style={[globalStyles.Small1, { marginBottom: 8 }]}>Pick Up, Delivery</Text>
-                            <Text style={[globalStyles.Small1]}>XXXXXX</Text>
+                            <Text testID="OffDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>Pick Up, Delivery</Text>
+                            <Text testID="OffDet.meetPrefPostalVal" style={globalStyles.Small1}>XXXXXX</Text>
                         </View>
                     </View>
                 </View>
@@ -224,96 +254,4 @@ export const RequestDetailsScreen = ({ navigation }) => {
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 12,
-        // marginTop: 20,
-        // backgroundColor: Colors.Background,
-        backgroundColor: Colors.offWhite
-        // textAlign: 'center',
-    },
-    headerText: {
-        fontSize: 24,
-        padding: 8,
-    },
-    text: {
-        padding: 8,
-    },
-    inputText: {
-        flex: 1,
-        backgroundColor: Colors.white,
-        marginLeft: 12,
-        marginRight: 12,
-        padding: 10,
-        borderRadius: 5,
-        fontSize: 16,
-        height: 60,
-    },
-    messageInputView: {
-        backgroundColor: "#D3D3D3",
-        borderRadius: 30,
-        width: "90%",
-        height: 100,
-        // marginBottom: 8,
-        marginTop: 10,
-        marginLeft: 8,
-    },
-    defaultBtn: {
-        display: "flex",
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: "center",
-        width: "40%",
-        gap: 10,
-        position: 'relative',
-        marginTop: 11,
-        marginBottom: 16,
-        marginRight: 11,
-        height: 42,
-        borderRadius: 100,
-        backgroundColor: Colors.primary,
-    },
-    secondaryBtn: {
-        display: "flex",
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: "center",
-        // width: "15%",
-        padding: 10,
-        gap: 10,
-        position: 'relative',
-        // marginTop: 30,
-        height: 42,
-        borderRadius: 100,
-        backgroundColor: Colors.primaryMid,
-    },
-    sendMessage: {
-        backgroundColor: Colors.Background,
-        borderRadius: 10,
-    },
-    information: {
-        // padding: 12,
-        paddingTop: 12,
-        paddingBottom: 20,
-        // paddingBottom: 8,
-        paddingRight: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.midLight
-    },
-    Small1: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        color: Colors.midDark,
-        marginBottom: 8
-    },
-    yourPost: {
-        flexDirection: "row",
-        marginTop: 4,
-        // marginBottom: 12,
-        justifyContent: "space-between",
-        alignItems: "center",
-    }
-})
-
-export default RequestDetailsScreen
+export default OfferDetailsScreen
