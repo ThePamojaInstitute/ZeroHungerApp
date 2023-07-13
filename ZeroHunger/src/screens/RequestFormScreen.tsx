@@ -68,36 +68,31 @@ export const RequestFormScreen = ({ navigation }) => {
         } else if (loading) {
             return
         }
-        
-      
-    
+
         setLoading(true)
         try {
-            var imageURL = await handleImageUpload().then
-            {
-                console.log(imageURL);
-            }
-            
-            createPost({
-                postData: {
-                    title: title,
-                    images: "test",
-                    postedBy: user['user_id'],
-                    postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
-                    description: desc,
-                },
-                postType: 'r'
-            }).then(res => {
-                if (res.msg === "success") {
-                    alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
-                    navigation.navigate('HomeScreen')
-                } else if (res.msg === "failure") {
-                    alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
-                } else {
-                    // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
-                    setErrMsg(res.msg ? res.msg : 'An error occured!')
-                }
-            }).finally(() => setLoading(false))
+            handleImageUpload().then(imageURL => {
+                createPost({
+                    postData: {
+                        title: title,
+                        images: imageURL,
+                        postedBy: user['user_id'],
+                        postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
+                        description: desc,
+                    },
+                    postType: 'r'
+                }).then(res => {
+                    if (res.msg === "success") {
+                        alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
+                        navigation.navigate('HomeScreen')
+                    } else if (res.msg === "failure") {
+                        alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+                    } else {
+                        // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                        setErrMsg(res.msg ? res.msg : 'An error occured!')
+                    }
+                }).finally(() => setLoading(false))
+            })
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
         }
@@ -107,33 +102,24 @@ export const RequestFormScreen = ({ navigation }) => {
     //https://stackoverflow.com/questions/42521679/how-can-i-upload-a-photo-with-expo
     // function handleImageUpload()
     // { //test function for image uploads
-     
+
     //     imageString = imageString.substring(imageString.indexOf(",") + 1);
     //     axiosInstance.post("posts/testBlobImage", { "IMAGE":imageString}).then((response) => {
     //      return (response.data).toString()
     //      })
     //    //  return "FailedUpload"
     // }
-    async function handleImageUpload()  {
+    async function handleImageUpload() {
         var imageString = images[0];
         imageString = imageString.substring(imageString.indexOf(",") + 1);
-        axiosInstance.post("posts/testBlobImage", { "IMAGE":imageString}).then(
-            (response) => {
-                var result = response.data;
-                console.log('Processing Request');
-                console.log("Image Uploaded to: " + result.toString());
-                return (result.toString());
-            },
-            (error) => {
-                console.log(error);
-                return (error);
-            }
-        );
+
+        const res = await axiosInstance.post("posts/testBlobImage", { "IMAGE": imageString })
+        var result = res.data;
+
+        console.log('Processing Request');
+        console.log("Image Uploaded to: " + result);
+        return result
     }
-
-    
-    
-
 
     return (
         <ScrollView testID="Request.formContainer" style={globalStyles.formContainer}>
