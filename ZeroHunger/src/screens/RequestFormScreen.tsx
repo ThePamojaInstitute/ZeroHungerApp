@@ -33,6 +33,7 @@ export const RequestFormScreen = ({ navigation }) => {
 
     const [title, setTitle] = useState("")
     const [images, setImages] = useState([])
+    const [imgStr, setImageStrs] = useState("")
     const [desc, setDesc] = useState("")
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
@@ -67,13 +68,20 @@ export const RequestFormScreen = ({ navigation }) => {
         } else if (loading) {
             return
         }
-
+        
+      
+    
         setLoading(true)
         try {
+            var imageURL = await handleImageUpload().then
+            {
+                console.log(imageURL);
+            }
+            
             createPost({
                 postData: {
                     title: title,
-                    images: images,
+                    images: "test",
                     postedBy: user['user_id'],
                     postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
                     description: desc,
@@ -95,13 +103,36 @@ export const RequestFormScreen = ({ navigation }) => {
         }
     }
 
+
     //https://stackoverflow.com/questions/42521679/how-can-i-upload-a-photo-with-expo
-    const handleImageUpload = () => { //test function for image uploads
+    // function handleImageUpload()
+    // { //test function for image uploads
+     
+    //     imageString = imageString.substring(imageString.indexOf(",") + 1);
+    //     axiosInstance.post("posts/testBlobImage", { "IMAGE":imageString}).then((response) => {
+    //      return (response.data).toString()
+    //      })
+    //    //  return "FailedUpload"
+    // }
+    async function handleImageUpload()  {
         var imageString = images[0];
         imageString = imageString.substring(imageString.indexOf(",") + 1);
-        console.log(imageString);
-        axiosInstance.post("posts/testBlobImage", { "IMAGE":imageString}); 
-    };
+        axiosInstance.post("posts/testBlobImage", { "IMAGE":imageString}).then(
+            (response) => {
+                var result = response.data;
+                console.log('Processing Request');
+                console.log("Image Uploaded to: " + result.toString());
+                return (result.toString());
+            },
+            (error) => {
+                console.log(error);
+                return (error);
+            }
+        );
+    }
+
+    
+    
 
 
     return (
@@ -176,5 +207,4 @@ export const RequestFormScreen = ({ navigation }) => {
         </ScrollView>
     )
 }
-
 export default RequestFormScreen

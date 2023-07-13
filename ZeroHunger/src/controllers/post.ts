@@ -2,10 +2,12 @@ import { axiosInstance } from "../../config";
 import { Char } from "../../types";
 
 
+
+
 export const createPost = async (obj: {
     postData: {
         title: string
-        images: string[],
+        images: string,
         postedBy: Number,
         postedOn: Number,
         description: string
@@ -19,6 +21,7 @@ export const createPost = async (obj: {
     }
 
     try {
+
         const res = await axiosInstance.post('/posts/createPost', obj)
         if (res.status === 201) {
             return { msg: "success", res: res.data }
