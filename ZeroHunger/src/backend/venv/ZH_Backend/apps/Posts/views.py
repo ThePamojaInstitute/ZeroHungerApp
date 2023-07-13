@@ -123,9 +123,10 @@ class ImageUploader(APIView):
             # )
 
             connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
-            container_client = ContainerClient.from_connection_string(conn_str=connection_string, container_name=file_upload_name)
-            container_client.create_container()
-            blob_service_client = BlobClient.from_connection_string(conn_str=connection_string, container_name="testcontainer", blob_name=(file_upload_name))
+            container_client = ContainerClient.from_connection_string(conn_str=connection_string, container_name="post-images")
+            if not container_client.exists():
+                container_client.create_container()
+            blob_service_client = BlobClient.from_connection_string(conn_str=connection_string, container_name="post-images", blob_name=(file_upload_name))
             imageInBase64 = request.data['IMAGE']
             blob_service_client.upload_blob(base64.decodebytes(bytes(imageInBase64, 'utf-8')))
             print(blob_service_client.url)
