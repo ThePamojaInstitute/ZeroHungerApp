@@ -8,6 +8,8 @@ import { createPost } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import { axiosInstance } from "../../config";
+import { handleImageUpload } from "../controllers/post";
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -31,10 +33,12 @@ export const OfferFormScreen = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
 
     const [title, setTitle] = useState("")
-    const [images, setImages] = useState("")
+    const [images, setImages] = useState([])
     const [desc, setDesc] = useState("")
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
+
+    
 
     useEffect(() => {
         if (!loaded) return
@@ -69,30 +73,34 @@ export const OfferFormScreen = ({ navigation }) => {
 
         setLoading(true)
         try {
-            createPost({
-                postData: {
-                    title: title,
-                    images: images,
-                    postedBy: user['user_id'],
-                    postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
-                    description: desc,
-                },
-                postType: 'o'
-            }).then(res => {
-                if (res.msg === "success") {
-                    alert!({ type: 'open', message: 'Offer posted successfully!', alertType: 'success' })
-                    navigation.navigate('HomeScreen')
-                } else if (res.msg === "failure") {
-                    alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
-                } else {
-                    // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
-                    setErrMsg(res.msg ? res.msg : 'An error occured!')
-                }
-            }).finally(() => setLoading(false))
+            handleImageUpload(images).then(imageURL => {
+                createPost({
+                    postData: {
+                        title: title,
+                        images: imageURL,
+                        postedBy: user['user_id'],
+                        postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
+                        description: desc,
+                    },
+                    postType: 'o'
+                }).then(res => {
+                    if (res.msg === "success") {
+                        alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
+                        navigation.navigate('HomeScreen')
+                    } else if (res.msg === "failure") {
+                        alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+                    } else {
+                        // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                        setErrMsg(res.msg ? res.msg : 'An error occured!')
+                    }
+                }).finally(() => setLoading(false))
+            })
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
         }
     }
+
+   
 
     return (
         <ScrollView testID="Offer.formContainer" style={globalStyles.formContainer}>
@@ -124,7 +132,7 @@ export const OfferFormScreen = ({ navigation }) => {
                         <Text testID="Offer.photoLabel" style={globalStyles.formTitleText}>Photo</Text>
                         <Text testID="Offer.photoDesc" style={globalStyles.formDescText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
                     </View>
-                    <ImagePicker setImages={setImages} />
+                    <ImagePicker images={images} setImages={setImages} />
                     <View>
                         <Text testID="Offer.categoryLabel" style={globalStyles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
                         <Text testID="Offer.categoryDesc" style={globalStyles.formDescText}>Please select all the food category type that applies</Text>

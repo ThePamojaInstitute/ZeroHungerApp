@@ -7,6 +7,7 @@ import Quantity from "../components/Quantity";
 import { createPost } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
+import { handleImageUpload } from "../controllers/post";
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -71,7 +72,7 @@ export const RequestFormScreen = ({ navigation }) => {
 
         setLoading(true)
         try {
-            handleImageUpload().then(imageURL => {
+            handleImageUpload(images).then(imageURL => {
                 createPost({
                     postData: {
                         title: title,
@@ -109,17 +110,7 @@ export const RequestFormScreen = ({ navigation }) => {
     //      })
     //    //  return "FailedUpload"
     // }
-    async function handleImageUpload() {
-        var imageString = images[0];
-        imageString = imageString.substring(imageString.indexOf(",") + 1);
-
-        const res = await axiosInstance.post("posts/testBlobImage", { "IMAGE": imageString })
-        var result = res.data;
-
-        console.log('Processing Request');
-        console.log("Image Uploaded to: " + result);
-        return result
-    }
+   
 
     return (
         <ScrollView testID="Request.formContainer" style={globalStyles.formContainer}>
@@ -152,7 +143,6 @@ export const RequestFormScreen = ({ navigation }) => {
                         <Text testID="Request.photoDesc" style={globalStyles.formDescText}>Optional: Add photo(s) to help community members understand what you are looking for!</Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
-                    <Button title="Test Image Upload" onPress={handleImageUpload} />
                     <View>
                         <Text testID="Request.categoryLabel" style={globalStyles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
                         <Text testID="Request.categoryDesc" style={globalStyles.formDescText}>Please select all the food category type that applies</Text>

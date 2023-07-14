@@ -2,7 +2,17 @@ import { axiosInstance } from "../../config";
 import { Char } from "../../types";
 
 
+export async function handleImageUpload(images) {
+    var imageString = images[0];
+    imageString = imageString.substring(imageString.indexOf(",") + 1);
 
+    const res = await axiosInstance.post("posts/testBlobImage", { "IMAGE": imageString })
+    var result = res.data;
+
+    console.log('Processing Request');
+    console.log("Image Uploaded to: " + result);
+    return result
+}
 
 export const createPost = async (obj: {
     postData: {
