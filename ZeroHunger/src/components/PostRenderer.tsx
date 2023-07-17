@@ -7,6 +7,16 @@ import { FlashList } from "@shopify/flash-list";
 import { deletePost } from "../controllers/post";
 import { useFocusEffect } from "@react-navigation/native";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+const { 
+    BlobServiceClient, 
+    generateAccountSASQueryParameters, 
+    AccountSASPermissions, 
+    AccountSASServices,
+    AccountSASResourceTypes,
+    StorageSharedKeyCredential,
+    SASProtocol 
+} = require('@azure/storage-blob');
+
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -148,15 +158,47 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         setTimeout(() => setRefreshing(false), 2500)
     }
 
-    // const handleDelete = (postId: Number) => {
-    //     deletePost(type, postId, accessToken).then(res => {
-    //         if (res.msg == "success") {
-    //             setArray(array.filter(item => item.postId != postId))
-    //             alert!({ type: 'open', message: res.res, alertType: 'success' })
-    //         } else {
-    //             alert!({ type: 'open', message: res.res, alertType: 'error' })
-    //         }
-    //     })
+    const handleDelete = (postId: Number) => {
+        deletePost(type, postId, accessToken).then(res => {
+            if (res.msg == "success") {
+                setArray(array.filter(item => item.postId != postId))
+                alert!({ type: 'open', message: res.res, alertType: 'success' })
+            } else {
+                alert!({ type: 'open', message: res.res, alertType: 'error' })
+            }
+        })
+    }
+
+    // const constants = {
+    //     accountName:
+    //     accountKey: 
+    // };
+    // const sharedKeyCredential = new StorageSharedKeyCredential(
+    //     constants.accountName,
+    //     constants.accountKey
+    // );
+
+    // async function createAccountSas() {
+
+    //     const sasOptions = {
+    
+    //         services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
+    //         resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
+    //         permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
+    //         protocol: SASProtocol.Https,
+    //         startsOn: new Date(),
+    //         expiresOn: new Date(new Date().valueOf() + (10 * 60 * 1000)),   // 10 minutes
+    //     };
+    
+    //     // const sasToken = generateAccountSASQueryParameters(
+    //     //     sasOptions,
+    //     //     sharedKeyCredential 
+    //     // ).toString();
+    
+    //     console.log(`sasToken = '${sasToken}'\n`);
+    
+    //     // prepend sasToken with `?`
+    //     return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
     // }
 
     const handlePress = (
@@ -194,15 +236,19 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                 array,
                 setArray
             })
+          
     }
 
+
     const Post = ({ title, imagesLink, postedOn, postedBy, description, postId, username }) => {
+
+       // var ImageBlob = URL.createObjectURL(imagesLink)
+        
         return (
             <GestureRecognizer
                 onSwipeRight={() => setShowRequests(true)}
                 onSwipeLeft={() => setShowRequests(false)}
-                style={{ backgroundColor: Colors.Background }}
-            >
+                style={{ backgroundColor: Colors.Background }}>
                 <TouchableOpacity style={styles.container}
                     onPress={() => handlePress(
                         title,
@@ -212,15 +258,17 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                         description,
                         postId,
                         username)}
-                    activeOpacity={0.6}
-                >
+                    activeOpacity={0.6}> 
                     <Image
                         style={styles.image}
                         source={{
-                            uri:
-                                imagesLink ?
-                                    imagesLink :
-                                    "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
+                            uri: imagesLink,
+                            headers: {
+
+                                Authorization: " SharedKey myaccount:Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
+                                
+                                
+                            },
                         }}
                     />
                     <View style={styles.subContainer}>
