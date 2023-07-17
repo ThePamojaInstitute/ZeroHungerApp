@@ -6,7 +6,18 @@ import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
-import { createPostObj, deletePost, isJson } from "../controllers/post";
+import { deletePost } from "../controllers/post";
+import { useFocusEffect } from "@react-navigation/native";
+const { 
+    BlobServiceClient, 
+    generateAccountSASQueryParameters, 
+    AccountSASPermissions, 
+    AccountSASServices,
+    AccountSASResourceTypes,
+    StorageSharedKeyCredential,
+    SASProtocol 
+} = require('@azure/storage-blob');
+
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -88,6 +99,38 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
             }
         })
     }
+
+    // const constants = {
+    //     accountName:
+    //     accountKey: 
+    // };
+    // const sharedKeyCredential = new StorageSharedKeyCredential(
+    //     constants.accountName,
+    //     constants.accountKey
+    // );
+
+    // async function createAccountSas() {
+
+    //     const sasOptions = {
+    
+    //         services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
+    //         resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
+    //         permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
+    //         protocol: SASProtocol.Https,
+    //         startsOn: new Date(),
+    //         expiresOn: new Date(new Date().valueOf() + (10 * 60 * 1000)),   // 10 minutes
+    //     };
+    
+    //     // const sasToken = generateAccountSASQueryParameters(
+    //     //     sasOptions,
+    //     //     sharedKeyCredential 
+    //     // ).toString();
+    
+    //     console.log(`sasToken = '${sasToken}'\n`);
+    
+    //     // prepend sasToken with `?`
+    //     return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
+    // }
 
     const handlePress = (
         title: string,
@@ -195,20 +238,28 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                         description,
                         postId,
                         username)}
-                    />
-                        }}
-                            },
-                                
-                                Authorization: " SharedKey myaccount:Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
-
-                            headers: {
-                                
-                            uri: imagesLink,
-                        source={{
-                        style={styles.image}
+                    activeOpacity={0.6}> 
                     <Image
+                        style={styles.image}
+                        source={{
+                            uri: imagesLink,
+                            headers: {
+                             //   Authorization: " SharedKey myaccount:Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
+                            },
+                        }}
+                    />
+                    <View style={styles.subContainer}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={globalStyles.H4}>{title}</Text>
+                            <TouchableOpacity style={{ marginLeft: 'auto' }}>
+                                <Ionicons
+                                    name='ellipsis-horizontal'
+                                    style={styles.postEllipsis}
+                                    width={20}
+                                    height={12} />
+                            </TouchableOpacity>
                     activeOpacity={0.6}
-                >
+                    </View> </View>
                     <View style={{ backgroundColor: Colors.Background }}>
                         <Image
                             testID="Posts.Img"

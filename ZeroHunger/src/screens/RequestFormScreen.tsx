@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ScrollView, TextInput, TouchableOpacity, Text, View, GestureResponderEvent } from "react-native";
 import styles from "../../styles/screens/postFormStyleSheet"
 import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent, Button } from "react-native";
 import ImagePicker from "../components/ImagePicker";
@@ -81,7 +80,7 @@ export const RequestFormScreen = ({ navigation }) => {
                         title: title,
                         images: imageURL,
                         postedBy: user['user_id'],
-                        postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
+                        postedOn:moment(moment.now()).format('YYYY-MM-DD HH:mm:SS'), // converts time to unix timestamp
                         description: desc,
                     },
                     postType: 'r'

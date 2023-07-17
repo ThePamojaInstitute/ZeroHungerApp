@@ -31,7 +31,7 @@ export const createPost = async (obj: {
     }
 
     try {
-
+        console.log("Creating Post!" + obj.postData.postedOn)
         const res = await axiosInstance.post('/posts/createPost', obj)
         if (res.status === 201) {
             return { msg: "success", res: res.data }

@@ -9,7 +9,6 @@ import Quantity from "../components/Quantity";
 import { createPost } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { axiosInstance } from "../../config";
 import { handleImageUpload } from "../controllers/post";
 import {
@@ -82,7 +81,7 @@ export const OfferFormScreen = ({ navigation }) => {
                         title: title,
                         images: imageURL,
                         postedBy: user['user_id'],
-                        postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
+                        postedOn:moment(moment.now()).format('YYYY-MM-DD HH:mm:SS'), // converts time to unix timestamp
                         description: desc,
                     },
                     postType: 'o'
