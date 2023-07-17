@@ -15,6 +15,8 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import GestureRecognizer from 'react-native-swipe-gestures';
+import useFetchPosts from "../hooks/useFetchPosts";
+import { useIsFocused } from '@react-navigation/native';
 
 export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     const [loaded, setLoaded] = useState(false)
@@ -32,117 +34,44 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     const { dispatch: alert } = useAlert()
     const { user, accessToken } = useContext(AuthContext);
 
-    const [noPosts, setNoPosts] = useState(false)
-    const [postIndex, setPostIndex] = useState(0)
-    const [array, setArray] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
-    const [endReached, setEndReached] = useState(false)
-    const [requestsLength, setRequestsLength] = useState(0)
-    const [offersLength, setOffersLength] = useState(0)
     const [refreshing, setRefreshing] = useState(false)
-    const [firstLoad, setFirstLoad] = useState(true)
 
-    const fetchLengths = async () => {
-        const res = await axiosInstance.get("posts/requestPostsForFeed")
-        if (res.data["r"] !== requestsLength) setRequestsLength(res.data["r"])
-        else if (res.data["o"] !== offersLength) setOffersLength(res.data["o"])
+    const isFocused = useIsFocused();
+
+    const {
+        data,
+        isLoading,
+        isError,
+        hasNextPage,
+        fetchNextPage,
+        refetch
+    } = useFetchPosts("requestPostsForFeed", accessToken, type, true)
+
+    // on navigation
+    useEffect(() => {
+        if (isFocused) {
+            refetch()
+        }
+    }, [isFocused])
+
+    if (isLoading) return <ActivityIndicator animating size="large" color={Colors.primary} />
+
+    if (isError) return <Text>An error occurred while fetching data</Text>
+
+    const flattenData = data.pages.flatMap((page) => page.data)
+
+    if (flattenData.length === 0) {
+        return <Text
+            testID="Posts.noPostsText"
+            style={styles.noPostsText}
+        >No {type === "r" ? 'requests' : 'offers'} available</Text>
     }
 
-    // on component mount
-    useEffect(() => {
-        if (!user) return
-        fetchLengths()
-    }, [])
-
-    useEffect(() => {
-        if (type === "r" &&
-            (postIndex < requestsLength || postIndex > requestsLength)) {
-            setPostIndex(requestsLength)
-        } else if (type === "o" &&
-            (postIndex < offersLength || postIndex > offersLength)) {
-            setPostIndex(offersLength)
+    const loadNext = () => {
+        if (hasNextPage) {
+            fetchNextPage();
         }
-    }, [requestsLength, offersLength])
-
-    const loadNumPosts = 5 //Change if number of posts to load changes
-
-    const loadPosts = async () => {
-        if (endReached) return
-
-        const json = JSON.stringify({
-            postIndex: postIndex
-            , postType: type
-        })
-        await axiosInstance.post("posts/requestPostsForFeed", json, {
-        }).then((res) => {
-            if (((isJson(res.data) && JSON.parse(res.data).length === 0) ||
-                (Object.keys(res.data).length === 0))) {
-                if (postIndex === 0) {
-                    console.log('No posts available')
-                    setNoPosts(true)
-                } else if (postIndex > 0) {
-                    console.log('All posts displayed')
-                    setEndReached(true)
-                }
-            }
-            else {
-                setIsLoading(true)
-                try {
-                    setPostIndex((postIndex + loadNumPosts))
-
-                    let data: object[]
-                    if (isJson(res.data)) data = JSON.parse(res.data)
-                    else if (res.data) data = res.data
-                    else return
-
-                    data.forEach((post: object) => {
-                        const newPost = createPostObj(post['fields'], post['pk'], post['username'])
-                        setArray(arr => [...arr, newPost])
-                    })
-                }
-                catch (e) {
-                    console.log(e)
-                }
-            }
-        }).finally(() => {
-            setFirstLoad(false)
-            setIsLoading(false)
-        })
     }
-
-    useEffect(() => {
-        if ((type === "r" && (requestsLength < array.length) && requestsLength != 0) ||
-            (type === "o" && (offersLength < array.length) && offersLength != 0)) {
-            array.pop()
-        }
-    }, [array])
-
-    useEffect(() => {
-        if ((type === "r" && requestsLength > 0 && endReached) ||
-            (type === "o" && offersLength > 0 && endReached)) {
-            loadPosts()
-        }
-    }, [postIndex])
-
-    const refresh = () => {
-        if (refreshing) return
-
-        setRefreshing(true)
-        setArray([])
-        setPostIndex(0)
-        setTimeout(() => setRefreshing(false), 2500)
-    }
-
-    // const handleDelete = (postId: Number) => {
-    //     deletePost(type, postId, accessToken).then(res => {
-    //         if (res.msg == "success") {
-    //             setArray(array.filter(item => item.postId != postId))
-    //             alert!({ type: 'open', message: res.res, alertType: 'success' })
-    //         } else {
-    //             alert!({ type: 'open', message: res.res, alertType: 'error' })
-    //         }
-    //     })
-    // }
 
     const handlePress = (
         title: string,
@@ -164,8 +93,6 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                 description,
                 postId,
                 username,
-                array,
-                setArray
             })
             :
             navigation.navigate('OfferDetailsScreen', {
@@ -176,8 +103,6 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                 description,
                 postId,
                 username,
-                array,
-                setArray
             })
     }
 
@@ -250,18 +175,18 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     }
 
     const renderItem = ({ item }) => {
-        if (!item || !item.postId) return
+        if (!item || !item.pk) return
 
         return (
             <Post
-                title={item.title}
-                imagesLink={item.imagesLink}
-                postedOn={item.postedOn}
-                postedBy={item.postedBy}
-                description={item.description}
-                postId={item.postId}
+                title={item['fields'].title}
+                imagesLink={item['fields'].imagesLink}
+                postedOn={item['fields'].postedOn}
+                postedBy={item['fields'].postedBy}
+                description={item['fields'].description}
+                postId={item.pk}
                 username={item.username}
-                key={item.postId}
+                key={item.pk}
             />
         )
     }
@@ -271,32 +196,23 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
             {!loaded && <Text>Loading...</Text>}
             {loaded &&
                 <>
-                    {noPosts && <Text testID="Posts.noPostsText" style={styles.noPostsText}>No {type === "r" ? 'requests' : 'offers'} available</Text>}
                     {user &&
                         <>
-                            {
-                                <FlashList
-                                    testID="Posts.list"
-                                    renderItem={renderItem}
-                                    data={array}
-                                    onEndReached={loadPosts}
-                                    onEndReachedThreshold={0.7}
-                                    showsVerticalScrollIndicator={false}
-                                    showsHorizontalScrollIndicator={false}
-                                    estimatedItemSize={125}
-                                    refreshControl={
-                                        <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[Colors.primary, Colors.primaryLight]} />
-                                    }
-                                    ListEmptyComponent={() => {
-                                        if (firstLoad) {
-                                            return <ActivityIndicator animating size="large" color={Colors.primary} />
-                                        }
-                                    }}
-                                    extraData={(type === "r" ? requestsLength : offersLength)}
-                                />}
+                            <FlashList
+                                testID="Posts.list"
+                                renderItem={renderItem}
+                                data={flattenData}
+                                onEndReached={loadNext}
+                                onEndReachedThreshold={0.7}
+                                showsVerticalScrollIndicator={false}
+                                showsHorizontalScrollIndicator={false}
+                                estimatedItemSize={125}
+                                refreshControl={
+                                    <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
+                                }
+                            />
                         </>
                     }
-                    {!endReached && isLoading && <Text>Loading...</Text>}
                 </>
             }
         </>
