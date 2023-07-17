@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { DrawerActions } from '@react-navigation/native';
-import { View, Text, TouchableOpacity, StyleSheet, GestureResponderEvent } from "react-native"
+import { View, Text, TouchableOpacity, StyleSheet, GestureResponderEvent, Image } from "react-native"
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from "@react-navigation/drawer";
 import BottomTab from "./BottomTab";
 import {
@@ -77,8 +77,11 @@ const CustomDrawer = (props) => {
                 />
                 <DrawerItem
                     label={() => <Text style={globalStyles.Body}>Notifications Settings</Text>}
-                    icon={() => <Ionicons name="md-cog-outline" size={24} />}
-                    onPress={() => { }}
+                    // icon={() => <Ionicons name="md-cog-outline" size={24} />}
+                    icon={() => <Image 
+                        style={{height: 20, width: 20, marginLeft: 3}}
+                        source={require('../../assets/notifications_settings_icon.png')}/>}
+                    onPress={() => { props.navigation.navigate("NotificationsSettingsScreen") }}
                 />
                 <DrawerItem
                     label={() => <Text style={globalStyles.Body}>FAQ</Text>}
