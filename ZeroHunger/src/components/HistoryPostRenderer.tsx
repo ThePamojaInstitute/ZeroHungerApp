@@ -22,7 +22,14 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
     const [modalVisible, setModalVisible] = useState(false)
     const [selectedPost, setSelectedPost] = useState(0)
 
-    const { data, isLoading, isError, hasNextPage, fetchNextPage, refetch } = useFetchPosts(accessToken, type, orderByNewest)
+    const {
+        data,
+        isLoading,
+        isError,
+        hasNextPage,
+        fetchNextPage,
+        refetch
+    } = useFetchPosts("postsHistory", accessToken, type, orderByNewest)
 
     useEffect(() => {
         refetch()

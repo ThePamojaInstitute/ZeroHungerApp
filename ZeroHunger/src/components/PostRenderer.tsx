@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, RefreshControl, ActivityIndicator } from "react-native";
+import { View, Text, Image, TouchableOpacity, RefreshControl, ActivityIndicator, Dimensions } from "react-native";
 import styles from "../../styles/components/postRendererStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { axiosInstance } from "../../config";
@@ -13,10 +13,13 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
-import { Entypo, Ionicons } from '@expo/vector-icons';
+import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import useFetchPosts from "../hooks/useFetchPosts";
 import { useIsFocused } from '@react-navigation/native';
+import Modal from 'react-native-modal';
+import bottomTabStyles from "../../styles/components/bottomTabStyleSheet";
+import historyStyles from "../../styles/screens/postsHistory";
 
 export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     const [loaded, setLoaded] = useState(false)
@@ -35,6 +38,8 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     const { user, accessToken } = useContext(AuthContext);
 
     const [refreshing, setRefreshing] = useState(false)
+    const [modalVisible, setModalVisible] = useState(false)
+    const [selectedPost, setSelectedPost] = useState(0)
 
     const isFocused = useIsFocused();
 
@@ -73,6 +78,17 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         }
     }
 
+    const handleDelete = (postId: Number) => {
+        deletePost(type, postId, accessToken).then(res => {
+            if (res.msg == "success") {
+                refetch()
+                alert!({ type: 'open', message: res.res, alertType: 'success' })
+            } else {
+                alert!({ type: 'open', message: res.res, alertType: 'error' })
+            }
+        })
+    }
+
     const handlePress = (
         title: string,
         imagesLink: string,
@@ -105,6 +121,59 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                 username,
             })
     }
+
+    const ModalComponent = () => (
+        <View>
+            <Modal
+                testID="Bottom.postNavModal"
+                isVisible={modalVisible}
+                animationIn="slideInUp"
+                backdropOpacity={0.5}
+                onBackButtonPress={() => setModalVisible(!modalVisible)}
+                onBackdropPress={() => setModalVisible(!modalVisible)}
+                onSwipeComplete={() => setModalVisible(!modalVisible)}
+                swipeDirection={['down']}
+                style={[bottomTabStyles.modal,
+                { marginTop: Dimensions.get('window').height * 0.85 }]}
+            >
+                <View style={{ marginBottom: 25 }}>
+                    <View
+                        testID="Bottom.postNavModalCont"
+                        style={bottomTabStyles.modalContent}>
+                        <Text
+                            testID="Bottom.postNavModalLabel"
+                            style={[globalStyles.H3, { alignSelf: 'center' }]}
+                        >Ticket options</Text>
+                    </View>
+                    <TouchableOpacity
+                        testID="Bottom.postNavModalClose"
+                        style={bottomTabStyles.modalClose}
+                        onPress={() => setModalVisible(!modalVisible)}
+                    >
+                        <Ionicons name="close" size={30} />
+                    </TouchableOpacity>
+                </View>
+                <View style={{ alignItems: "flex-start", gap: 12 }}>
+                    <TouchableOpacity
+                        style={historyStyles.modalItem}
+                        onPress={() => {
+                            handleDelete(selectedPost)
+                            setModalVisible(false)
+                        }}
+                        testID="Bottom.postNavModalReqBtn"
+                    >
+                        <MaterialCommunityIcons
+                            name="trash-can-outline"
+                            size={24}
+                            color="black"
+                            style={{ marginRight: 10 }}
+                        />
+                        <Text style={globalStyles.Body}>Delete ticket</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+        </View>
+    )
 
     const Post = ({ title, imagesLink, postedOn, postedBy, description, postId, username }) => {
         return (
@@ -140,9 +209,17 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                     <View testID="Posts.subContainer" style={styles.subContainer}>
                         <View testID="Posts.contentCont" style={{ flexDirection: 'row' }}>
                             <Text testID="Posts.title" style={[globalStyles.H4, { marginLeft: 10, marginBottom: 5 }]}>{title}</Text>
-                            <TouchableOpacity testID="Posts.ellipsis" style={{ marginLeft: 'auto' }}>
-                                <Entypo name="dots-three-horizontal" size={16} color="black" style={styles.postEllipsis} />
-                            </TouchableOpacity>
+                            {user['username'] === username &&
+                                <TouchableOpacity
+                                    testID="Posts.ellipsis"
+                                    style={{ marginLeft: 'auto' }}
+                                    onPress={() => {
+                                        setSelectedPost(postId)
+                                        setModalVisible(true)
+                                    }}
+                                >
+                                    <Entypo name="dots-three-horizontal" size={16} color="black" style={styles.postEllipsis} />
+                                </TouchableOpacity>}
                         </View>
                         <View style={{ marginTop: 3, marginLeft: 11 }}>
                             <Text testID="Posts.username" style={globalStyles.Small1}>{username}</Text>
@@ -156,19 +233,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                             {/* Placeholder need by date */}
                             <Text testID="Posts.tagLabel" style={styles.postTagLabel}>Need in {3} days</Text>
                         </View>
-                        {/* <Text style={styles.quantityText}>Quantity: </Text> */}
                     </View>
-                    {/* <View> */}
-                    {/* <TouchableOpacity>
-                        <Ionicons name='ellipsis-horizontal' style={styles.postEllipsis} width={20} />
-                    </TouchableOpacity> */}
-                    {/* <Text style={styles.postedOnText}>Posted On: {postedOn}</Text> */}
-                    {/* {user && user['username'] === username &&
-                        <Button buttonColor="red"
-                            mode="contained"
-                            onPress={() => handleDelete(postId)}
-                        >Delete Post</Button>} */}
-                    {/* </View> */}
                 </TouchableOpacity>
             </GestureRecognizer>
         )
@@ -211,6 +276,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                                     <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
                                 }
                             />
+                            <ModalComponent />
                         </>
                     }
                 </>
