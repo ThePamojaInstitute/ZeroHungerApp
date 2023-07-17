@@ -2,7 +2,6 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import * as React from 'react'
 import { TouchableOpacity } from "react-native"
-import Feedscreen from './src/screens/FeedScreen';
 import LoginScreen from './src/screens/Loginscreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
 import LandingPageScreen from './src/screens/HomeScreen';
@@ -24,6 +23,10 @@ import { Colors } from './styles/globalStyleSheet';
 import { Ionicons } from '@expo/vector-icons'
 import BottomTab from './src/components/BottomTab';
 import DrawerTab from './src/components/DrawerTab';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+
+const queryClient = new QueryClient();
 
 const Stack = createNativeStackNavigator();
 
@@ -31,12 +34,13 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <AuthContextProvider>
-        <NotificationContextProvider>
-          <NavigationContainer>
-            <AlertProvider>
-              <>
-                <Stack.Navigator>
-                  {/* <Stack.Screen
+        <QueryClientProvider client={queryClient}>
+          <NotificationContextProvider>
+            <NavigationContainer>
+              <AlertProvider>
+                <>
+                  <Stack.Navigator>
+                    {/* <Stack.Screen
                     name="LandingPageScreenTemp"
                     component={LandingPageScreen}
                     options={{
@@ -104,23 +108,24 @@ export default function App() {
                     }}
                   /> */}
 
-                  {/* <Stack.Screen
+                    {/* <Stack.Screen
                     name="BottomTab"
                     component={BottomTab}
                     options={{headerShown: false}}
                   /> */}
-                  <Stack.Screen
-                    name="ZeroHunger"
-                    component={DrawerTab}
-                    options={{headerShown: false}}
-                  />
+                    <Stack.Screen
+                      name="ZeroHunger"
+                      component={DrawerTab}
+                      options={{ headerShown: false }}
+                    />
 
-                </Stack.Navigator>
-                <SnackBar />
-              </>
-            </AlertProvider>
-          </NavigationContainer>
-        </NotificationContextProvider>
+                  </Stack.Navigator>
+                  <SnackBar />
+                </>
+              </AlertProvider>
+            </NavigationContainer>
+          </NotificationContextProvider>
+        </QueryClientProvider>
       </AuthContextProvider>
     </SafeAreaProvider>
   )
