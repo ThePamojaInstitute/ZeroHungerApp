@@ -220,14 +220,12 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     )
 
     const Post = ({ title, imagesLink, postedOn, postedBy, description, postId, username }) => {
-
-       // var ImageBlob = URL.createObjectURL(imagesLink)
-        
         return (
             <GestureRecognizer
                 onSwipeRight={() => setShowRequests(true)}
                 onSwipeLeft={() => setShowRequests(false)}
-                style={{ backgroundColor: Colors.Background }}>
+                style={{ backgroundColor: Colors.Background }}
+            >
                 <TouchableOpacity style={styles.container}
                     testID="Posts.btn"
                     onPress={() => handlePress(
@@ -238,37 +236,15 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                         description,
                         postId,
                         username)}
-                    activeOpacity={0.6}> 
-                    <Image
-                        style={styles.image}
-                        source={{
-                            uri: imagesLink,
-                            headers: {
-                             //   Authorization: " SharedKey myaccount:Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
-                            },
-                        }}
-                    />
-                    <View style={styles.subContainer}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={globalStyles.H4}>{title}</Text>
-                            <TouchableOpacity style={{ marginLeft: 'auto' }}>
-                                <Ionicons
-                                    name='ellipsis-horizontal'
-                                    style={styles.postEllipsis}
-                                    width={20}
-                                    height={12} />
-                            </TouchableOpacity>
                     activeOpacity={0.6}
-                    </View> </View>
+                >
                     <View style={{ backgroundColor: Colors.Background }}>
                         <Image
                             testID="Posts.Img"
                             style={styles.image}
                             source={{
-                                uri:
-                                    imagesLink ?
-                                        imagesLink :
-                                        "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
+                                
+                                uri: imagesLink
                             }}
                         />
                     </View>
@@ -307,11 +283,11 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
 
     const renderItem = ({ item }) => {
         if (!item || !item.pk) return
-
+        console.log(item)
         return (
             <Post
                 title={item['fields'].title}
-                imagesLink={item['fields'].imagesLink}
+                imagesLink={item['fields'].images}
                 postedOn={item['fields'].postedOn}
                 postedBy={item['fields'].postedBy}
                 description={item['fields'].description}

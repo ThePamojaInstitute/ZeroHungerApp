@@ -13,7 +13,7 @@ export default function useFetchPosts(url: string, accessToken: string, type: "r
                 'page': pageParam,
             }
         })
-
+        console.log(res.data)
         return {
             data: res.data,
             nextPage: pageParam + 1,
