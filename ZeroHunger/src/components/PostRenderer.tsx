@@ -6,14 +6,14 @@ import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
-import { deletePost } from "../controllers/post";
+import { createPostObj, deletePost, isJson } from "../controllers/post";
 import {
     useFonts,
     PublicSans_600SemiBold,
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
-import { Ionicons } from '@expo/vector-icons';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 import GestureRecognizer from 'react-native-swipe-gestures';
 
 export const PostRenderer = ({ type, navigation, setShowRequests }) => {
@@ -63,30 +63,6 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
             setPostIndex(offersLength)
         }
     }, [requestsLength, offersLength])
-
-    const isJson = (str: string) => {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
-
-    const createPostObj = (fields: object, pk: number, username: string) => {
-        const postedOnDate = new Date(fields['postedOn'] * 1000).toLocaleDateString('en-US')
-        const newPost = {
-            title: fields['title'],
-            imagesLink: fields['images'],
-            postedOn: postedOnDate,
-            postedBy: fields['postedBy'],
-            description: fields['description'],
-            postId: pk,
-            username: username
-        }
-
-        return newPost
-    }
 
     const loadNumPosts = 5 //Change if number of posts to load changes
 
@@ -224,28 +200,26 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                         username)}
                     activeOpacity={0.6}
                 >
-                    <Image
-                        testID="Posts.Img"
-                        style={styles.image}
-                        source={{
-                            uri:
-                                imagesLink ?
-                                    imagesLink :
-                                    "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
-                        }}
-                    />
+                    <View style={{ backgroundColor: Colors.Background }}>
+                        <Image
+                            testID="Posts.Img"
+                            style={styles.image}
+                            source={{
+                                uri:
+                                    imagesLink ?
+                                        imagesLink :
+                                        "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
+                            }}
+                        />
+                    </View>
                     <View testID="Posts.subContainer" style={styles.subContainer}>
                         <View testID="Posts.contentCont" style={{ flexDirection: 'row' }}>
-                            <Text testID="Posts.title" style={globalStyles.H4}>{title}</Text>
+                            <Text testID="Posts.title" style={[globalStyles.H4, { marginLeft: 10, marginBottom: 5 }]}>{title}</Text>
                             <TouchableOpacity testID="Posts.ellipsis" style={{ marginLeft: 'auto' }}>
-                                <Ionicons
-                                    name='ellipsis-horizontal'
-                                    style={styles.postEllipsis}
-                                    width={20}
-                                    height={12} />
+                                <Entypo name="dots-three-horizontal" size={16} color="black" style={styles.postEllipsis} />
                             </TouchableOpacity>
                         </View>
-                        <View style={{ marginTop: 16 }}>
+                        <View style={{ marginTop: 3, marginLeft: 11 }}>
                             <Text testID="Posts.username" style={globalStyles.Small1}>{username}</Text>
                             <View testID="Posts.locationCont" style={styles.locationCont}>
                                 <Ionicons testID="Posts.locationIcon" name='location-outline' size={13} style={{ marginRight: 4 }} />
