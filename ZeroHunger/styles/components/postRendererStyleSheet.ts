@@ -23,8 +23,7 @@ export default StyleSheet.create({
     },
     image: {
         width: 105,
-        height: 105,
-        marginRight: 15,
+        height: 106,
     },
     noPostsText: {
         fontSize: 36,
@@ -32,8 +31,7 @@ export default StyleSheet.create({
     },
     postEllipsis: {
         alignSelf: 'flex-end',
-        padding: 8,
-        marginRight: 8
+        marginRight: 2
     },
     locationCont: {
         flexDirection: 'row',
@@ -50,7 +48,7 @@ export default StyleSheet.create({
         paddingVertical: 4,
         paddingHorizontal: 5,
         alignSelf: 'flex-end',
-        marginBottom: 10,
+        marginBottom: 5,
     },
     postTagLabel: {
         color: Colors.dark,

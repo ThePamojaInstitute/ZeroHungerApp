@@ -2,9 +2,6 @@ import { View, Text, Image, TextInput, TouchableOpacity, LogBox } from "react-na
 import styles from "../../styles/screens/postDetailsStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { Button } from "react-native-paper";
-import { deletePost } from "../controllers/post";
-import { useAlert } from "../context/Alert";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
@@ -29,13 +26,10 @@ export const RequestDetailsScreen = ({ navigation }) => {
             description: string,
             postId: Number,
             username: string,
-            array: object[],
-            setArray: React.Dispatch<React.SetStateAction<object[]>>
         }
     }> = useRoute()
 
-    const { dispatch: alert } = useAlert()
-    const { user, accessToken } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
     const [message, setMessage] = useState("Hi " + route.params.username + ", do you still need this? I have some to share")
     const [inputHeight, setInputHeight] = useState(0)
@@ -57,18 +51,10 @@ export const RequestDetailsScreen = ({ navigation }) => {
             username: route.params.username,
             type: "r"
         }
-        navigation.navigate('Chat', { user1: user['username'], user2: route.params.username, msg: message, post: JSON.stringify(post) })
-    }
-
-    const handleDelete = (postId: Number) => {
-        deletePost("r", postId, accessToken).then(res => {
-            if (res.msg == "success") {
-                route.params.setArray(route.params.array.filter(item => item['postId'] != postId))
-                alert!({ type: 'open', message: res.res, alertType: 'success' })
-            } else {
-                alert!({ type: 'open', message: res.res, alertType: 'error' })
-            }
-        }).then(() => navigation.navigate('HomeScreen'))
+        navigation.navigate('Chat', {
+            user1: user['username'],
+            user2: route.params.username, msg: message, post: JSON.stringify(post)
+        })
     }
 
     const renderItem = ({ item }) => {
@@ -246,16 +232,6 @@ export const RequestDetailsScreen = ({ navigation }) => {
                         </View>
                     </View>
                 </View>
-
-                {user && user['username'] === route.params.username &&
-                    <View style={{ height: 300 }}>
-                        <Button buttonColor="red"
-                            mode="contained"
-                            onPress={() => handleDelete(route.params.postId)}
-                            style={{ width: '80%' }}
-                        >Delete Post</Button>
-                    </View>
-                }
             </View>
         </ScrollView>
     )

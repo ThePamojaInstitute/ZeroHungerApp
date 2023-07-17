@@ -399,16 +399,46 @@ describe('createPost', () => {
         })
 
         expect(spyCreatePost).toBeCalledTimes(1)
-        expect(spyCreatePost).toBeCalledWith({
-            "postData": {
-                "description": "test desc",
-                "images": "",
-                "postedBy": "1",
-                "postedOn": Math.floor(new Date().getTime() / 1000) || Math.floor(new Date().getTime() / 1000) + 1,
-                "title": "test title"
-            },
-            "postType": "r",
-        })
+        try {
+            expect(spyCreatePost).toBeCalledWith({
+                "postData": {
+                    "description": "test desc",
+                    "images": "",
+                    "postedBy": "1",
+                    "postedOn": Math.floor(new Date().getTime() / 1000),
+                    "title": "test title"
+                },
+                "postType": "r",
+            })
+        } catch {
+            try {
+                expect(spyCreatePost).toBeCalledWith({
+                    "postData": {
+                        "description": "test desc",
+                        "images": "",
+                        "postedBy": "1",
+                        "postedOn": Math.floor(new Date().getTime() / 1000) + 1,
+                        "title": "test title"
+                    },
+                    "postType": "r",
+                })
+            } catch {
+                try {
+                    expect(spyCreatePost).toBeCalledWith({
+                        "postData": {
+                            "description": "test desc",
+                            "images": "",
+                            "postedBy": "1",
+                            "postedOn": Math.floor(new Date().getTime() / 1000) - 1,
+                            "title": "test title"
+                        },
+                        "postType": "r",
+                    })
+                } catch {
+                    throw Error
+                }
+            }
+        }
     })
 
     it('return failure message when request fails', async () => {

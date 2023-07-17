@@ -79,7 +79,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                     testID="Drawer.historyBtn"
                     label={() => <Text style={globalStyles.Body}>Request & Offer History</Text>}
                     icon={() => <MaterialCommunityIcons name="history" size={24} />}
-                    onPress={() => { }}
+                    onPress={() => props.navigation.navigate("PostsHistory")}
                 />
                 <DrawerItem
                     testID="Drawer.dietRestBtn"

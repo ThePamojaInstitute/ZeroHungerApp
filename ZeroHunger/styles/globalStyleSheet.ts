@@ -146,4 +146,9 @@ export const globalStyles = StyleSheet.create({
         fontSize: 17,
         color: Colors.dark
     },
+    Tag: {
+        fontFamily: 'PublicSans_500Medium',
+        fontSize: 12,
+        color: Colors.dark
+    },
 })

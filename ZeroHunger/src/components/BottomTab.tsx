@@ -23,6 +23,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
+import PostsHistory from "../screens/PostsHistory";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -153,6 +154,18 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="AccountSettingsScreen"
                 component={AccountSettingsScreen}
+            />
+            <Stack.Screen
+                name="PostsHistory"
+                component={PostsHistory}
+                options={{
+                    headerShown: true,
+                    title: "Request & Offer History",
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                }}
             />
         </Stack.Navigator>
     )

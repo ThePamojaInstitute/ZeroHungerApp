@@ -127,9 +127,4 @@ export default StyleSheet.create({
         alignSelf: 'center',
         marginTop: 10
     },
-    Tag: {
-        fontFamily: 'PublicSans_500Medium',
-        fontSize: 12,
-        color: Colors.dark
-    },
 })

@@ -1,47 +1,26 @@
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, RefreshControl, ActivityIndicator, Dimensions } from "react-native";
-import styles from "../../styles/components/postRendererStyleSheet"
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
-import { axiosInstance } from "../../config";
-import { useAlert } from "../context/Alert";
+import { useContext, useEffect, useState } from "react";
+import { Text, View, ActivityIndicator, TouchableOpacity, Image, Dimensions } from "react-native"
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
-import { createPostObj, deletePost, isJson } from "../controllers/post";
-import {
-    useFonts,
-    PublicSans_600SemiBold,
-    PublicSans_500Medium,
-    PublicSans_400Regular
-} from '@expo-google-fonts/public-sans';
-import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import GestureRecognizer from 'react-native-swipe-gestures';
-import useFetchPosts from "../hooks/useFetchPosts";
-import { useIsFocused } from '@react-navigation/native';
-import Modal from 'react-native-modal';
-import bottomTabStyles from "../../styles/components/bottomTabStyleSheet";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import rendererStyles from "../../styles/components/postRendererStyleSheet";
 import historyStyles from "../../styles/screens/postsHistory";
-
-export const PostRenderer = ({ type, navigation, setShowRequests }) => {
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
+import bottomTabStyles from "../../styles/components/bottomTabStyleSheet";
+import GestureRecognizer from "react-native-swipe-gestures";
+import { Entypo, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { deletePost, markAsFulfilled } from "../controllers/post";
+import Modal from 'react-native-modal';
+import { useAlert } from "../context/Alert";
+import useFetchPosts from "../hooks/useFetchPosts";
 
 
-    const { dispatch: alert } = useAlert()
+export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderByNewest }) => {
     const { user, accessToken } = useContext(AuthContext);
+    const { dispatch: alert } = useAlert()
 
-    const [refreshing, setRefreshing] = useState(false)
+    // const [refreshing, setRefreshing] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
     const [selectedPost, setSelectedPost] = useState(0)
-
-    const isFocused = useIsFocused();
 
     const {
         data,
@@ -50,14 +29,11 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchPosts("requestPostsForFeed", accessToken, type, true)
+    } = useFetchPosts("postsHistory", accessToken, type, orderByNewest)
 
-    // on navigation
     useEffect(() => {
-        if (isFocused) {
-            refetch()
-        }
-    }, [isFocused])
+        refetch()
+    }, [orderByNewest])
 
     if (isLoading) return <ActivityIndicator animating size="large" color={Colors.primary} />
 
@@ -68,7 +44,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     if (flattenData.length === 0) {
         return <Text
             testID="Posts.noPostsText"
-            style={styles.noPostsText}
+            style={rendererStyles.noPostsText}
         >No {type === "r" ? 'requests' : 'offers'} available</Text>
     }
 
@@ -76,17 +52,6 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         if (hasNextPage) {
             fetchNextPage();
         }
-    }
-
-    const handleDelete = (postId: Number) => {
-        deletePost(type, postId, accessToken).then(res => {
-            if (res.msg == "success") {
-                refetch()
-                alert!({ type: 'open', message: res.res, alertType: 'success' })
-            } else {
-                alert!({ type: 'open', message: res.res, alertType: 'error' })
-            }
-        })
     }
 
     const handlePress = (
@@ -122,6 +87,28 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
             })
     }
 
+    const handleDelete = (postId: Number) => {
+        deletePost(type, postId, accessToken).then(res => {
+            if (res.msg == "success") {
+                refetch()
+                alert!({ type: 'open', message: res.res, alertType: 'success' })
+            } else {
+                alert!({ type: 'open', message: res.res, alertType: 'error' })
+            }
+        })
+    }
+
+    const handleMarkAsFulfilled = (postId: Number) => {
+        markAsFulfilled(type, postId, accessToken).then(res => {
+            if (res.msg == "success") {
+                refetch()
+                alert!({ type: 'open', message: res.res, alertType: 'success' })
+            } else {
+                alert!({ type: 'open', message: res.res, alertType: 'error' })
+            }
+        })
+    }
+
     const ModalComponent = () => (
         <View>
             <Modal
@@ -134,7 +121,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                 onSwipeComplete={() => setModalVisible(!modalVisible)}
                 swipeDirection={['down']}
                 style={[bottomTabStyles.modal,
-                { marginTop: Dimensions.get('window').height * 0.85 }]}
+                { marginTop: Dimensions.get('window').height * 0.78 }]}
             >
                 <View style={{ marginBottom: 25 }}>
                     <View
@@ -154,6 +141,21 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                     </TouchableOpacity>
                 </View>
                 <View style={{ alignItems: "flex-start", gap: 12 }}>
+                    <TouchableOpacity
+                        style={[historyStyles.modalItem, historyStyles.modalItemBorder]}
+                        onPress={() => {
+                            handleMarkAsFulfilled(selectedPost)
+                            setModalVisible(false)
+                        }}
+                        testID="Bottom.postNavModalReqBtn"
+                    >
+                        <MaterialCommunityIcons
+                            name="check-circle-outline"
+                            size={24} color="black"
+                            style={{ marginRight: 10 }}
+                        />
+                        <Text style={globalStyles.Body}>Mark as fulfilled</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity
                         style={historyStyles.modalItem}
                         onPress={() => {
@@ -175,14 +177,14 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         </View>
     )
 
-    const Post = ({ title, imagesLink, postedOn, postedBy, description, postId, username }) => {
+    const Post = ({ title, imagesLink, postedOn, postedBy, description, fulfilled, postId, username }) => {
         return (
             <GestureRecognizer
                 onSwipeRight={() => setShowRequests(true)}
                 onSwipeLeft={() => setShowRequests(false)}
                 style={{ backgroundColor: Colors.Background }}
             >
-                <TouchableOpacity style={styles.container}
+                <TouchableOpacity style={rendererStyles.container}
                     testID="Posts.btn"
                     onPress={() => handlePress(
                         title,
@@ -197,7 +199,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                     <View style={{ backgroundColor: Colors.Background }}>
                         <Image
                             testID="Posts.Img"
-                            style={styles.image}
+                            style={rendererStyles.image}
                             source={{
                                 uri:
                                     imagesLink ?
@@ -206,32 +208,44 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                             }}
                         />
                     </View>
-                    <View testID="Posts.subContainer" style={styles.subContainer}>
+                    <View testID="Posts.subContainer" style={rendererStyles.subContainer}>
                         <View testID="Posts.contentCont" style={{ flexDirection: 'row' }}>
-                            <Text testID="Posts.title" style={[globalStyles.H4, { marginLeft: 10, marginBottom: 5 }]}>{title}</Text>
-                            {user['username'] === username &&
-                                <TouchableOpacity
-                                    testID="Posts.ellipsis"
-                                    style={{ marginLeft: 'auto' }}
-                                    onPress={() => {
-                                        setSelectedPost(postId)
-                                        setModalVisible(true)
-                                    }}
-                                >
-                                    <Entypo name="dots-three-horizontal" size={16} color="black" style={styles.postEllipsis} />
-                                </TouchableOpacity>}
+                            <Text
+                                testID="Posts.title"
+                                style={[globalStyles.H4, { marginLeft: 10 }]}
+                            >{title}</Text>
+                            <TouchableOpacity
+                                testID="Posts.ellipsis"
+                                style={{ marginLeft: 'auto' }}
+                                onPress={() => {
+                                    setSelectedPost(postId)
+                                    setModalVisible(true)
+                                }}
+                            >
+                                <Entypo
+                                    name="dots-three-horizontal"
+                                    size={16}
+                                    color="black"
+                                    style={rendererStyles.postEllipsis} />
+                            </TouchableOpacity>
                         </View>
-                        <View style={{ marginTop: 3, marginLeft: 11 }}>
-                            <Text testID="Posts.username" style={globalStyles.Small1}>{username}</Text>
-                            <View testID="Posts.locationCont" style={styles.locationCont}>
-                                <Ionicons testID="Posts.locationIcon" name='location-outline' size={13} style={{ marginRight: 4 }} />
+                        <View style={{ marginTop: 5, marginLeft: 10 }}>
+                            <View testID="Posts.locationCont" style={rendererStyles.locationCont}>
+                                <Ionicons
+                                    testID="Posts.locationIcon"
+                                    name='location-outline'
+                                    size={13}
+                                    style={{ marginRight: 4 }} />
                                 {/* Placeholder distance away */}
                                 <Text testID="Posts.locationText" style={globalStyles.Small1}>{1} km away</Text>
                             </View>
                         </View>
-                        <View testID="Posts.tag" style={styles.postTag}>
+                        <Text style={[globalStyles.Tag, historyStyles.fulfillment,
+                        { color: fulfilled ? Colors.primaryDark : Colors.alert2 }]}
+                        >{fulfilled ? 'Fulfilled' : 'Not fulfilled'}</Text>
+                        <View testID="Posts.tag" style={rendererStyles.postTag}>
                             {/* Placeholder need by date */}
-                            <Text testID="Posts.tagLabel" style={styles.postTagLabel}>Need in {3} days</Text>
+                            <Text testID="Posts.tagLabel" style={rendererStyles.postTagLabel}>Need in {3} days</Text>
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -249,6 +263,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                 postedOn={item['fields'].postedOn}
                 postedBy={item['fields'].postedBy}
                 description={item['fields'].description}
+                fulfilled={item['fields'].fulfilled}
                 postId={item.pk}
                 username={item.username}
                 key={item.pk}
@@ -258,31 +273,22 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
 
     return (
         <>
-            {!loaded && <Text>Loading...</Text>}
-            {loaded &&
+            {user &&
                 <>
-                    {user &&
-                        <>
-                            <FlashList
-                                testID="Posts.list"
-                                renderItem={renderItem}
-                                data={flattenData}
-                                onEndReached={loadNext}
-                                onEndReachedThreshold={0.7}
-                                showsVerticalScrollIndicator={false}
-                                showsHorizontalScrollIndicator={false}
-                                estimatedItemSize={125}
-                                refreshControl={
-                                    <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
-                                }
-                            />
-                            <ModalComponent />
-                        </>
-                    }
+                    <FlashList
+                        data={flattenData}
+                        renderItem={renderItem}
+                        onEndReached={loadNext}
+                        onEndReachedThreshold={0.3}
+                        estimatedItemSize={125}
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                    />
+                    <ModalComponent />
                 </>
             }
         </>
     )
 }
 
-export default PostRenderer
+export default HistoryPostRenderer

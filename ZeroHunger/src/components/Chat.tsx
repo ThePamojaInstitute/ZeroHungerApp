@@ -238,7 +238,7 @@ export const Chat = ({ navigation, route }) => {
                                     }]}>{1}km away</Text>
                                 </View>
                                 <View testID='Chat.postMsgNeedBy' style={styles.postMsgNeedBy}>
-                                    <Text testID='Chat.postMsgTag' style={styles.Tag}>Need in {3} days</Text>
+                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>Need in {3} days</Text>
                                 </View>
                             </View>
                         </View>
