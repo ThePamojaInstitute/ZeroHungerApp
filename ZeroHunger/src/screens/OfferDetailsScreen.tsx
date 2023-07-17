@@ -246,9 +246,11 @@ const styles = StyleSheet.create({
         marginLeft: 12,
         marginRight: 12,
         padding: 10,
-        borderRadius: 5,
+        borderRadius: 10,
         fontSize: 16,
         height: 60,
+        borderWidth: 1,
+        borderColor: Colors.midLight
     },
     messageInputView: {
         backgroundColor: "#D3D3D3",
@@ -291,6 +293,8 @@ const styles = StyleSheet.create({
     sendMessage: {
         backgroundColor: Colors.Background,
         borderRadius: 10,
+        borderWidth: 1,
+        borderColor: Colors.midLight
     },
     information: {
         // padding: 12,
