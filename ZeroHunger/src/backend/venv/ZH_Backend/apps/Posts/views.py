@@ -31,30 +31,44 @@ def add_username(posts):
                 except Exception as e:
                     return Response(e.__str__(), 500)
                 
-def get_posts(posts_type, order_by_newest, page, decoded_token):
+def get_user_posts(posts_type, order_by_newest, page, user_id):
     try:
         if(posts_type == "r"):
             if(order_by_newest == 'false'):
-                posts = RequestPost.objects.filter(postedBy__pk=decoded_token['user_id']).all().order_by('postedOn')[page * 5:][:5]
+                posts = RequestPost.objects.filter(postedBy__pk=user_id).all().order_by('postedOn')[page * 5:][:5]
             else:
-                posts = RequestPost.objects.filter(postedBy__pk=decoded_token['user_id']).all().order_by('-postedOn')[page * 5:][:5]
+                posts = RequestPost.objects.filter(postedBy__pk=user_id).all().order_by('-postedOn')[page * 5:][:5]
         elif(posts_type == "o"):
             if(order_by_newest == 'false'):
-                posts = OfferPost.objects.filter(postedBy__pk=decoded_token['user_id']).all().order_by('postedOn')[page * 5:][:5]
+                posts = OfferPost.objects.filter(postedBy__pk=user_id).all().order_by('postedOn')[page * 5:][:5]
             else:
-                posts = OfferPost.objects.filter(postedBy__pk=decoded_token['user_id']).all().order_by('-postedOn')[page * 5:][:5]
+                posts = OfferPost.objects.filter(postedBy__pk=user_id).all().order_by('-postedOn')[page * 5:][:5]
         return posts
     except Exception as e:
         return Response(e.__str__(), 500) 
     
-def get_user_posts(data):
+def get_post(post_id, post_type):
     try:
-            if(data['data']['postType'] == "r"):
-                return RequestPost.objects.get(pk=data['data']['postId'])
-            elif(data['data']['postType'] == "o"):
-                return OfferPost.objects.get(pk=data['data']['postId'])
+            if(post_type == "r"):
+                return RequestPost.objects.get(pk=post_id)
+            elif(post_type == "o"):
+                return OfferPost.objects.get(pk=post_id)
     except:
         return Response("Post not found", 404)
+    
+def get_posts(posts_type, page):
+    try:
+        if(posts_type == "r"):
+            return RequestPost.objects.all().filter(fulfilled=False).order_by('-postedOn')[page * 5:][:5]
+        elif(posts_type == "o"):
+            return OfferPost.objects.all().filter(fulfilled=False).order_by('-postedOn')[page * 5:][:5]
+    except Exception as e:
+        return Response(e.__str__(), 500) 
+    
+def serialize_posts(posts):
+    data = serializers.serialize('json', posts)
+    return json.loads(data)
+
 
 class createPost(APIView):
     def post(self, request, format=JSONParser):
@@ -73,18 +87,12 @@ class deletePost(APIView):
      def delete(self,request, format=JSONParser):
         decoded_token = decode_token(request.headers['Authorization'])
         
-        try:
-            if(request.data['postType'] == "r"):
-                obj = RequestPost.objects.get(pk=request.data['postId'])
-            elif(request.data['postType'] == "o"):
-                obj = OfferPost.objects.get(pk=request.data['postId'])
-        except:
-            return Response("Post not found", 404)
+        post = get_post(request.data['postId'], request.data['postType'])
         
         # if user is the owner of the post
-        if(decoded_token['username'] == obj.postedBy.username):
+        if(decoded_token['username'] == post.postedBy.username):
             try:
-                obj.delete()
+                post.delete()
 
                 return Response("Post deleted successfully!", 200)
             except:
@@ -94,54 +102,39 @@ class deletePost(APIView):
             
 #https://stackoverflow.com/questions/57031455/infinite-scrolling-using-django
 class requestPostsForFeed(APIView):
-     def post(self, request):
-        response_data = request.data
-        response_data = json.dumps(response_data)
-        data = json.loads(response_data)
-        counter = int(data['postIndex'])
+    def get(self, request):
+        page = int(request.GET.get('page',0))
+        postsType = request.GET.get('postsType',"r")
 
-        if(request.data['postType'] == "r"):
-            obj = RequestPost.objects.all().filter(fulfilled=False).order_by('-postedOn')[counter:][:5]
-        elif(request.data['postType'] == "o"):
-            obj = OfferPost.objects.all().filter(fulfilled=False).order_by('-postedOn')[counter:][:5]
-        
-        data = serializers.serialize('json', obj)
-        data = json.loads(data)
+        posts = get_posts(postsType, page)
+
+        data = serialize_posts(posts)
 
         add_username(data)
         
-        return Response(json.dumps(data), status=201)
-     
-     def get(self, request):
-        length = {
-            "r": len(RequestPost.objects.all()),
-            "o": len(OfferPost.objects.all())
-        }
-
-        return Response(length, status=200)
+        return Response(data, status=201)
      
 class postsHistory(APIView):
     def get(self, request):
-            decoded_token = decode_token(request.headers['Authorization'])
+        decoded_token = decode_token(request.headers['Authorization'])
             
-            postsType = request.GET.get('postsType','')
-            orderByNewest = request.GET.get('orderByNewest','')
-            page = int(request.GET.get('page',''))
+        postsType = request.GET.get('postsType',"r")
+        orderByNewest = request.GET.get('orderByNewest',True)
+        page = int(request.GET.get('page',0))
 
-            posts = get_posts(postsType, orderByNewest, page, decoded_token)
+        posts = get_user_posts(postsType, orderByNewest, page, decoded_token['user_id'])
 
-            data = serializers.serialize('json', posts)
-            data = json.loads(data)
+        data = serialize_posts(posts)
 
-            add_username(data)
+        add_username(data)
 
-            return Response(data, status=200)
+        return Response(data, status=200)
 
 class markAsFulfilled(APIView):
-     def put(self, request):
+    def put(self, request):
         decoded_token = decode_token(request.data['headers']['Authorization'])
         
-        obj = get_user_posts(request.data)
+        obj = get_post(request.data['data']['postId'], request.data['data']['postType'])
         
         # if user is the owner of the post
         if(decoded_token['username'] == obj.postedBy.username):
