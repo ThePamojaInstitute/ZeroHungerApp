@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, Dimensions, Image } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
+import { getFocusedRouteNameFromRoute, useIsFocused } from "@react-navigation/native"
 import LoginScreen from '../screens/Loginscreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen'
 import HomeScreen from '../screens/HomeScreen';
@@ -10,8 +10,10 @@ import RequestDetailsScreen from '../screens/RequestDetailsScreen';
 import OfferFormScreen from '../screens/OfferFormScreen';
 import OfferDetailsScreen from '../screens/OfferDetailsScreen';
 import AccountSettingsScreen from '../screens/AccountSettingsScreen';
+import NotificationsSettingsScreen from '../screens/NotificationsSettingsScreen';
 import Conversations from '../screens/Conversations';
 import Chat from './Chat';
+import NotificationsScreen from '../screens/NotificationsScreen';
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -27,6 +29,9 @@ const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
 const HomeStackNavigator = ({ navigation }) => {
+
+    const [modalVisible, setModalVisible] = useState(false)
+
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -59,7 +64,7 @@ const HomeStackNavigator = ({ navigation }) => {
                                 style={{ padding: 16 }}
                                 name="notifications-sharp"
                                 size={22}
-                                onPress={() => { }}
+                                onPress={() => { navigation.navigate("NotificationsScreen") }}
                             />
                         </View>
                     )
@@ -72,6 +77,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     // headerShown: false,
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background,
                     },
@@ -85,6 +91,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     // headerShown: false,
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background
                     }
@@ -93,6 +100,9 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="RequestFormScreen"
                 component={RequestFormScreen}
+                options={{
+                    headerShadowVisible: false,
+                }}
             />
             <Stack.Screen
                 name="RequestDetailsScreen"
@@ -100,6 +110,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 options={{
                     title: "Request",
                     headerTitleAlign: "center",
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -116,6 +127,9 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="OfferFormScreen"
                 component={OfferFormScreen}
+                options={{
+                    headerShadowVisible: false,
+                }}
             />
             <Stack.Screen
                 name="OfferDetailsScreen"
@@ -123,6 +137,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 options={{
                     title: "Offer",
                     headerTitleAlign: "center",
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -151,6 +166,83 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="AccountSettingsScreen"
                 component={AccountSettingsScreen}
+                options={{
+                    headerShadowVisible: false,
+                }}
+            />
+            <Stack.Screen
+                name="NotificationsSettingsScreen"
+                component={NotificationsSettingsScreen}
+                options={{
+                    title: "Notifications Settings",
+                    headerTitleAlign: "center",
+                    headerShadowVisible: false,
+                }}
+            />
+            <Stack.Screen
+                name="NotificationsScreen"
+                component={NotificationsScreen}
+                options={{
+                    title: "Notifications",
+                    headerTitleAlign: 'center',
+                    headerShadowVisible: false,
+                    headerRight: () => (
+                        <View>
+                            <Ionicons
+                                name="ellipsis-horizontal"
+                                size={24}
+                                style={{ paddingRight: 16 }}
+                                onPress={() => { setModalVisible(!modalVisible) }}
+                            />
+                            <View>
+                                <Modal
+                                    isVisible={modalVisible}
+                                    animationIn="slideInUp"
+                                    backdropOpacity={0.5}
+                                    onBackButtonPress={() => setModalVisible(!modalVisible)}
+                                    onBackdropPress={() => setModalVisible(!modalVisible)}
+                                    onSwipeComplete={() => setModalVisible(!modalVisible)}
+                                    swipeDirection={['down']}
+                                    style={styles.modal}
+                                >
+                                    <View style={{ marginBottom: 30 }}>
+                                        <View style={styles.modalContent}>
+                                            <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>Notifications Options</Text>
+                                        </View>
+                                        <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0, marginRight: 10 }} onPress={() => setModalVisible(!modalVisible)}>
+                                            <Ionicons name="close" size={30} />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={{ padding: 12 }}>
+                                        {/* TODO: Implement mark all as read */}
+                                        <View style={{padding: 12, borderBottomWidth: 1, borderBottomColor: Colors.midLight}}>
+                                            <TouchableOpacity style={{ flexDirection: "row" }} onPress={() => {  }}>
+                                                <Ionicons name="checkmark-circle-outline" size={24} style={{paddingRight: 16}}/>
+                                                <Text style={[globalStyles.Body, {marginTop: 3}]}>Mark all as read</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View style={{ padding: 12 }}>
+                                            <TouchableOpacity style={{ flexDirection: "row" }} 
+                                                onPress={() => { 
+                                                    setModalVisible(!modalVisible)
+                                                    navigation.navigate("NotificationsSettingsScreen") 
+                                                }}
+                                            >
+                                                {/* <Ionicons name="md-cog-outline" size={24} style={{ paddingRight: 16 }}/> */}
+                                                <Image 
+                                                    style={{height: 20, width: 20, marginLeft: 3, marginRight: 16}}
+                                                    source={require('../../assets/notifications_settings_icon.png')}
+                                                />
+                                                <Text style={[globalStyles.Body, {marginTop: 3}]}>Notifications settings</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </Modal>
+                            </View>
+                        </View>
+                        
+                    )
+                }}
             />
         </Stack.Navigator>
     )
@@ -190,6 +282,7 @@ const ChatStackNavigator = () => {
                 options={{
                     title: "Request",
                     headerTitleAlign: "center",
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -209,6 +302,7 @@ const ChatStackNavigator = () => {
                 options={{
                     title: "Offer",
                     headerTitleAlign: "center",
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
