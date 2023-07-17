@@ -15,6 +15,7 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
+import moment from "moment";
 
 export const OfferFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -75,7 +76,7 @@ export const OfferFormScreen = ({ navigation }) => {
                     title: title,
                     images: images,
                     postedBy: user['user_id'],
-                    postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
+                    postedOn: moment(moment.now()).format('YYYY-MM-DD HH:mm:SS'),
                     description: desc,
                 },
                 postType: 'o'
