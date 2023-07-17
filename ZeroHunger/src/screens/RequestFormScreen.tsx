@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ScrollView, TextInput, TouchableOpacity, Text, View, GestureResponderEvent } from "react-native";
 import styles from "../../styles/screens/postFormStyleSheet"
+import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent, Button } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import FoodCategories from "../components/FoodCategories";
@@ -8,6 +8,7 @@ import Quantity from "../components/Quantity";
 import { createPost } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
+import { handleImageUpload } from "../controllers/post";
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -16,6 +17,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import moment from "moment";
+import { axiosInstance } from "../../config";
 
 export const RequestFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -33,7 +35,8 @@ export const RequestFormScreen = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
 
     const [title, setTitle] = useState("")
-    const [images, setImages] = useState("")
+    const [images, setImages] = useState([])
+    const [imgStr, setImageStrs] = useState("")
     const [desc, setDesc] = useState("")
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
@@ -71,30 +74,45 @@ export const RequestFormScreen = ({ navigation }) => {
 
         setLoading(true)
         try {
-            createPost({
-                postData: {
-                    title: title,
-                    images: images,
-                    postedBy: user['user_id'],
-                    postedOn: moment(moment.now()).format('YYYY-MM-DD HH:mm:SS'),
-                    description: desc,
-                },
-                postType: 'r'
-            }).then(res => {
-                if (res.msg === "success") {
-                    alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
-                    navigation.navigate('HomeScreen')
-                } else if (res.msg === "failure") {
-                    alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
-                } else {
-                    // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
-                    setErrMsg(res.msg ? res.msg : 'An error occured!')
-                }
-            }).finally(() => setLoading(false))
+            handleImageUpload(images).then(imageURL => {
+                createPost({
+                    postData: {
+                        title: title,
+                        images: imageURL,
+                        postedBy: user['user_id'],
+                        postedOn:moment(moment.now()).format('YYYY-MM-DD HH:mm:SS'), // converts time to unix timestamp
+                        description: desc,
+                    },
+                    postType: 'r'
+                }).then(res => {
+                    if (res.msg === "success") {
+                        alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
+                        navigation.navigate('HomeScreen')
+                    } else if (res.msg === "failure") {
+                        alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+                    } else {
+                        // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                        setErrMsg(res.msg ? res.msg : 'An error occured!')
+                    }
+                }).finally(() => setLoading(false))
+            })
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
         }
     }
+
+
+    //https://stackoverflow.com/questions/42521679/how-can-i-upload-a-photo-with-expo
+    // function handleImageUpload()
+    // { //test function for image uploads
+
+    //     imageString = imageString.substring(imageString.indexOf(",") + 1);
+    //     axiosInstance.post("posts/testBlobImage", { "IMAGE":imageString}).then((response) => {
+    //      return (response.data).toString()
+    //      })
+    //    //  return "FailedUpload"
+    // }
+   
 
     return (
         <ScrollView testID="Request.formContainer" style={styles.formContainer}>
@@ -126,7 +144,7 @@ export const RequestFormScreen = ({ navigation }) => {
                         <Text testID="Request.photoLabel" style={styles.formTitleText}>Photo</Text>
                         <Text testID="Request.photoDesc" style={styles.formDescText}>Optional: Add photo(s) to help community members understand what you are looking for!</Text>
                     </View>
-                    <ImagePicker setImages={setImages} />
+                    <ImagePicker images={images} setImages={setImages} />
                     <View>
                         <Text testID="Request.categoryLabel" style={styles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
                         <Text testID="Request.categoryDesc" style={styles.formDescText}>Please select all the food category type that applies</Text>
@@ -167,5 +185,4 @@ export const RequestFormScreen = ({ navigation }) => {
         </ScrollView>
     )
 }
-
 export default RequestFormScreen

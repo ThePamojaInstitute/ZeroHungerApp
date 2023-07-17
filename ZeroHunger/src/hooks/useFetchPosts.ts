@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query"
 import { axiosInstance } from "../../config";
 
 export default function useFetchPosts(url: string, accessToken: string, type: "r" | "o", orderByNewest: boolean) {
@@ -13,7 +13,6 @@ export default function useFetchPosts(url: string, accessToken: string, type: "r
                 'page': pageParam,
             }
         })
-
         return {
             data: res.data,
             nextPage: pageParam + 1,

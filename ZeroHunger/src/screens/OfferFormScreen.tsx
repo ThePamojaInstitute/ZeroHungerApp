@@ -9,6 +9,8 @@ import Quantity from "../components/Quantity";
 import { createPost } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
+import { axiosInstance } from "../../config";
+import { handleImageUpload } from "../controllers/post";
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -33,10 +35,12 @@ export const OfferFormScreen = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
 
     const [title, setTitle] = useState("")
-    const [images, setImages] = useState("")
+    const [images, setImages] = useState([])
     const [desc, setDesc] = useState("")
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
+
+    
 
     useEffect(() => {
         if (!loaded) return
@@ -71,30 +75,34 @@ export const OfferFormScreen = ({ navigation }) => {
 
         setLoading(true)
         try {
-            createPost({
-                postData: {
-                    title: title,
-                    images: images,
-                    postedBy: user['user_id'],
-                    postedOn: moment(moment.now()).format('YYYY-MM-DD HH:mm:SS'),
-                    description: desc,
-                },
-                postType: 'o'
-            }).then(res => {
-                if (res.msg === "success") {
-                    alert!({ type: 'open', message: 'Offer posted successfully!', alertType: 'success' })
-                    navigation.navigate('HomeScreen')
-                } else if (res.msg === "failure") {
-                    alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
-                } else {
-                    // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
-                    setErrMsg(res.msg ? res.msg : 'An error occured!')
-                }
-            }).finally(() => setLoading(false))
+            handleImageUpload(images).then(imageURL => {
+                createPost({
+                    postData: {
+                        title: title,
+                        images: imageURL,
+                        postedBy: user['user_id'],
+                        postedOn:moment(moment.now()).format('YYYY-MM-DD HH:mm:SS'), // converts time to unix timestamp
+                        description: desc,
+                    },
+                    postType: 'o'
+                }).then(res => {
+                    if (res.msg === "success") {
+                        alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
+                        navigation.navigate('HomeScreen')
+                    } else if (res.msg === "failure") {
+                        alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+                    } else {
+                        // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                        setErrMsg(res.msg ? res.msg : 'An error occured!')
+                    }
+                }).finally(() => setLoading(false))
+            })
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
         }
     }
+
+   
 
     return (
         <ScrollView testID="Offer.formContainer" style={styles.formContainer}>
@@ -126,7 +134,7 @@ export const OfferFormScreen = ({ navigation }) => {
                         <Text testID="Offer.photoLabel" style={styles.formTitleText}>Photo</Text>
                         <Text testID="Offer.photoDesc" style={styles.formDescText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
                     </View>
-                    <ImagePicker setImages={setImages} />
+                    <ImagePicker images={images} setImages={setImages} />
                     <View>
                         <Text testID="Offer.categoryLabel" style={styles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
                         <Text testID="Offer.categoryDesc" style={styles.formDescText}>Please select all the food category type that applies</Text>

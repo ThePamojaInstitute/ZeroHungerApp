@@ -195,6 +195,13 @@ AUTH_USER_MODEL = "Users.BasicUser"
 # redis_connection_string = client.get_secret("zh-backend-testing-redisconnectionstring").value
 # azure_redis_password = client.get_secret("AZURE-REDIS-PASSWORD").value
 
+CHANNEL_LAYERS = {
+    "default": {
+        # For production level, don’t use InMemoryChannelLayer use Redis channel instead
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
 # CHANNEL_LAYERS = {
 #     "default": {
 #         "BACKEND": "channels_redis.core.RedisChannelLayer",

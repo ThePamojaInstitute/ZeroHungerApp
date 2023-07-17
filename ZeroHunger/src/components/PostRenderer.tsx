@@ -6,7 +6,18 @@ import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
-import { createPostObj, deletePost, isJson } from "../controllers/post";
+import { deletePost } from "../controllers/post";
+import { useFocusEffect } from "@react-navigation/native";
+const { 
+    BlobServiceClient, 
+    generateAccountSASQueryParameters, 
+    AccountSASPermissions, 
+    AccountSASServices,
+    AccountSASResourceTypes,
+    StorageSharedKeyCredential,
+    SASProtocol 
+} = require('@azure/storage-blob');
+
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -89,6 +100,38 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         })
     }
 
+    // const constants = {
+    //     accountName:
+    //     accountKey: 
+    // };
+    // const sharedKeyCredential = new StorageSharedKeyCredential(
+    //     constants.accountName,
+    //     constants.accountKey
+    // );
+
+    // async function createAccountSas() {
+
+    //     const sasOptions = {
+    
+    //         services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
+    //         resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
+    //         permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
+    //         protocol: SASProtocol.Https,
+    //         startsOn: new Date(),
+    //         expiresOn: new Date(new Date().valueOf() + (10 * 60 * 1000)),   // 10 minutes
+    //     };
+    
+    //     // const sasToken = generateAccountSASQueryParameters(
+    //     //     sasOptions,
+    //     //     sharedKeyCredential 
+    //     // ).toString();
+    
+    //     console.log(`sasToken = '${sasToken}'\n`);
+    
+    //     // prepend sasToken with `?`
+    //     return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
+    // }
+
     const handlePress = (
         title: string,
         imagesLink: string,
@@ -120,6 +163,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                 postId,
                 username,
             })
+          
     }
 
     const ModalComponent = () => (
@@ -199,10 +243,8 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                             testID="Posts.Img"
                             style={styles.image}
                             source={{
-                                uri:
-                                    imagesLink ?
-                                        imagesLink :
-                                        "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
+                                
+                                uri: imagesLink
                             }}
                         />
                     </View>
@@ -241,11 +283,11 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
 
     const renderItem = ({ item }) => {
         if (!item || !item.pk) return
-
+        console.log(item)
         return (
             <Post
                 title={item['fields'].title}
-                imagesLink={item['fields'].imagesLink}
+                imagesLink={item['fields'].images}
                 postedOn={item['fields'].postedOn}
                 postedBy={item['fields'].postedBy}
                 description={item['fields'].description}
