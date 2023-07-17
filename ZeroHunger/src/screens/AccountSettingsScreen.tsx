@@ -1,6 +1,7 @@
 import { useContext } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import styles from "../../styles/screens/accountSettingsStyleSheet"
 import { AuthContext } from "../context/AuthContext";
-import { View, Text, Dimensions, TouchableOpacity, StyleSheet, GestureResponderEvent } from "react-native";
 import { logOutUser, deleteUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
 
@@ -27,31 +28,20 @@ export const AccountSettingsScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={{ padding: 50 }}>
+        <View testID="AccSett.container" style={{ padding: 50 }}>
             <Text>Temporary Account Settings Screen</Text>
-            <TouchableOpacity testID="DeleteUser.Button" style={styles.deleteBtn} onPress={handleDeleteUser}>
-                <Text style={styles.deleteBtnText}>Delete User</Text>
+            <TouchableOpacity
+                testID="AccSett.deleteUserBtn"
+                style={styles.deleteUserBtn}
+                onPress={handleDeleteUser}
+            >
+                <Text
+                    testID="AccSett.deleteUserBtnText"
+                    style={styles.deleteUserBtnText}
+                >Delete User</Text>
             </TouchableOpacity>
         </View>
     )
 }
 
 export default AccountSettingsScreen
-
-const styles = StyleSheet.create({
-    deleteBtn: {
-        title: "Login",
-        width: "50%",
-        borderRadius: 25,
-        marginTop: 20,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "red",
-    },
-    deleteBtnText: {
-        color: "#FFFFFF",
-        padding: 15,
-        marginLeft: 10,
-        fontSize: 15,
-    },
-})

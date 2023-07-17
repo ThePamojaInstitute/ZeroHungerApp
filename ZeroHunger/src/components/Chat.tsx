@@ -1,13 +1,15 @@
 import React, { useContext, useEffect, useState, } from 'react'
-import { StyleSheet, Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import styles from "../../styles/components/chatStyleSheet"
+import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { AuthContext } from '../context/AuthContext';
 import { NotificationContext } from '../context/ChatNotificationContext';
 import { Message } from './Message';
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { FlashList } from "@shopify/flash-list";
 import { Entypo, Ionicons } from '@expo/vector-icons';
-import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { Char } from '../../types';
+import { BaseURL } from '../../config';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -35,6 +37,7 @@ export const Chat = ({ navigation, route }) => {
     const [loading, setLoading] = useState(false)
     const [endReached, setEndReached] = useState(false)
     const [inputHeight, setInputHeight] = useState(0)
+    const [initiated, setInitiated] = useState(false)
 
     const namesAlph = [route.params.user1, route.params.user2].sort();
     const conversationName = `${namesAlph[0]}__${namesAlph[1]}`
@@ -60,6 +63,8 @@ export const Chat = ({ navigation, route }) => {
     }
 
     const loadMessages = () => {
+        if (!initiated) return
+
         if (end) {
             setLoading(true)
             sendJsonMessage({
@@ -71,7 +76,7 @@ export const Chat = ({ navigation, route }) => {
         } else console.log("end!!");
     }
 
-    const { readyState, sendJsonMessage } = useWebSocket(user ? `ws://zh-backend-azure-webapp.azurewebsites.net/chats/${conversationName}/` : null, {
+    const { readyState, sendJsonMessage } = useWebSocket(user ? `ws://${BaseURL}/chats/${conversationName}/` : null, {
         queryParams: {
             token: user ? accessToken : ""
         },
@@ -89,10 +94,10 @@ export const Chat = ({ navigation, route }) => {
                     sendJsonMessage({ type: "read_messages" });
                     break;
                 case "last_30_messages":
+                    setInitiated(true)
                     if (data.messages.length === 0) {
                         setEmpty(true)
-                    }
-                    setMessageHistory(data.messages);
+                    } else setMessageHistory(data.messages);
                     break
                 case "render_x_to_y_messages":
                     setMessageHistory([...messageHistory, ...data.messages]);
@@ -191,7 +196,7 @@ export const Chat = ({ navigation, route }) => {
         const content = JSON.parse(item.content)
 
         return (
-            <TouchableOpacity onPress={() => handlePress(
+            <TouchableOpacity testID='Chat.postPrev' onPress={() => handlePress(
                 content.title,
                 content.images,
                 content.postedOn,
@@ -201,35 +206,39 @@ export const Chat = ({ navigation, route }) => {
                 content.username,
                 content.type
             )}>
-                <View style={user['username'] === item.to_user['username'] ? styles.postMsgContainerIn : styles.postMsgContainerOut}>
+                <View testID='Chat.postCont' style={user['username'] === item.to_user['username'] ? styles.postMsgContainerIn : styles.postMsgContainerOut}>
                     <View
-                        style={user['username'] === item.to_user['username'] ? styles.postMsgIn : styles.postMsgOut}>
-                        <View style={styles.postMsgCont}>
+                        testID='Chat.postMsg'
+                        style={user['username'] === item.to_user['username'] ?
+                            styles.postMsgIn : styles.postMsgOut}>
+                        <View testID='Chat.postMsgCont' style={styles.postMsgCont}>
                             <Image
+                                testID='Chat.postMsgImg'
                                 style={styles.postMsgImg}
                                 source={{ uri: content.images }}
                             />
-                            <View style={styles.postMsgSubCont}>
-                                <Text style={[styles.postMsgTitle, {
+                            <View testID='Chat.postMsgSubCont' style={styles.postMsgSubCont}>
+                                <Text testID='Chat.postMsgTitle' style={[styles.postMsgTitle, {
                                     color: user['username'] === item.to_user['username'] ?
                                         Colors.dark : Colors.white
                                 }]}>{content.title}</Text>
-                                <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
+                                <View testID='Chat.postMsgLocation' style={styles.postMsgLocation}>
                                     <Ionicons name='location-outline' size={13}
+                                        testID='Chat.postMsgLocationIcon'
                                         style={{
                                             marginRight: 4,
                                             color: user['username'] === item.to_user['username'] ?
                                                 Colors.dark : Colors.white
                                         }} />
                                     {/* Placeholder distance away */}
-                                    <Text style={[globalStyles.Small2,
+                                    <Text testID='Chat.postMsgDistance' style={[globalStyles.Small2,
                                     {
                                         color: user['username'] === item.to_user['username'] ?
                                             Colors.dark : Colors.white
                                     }]}>{1}km away</Text>
                                 </View>
-                                <View style={styles.postMsgNeedBy}>
-                                    <Text style={globalStyles.Tag}>Need in {3} days</Text>
+                                <View testID='Chat.postMsgNeedBy' style={styles.postMsgNeedBy}>
+                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>Need in {3} days</Text>
                                 </View>
                             </View>
                         </View>
@@ -251,10 +260,10 @@ export const Chat = ({ navigation, route }) => {
 
 
     return (
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <View testID='Chat.container' style={{ flex: 1, backgroundColor: 'white' }}>
             <Text>The WebSocket is currently {connectionStatus}</Text>
-            {((!empty && messageHistory.length === 0)) && <ActivityIndicator animating size="large" color={Colors.dark} />}
-            {empty && !loading && <Text style={{ fontSize: 20, alignSelf: 'center', marginTop: 10 }}>No Messages</Text>}
+            {(!empty && messageHistory.length === 0) && <ActivityIndicator animating size="large" color={Colors.dark} />}
+            {empty && !loading && <Text testID='Chat.noMsgs' style={styles.noMsgs}>No Messages</Text>}
             <FlashList
                 renderItem={renderItem}
                 data={messageHistory}
@@ -262,15 +271,16 @@ export const Chat = ({ navigation, route }) => {
                 onEndReachedThreshold={0.3}
                 inverted={true}
                 estimatedItemSize={100}
-                testID='messagesList'
+                testID='Chat.messagesList'
                 ListFooterComponent={endReached ?
                     <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 10 }}
                     >End Reached</Text> : <></>}
             />
-            <View style={[styles.chatBar, inputHeight > 50 ? { height: 69 + (inputHeight - 69 + 25) } : { height: 69 }]}>
-                <Entypo name="camera" size={26} color="black" style={styles.chatCameraIcom} />
-                <View style={styles.chatInputContainer}>
+            <View testID='Chat.chatBar' style={[styles.chatBar, inputHeight > 50 ? { height: 69 + (inputHeight - 69 + 25) } : { height: 69 }]}>
+                <Entypo testID='Chat.chatCameraIcon' name="camera" size={26} color="black" style={styles.chatCameraIcon} />
+                <View testID='Chat.chatInputContainer' style={styles.chatInputContainer}>
                     <TextInput
+                        testID='Chat.chatInput'
                         value={message}
                         style={[styles.chatInput, { height: inputHeight }]}
                         placeholder="Type a message"
@@ -284,7 +294,9 @@ export const Chat = ({ navigation, route }) => {
                         }}
                         numberOfLines={3}
                     />
-                    <Ionicons name="send"
+                    <Ionicons
+                        testID='Chat.chatSendIcon'
+                        name="send"
                         size={22}
                         color="black"
                         style={styles.chatSendIcon}
@@ -324,121 +336,3 @@ export const Chat = ({ navigation, route }) => {
 }
 
 export default Chat
-
-const styles = StyleSheet.create({
-    chatBar: {
-        backgroundColor: '#f8f9fb',
-        borderColor: '#eff1f7',
-        borderTopWidth: 1,
-        height: 69,
-        position: 'relative',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        maxHeight: 100
-    },
-    chatInputContainer: {
-        width: '85%',
-        marginLeft: 15,
-        backgroundColor: 'white',
-        marginTop: 10,
-        marginBottom: 20,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: Colors.midLight,
-    },
-    chatInput: {
-        paddingLeft: 10,
-        paddingRight: -20,
-        paddingVertical: 6.5,
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 15,
-        maxHeight: 70,
-        width: '93%'
-    },
-    chatCameraIcom: {
-        marginBottom: 11,
-        marginLeft: 5,
-    },
-    chatSendIcon: {
-        right: 0,
-        position: 'absolute',
-        marginRight: 5,
-        marginTop: 4.5,
-        top: 0,
-        bottom: 0
-    },
-    postMsgCont: {
-        flexDirection: 'row',
-        marginVertical: -11
-    },
-    postMsgSubCont: {
-        marginVertical: 10,
-        marginRight: 65,
-        marginLeft: 5
-    },
-    postMsgImg: {
-        height: 90,
-        width: 90,
-        resizeMode: 'cover',
-        marginLeft: -10,
-        borderTopLeftRadius: 10,
-        borderBottomLeftRadius: 10,
-        marginRight: 5
-    },
-    postMsgTitle: {
-        color: Colors.dark,
-        fontFamily: 'PublicSans_500Medium',
-        fontSize: 15
-    },
-    postMsgNeedBy: {
-        backgroundColor: Colors.primaryLight,
-        paddingLeft: 8,
-        paddingRight: 8,
-        paddingTop: 4,
-        paddingBottom: 4,
-        borderRadius: 4,
-        marginTop: -3,
-        marginBottom: -10
-    },
-    postMsgIn: {
-        position: 'relative',
-        left: 0,
-        backgroundColor: Colors.primaryLightest,
-        borderRadius: 10,
-        alignItems: 'flex-start',
-        gap: 4,
-        overflow: 'hidden',
-        padding: 10,
-        minWidth: '5%',
-        maxWidth: '75%',
-        marginleft: 20,
-        marginBottom: 20
-    },
-    postMsgOut: {
-        position: 'relative',
-        left: 0,
-        backgroundColor: Colors.primary,
-        borderRadius: 10,
-        alignItems: 'flex-start',
-        gap: 4,
-        overflow: 'hidden',
-        padding: 10,
-        minWidth: '5%',
-        maxWidth: '75%',
-        marginRight: 20,
-        marginBottom: 20
-    },
-    postMsgContainerIn: {
-        marginTop: 1,
-        marginBottom: 1,
-        flexDirection: 'row',
-        marginLeft: 20
-    },
-    postMsgContainerOut: {
-        marginTop: 1,
-        marginBottom: 1,
-        flexDirection: 'row-reverse',
-    }
-});

@@ -1,12 +1,16 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, Dimensions, StyleSheet, Image, TouchableHighlight, TextInput, RefreshControl, ActivityIndicator } from "react-native";
+import {
+    View, Text, Dimensions, Image,
+    TouchableHighlight, TextInput, RefreshControl, ActivityIndicator
+} from "react-native";
+import styles from "../../styles/screens/conversationsStyleSheet"
+import { Colors } from "../../styles/globalStyleSheet";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
 import { axiosInstance } from "../../config";
 import { ConversationModel } from "../models/Conversation";
 import { FlashList } from "@shopify/flash-list";
-import { Colors } from "../../styles/globalStyleSheet";
 import moment from 'moment';
 import {
     useFonts,
@@ -33,7 +37,6 @@ export const Conversations = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
 
     const [conversations, setActiveConversations] = useState<ConversationModel[]>([]);
-    // const [createGroup, setCreateGroup] = useState("")
     const [empty, setEmpty] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
     const [firstLoad, setFirstLoad] = useState(true)
@@ -61,7 +64,6 @@ export const Conversations = ({ navigation }) => {
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
         }
-
     }
 
     useEffect(() => {
@@ -80,15 +82,6 @@ export const Conversations = ({ navigation }) => {
     const refresh = () => {
         getConversations()
     }
-
-    // const handleCreate = () => {
-    //     if (user['username'].toLowerCase() === createGroup.toLowerCase()) {
-    //         alert!({ type: 'open', message: 'The username you entered is your username', alertType: 'error' })
-    //     } else if (!user['username'] || !createGroup) {
-    //         alert!({ type: 'open', message: 'Please enter a username', alertType: 'error' })
-    //     }
-    //     navigateToChat(user['username'], createGroup)
-    // }
 
     const renderItem = ({ item }) => {
         let namesAlph: string[]
@@ -139,211 +132,106 @@ export const Conversations = ({ navigation }) => {
         return (
             <TouchableHighlight
                 onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}
-                testID={`${namesAlph[0]}__${namesAlph[1]}.Button`}
+                testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}`}
             >
-                <>
-                    {!loaded && <Text>Loading...</Text>}
-                    {loaded &&
-                        <View testID={`${namesAlph[0]}__${namesAlph[1]}`}
-                            key={item.other_user.username}
-                            style={styles.conversation}
-                        >
-                            <View style={styles.info}>
-                                <Image
-                                    style={styles.profileImg}
-                                    source={require('../../assets/Profile.png')}
-                                />
-                                <View style={styles.content}>
-                                    <Text
-                                        style={isUnread ? styles.usernameUnread : styles.username}
-                                    >{item.other_user.username}</Text>
-                                    <Text ellipsizeMode="tail"
-                                        numberOfLines={2}
-                                        style={isUnread ? styles.lastMessageUnread : styles.lastMessage}
-                                    >{item?.last_message?.content}</Text>
-                                </View>
-                            </View>
-                            <View>
-                                {isUnread &&
-                                    <View style={styles.ellipseFrame}>
-                                        <View style={styles.ellipse}></View>
-                                    </View>}
-                                <Text style={styles.timestamp}>{timestamp ? timestamp : ''}</Text>
-                            </View>
-                        </View>}
-                </>
+                <View
+                    testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}Cont`}
+                    key={item.other_user.username}
+                    style={styles.conversation}
+                >
+                    <View testID="Conversation.info" style={styles.info}>
+                        <Image
+                            testID="Conversation.profileImg"
+                            style={styles.profileImg}
+                            source={require('../../assets/Profile.png')}
+                        />
+                        <View testID="Conversation.content" style={styles.content}>
+                            <Text
+                                testID="Conversation.username"
+                                style={isUnread ? styles.usernameUnread : styles.username}
+                            >{item.other_user.username}</Text>
+                            <Text
+                                testID="Conversation.lastMsg"
+                                ellipsizeMode="tail"
+                                numberOfLines={2}
+                                style={isUnread ? styles.lastMessageUnread : styles.lastMessage}
+                            >{item?.last_message?.content}</Text>
+                        </View>
+                    </View>
+                    <View>
+                        {isUnread &&
+                            <View testID="Conversation.ellipseFrame" style={styles.ellipseFrame}>
+                                <View testID="Conversation.ellipse" style={styles.ellipse}></View>
+                            </View>}
+                        <Text
+                            testID="Conversation.timestamp"
+                            style={styles.timestamp}
+                        >{timestamp ? timestamp : ''}</Text>
+                    </View>
+                </View>
             </TouchableHighlight>
         )
     };
 
     return (
-        <View style={{ backgroundColor: Colors.Background }}>
-            {empty && <Text style={{ fontSize: 20, alignSelf: 'center', marginTop: 10 }}>No Messages</Text>}
-            {!empty && <View style={{ height: Dimensions.get('window').height - 130 }}>
-                <View style={styles.searchContainer}>
-                    <View style={styles.searchInputContainer}>
-                        <MaterialIcons style={styles.searchIcon} name="search" size={24} color="black" />
-                        <TextInput
-                            placeholder="Search messages"
-                            style={styles.searchInput}
+        <View testID="Conversations.container" style={{ backgroundColor: Colors.Background }}>
+            {!loaded && <Text>Loading...</Text>}
+            {loaded &&
+                <>
+                    {empty && <Text testID="Conversations.noMsgs" style={styles.noMsgs}>No Messages</Text>}
+                    {!empty && <View
+                        testID="Conversations.subContainer"
+                        style={{ height: Dimensions.get('window').height - 130 }}>
+                        <View
+                            testID="Conversations.searchContainer"
+                            style={styles.searchContainer}>
+                            <View
+                                testID="Conversations.searchInputContainer"
+                                style={styles.searchInputContainer}>
+                                <MaterialIcons
+                                    style={styles.searchIcon}
+                                    name="search"
+                                    size={24}
+                                    color="black" />
+                                <TextInput
+                                    testID="Conversations.searchInput"
+                                    placeholder="Search messages"
+                                    style={styles.searchInput}
+                                />
+                            </View>
+                        </View>
+                        {conversations.length === 0 &&
+                            <ActivityIndicator animating size="large" color={Colors.primary} />}
+                        <FlashList
+                            data={conversations}
+                            renderItem={renderItem}
+                            testID="Conversations.List"
+                            estimatedItemSize={100}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={refreshing}
+                                    onRefresh={refresh}
+                                    colors={[Colors.primary, Colors.primaryLight]}
+                                />
+                            }
+                            ListEmptyComponent={() => {
+                                if (empty) {
+                                    return <Text style={{ fontSize: 20 }}>No posts available</Text>
+                                }
+                                else if (firstLoad) {
+                                    return <ActivityIndicator
+                                        animating
+                                        size="large"
+                                        color={Colors.primary}
+                                    />
+                                }
+                            }}
                         />
-                    </View>
-                </View>
-                {conversations.length === 0 && <ActivityIndicator animating size="large" color={Colors.primary} />}
-                <FlashList
-                    data={conversations}
-                    renderItem={renderItem}
-                    testID="conversationsList"
-                    estimatedItemSize={100}
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[Colors.primary, Colors.primaryLight]} />
-                    }
-                    ListEmptyComponent={() => {
-                        if (empty) {
-                            return <Text style={{ fontSize: 20 }}>No posts available</Text>
-                        }
-                        else if (firstLoad) {
-                            return <ActivityIndicator animating size="large" color={Colors.primary} />
-                        }
-                    }}
-                />
-            </View>}
+                    </View>}
+                </>
+            }
         </View>
     );
 }
 
 export default Conversations
-
-const styles = StyleSheet.create({
-    conversation: {
-        alignItems: 'flex-start',
-        display: 'flex',
-        flexDirection: 'row',
-        gap: 20,
-        padding: 12,
-        position: 'relative',
-        width: '95%'
-    },
-    info: {
-        alignItems: 'flex-start',
-        display: 'flex',
-        flex: 1,
-        gap: 12,
-        position: 'relative',
-        flexDirection: 'row'
-    },
-    profileImg: {
-        resizeMode: 'cover',
-        width: 48,
-        height: 48,
-        position: 'relative'
-    },
-    content: {
-        alignItems: 'flex-start',
-        display: 'flex',
-        flex: 1,
-        flexDirection: 'column',
-        gap: 1,
-        position: 'relative',
-    },
-    username: {
-        alignSelf: 'stretch',
-        color: Colors.dark,
-        fontSize: 15,
-        letterSpacing: 0,
-        lineHeight: 18,
-        marginTop: -1,
-        position: 'relative',
-        fontFamily: 'PublicSans_500Medium'
-    },
-    usernameUnread: {
-        alignSelf: 'stretch',
-        color: Colors.dark,
-        fontSize: 15,
-        letterSpacing: 0,
-        lineHeight: 18,
-        marginTop: -1,
-        position: 'relative',
-        fontFamily: 'PublicSans_600SemiBold'
-    },
-    lastMessage: {
-        alignSelf: 'stretch',
-        color: Colors.dark,
-        fontSize: 13,
-        letterSpacing: 0,
-        lineHeight: 15.6,
-        position: 'relative',
-        fontFamily: 'PublicSans_400Regular'
-    },
-    lastMessageUnread: {
-        alignSelf: 'stretch',
-        color: Colors.dark,
-        fontSize: 13,
-        letterSpacing: 0,
-        lineHeight: 15.6,
-        position: 'relative',
-        fontFamily: 'PublicSans_600SemiBold'
-    },
-    ellipseFrame: {
-        alignItems: 'flex-start',
-        display: 'flex',
-        gap: 10,
-        right: 0,
-        top: 0,
-        paddingVertical: 2,
-        paddingHorizontal: 0,
-        position: 'absolute',
-    },
-    ellipse: {
-        backgroundColor: '#306775',
-        borderRadius: 4,
-        height: 8,
-        minWidth: 8,
-        position: 'relative',
-        marginTop: 5,
-        marginRight: 35
-    },
-    timestamp: {
-        left: -15,
-        top: 0,
-        marginRight: 10,
-        paddingVertical: 2,
-        paddingHorizontal: 0,
-        position: 'absolute',
-        color: Colors.dark,
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13.2
-    },
-    searchContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 0,
-        width: "100%",
-        height: 45,
-        marginBottom: 10,
-        marginTop: 5,
-        paddingHorizontal: 10,
-    },
-    searchInputContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        backgroundColor: Colors.white,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: Colors.midLight,
-        borderRadius: 10,
-        paddingLeft: 7,
-    },
-    searchInput: {
-        backgroundColor: Colors.white,
-        color: '#646464',
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 16,
-        lineHeight: 20.8,
-        width: '50%'
-    },
-    searchIcon: {
-        paddingTop: 10,
-        paddingRight: 5
-    }
-})

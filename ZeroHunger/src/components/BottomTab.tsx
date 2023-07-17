@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from "react-native";
+import { View, TouchableOpacity, Text, Dimensions } from "react-native";
+import styles from "../../styles/components/bottomTabStyleSheet"
+import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
 import LoginScreen from '../screens/Loginscreen';
@@ -18,10 +20,10 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
-import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
+import PostsHistory from "../screens/PostsHistory";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -45,6 +47,7 @@ const HomeStackNavigator = ({ navigation }) => {
                             name="menu"
                             size={24}
                             onPress={navigation.openDrawer}
+                            testID="Home.drawerBtn"
                         />
                     ),
                     headerRight: () => (
@@ -54,12 +57,14 @@ const HomeStackNavigator = ({ navigation }) => {
                                 name="md-search"
                                 size={22}
                                 onPress={() => { }}
+                                testID="Home.searchBtn"
                             />
                             <Ionicons
                                 style={{ padding: 16 }}
                                 name="notifications-sharp"
                                 size={22}
                                 onPress={() => { }}
+                                testID="Home.notificationBtn"
                             />
                         </View>
                     )
@@ -69,7 +74,6 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="LoginScreen"
                 component={LoginScreen}
                 options={{
-                    // headerShown: false,
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
                     headerStyle: {
@@ -82,7 +86,6 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="CreateAccountScreen"
                 component={CreateAccountScreen}
                 options={{
-                    // headerShown: false,
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
                     headerStyle: {
@@ -151,6 +154,18 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="AccountSettingsScreen"
                 component={AccountSettingsScreen}
+            />
+            <Stack.Screen
+                name="PostsHistory"
+                component={PostsHistory}
+                options={{
+                    headerShown: true,
+                    title: "Request & Offer History",
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                }}
             />
         </Stack.Navigator>
     )
@@ -250,10 +265,22 @@ const BottomTab = () => {
                 options={({ route }) => ({
                     headerShown: false,
                     tabBarIcon: ({ focused }) => (
-                        <View style={{ flex: 0, alignItems: "center", justifyContent: "center" }}>
+                        <View testID="Bottom.homeNav" style={styles.homeButton}>
                             {focused
-                                ? <Ionicons name="home" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
-                                : <Ionicons name="home-outline" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                                ? <Ionicons
+                                    testID="Bottom.homeNavIcon"
+                                    name="home"
+                                    size={24}
+                                    color={Colors.primary}
+                                    style={{ marginBottom: -10 }}
+                                />
+                                : <Ionicons
+                                    testID="Bottom.homeNavIconOutline"
+                                    name="home-outline"
+                                    size={24}
+                                    color={Colors.primary}
+                                    style={{ marginBottom: -10 }}
+                                />
                             }
                         </View>
                     ),
@@ -277,15 +304,29 @@ const BottomTab = () => {
                 //Post button + modal
                 options={({ navigation }) => ({
                     tabBarButton: () =>
-                        <View>
+                        <View testID="Bottom.postNav">
                             <View>
-                                <TouchableOpacity style={styles.postButton} onPress={() => setModalVisible(!modalVisible)}>
-                                    <Ionicons name="add-circle-outline" size={28} color={Colors.primary} style={{ marginLeft: 3 }} />
-                                    <Text style={styles.bottomBarText}>Post</Text>
+                                <TouchableOpacity
+                                    testID="Bottom.postNavButton"
+                                    style={styles.postButton}
+                                    onPress={() => setModalVisible(!modalVisible)}
+                                >
+                                    <Ionicons
+                                        testID="Bottom.postNavIcon"
+                                        name="add-circle-outline"
+                                        size={28}
+                                        color={Colors.primary}
+                                        style={{ marginLeft: 3 }}
+                                    />
+                                    <Text
+                                        testID="Bottom.postNavLabel"
+                                        style={styles.bottomBarText}
+                                    >Post</Text>
                                 </TouchableOpacity>
                             </View>
                             <View>
                                 <Modal
+                                    testID="Bottom.postNavModal"
                                     isVisible={modalVisible}
                                     animationIn="slideInUp"
                                     backdropOpacity={0.5}
@@ -293,13 +334,23 @@ const BottomTab = () => {
                                     onBackdropPress={() => setModalVisible(!modalVisible)}
                                     onSwipeComplete={() => setModalVisible(!modalVisible)}
                                     swipeDirection={['down']}
-                                    style={styles.modal}
+                                    style={[styles.modal,
+                                    { marginTop: Dimensions.get('window').height * 0.74 }]}
                                 >
                                     <View style={{ marginBottom: 30 }}>
-                                        <View style={styles.modalContent}>
-                                            <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>What would you like to post?</Text>
+                                        <View
+                                            testID="Bottom.postNavModalCont"
+                                            style={styles.modalContent}>
+                                            <Text
+                                                testID="Bottom.postNavModalLabel"
+                                                style={[globalStyles.H3, { alignSelf: 'center' }]}
+                                            >What would you like to post?</Text>
                                         </View>
-                                        <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0, marginRight: 10 }} onPress={() => setModalVisible(!modalVisible)}>
+                                        <TouchableOpacity
+                                            testID="Bottom.postNavModalClose"
+                                            style={styles.modalClose}
+                                            onPress={() => setModalVisible(!modalVisible)}
+                                        >
                                             <Ionicons name="close" size={30} />
                                         </TouchableOpacity>
                                     </View>
@@ -310,8 +361,12 @@ const BottomTab = () => {
                                                 setModalVisible(false)
                                                 navigation.navigate("RequestFormScreen")
                                             }}
+                                            testID="Bottom.postNavModalReqBtn"
                                         >
-                                            <Text style={[globalStyles.defaultBtnLabel, { color: '#E8E3D9' }]}>A Request for Food</Text>
+                                            <Text
+                                                testID="Bottom.postNavModalReqLabel"
+                                                style={[globalStyles.defaultBtnLabel, { color: '#E8E3D9' }]}
+                                            >A Request for Food</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={[globalStyles.secondaryBtn, { marginTop: 16 }]}
@@ -319,8 +374,12 @@ const BottomTab = () => {
                                                 setModalVisible(false)
                                                 navigation.navigate("OfferFormScreen")
                                             }}
+                                            testID="Bottom.postNavModalOffBtn"
                                         >
-                                            <Text style={[globalStyles.secondaryBtnLabel, { color: Colors.primaryDark }]}>An Offering of Food</Text>
+                                            <Text
+                                                testID="Bottom.postNavModalOffLabel"
+                                                style={[globalStyles.secondaryBtnLabel, { color: Colors.primaryDark }]}
+                                            >An Offering of Food</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </Modal>
@@ -333,10 +392,25 @@ const BottomTab = () => {
                 component={ChatStackNavigator}
                 options={({ route }) => ({
                     tabBarIcon: ({ focused }) => (
-                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                        <View
+                            testID="Bottom.messagesNav"
+                            style={styles.messagesButton}
+                        >
                             {focused
-                                ? <Ionicons name="chatbox-ellipses" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
-                                : <Ionicons name="chatbox-ellipses-outline" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                                ? <Ionicons
+                                    testID="Bottom.messagesNavIcon"
+                                    name="chatbox-ellipses"
+                                    size={24}
+                                    color={Colors.primary}
+                                    style={{ marginBottom: -10 }}
+                                />
+                                : <Ionicons
+                                    testID="Bottom.messagesNavIconOutline"
+                                    name="chatbox-ellipses-outline"
+                                    size={24}
+                                    color={Colors.primary}
+                                    style={{ marginBottom: -10 }}
+                                />
                             }
                         </View>
                     ),
@@ -357,39 +431,3 @@ const BottomTab = () => {
 }
 
 export default BottomTab
-
-const styles = StyleSheet.create({
-    bottomBarText: {
-        // marginBottom: 14,
-        fontSize: 11,
-        color: Colors.primary,
-        marginBottom: 14,
-        textAlign: "center"
-    },
-    bottomBarTab: {
-        height: 69,
-        backgroundColor: Colors.offWhite,
-        borderTopWidth: 0,
-    },
-    postButton: {
-        marginTop: 9,
-        alignItems: "center",
-        justifyContent: "center",
-        // position: "absolute",
-        // zIndex: 100,
-        // width: "70%"
-        paddingHorizontal: 40,
-    },
-    modal: {
-        margin: 0,
-        marginTop: Dimensions.get('window').height * 0.74,
-        backgroundColor: Colors.offWhite,
-        borderRadius: 10,
-        elevation: 0,
-    },
-    modalContent: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-    }
-})

@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent } from "react-native";
+import { ScrollView, TextInput, TouchableOpacity, Text, View, GestureResponderEvent } from "react-native";
+import styles from "../../styles/screens/postFormStyleSheet"
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import FoodCategories from "../components/FoodCategories";
@@ -16,6 +18,7 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
+import moment from "moment";
 
 export const OfferFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -50,7 +53,7 @@ export const OfferFormScreen = ({ navigation }) => {
             },
             headerLeft: () => (
                 <TouchableOpacity testID="Offer.cancelBtn" onPress={() => navigation.navigate('HomeScreen')}>
-                    <Text testID="Offer.cancelBtnLabel" style={globalStyles.formCancelBtn}>Cancel</Text>
+                    <Text testID="Offer.cancelBtnLabel" style={styles.formCancelBtn}>Cancel</Text>
                 </TouchableOpacity>
             ),
             headerRight: () => (
@@ -103,22 +106,22 @@ export const OfferFormScreen = ({ navigation }) => {
    
 
     return (
-        <ScrollView testID="Offer.formContainer" style={globalStyles.formContainer}>
+        <ScrollView testID="Offer.formContainer" style={styles.formContainer}>
             {(!loaded || loading) && <Text>Loading...</Text>}
             {loaded &&
                 <>
                     <View>
-                        <Text testID="Offer.titleLabel" style={[globalStyles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.titleDesc" style={globalStyles.formDescText}>Create a descriptive title for the food you are offering</Text>
+                        <Text testID="Offer.titleLabel" style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Offer.titleDesc" style={styles.formDescText}>Create a descriptive title for the food you are offering</Text>
                     </View>
-                    <View testID="Offer.formInputContainer" style={globalStyles.formInputContainer}>
+                    <View testID="Offer.formInputContainer" style={styles.formInputContainer}>
                         <TextInput
                             value={title}
                             nativeID="title"
                             testID="Offer.titleInput"
                             placeholder="Enter name of food offering"
                             placeholderTextColor="#656565"
-                            style={[globalStyles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                            style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
                             onChangeText={newText => {
                                 setTitle(newText)
                                 setErrMsg("")
@@ -127,20 +130,20 @@ export const OfferFormScreen = ({ navigation }) => {
                             maxLength={100}
                         />
                     </View>
-                    {errMsg && <Text testID="Offer.titleErrMsg" style={globalStyles.formErrorMsg}>{errMsg}</Text>}
+                    {errMsg && <Text testID="Offer.titleErrMsg" style={styles.formErrorMsg}>{errMsg}</Text>}
                     <View>
-                        <Text testID="Offer.photoLabel" style={globalStyles.formTitleText}>Photo</Text>
-                        <Text testID="Offer.photoDesc" style={globalStyles.formDescText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
+                        <Text testID="Offer.photoLabel" style={styles.formTitleText}>Photo</Text>
+                        <Text testID="Offer.photoDesc" style={styles.formDescText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
                     <View>
-                        <Text testID="Offer.categoryLabel" style={globalStyles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.categoryDesc" style={globalStyles.formDescText}>Please select all the food category type that applies</Text>
+                        <Text testID="Offer.categoryLabel" style={styles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Offer.categoryDesc" style={styles.formDescText}>Please select all the food category type that applies</Text>
                         <FoodCategories />
                     </View>
                     <View>
-                        <Text testID="Offer.quantityLabel" style={globalStyles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.quantityDesc" style={globalStyles.formDescText}>Please input the quantity of the food you are giving away</Text>
+                        <Text testID="Offer.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Offer.quantityDesc" style={styles.formDescText}>Please input the quantity of the food you are giving away</Text>
                         <Quantity />
                     </View>
                     {/* <View>
@@ -149,17 +152,17 @@ export const OfferFormScreen = ({ navigation }) => {
                 <DatePicker />
             </View> */}
                     <View>
-                        <Text testID="Offer.descTitle" style={globalStyles.formTitleText}>Description</Text>
-                        <Text testID="Offer.descDesc" style={globalStyles.formDescText}>Optional: Describe your offer in detail</Text>
+                        <Text testID="Offer.descTitle" style={styles.formTitleText}>Description</Text>
+                        <Text testID="Offer.descDesc" style={styles.formDescText}>Optional: Describe your offer in detail</Text>
                     </View>
-                    <View style={globalStyles.formDescInputView}>
+                    <View style={styles.formDescInputView}>
                         <TextInput
                             value={desc}
                             nativeID="desc"
                             testID="Offer.descInput"
                             placeholder="Enter Description"
                             placeholderTextColor="#656565"
-                            style={globalStyles.formInputText}
+                            style={styles.formInputText}
                             multiline={true}
                             onChangeText={newText => {
                                 setDesc(newText)

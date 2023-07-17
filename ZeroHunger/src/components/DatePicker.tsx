@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
+import styles from "../../styles/components/datePickerStyleSheet"
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
@@ -44,11 +45,11 @@ const DatePicker = () => {
             <Text>{selected && `selected: ${date.toLocaleDateString()}`}</Text> */}
             <Pressable
                 testID="DatePicker.showBtn"
-                style={globalStyles.datePickerContainer}
+                style={styles.datePickerContainer}
                 onPress={() => setShow(true)}
             >
-                <Image testID="DatePicker.calendarImg" style={globalStyles.datePickerImg} source={require('../../assets/calendar.png')} />
-                <Text testID="DatePicker.selectedDate" style={globalStyles.datePickerDate}>{selected ? toStringDate(date) : 'MM/DD/YYYY'}</Text>
+                <Image testID="DatePicker.calendarImg" style={styles.datePickerImg} source={require('../../assets/calendar.png')} />
+                <Text testID="DatePicker.selectedDate" style={styles.datePickerDate}>{selected ? toStringDate(date) : 'MM/DD/YYYY'}</Text>
             </Pressable>
             {show && (
                 <DateTimePicker

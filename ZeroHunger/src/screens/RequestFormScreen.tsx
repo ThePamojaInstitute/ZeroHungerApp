@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
+import { ScrollView, TextInput, TouchableOpacity, Text, View, GestureResponderEvent } from "react-native";
+import styles from "../../styles/screens/postFormStyleSheet"
 import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent, Button } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
@@ -15,6 +17,7 @@ import {
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import moment from "moment";
 import { axiosInstance } from "../../config";
 
 export const RequestFormScreen = ({ navigation }) => {
@@ -49,7 +52,7 @@ export const RequestFormScreen = ({ navigation }) => {
             },
             headerLeft: () => (
                 <TouchableOpacity testID="Request.cancelBtn" onPress={() => navigation.navigate('HomeScreen')}>
-                    <Text testID="Request.cancelBtnLabel" style={globalStyles.formCancelBtn}>Cancel</Text>
+                    <Text testID="Request.cancelBtnLabel" style={styles.formCancelBtn}>Cancel</Text>
                 </TouchableOpacity>
             ),
             headerRight: () => (
@@ -113,22 +116,22 @@ export const RequestFormScreen = ({ navigation }) => {
    
 
     return (
-        <ScrollView testID="Request.formContainer" style={globalStyles.formContainer}>
+        <ScrollView testID="Request.formContainer" style={styles.formContainer}>
             {(!loaded || loading) && <Text>Loading...</Text>}
             {loaded &&
                 <>
                     <View>
-                        <Text testID="Request.titleLabel" style={[globalStyles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Request.titleDesc" style={globalStyles.formDescText}>Create a descriptive title for your request</Text>
+                        <Text testID="Request.titleLabel" style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Request.titleDesc" style={styles.formDescText}>Create a descriptive title for your request</Text>
                     </View>
-                    <View testID="Request.formInputContainer" style={globalStyles.formInputContainer}>
+                    <View testID="Request.formInputContainer" style={styles.formInputContainer}>
                         <TextInput
                             value={title}
                             nativeID="title"
                             testID="Request.titleInput"
                             placeholder="Enter name of food"
                             placeholderTextColor="#656565"
-                            style={[globalStyles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                            style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
                             onChangeText={newText => {
                                 setTitle(newText)
                                 setErrMsg("")
@@ -137,39 +140,39 @@ export const RequestFormScreen = ({ navigation }) => {
                             maxLength={100}
                         />
                     </View>
-                    {errMsg && <Text testID="Request.titleErrMsg" style={globalStyles.formErrorMsg}>{errMsg}</Text>}
+                    {errMsg && <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{errMsg}</Text>}
                     <View>
-                        <Text testID="Request.photoLabel" style={globalStyles.formTitleText}>Photo</Text>
-                        <Text testID="Request.photoDesc" style={globalStyles.formDescText}>Optional: Add photo(s) to help community members understand what you are looking for!</Text>
+                        <Text testID="Request.photoLabel" style={styles.formTitleText}>Photo</Text>
+                        <Text testID="Request.photoDesc" style={styles.formDescText}>Optional: Add photo(s) to help community members understand what you are looking for!</Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
                     <View>
-                        <Text testID="Request.categoryLabel" style={globalStyles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Request.categoryDesc" style={globalStyles.formDescText}>Please select all the food category type that applies</Text>
+                        <Text testID="Request.categoryLabel" style={styles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Request.categoryDesc" style={styles.formDescText}>Please select all the food category type that applies</Text>
                         <FoodCategories />
                     </View>
                     <View>
-                        <Text testID="Request.quantityLabel" style={globalStyles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Request.quantityDesc" style={globalStyles.formDescText}>Please input the desired quantity of the food item you need</Text>
+                        <Text testID="Request.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Request.quantityDesc" style={styles.formDescText}>Please input the desired quantity of the food item you need</Text>
                         <Quantity />
                     </View>
                     <View>
-                        <Text testID="Request.dateLabel" style={globalStyles.formTitleText}>Need By Date</Text>
-                        <Text testID="Request.dateDesc" style={globalStyles.formDescText}>Optional: Please select a date you would need this item by. Your post will expire at the end of this date.</Text>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Need By Date</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>Optional: Please select a date you would need this item by. Your post will expire at the end of this date.</Text>
                         <DatePicker />
                     </View>
                     <View>
-                        <Text testID="Request.descTitle" style={globalStyles.formTitleText}>Description</Text>
-                        <Text testID="Request.descDesc" style={globalStyles.formDescText}>Optional: Describe your food request in detail</Text>
+                        <Text testID="Request.descTitle" style={styles.formTitleText}>Description</Text>
+                        <Text testID="Request.descDesc" style={styles.formDescText}>Optional: Describe your food request in detail</Text>
                     </View>
-                    <View style={globalStyles.formDescInputView}>
+                    <View style={styles.formDescInputView}>
                         <TextInput
                             value={desc}
                             nativeID="desc"
                             testID="Request.descInput"
                             placeholder="Enter Description"
                             placeholderTextColor="#656565"
-                            style={globalStyles.formInputText}
+                            style={styles.formInputText}
                             multiline={true}
                             onChangeText={newText => {
                                 setDesc(newText)
