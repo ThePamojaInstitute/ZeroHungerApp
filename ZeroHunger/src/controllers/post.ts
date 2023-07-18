@@ -81,6 +81,8 @@ export const markAsFulfilled = async (postType: Char, postId: Number, token: str
 }
 
 export const handleImageUpload = async (images: string[]) => {
+    if (images.length === 0) return ''
+
     let imageString = images[0];
     imageString = imageString.substring(imageString.indexOf(",") + 1);
 
