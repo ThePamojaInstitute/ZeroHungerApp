@@ -10,7 +10,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import { NotificationContext } from "../context/ChatNotificationContext";
-import PostRenderer from "../components/PostRenderer";
+import FeedPostRenderer from "../components/FeedPostRenderer";
 import FoodCategories from "../components/FoodCategories";
 import {
     useFonts,
@@ -104,13 +104,13 @@ export const HomeScreen = ({ navigation }) => {
                         <FoodCategories />
                     </View>
                     {showRequests &&
-                        <PostRenderer
+                        <FeedPostRenderer
                             type={"r"}
                             navigation={navigation}
                             setShowRequests={setShowRequests}
                         />}
                     {!showRequests &&
-                        <PostRenderer
+                        <FeedPostRenderer
                             type={"o"}
                             navigation={navigation}
                             setShowRequests={setShowRequests}

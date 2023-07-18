@@ -2,7 +2,6 @@ import React, { forwardRef, useContext, useEffect, useRef, useState } from "reac
 import { Text, RefreshControl, ActivityIndicator } from "react-native";
 import styles from "../../styles/components/postRendererStyleSheet"
 import { Colors } from "../../styles/globalStyleSheet";
-import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
@@ -13,7 +12,7 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
-import useFetchPosts from "../hooks/useFetchPosts";
+import useFetchFeedPosts from "../hooks/useFetchFeedPosts";
 import { useIsFocused } from '@react-navigation/native';
 import { Post } from "./Post";
 import { PostModel } from "../models/Post";
@@ -31,7 +30,7 @@ import {
 
 const MyPostModal = forwardRef(_MyPostModal)
 
-export const PostRenderer = ({ type, navigation, setShowRequests }) => {
+export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
         PublicSans_400Regular,
@@ -65,7 +64,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchPosts("requestPostsForFeed", accessToken, type, true)
+    } = useFetchFeedPosts(accessToken, type, true)
 
     // on navigation
     useEffect(() => {
@@ -190,7 +189,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
                 renderItem={renderItem}
                 data={flattenData}
                 onEndReached={loadNext}
-                onEndReachedThreshold={0.7}
+                onEndReachedThreshold={0.3}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
                 estimatedItemSize={125}
@@ -208,4 +207,4 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     )
 }
 
-export default PostRenderer
+export default FeedPostRenderer
