@@ -58,7 +58,7 @@ export const globalStyles = StyleSheet.create({
         marginTop: 30,
         height: 42,
         borderRadius: 100,
-        backgroundColor: Colors.primaryMid,
+        backgroundColor: Colors.primaryLight,
     },
     secondaryBtnLabel: {
         fontFamily: 'PublicSans_600SemiBold',

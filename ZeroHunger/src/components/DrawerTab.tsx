@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, GestureResponderEvent } from "react-native"
+import { View, Text, TouchableOpacity, GestureResponderEvent, Image } from "react-native"
 import styles from "../../styles/components/drawerTabStyleSheet"
 import { globalStyles } from "../../styles/globalStyleSheet";
 import { DrawerActions } from '@react-navigation/native';
@@ -78,42 +78,42 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                 <DrawerItem
                     testID="Drawer.historyBtn"
                     label={() => <Text style={globalStyles.Body}>Request & Offer History</Text>}
-                    icon={() => <MaterialCommunityIcons name="history" size={24} />}
+                    icon={() => <Image source={require('../../assets/History.png')} style={styles.Img} />}
                     onPress={() => props.navigation.navigate("PostsHistory")}
                 />
                 <DrawerItem
                     testID="Drawer.dietRestBtn"
-                    label={() => <Text style={globalStyles.Body}>Dietary Restrictions</Text>}
-                    icon={() => <MaterialCommunityIcons name="silverware-fork-knife" size={24} />}
+                    label={() => <Text style={globalStyles.Body}>Preferences</Text>}
+                    icon={() => <Image source={require('../../assets/Settings.png')} style={styles.Img} />}
                     onPress={() => { }}
                 />
                 <DrawerItem
                     testID="Drawer.notifSettBtn"
                     label={() => <Text style={globalStyles.Body}>Notifications Settings</Text>}
-                    icon={() => <Ionicons name="md-cog-outline" size={24} />}
+                    icon={() => <Image source={require('../../assets/Notifications_Settings.png')} style={styles.Img} />}
                     onPress={() => { }}
                 />
                 <DrawerItem
                     testID="Drawer.FAQBtn"
-                    label={() => <Text style={globalStyles.Body}>FAQ</Text>}
-                    icon={() => <Ionicons name="help-circle-outline" size={24} />}
+                    label={() => <Text style={globalStyles.Body}>FAQs</Text>}
+                    icon={() => <Image source={require('../../assets/Help.png')} style={styles.Img} />}
                     onPress={() => { }}
                 />
                 <DrawerItem
                     testID="Drawer.termsBtn"
                     label={() => <Text style={globalStyles.Body}>Terms and Conditions</Text>}
-                    icon={() => <Ionicons name="document-text-outline" size={24} />}
+                    icon={() => <Image source={require('../../assets/Scroll.png')} style={styles.Img} />}
                     onPress={() => { }}
                 />
                 <DrawerItem
                     testID="Drawer.policyBtn"
                     label={() => <Text style={globalStyles.Body}>Privacy Policy</Text>}
-                    icon={() => <MaterialCommunityIcons name="shield-lock-outline" size={24} />}
+                    icon={() => <Image source={require('../../assets/Privacy.png')} style={styles.Img} />}
                     onPress={() => { }}
                 />
 
-                <TouchableOpacity testID="Drawer.logOutBtn" style={styles.logOutBtn} onPress={handleLogOut}>
-                    <Text testID="Drawer.logOutBtnText" style={styles.logOutBtnText}>Log Out</Text>
+                <TouchableOpacity testID="Drawer.logOutBtn" style={[globalStyles.secondaryBtn, { width: '85%', marginLeft: 10 }]} onPress={handleLogOut}>
+                    <Text testID="Drawer.logOutBtnText" style={globalStyles.secondaryBtnLabel}>Log Out</Text>
                 </TouchableOpacity>
 
                 <DrawerItemList {...props} />
