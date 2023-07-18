@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState, Suspense } from "react";
+
 import {
   Text,
   View,
@@ -27,6 +28,8 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons } from '@expo/vector-icons';
 import NotificationsTest from "./NotificationsTest";
+import { useTranslation } from "react-i18next";
+import { any } from "jest-mock-extended";
 
 export const LoginScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false)
@@ -129,11 +132,10 @@ export const LoginScreen = ({ navigation }) => {
       }
     })  //replace this with actual URL later
   }
+  
+  const {t, i18n} = useTranslation();
+  console.log( )
 
-
-  const TestBlobUpload = () => {
-    axiosInstance.post("posts/testBlobImage")
-  }
   return (
     <View testID="Login.container" style={styles.authContainer}>
       {!loaded && <Text>Loading...</Text>}
@@ -146,7 +148,7 @@ export const LoginScreen = ({ navigation }) => {
             </View>}
           <View testID="Login.usernameInputContainer" style={styles.inputContainer}>
             <Text testID="Login.usernameLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}>Username</Text>
+            { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}>{t("loginScreen.UsernameLabel")} </Text>
             <TextInput
               nativeID="Login.usernameInput"
               testID="Login.usernameInput"
@@ -235,7 +237,6 @@ export const LoginScreen = ({ navigation }) => {
           </TouchableOpacity> */}
           <NotificationsTest setExpoToken={setExpoPushToken} />
 
-          <TouchableOpacity onPress={TestBlobUpload}> </TouchableOpacity>
         </>
       }
       {/* <Button
@@ -247,4 +248,12 @@ export const LoginScreen = ({ navigation }) => {
     </View>
   );
 }
-export default LoginScreen
+
+export default function WrappedLoginScreen()
+{
+  return (
+    <Suspense fallback="Loading">
+      <LoginScreen navigation={any} />
+    </Suspense>
+  )
+}

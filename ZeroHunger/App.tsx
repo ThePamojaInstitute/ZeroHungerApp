@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import * as React from 'react'
+import {Suspense} from 'react'
 import { TouchableOpacity } from "react-native"
 import LoginScreen from './src/screens/Loginscreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
@@ -25,12 +26,14 @@ import BottomTab from './src/components/BottomTab';
 import DrawerTab from './src/components/DrawerTab';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { useTranslation } from "react-i18next";
 
 const queryClient = new QueryClient();
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
   return (
     <SafeAreaProvider>
       <AuthContextProvider>
@@ -128,6 +131,7 @@ export default function App() {
         </QueryClientProvider>
       </AuthContextProvider>
     </SafeAreaProvider>
+
   )
 }
 
