@@ -6,7 +6,7 @@ import { Colors } from "../../styles/globalStyleSheet";
 import rendererStyles from "../../styles/components/postRendererStyleSheet";
 import { deletePost, markAsFulfilled } from "../controllers/post";
 import { useAlert } from "../context/Alert";
-import useFetchPosts from "../hooks/useFetchPosts";
+import useFetchHistoryPosts from "../hooks/useFetchHistoryPosts";
 import { PostModel } from "../models/Post";
 import { Post } from "./Post";
 import { default as _MyPostModal } from "./MyPostModal";
@@ -33,7 +33,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchPosts("postsHistory", accessToken, type, orderByNewest)
+    } = useFetchHistoryPosts(accessToken, type, orderByNewest)
 
     useEffect(() => {
         refetch()
