@@ -2,24 +2,11 @@ import { axiosInstance } from "../../config";
 import { Char } from "../../types";
 
 
-export async function handleImageUpload(images) {
-    var imageString = images[0];
-    imageString = imageString.substring(imageString.indexOf(",") + 1);
-
-    const res = await axiosInstance.post("posts/testBlobImage", { "IMAGE": imageString })
-    var result = res.data;
-
-    console.log('Processing Request');
-    console.log("Image Uploaded to: " + result);
-    return result
-}
-
 export const createPost = async (obj: {
     postData: {
         title: string
         images: string,
         postedBy: Number,
-        postedOn: string,
         description: string
     }
     postType: Char
@@ -31,7 +18,6 @@ export const createPost = async (obj: {
     }
 
     try {
-        console.log("Creating Post!" + obj.postData.postedOn)
         const res = await axiosInstance.post('/posts/createPost', obj)
         if (res.status === 201) {
             return { msg: "success", res: res.data }
@@ -45,6 +31,8 @@ export const createPost = async (obj: {
 }
 
 export const deletePost = async (postType: Char, postId: Number, token: string) => {
+    if (postId === 0) return
+
     try {
         const res = await axiosInstance.delete('/posts/deletePost', {
             headers: {
@@ -68,6 +56,8 @@ export const deletePost = async (postType: Char, postId: Number, token: string) 
 }
 
 export const markAsFulfilled = async (postType: Char, postId: Number, token: string) => {
+    if (postId === 0) return
+
     try {
         const res = await axiosInstance.put('/posts/markAsFulfilled', {
             headers: {
@@ -90,27 +80,14 @@ export const markAsFulfilled = async (postType: Char, postId: Number, token: str
     }
 }
 
-export const createPostObj = (fields: object, pk: number, username: string) => {
-    const postedOnDate = new Date(fields['postedOn'] * 1000).toLocaleDateString('en-US')
-    const newPost = {
-        title: fields['title'],
-        imagesLink: fields['images'],
-        postedOn: postedOnDate,
-        postedBy: fields['postedBy'],
-        description: fields['description'],
-        fulfilled: fields['fulfilled'],
-        postId: pk,
-        username: username
-    }
+export const handleImageUpload = async (images: string[]) => {
+    let imageString = images[0];
+    imageString = imageString.substring(imageString.indexOf(",") + 1);
 
-    return newPost
-}
+    const res = await axiosInstance.post("posts/testBlobImage", { "IMAGE": imageString })
+    let result = res.data;
 
-export const isJson = (str: string) => {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
+    console.log('Processing Request');
+    console.log("Image Uploaded to: " + result);
+    return result
 }

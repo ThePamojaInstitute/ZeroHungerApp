@@ -17,7 +17,6 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
-import moment from "moment";
 
 export const OfferFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -39,8 +38,6 @@ export const OfferFormScreen = ({ navigation }) => {
     const [desc, setDesc] = useState("")
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
-
-    
 
     useEffect(() => {
         if (!loaded) return
@@ -81,7 +78,6 @@ export const OfferFormScreen = ({ navigation }) => {
                         title: title,
                         images: imageURL,
                         postedBy: user['user_id'],
-                        postedOn:moment(moment.now()).format('YYYY-MM-DD HH:mm:SS'), // converts time to unix timestamp
                         description: desc,
                     },
                     postType: 'o'
@@ -97,12 +93,11 @@ export const OfferFormScreen = ({ navigation }) => {
                     }
                 }).finally(() => setLoading(false))
             })
+
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
         }
     }
-
-   
 
     return (
         <ScrollView testID="Offer.formContainer" style={styles.formContainer}>
@@ -110,7 +105,11 @@ export const OfferFormScreen = ({ navigation }) => {
             {loaded &&
                 <>
                     <View>
-                        <Text testID="Offer.titleLabel" style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text
+                            testID="Offer.titleLabel"
+                            style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}
+                        >Title <Text style={{ color: Colors.alert2 }}>*</Text>
+                        </Text>
                         <Text testID="Offer.titleDesc" style={styles.formDescText}>Create a descriptive title for the food you are offering</Text>
                     </View>
                     <View testID="Offer.formInputContainer" style={styles.formInputContainer}>

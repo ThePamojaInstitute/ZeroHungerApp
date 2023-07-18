@@ -1,36 +1,35 @@
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, RefreshControl, ActivityIndicator, Dimensions } from "react-native";
+import React, { forwardRef, useContext, useEffect, useRef, useState } from "react";
+import { Text, RefreshControl, ActivityIndicator } from "react-native";
 import styles from "../../styles/components/postRendererStyleSheet"
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import { Colors } from "../../styles/globalStyleSheet";
 import { axiosInstance } from "../../config";
 import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
-import { deletePost } from "../controllers/post";
-import { useFocusEffect } from "@react-navigation/native";
-const { 
-    BlobServiceClient, 
-    generateAccountSASQueryParameters, 
-    AccountSASPermissions, 
-    AccountSASServices,
-    AccountSASResourceTypes,
-    StorageSharedKeyCredential,
-    SASProtocol 
-} = require('@azure/storage-blob');
-
+import { deletePost, markAsFulfilled } from "../controllers/post";
 import {
     useFonts,
     PublicSans_600SemiBold,
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
-import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import GestureRecognizer from 'react-native-swipe-gestures';
 import useFetchPosts from "../hooks/useFetchPosts";
 import { useIsFocused } from '@react-navigation/native';
-import Modal from 'react-native-modal';
-import bottomTabStyles from "../../styles/components/bottomTabStyleSheet";
-import historyStyles from "../../styles/screens/postsHistory";
+import { Post } from "./Post";
+import { PostModel } from "../models/Post";
+import { default as _MyPostModal } from "./MyPostModal";
+import {
+    BlobServiceClient,
+    generateAccountSASQueryParameters,
+    AccountSASPermissions,
+    AccountSASServices,
+    AccountSASResourceTypes,
+    StorageSharedKeyCredential,
+    SASProtocol
+} from '@azure/storage-blob';
+
+
+const MyPostModal = forwardRef(_MyPostModal)
 
 export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     const [loaded, setLoaded] = useState(false)
@@ -49,8 +48,13 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     const { user, accessToken } = useContext(AuthContext);
 
     const [refreshing, setRefreshing] = useState(false)
-    const [modalVisible, setModalVisible] = useState(false)
-    const [selectedPost, setSelectedPost] = useState(0)
+
+    const selectedPost = useRef(0)
+    const modalRef = useRef(null)
+
+    const openModal = () => {
+        modalRef.current.publicHandler()
+    }
 
     const isFocused = useIsFocused();
 
@@ -67,8 +71,14 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     useEffect(() => {
         if (isFocused) {
             refetch()
-        }
+        } else return
     }, [isFocused])
+
+    if (!user) return navigation.navigate('LoginScreen')
+
+    if (!loaded) return <Text>Loading...</Text>
+
+    if (!data) return <Text>An error occurred while fetching data</Text>
 
     if (isLoading) return <ActivityIndicator animating size="large" color={Colors.primary} />
 
@@ -100,6 +110,17 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
         })
     }
 
+    const handleMarkAsFulfilled = (postId: Number) => {
+        markAsFulfilled(type, postId, accessToken).then(res => {
+            if (res.msg == "success") {
+                refetch()
+                alert!({ type: 'open', message: res.res, alertType: 'success' })
+            } else {
+                alert!({ type: 'open', message: res.res, alertType: 'error' })
+            }
+        })
+    }
+
     // const constants = {
     //     accountName:
     //     accountKey: 
@@ -112,7 +133,7 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     // async function createAccountSas() {
 
     //     const sasOptions = {
-    
+
     //         services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
     //         resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
     //         permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
@@ -120,179 +141,43 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
     //         startsOn: new Date(),
     //         expiresOn: new Date(new Date().valueOf() + (10 * 60 * 1000)),   // 10 minutes
     //     };
-    
+
     //     // const sasToken = generateAccountSASQueryParameters(
     //     //     sasOptions,
     //     //     sharedKeyCredential 
     //     // ).toString();
-    
+
     //     console.log(`sasToken = '${sasToken}'\n`);
-    
+
     //     // prepend sasToken with `?`
     //     return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
     // }
 
-    const handlePress = (
-        title: string,
-        imagesLink: string,
-        postedOn: Number,
-        postedBy: Number,
-        description: string,
-        postId: Number,
-        username: string) => {
-        //Placeholder image
-        imagesLink = imagesLink ? imagesLink : "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
 
-        type === "r" ?
-            navigation.navigate('RequestDetailsScreen', {
-                title,
-                imagesLink,
-                postedOn,
-                postedBy,
-                description,
-                postId,
-                username,
-            })
-            :
-            navigation.navigate('OfferDetailsScreen', {
-                title,
-                imagesLink,
-                postedOn,
-                postedBy,
-                description,
-                postId,
-                username,
-            })
-          
-    }
-
-    const ModalComponent = () => (
-        <View>
-            <Modal
-                testID="Bottom.postNavModal"
-                isVisible={modalVisible}
-                animationIn="slideInUp"
-                backdropOpacity={0.5}
-                onBackButtonPress={() => setModalVisible(!modalVisible)}
-                onBackdropPress={() => setModalVisible(!modalVisible)}
-                onSwipeComplete={() => setModalVisible(!modalVisible)}
-                swipeDirection={['down']}
-                style={[bottomTabStyles.modal,
-                { marginTop: Dimensions.get('window').height * 0.85 }]}
-            >
-                <View style={{ marginBottom: 25 }}>
-                    <View
-                        testID="Bottom.postNavModalCont"
-                        style={bottomTabStyles.modalContent}>
-                        <Text
-                            testID="Bottom.postNavModalLabel"
-                            style={[globalStyles.H3, { alignSelf: 'center' }]}
-                        >Ticket options</Text>
-                    </View>
-                    <TouchableOpacity
-                        testID="Bottom.postNavModalClose"
-                        style={bottomTabStyles.modalClose}
-                        onPress={() => setModalVisible(!modalVisible)}
-                    >
-                        <Ionicons name="close" size={30} />
-                    </TouchableOpacity>
-                </View>
-                <View style={{ alignItems: "flex-start", gap: 12 }}>
-                    <TouchableOpacity
-                        style={historyStyles.modalItem}
-                        onPress={() => {
-                            handleDelete(selectedPost)
-                            setModalVisible(false)
-                        }}
-                        testID="Bottom.postNavModalReqBtn"
-                    >
-                        <MaterialCommunityIcons
-                            name="trash-can-outline"
-                            size={24}
-                            color="black"
-                            style={{ marginRight: 10 }}
-                        />
-                        <Text style={globalStyles.Body}>Delete ticket</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
-        </View>
-    )
-
-    const Post = ({ title, imagesLink, postedOn, postedBy, description, postId, username }) => {
-        return (
-            <GestureRecognizer
-                onSwipeRight={() => setShowRequests(true)}
-                onSwipeLeft={() => setShowRequests(false)}
-                style={{ backgroundColor: Colors.Background }}
-            >
-                <TouchableOpacity style={styles.container}
-                    testID="Posts.btn"
-                    onPress={() => handlePress(
-                        title,
-                        imagesLink,
-                        postedOn,
-                        postedBy,
-                        description,
-                        postId,
-                        username)}
-                    activeOpacity={0.6}
-                >
-                    <View style={{ backgroundColor: Colors.Background }}>
-                        <Image
-                            testID="Posts.Img"
-                            style={styles.image}
-                            source={{
-                                
-                                uri: imagesLink
-                            }}
-                        />
-                    </View>
-                    <View testID="Posts.subContainer" style={styles.subContainer}>
-                        <View testID="Posts.contentCont" style={{ flexDirection: 'row' }}>
-                            <Text testID="Posts.title" style={[globalStyles.H4, { marginLeft: 10, marginBottom: 5 }]}>{title}</Text>
-                            {user['username'] === username &&
-                                <TouchableOpacity
-                                    testID="Posts.ellipsis"
-                                    style={{ marginLeft: 'auto' }}
-                                    onPress={() => {
-                                        setSelectedPost(postId)
-                                        setModalVisible(true)
-                                    }}
-                                >
-                                    <Entypo name="dots-three-horizontal" size={16} color="black" style={styles.postEllipsis} />
-                                </TouchableOpacity>}
-                        </View>
-                        <View style={{ marginTop: 3, marginLeft: 11 }}>
-                            <Text testID="Posts.username" style={globalStyles.Small1}>{username}</Text>
-                            <View testID="Posts.locationCont" style={styles.locationCont}>
-                                <Ionicons testID="Posts.locationIcon" name='location-outline' size={13} style={{ marginRight: 4 }} />
-                                {/* Placeholder distance away */}
-                                <Text testID="Posts.locationText" style={globalStyles.Small1}>{1} km away</Text>
-                            </View>
-                        </View>
-                        <View testID="Posts.tag" style={styles.postTag}>
-                            {/* Placeholder need by date */}
-                            <Text testID="Posts.tagLabel" style={styles.postTagLabel}>Need in {3} days</Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            </GestureRecognizer>
-        )
-    }
 
     const renderItem = ({ item }) => {
         if (!item || !item.pk) return
-        console.log(item)
+
+        const post: PostModel = {
+            title: item['fields'].title,
+            imageLink: item['fields'].images,
+            postedOn: item['fields'].postedOn,
+            postedBy: item['fields'].postedBy,
+            description: item['fields'].description,
+            fulfilled: item['fields'].fulfilled,
+            postId: item.pk,
+            username: item.username,
+            type: type
+        }
+
         return (
             <Post
-                title={item['fields'].title}
-                imagesLink={item['fields'].images}
-                postedOn={item['fields'].postedOn}
-                postedBy={item['fields'].postedBy}
-                description={item['fields'].description}
-                postId={item.pk}
-                username={item.username}
+                post={post}
+                navigation={navigation}
+                openModal={openModal}
+                selectedPost={selectedPost}
+                setShowRequests={setShowRequests}
+                from="home"
                 key={item.pk}
             />
         )
@@ -300,29 +185,25 @@ export const PostRenderer = ({ type, navigation, setShowRequests }) => {
 
     return (
         <>
-            {!loaded && <Text>Loading...</Text>}
-            {loaded &&
-                <>
-                    {user &&
-                        <>
-                            <FlashList
-                                testID="Posts.list"
-                                renderItem={renderItem}
-                                data={flattenData}
-                                onEndReached={loadNext}
-                                onEndReachedThreshold={0.7}
-                                showsVerticalScrollIndicator={false}
-                                showsHorizontalScrollIndicator={false}
-                                estimatedItemSize={125}
-                                refreshControl={
-                                    <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
-                                }
-                            />
-                            <ModalComponent />
-                        </>
-                    }
-                </>
-            }
+            <FlashList
+                testID="Posts.list"
+                renderItem={renderItem}
+                data={flattenData}
+                onEndReached={loadNext}
+                onEndReachedThreshold={0.7}
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                estimatedItemSize={125}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
+                }
+            />
+            <MyPostModal
+                ref={modalRef}
+                selectedPost={selectedPost}
+                handleDelete={handleDelete}
+                handleMarkAsFulfilled={handleMarkAsFulfilled}
+            />
         </>
     )
 }

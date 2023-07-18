@@ -155,7 +155,7 @@ class createPost(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         else:
-              return Response(serializer.errors, status=401)
+            return Response(serializer.errors, status=401)
         
 class deletePost(APIView):
      def delete(self,request, format=JSONParser):
@@ -221,6 +221,7 @@ class markAsFulfilled(APIView):
                 return Response("Error while updating post", 500)
         else:
             return Response("Unauthorized", 401)
+        
 class ImageUploader(APIView):
   
      def post(self,request):

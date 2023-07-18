@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styles from "../../styles/screens/postFormStyleSheet"
-import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent, Button } from "react-native";
+import { ScrollView, TextInput, TouchableOpacity, Text, View, GestureResponderEvent } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import FoodCategories from "../components/FoodCategories";
@@ -16,7 +16,6 @@ import {
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
-import moment from "moment";
 import { axiosInstance } from "../../config";
 
 export const RequestFormScreen = ({ navigation }) => {
@@ -75,12 +74,13 @@ export const RequestFormScreen = ({ navigation }) => {
         setLoading(true)
         try {
             handleImageUpload(images).then(imageURL => {
+                console.log(imageURL);
+
                 createPost({
                     postData: {
                         title: title,
                         images: imageURL,
                         postedBy: user['user_id'],
-                        postedOn:moment(moment.now()).format('YYYY-MM-DD HH:mm:SS'), // converts time to unix timestamp
                         description: desc,
                     },
                     postType: 'r'
@@ -96,6 +96,7 @@ export const RequestFormScreen = ({ navigation }) => {
                     }
                 }).finally(() => setLoading(false))
             })
+
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
         }
@@ -112,7 +113,7 @@ export const RequestFormScreen = ({ navigation }) => {
     //      })
     //    //  return "FailedUpload"
     // }
-   
+
 
     return (
         <ScrollView testID="Request.formContainer" style={styles.formContainer}>
@@ -120,7 +121,11 @@ export const RequestFormScreen = ({ navigation }) => {
             {loaded &&
                 <>
                     <View>
-                        <Text testID="Request.titleLabel" style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text
+                            testID="Request.titleLabel"
+                            style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}
+                        >Title <Text style={{ color: Colors.alert2 }}>*</Text>
+                        </Text>
                         <Text testID="Request.titleDesc" style={styles.formDescText}>Create a descriptive title for your request</Text>
                     </View>
                     <View testID="Request.formInputContainer" style={styles.formInputContainer}>
