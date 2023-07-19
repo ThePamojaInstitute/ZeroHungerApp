@@ -14,6 +14,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
+import { handleLogistics } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -34,9 +35,6 @@ export const RequestDetailsScreen = ({ navigation }) => {
     }> = useRoute()
 
     const { user } = useContext(AuthContext);
-
-    console.log();
-
 
     const [message, setMessage] = useState("Hi " + route.params.username + ", do you still need this? I have some to share")
     const [inputHeight, setInputHeight] = useState(0)
@@ -65,6 +63,8 @@ export const RequestDetailsScreen = ({ navigation }) => {
             user2: route.params.username, msg: message, post: JSON.stringify(post)
         })
     }
+
+    const logistics = handleLogistics(route.params.logistics)
 
     // const renderItem = ({ item }) => {
     //     return (
@@ -229,7 +229,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                             <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal Code</Text>
                         </View>
                         <View>
-                            <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>Pick Up, Delivery</Text>
+                            <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
                             <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>XXXXXX</Text>
                         </View>
                     </View>

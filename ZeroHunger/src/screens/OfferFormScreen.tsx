@@ -17,6 +17,7 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
+import Logistics from "../components/Logistics";
 
 export const OfferFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -38,6 +39,7 @@ export const OfferFormScreen = ({ navigation }) => {
     const [desc, setDesc] = useState("")
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
+    const [logistics, setLogistics] = useState<number[]>([])
 
     useEffect(() => {
         if (!loaded) return
@@ -58,7 +60,7 @@ export const OfferFormScreen = ({ navigation }) => {
                 </TouchableOpacity>
             )
         })
-    }, [title, images, desc, loading, loaded])
+    }, [title, images, desc, loading, loaded, logistics])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
@@ -79,6 +81,7 @@ export const OfferFormScreen = ({ navigation }) => {
                         images: imageURL,
                         postedBy: user['user_id'],
                         description: desc,
+                        logistics: logistics,
                     },
                     postType: 'o'
                 }).then(res => {
@@ -134,12 +137,12 @@ export const OfferFormScreen = ({ navigation }) => {
                         <Text testID="Offer.photoDesc" style={styles.formDescText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
-                    <View>
+                    <View style={{ opacity: 0.5 }}>
                         <Text testID="Offer.categoryLabel" style={styles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
                         <Text testID="Offer.categoryDesc" style={styles.formDescText}>Please select all the food category type that applies</Text>
                         <FoodCategories />
                     </View>
-                    <View>
+                    <View style={{ opacity: 0.5 }}>
                         <Text testID="Offer.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
                         <Text testID="Offer.quantityDesc" style={styles.formDescText}>Please input the quantity of the food you are giving away</Text>
                         <Quantity />
@@ -149,6 +152,11 @@ export const OfferFormScreen = ({ navigation }) => {
                 <Text style={styles.descText}>Optional: Please select a date you would need this item by. Your post will expire at the end of this date.</Text>
                 <DatePicker />
             </View> */}
+                    <View>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery preferences</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>Select all that apply</Text>
+                        <Logistics logistics={logistics} setLogistics={setLogistics} />
+                    </View>
                     <View>
                         <Text testID="Offer.descTitle" style={styles.formTitleText}>Description</Text>
                         <Text testID="Offer.descDesc" style={styles.formDescText}>Optional: Describe your offer in detail</Text>

@@ -14,6 +14,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
+import { handleLogistics } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -62,6 +63,8 @@ export const OfferDetailsScreen = ({ navigation }) => {
             user2: route.params.username, msg: message, post: JSON.stringify(post)
         })
     }
+
+    const logistics = handleLogistics(route.params.logistics)
 
     // const renderItem = ({ item }) => {
     //     return (
@@ -219,7 +222,7 @@ export const OfferDetailsScreen = ({ navigation }) => {
                             <Text testID="OffDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal Code</Text>
                         </View>
                         <View>
-                            <Text testID="OffDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>Pick Up, Delivery</Text>
+                            <Text testID="OffDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
                             <Text testID="OffDet.meetPrefPostalVal" style={globalStyles.Small1}>XXXXXX</Text>
                         </View>
                     </View>
