@@ -8,5 +8,6 @@ export interface PostModel {
     postId: number;
     username: string;
     type: "r" | "o";
-    logistics: string
+    logistics: string;
+    postalCode: string;
 }

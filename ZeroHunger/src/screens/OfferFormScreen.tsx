@@ -40,6 +40,7 @@ export const OfferFormScreen = ({ navigation }) => {
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
     const [logistics, setLogistics] = useState<number[]>([])
+    const [postalCode, setPostalCode] = useState('')
 
     useEffect(() => {
         if (!loaded) return
@@ -60,7 +61,7 @@ export const OfferFormScreen = ({ navigation }) => {
                 </TouchableOpacity>
             )
         })
-    }, [title, images, desc, loading, loaded, logistics])
+    }, [title, images, desc, loading, loaded, logistics, postalCode])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
@@ -82,6 +83,7 @@ export const OfferFormScreen = ({ navigation }) => {
                         postedBy: user['user_id'],
                         description: desc,
                         logistics: logistics,
+                        postalCode: postalCode,
                     },
                     postType: 'o'
                 }).then(res => {
@@ -113,7 +115,7 @@ export const OfferFormScreen = ({ navigation }) => {
                             style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}
                         >Title <Text style={{ color: Colors.alert2 }}>*</Text>
                         </Text>
-                        <Text testID="Offer.titleDesc" style={styles.formDescText}>Create a descriptive title for the food you are offering</Text>
+                        <Text testID="Offer.titleDesc" style={styles.formDescText}>Create a descriptive title for your offering.</Text>
                     </View>
                     <View testID="Offer.formInputContainer" style={styles.formInputContainer}>
                         <TextInput
@@ -134,17 +136,17 @@ export const OfferFormScreen = ({ navigation }) => {
                     {errMsg && <Text testID="Offer.titleErrMsg" style={styles.formErrorMsg}>{errMsg}</Text>}
                     <View>
                         <Text testID="Offer.photoLabel" style={styles.formTitleText}>Photo</Text>
-                        <Text testID="Offer.photoDesc" style={styles.formDescText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
+                        <Text testID="Offer.photoDesc" style={styles.formDescText}>Add photo(s) to help community members understand what you are offering.</Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
                     <View style={{ opacity: 0.5 }}>
                         <Text testID="Offer.categoryLabel" style={styles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.categoryDesc" style={styles.formDescText}>Please select all the food category type that applies</Text>
+                        <Text testID="Offer.categoryDesc" style={styles.formDescText}>Please select all the food categories that apply.</Text>
                         <FoodCategories />
                     </View>
                     <View style={{ opacity: 0.5 }}>
                         <Text testID="Offer.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.quantityDesc" style={styles.formDescText}>Please input the quantity of the food you are giving away</Text>
+                        <Text testID="Offer.quantityDesc" style={styles.formDescText}>Please input the quantity of the food you are offering.</Text>
                         <Quantity />
                     </View>
                     {/* <View>
@@ -154,12 +156,32 @@ export const OfferFormScreen = ({ navigation }) => {
             </View> */}
                     <View>
                         <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery preferences</Text>
-                        <Text testID="Request.dateDesc" style={styles.formDescText}>Select all that apply</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>Select all that apply.</Text>
                         <Logistics logistics={logistics} setLogistics={setLogistics} />
                     </View>
                     <View>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery postalCode</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate the postal code of your desired pick up or delivery postalCode.</Text>
+                        <View testID="Request.formInputContainer" style={styles.formInputContainer}>
+                            <TextInput
+                                value={postalCode}
+                                nativeID="postalCode"
+                                testID="Request.postalCodeInput"
+                                placeholder="XXX XXX"
+                                placeholderTextColor="#656565"
+                                style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                                onChangeText={newText => {
+                                    setPostalCode(newText)
+                                    setErrMsg("")
+                                }}
+                                onChange={() => setErrMsg("")}
+                                maxLength={7}
+                            />
+                        </View>
+                    </View>
+                    <View>
                         <Text testID="Offer.descTitle" style={styles.formTitleText}>Description</Text>
-                        <Text testID="Offer.descDesc" style={styles.formDescText}>Optional: Describe your offer in detail</Text>
+                        <Text testID="Offer.descDesc" style={styles.formDescText}>Describe your offer in detail.</Text>
                     </View>
                     <View style={styles.formDescInputView}>
                         <TextInput

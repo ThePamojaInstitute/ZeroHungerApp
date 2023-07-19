@@ -14,7 +14,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
-import { handleLogistics } from "../controllers/post";
+import { formatPostalCode, handleLogistics } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -65,6 +65,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
     }
 
     const logistics = handleLogistics(route.params.logistics)
+    const postalCode = formatPostalCode(route.params.postalCode)
 
     // const renderItem = ({ item }) => {
     //     return (
@@ -103,7 +104,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                             <View testID="ReqDet.location" style={{ flexDirection: "row" }}>
                                 <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                                 {/* Placeholder postal code */}
-                                <Text testID="ReqDet.locationText" style={globalStyles.Small2}>XXXXXX</Text>
+                                <Text testID="ReqDet.locationText" style={[globalStyles.Small2, { textTransform: 'uppercase' }]}>{postalCode}</Text>
                             </View>
                             {/* TODO: Implement edit posts */}
                             <View>
@@ -230,7 +231,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                         </View>
                         <View>
                             <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
-                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>XXXXXX</Text>
+                            <Text testID="ReqDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase' }]}>{postalCode}</Text>
                         </View>
                     </View>
                 </View>
