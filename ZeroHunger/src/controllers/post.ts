@@ -7,6 +7,11 @@ export const logisticsPreferences = {
     PUBLIC: 2
 }
 
+export const accessNeedsPreferences = {
+    NONE: 0,
+    WHEELCHAIR: 1,
+    DELIVERY: 2
+}
 
 export const createPost = async (post: {
     postData: {
@@ -16,6 +21,7 @@ export const createPost = async (post: {
         description: string,
         logistics: number[],
         postalCode: string,
+        accessNeeds: number,
     }
     postType: Char
 }) => {
@@ -27,6 +33,8 @@ export const createPost = async (post: {
         return { msg: "Title should be at most 100 characters", res: null }
     } else if (post.postData.postalCode.length > 0 && !post.postData.postalCode.match(canadianPostalCodeRegex)) {
         return { msg: "Please enter a valid postal code", res: null }
+    } else if (!post.postData.accessNeeds) {
+        return { msg: "access needs", res: null }
     }
 
     try {
@@ -114,6 +122,8 @@ export const getLogisticsType = (num: number) => {
             return 'Delivery'
         case logisticsPreferences.PUBLIC:
             return 'Meet at a public location'
+        default:
+            return ''
     }
 }
 
@@ -139,7 +149,7 @@ export const handleLogistics = (str: string) => {
 }
 
 export const formatPostalCode = (postalCode: string) => {
-    if (!postalCode) return 'XXX XXX'
+    if (!postalCode) return 'N/A'
 
     if (postalCode.includes('-')) {
         postalCode = postalCode.replace('-', ' ')
@@ -147,4 +157,17 @@ export const formatPostalCode = (postalCode: string) => {
         postalCode = postalCode.slice(0, 3) + ' ' + postalCode.slice(3)
     }
     return postalCode
+}
+
+export const handleAccessNeeds = (num: number) => {
+    switch (num) {
+        case accessNeedsPreferences.NONE:
+            return 'No access needs'
+        case accessNeedsPreferences.WHEELCHAIR:
+            return 'Pick up location must be wheelchair accessible'
+        case accessNeedsPreferences.DELIVERY:
+            return 'Delivery only'
+        default:
+            return ''
+    }
 }
