@@ -14,14 +14,19 @@ export const createPost = async (post: {
         images: string,
         postedBy: Number,
         description: string,
-        logistics: number[]
+        logistics: number[],
+        postalCode: string,
     }
     postType: Char
 }) => {
+    const canadianPostalCodeRegex = /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i
+
     if (!post.postData.title) {
         return { msg: `Please enter a title to your ${post.postType === "r" ? "request" : "offer"}`, res: null }
     } else if (post.postData.title.length > 100) {
         return { msg: "Title should be at most 100 characters", res: null }
+    } else if (post.postData.postalCode.length > 0 && !post.postData.postalCode.match(canadianPostalCodeRegex)) {
+        return { msg: "Please enter a valid postal code", res: null }
     }
 
     try {
@@ -131,4 +136,15 @@ export const handleLogistics = (str: string) => {
         }
     })
     return preferences
+}
+
+export const formatPostalCode = (postalCode: string) => {
+    if (!postalCode) return 'XXX XXX'
+
+    if (postalCode.includes('-')) {
+        postalCode = postalCode.replace('-', ' ')
+    } else if (postalCode.length === 6) {
+        postalCode = postalCode.slice(0, 3) + ' ' + postalCode.slice(3)
+    }
+    return postalCode
 }
