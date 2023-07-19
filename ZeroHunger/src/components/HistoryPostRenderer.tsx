@@ -91,7 +91,10 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
             postedOn: item['fields'].postedOn,
             postedBy: item['fields'].postedBy,
             description: item['fields'].description,
+            logistics: item['fields'].logistics,
             fulfilled: item['fields'].fulfilled,
+            postalCode: item['fields'].postalCode,
+            accessNeeds: item['fields'].accessNeeds,
             postId: item.pk,
             username: item.username,
             type: type
