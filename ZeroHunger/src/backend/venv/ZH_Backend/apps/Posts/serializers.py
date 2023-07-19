@@ -12,11 +12,12 @@ class createRequestSerializer (serializers.ModelSerializer):
     description = serializers.CharField(max_length=1024, required=False, allow_blank=True)
     fulfilled = serializers.BooleanField(default=False)
     logistics = fields.MultipleChoiceField(choices=logistics_choices, required=False)
+    postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
 
     class Meta:
         model=RequestPost
         fields = ['title', 'images', 'postedOn', 'postedBy', 
-                  'description', 'fulfilled', 'logistics']
+                  'description', 'fulfilled', 'logistics', 'postalCode']
     def save(self):
         post=RequestPost(title=self.validated_data['title'],
                        images=self.validated_data['images'],
@@ -24,7 +25,8 @@ class createRequestSerializer (serializers.ModelSerializer):
                        postedBy=self.validated_data['postedBy'],
                        description=self.validated_data['description'],
                        fulfilled=self.validated_data['fulfilled'],
-                       logistics=self.validated_data['logistics'])
+                       logistics=self.validated_data['logistics'],
+                       postalCode=self.validated_data['postalCode'])
         post.save()
 
 class createOfferSerializer (serializers.ModelSerializer):
@@ -35,11 +37,12 @@ class createOfferSerializer (serializers.ModelSerializer):
     description = serializers.CharField(max_length=1024, required=False, allow_blank=True)
     fulfilled = serializers.BooleanField(default=False)
     logistics = fields.MultipleChoiceField(choices=logistics_choices, required=False)
+    postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
 
     class Meta:
         model=OfferPost
         fields = ['title', 'images', 'postedOn', 'postedBy', 
-                  'description', 'fulfilled', 'logistics']
+                  'description', 'fulfilled', 'logistics', 'postalCode']
     def save(self):
         post=OfferPost(title=self.validated_data['title'],
                        images=self.validated_data['images'],
@@ -47,5 +50,6 @@ class createOfferSerializer (serializers.ModelSerializer):
                        postedBy=self.validated_data['postedBy'],
                        description=self.validated_data['description'],
                        fulfilled=self.validated_data['fulfilled'],
-                       logistics=self.validated_data['logistics'])
+                       logistics=self.validated_data['logistics'],
+                       postalCode=self.validated_data['postalCode'])
         post.save()
