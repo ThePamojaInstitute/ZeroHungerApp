@@ -10,4 +10,5 @@ export interface PostModel {
     type: "r" | "o";
     logistics: string;
     postalCode: string;
+    accessNeeds: number;
 }

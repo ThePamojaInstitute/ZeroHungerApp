@@ -18,6 +18,7 @@ import {
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
 import Logistics from "../components/Logistics";
+import AccessNeeds from "../components/AccessNeeds";
 
 export const OfferFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -41,6 +42,7 @@ export const OfferFormScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false)
     const [logistics, setLogistics] = useState<number[]>([])
     const [postalCode, setPostalCode] = useState('')
+    const [accessNeeds, setAccessNeeds] = useState<number>()
 
     useEffect(() => {
         if (!loaded) return
@@ -61,7 +63,7 @@ export const OfferFormScreen = ({ navigation }) => {
                 </TouchableOpacity>
             )
         })
-    }, [title, images, desc, loading, loaded, logistics, postalCode])
+    }, [title, images, desc, loading, loaded, logistics, postalCode, accessNeeds])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
@@ -84,6 +86,7 @@ export const OfferFormScreen = ({ navigation }) => {
                         description: desc,
                         logistics: logistics,
                         postalCode: postalCode,
+                        accessNeeds: accessNeeds,
                     },
                     postType: 'o'
                 }).then(res => {
@@ -160,8 +163,8 @@ export const OfferFormScreen = ({ navigation }) => {
                         <Logistics logistics={logistics} setLogistics={setLogistics} />
                     </View>
                     <View>
-                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery postalCode</Text>
-                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate the postal code of your desired pick up or delivery postalCode.</Text>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery location</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate the postal code of your desired pick up or delivery location.</Text>
                         <View testID="Request.formInputContainer" style={styles.formInputContainer}>
                             <TextInput
                                 value={postalCode}
@@ -178,6 +181,11 @@ export const OfferFormScreen = ({ navigation }) => {
                                 maxLength={7}
                             />
                         </View>
+                    </View>
+                    <View>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Access needs for pick up or delivery</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate if you have any access needs for sharing the food you are offering.</Text>
+                        <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} />
                     </View>
                     <View>
                         <Text testID="Offer.descTitle" style={styles.formTitleText}>Description</Text>
