@@ -145,7 +145,6 @@ def serialize_posts(posts):
 
 class createPost(APIView):
     def post(self, request, format=JSONParser):
-        print(request.data)
         if (request.data['postType'] == "r"): 
             serializer = createRequestSerializer(data=request.data['postData'])
         elif (request.data['postType'] == "o"):
