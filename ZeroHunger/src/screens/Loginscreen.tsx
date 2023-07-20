@@ -134,9 +134,9 @@ export const LoginScreen = ({ navigation }) => {
   }
   
   const {t, i18n} = useTranslation();
-  console.log( )
 
   return (
+    <Suspense>
     <View testID="Login.container" style={styles.authContainer}>
       {!loaded && <Text>Loading...</Text>}
       {loaded &&
@@ -247,14 +247,8 @@ export const LoginScreen = ({ navigation }) => {
         Show Snackbar
       </Button> */}
     </View>
+    </Suspense>
   );
 }
 
-export default function WrappedLoginScreen()
-{
-  return (
-    <Suspense fallback="Loading">
-      <LoginScreen navigation={any} />
-    </Suspense>
-  )
-}
+export default LoginScreen

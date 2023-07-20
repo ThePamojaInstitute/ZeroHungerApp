@@ -74,7 +74,7 @@ const HomeStackNavigator = ({ navigation }) => {
             />
             <Stack.Screen
                 name="LoginScreen"
-                component={WrappedLoginScreen}
+                component={LoginScreen}
                 options={{
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',

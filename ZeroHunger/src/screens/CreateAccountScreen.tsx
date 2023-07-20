@@ -23,6 +23,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from "react-i18next";
 
 export const CreateAccountScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false)
@@ -110,7 +111,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       }
     })
   }
-
+  const {t, i18n} = useTranslation();
   return (
     <View testID="SignUp.container" style={styles.authContainer}>
       {!loaded && <Text>Loading...</Text>}
