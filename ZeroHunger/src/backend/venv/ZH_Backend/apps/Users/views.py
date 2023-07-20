@@ -143,6 +143,7 @@ class userPreferences(APIView):
             user.set_logistics(data['logistics'])
             user.set_diet(data['dietRequirements'])
             user.set_postal_code(data['postalCode'])
+            user.update_coordinates()
 
             user.save()   
         except Exception as e:
