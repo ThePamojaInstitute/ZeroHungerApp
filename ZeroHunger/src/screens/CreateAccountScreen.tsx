@@ -114,14 +114,14 @@ export const CreateAccountScreen = ({ navigation }) => {
   const {t, i18n} = useTranslation();
   return (
     <View testID="SignUp.container" style={styles.authContainer}>
-      {!loaded && <Text>Loading...</Text>}
+      {!loaded && <Text>{t("account.signup.loading.label")}</Text>}
       {loaded &&
         <>
-          <Text>{loading && "Loading..."}</Text>
+          <Text>{loading && t("account.signup.loading.label")}</Text>
           <View testID="SignUp.usernameInputContainer" style={styles.inputContainer}>
             <Text testID="SignUp.usernameLabel" style={[styles.inputLabel,
             { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}
-            >Username</Text>
+            > {t("account.signup.user.label")} </Text>
             <TextInput
               nativeID="SignUp.usernameInput"
               testID="SignUp.usernameInput"
@@ -144,7 +144,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           <View testID="SignUp.emailInputContainer" style={styles.inputContainer}>
             <Text testID="SignUp.emailLabel" style={[styles.inputLabel,
             { color: `${(errField === 'email') ? Colors.alert2 : Colors.dark}` }]}
-            >Email Address</Text>
+            > {t("account.signup.email.label")} </Text>
             <TextInput
               nativeID="SignUp.emailInput"
               testID="SignUp.emailInput"
@@ -167,7 +167,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           <View testID="SignUp.passwordInputContainer" style={styles.inputContainer}>
             <Text testID="SignUp.passwordLabel" style={[styles.inputLabel,
             { color: `${(errField === 'password') ? Colors.alert2 : Colors.dark}` }]}
-            >Password</Text>
+            > {t("account.signup.pass.label")} </Text>
             <View testID="SignUp.innerPasswordInputContainer" style={[styles.passwordInputContainer,
             { borderColor: `${(errField === 'password') ? Colors.alert2 : Colors.midLight}` }]}>
               <TextInput
@@ -200,7 +200,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           <View testID="SignUp.confPasswordInputContainer" style={styles.inputContainer}>
             <Text testID="SignUp.confPasswordLabel" style={[styles.inputLabel,
             { color: `${(errField === 'confPass') ? Colors.alert2 : Colors.dark}` }]}
-            >Confirm Password</Text>
+            >{t("account.signup.passConfirm.label")}</Text>
             <View testID="SignUp.innerconfPasswordInputContainer" style={[styles.passwordInputContainer,
             { borderColor: `${(errField === 'confPass') ? Colors.alert2 : Colors.midLight}` }]}>
               <TextInput
@@ -232,10 +232,10 @@ export const CreateAccountScreen = ({ navigation }) => {
             </View>}
           <View testID="SignUp.termsAndCondContainer" style={styles.termsAndCondContainer}>
             <Text testID="SignUp.termsInputLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'terms') ? Colors.alert2 : Colors.dark}` }]}>Terms and Conditions</Text>
-            <Text testID="SignUp.termsAndCondText" style={styles.termsAndCondText}>Read our <Text testID="SignUp.termsAndCondLink" style={{ textDecorationLine: 'underline' }}
+            { color: `${(errField === 'terms') ? Colors.alert2 : Colors.dark}` }]}> {t("account.signup.terms.label")} </Text>
+            <Text testID="SignUp.termsAndCondText" style={styles.termsAndCondText}> {t("account.signup.terms.desc")} <Text testID="SignUp.termsAndCondLink" style={{ textDecorationLine: 'underline' }}
               onPress={() => console.log("terms and conditions")}
-            >terms and conditions.</Text></Text>
+            > {t("account.signup.terms.link")} </Text></Text>
             {(errField === 'terms') &&
               <Text
                 testID="SignUp.termsAndCondErrMsg"
@@ -250,11 +250,11 @@ export const CreateAccountScreen = ({ navigation }) => {
                   if (errField === 'terms') setErrField('')
                   setIsAccepted(!isAccepted)
                 }} />
-              <Text testID="SignUp.termsAndCondAcceptText" style={styles.termsAndCondAcceptText}>I accept</Text>
+              <Text testID="SignUp.termsAndCondAcceptText" style={styles.termsAndCondAcceptText}>{t("account.signup.terms.accept.label")}</Text>
             </View>
           </View>
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={handleSignUp}>
-            <Text style={globalStyles.defaultBtnLabel}>Sign Up</Text>
+            <Text style={globalStyles.defaultBtnLabel}>{t("account.signup.submit.label")}</Text>
           </TouchableOpacity>
         </>
       }

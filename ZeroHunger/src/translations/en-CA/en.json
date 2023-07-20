@@ -237,6 +237,7 @@
 			}
 		},
 		"signup": {
+			"loading.label":"Loading",
 			"user.label":	"Username",
 			"display.label": "Display name",
 			"email.label":	"Email Address",
@@ -244,7 +245,8 @@
 			"passConfirm.label": "Confirm Password",
 			"terms" : {
 				"label":	"Terms and conditions",
-				"desc": "Read our terms and conditions.",
+				"desc": "Read our",
+				"link":"terms and conditions.",
 				"accept.label": "I accept"
 			},
 			"submit.label": "Sign up",
