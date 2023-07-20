@@ -14,12 +14,14 @@ class createRequestSerializer (serializers.ModelSerializer):
     fulfilled = serializers.BooleanField(default=False)
     logistics = fields.MultipleChoiceField(choices=LOGISTICS_CHOICES, required=False)
     postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
+    coordinates = serializers.CharField(max_length=50, required=False, allow_blank=True)
     accessNeeds = serializers.IntegerField()
 
     class Meta:
         model=RequestPost
         fields = ['title', 'images', 'postedOn', 'postedBy', 
-                  'description', 'fulfilled', 'logistics', 'postalCode', 'accessNeeds']
+                'description', 'fulfilled', 'logistics', 'postalCode',
+                'accessNeeds', 'coordinates']
     def save(self):
         post=RequestPost(title=self.validated_data['title'],
                        images=self.validated_data['images'],
@@ -29,7 +31,8 @@ class createRequestSerializer (serializers.ModelSerializer):
                        fulfilled=self.validated_data['fulfilled'],
                        logistics=self.validated_data['logistics'],
                        postalCode=self.validated_data['postalCode'],
-                       accessNeeds=self.validated_data['accessNeeds'])
+                       accessNeeds=self.validated_data['accessNeeds'],
+                       coordinates=self.validated_data['coordinates'])
         post.save()
 
 class createOfferSerializer (serializers.ModelSerializer):
@@ -46,7 +49,8 @@ class createOfferSerializer (serializers.ModelSerializer):
     class Meta:
         model=OfferPost
         fields = ['title', 'images', 'postedOn', 'postedBy', 
-                  'description', 'fulfilled', 'logistics', 'postalCode', 'accessNeeds']
+                'description', 'fulfilled', 'logistics', 'postalCode',
+                'accessNeeds', 'coordinates']
     def save(self):
         post=OfferPost(title=self.validated_data['title'],
                        images=self.validated_data['images'],
@@ -56,5 +60,6 @@ class createOfferSerializer (serializers.ModelSerializer):
                        fulfilled=self.validated_data['fulfilled'],
                        logistics=self.validated_data['logistics'],
                        postalCode=self.validated_data['postalCode'],
-                       accessNeeds=self.validated_data['accessNeeds'])
+                       accessNeeds=self.validated_data['accessNeeds'],
+                       coordinates=self.validated_data['coordinates'])
         post.save()

@@ -13,6 +13,7 @@ class RequestPost(models.Model):
     fulfilled = models.BooleanField(default=False)
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=3, default='')
     postalCode = models.CharField(max_length=7, blank=True)
+    coordinates = models.CharField(max_length=50, blank=True)
     accessNeeds = models.IntegerField(choices=ACCESS_NEEDS_CHOICES, default=0)
 
     def __str__(self):
@@ -26,6 +27,7 @@ class OfferPost(models.Model):
     fulfilled = models.BooleanField(default=False)
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=3, default='')
     postalCode = models.CharField(max_length=7, blank=True)
+    coordinates = models.CharField(max_length=50, blank=True)
     accessNeeds = models.IntegerField(choices=ACCESS_NEEDS_CHOICES, default=0)
     
     def __str__(self):
