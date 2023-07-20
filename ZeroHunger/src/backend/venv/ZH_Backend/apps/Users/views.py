@@ -11,6 +11,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 
+import json
+
 from .models import BasicUser
 from apps.Chat.models import Conversation
 from django.db.models import Q
@@ -115,3 +117,23 @@ class logOut(APIView):
         except Exception as e:
            print(e)
            return Response(status=400)
+
+
+class getNotifications(APIView):
+    def post(self, request, format=None):
+        try:
+            user = BasicUser.objects.get(username=request.data['username'])
+            notifications = user.notifications
+            return Response(json.dumps(notifications, indent=1), status=200)
+        except Exception as e:
+            print(e)
+            return Response(status=400)
+        
+class addNotification(APIView):
+    def post(self, request, format=None):
+        try:
+            user = BasicUser.objects.get(username=request.data['username'])
+            
+        except Exception as e:
+            print(e)
+            return Response(status=400)
