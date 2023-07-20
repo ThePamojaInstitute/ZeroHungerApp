@@ -225,9 +225,10 @@ export const LoginScreen = ({ navigation }) => {
             setErrMsg('')
             setUsername('')
             setPassword('')
+            console.log(navigation)
             navigation.navigate("CreateAccountScreen")
           }}>
-            <Text testID="SignUp.ButtonLabel" style={globalStyles.outlineBtnLabel}> {t("account.signin.create")} </Text>
+            <Text testID="SignUp.ButtonLabel" style={globalStyles.outlineBtnLabel}> Sign up </Text>
           </TouchableOpacity>
           {/* <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add a Request</Text>
