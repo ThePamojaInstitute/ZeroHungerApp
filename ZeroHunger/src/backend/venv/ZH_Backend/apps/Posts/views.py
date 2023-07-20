@@ -144,6 +144,10 @@ def serialize_posts(posts):
     data = serializers.serialize('json', posts)
     return json.loads(data)
 
+def get_postal_code(user_id):
+    user = BasicUser.objects.get(pk=user_id)
+    return user.postalCode
+
 def get_coordinates(postal_code):
     if len(postal_code) > 6:
         seperator = postal_code[3]
@@ -207,6 +211,11 @@ def add_distance(user, data):
 class createPost(APIView):
     def post(self, request, format=JSONParser):
         postal_code = request.data['postData']['postalCode']
+
+        if(len(postal_code) == 0):
+            user_id = request.data['postData']['postedBy']
+            postal_code = get_postal_code(user_id)
+            
         if(postal_code):
             request.data['postData']['coordinates'] = get_coordinates(postal_code)
         else:
