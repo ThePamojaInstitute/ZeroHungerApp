@@ -167,6 +167,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
             fulfilled: item['fields'].fulfilled,
             postalCode: item['fields'].postalCode,
             accessNeeds: item['fields'].accessNeeds,
+            distance: item['fields']?.distance,
             postId: item.pk,
             username: item.username,
             type: type

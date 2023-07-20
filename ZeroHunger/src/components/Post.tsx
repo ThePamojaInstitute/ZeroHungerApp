@@ -74,11 +74,12 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                         {from === "home" &&
                             <Text testID="Posts.username" style={globalStyles.Small1}>{post.username}</Text>
                         }
-                        <View testID="Posts.locationCont" style={styles.locationCont}>
-                            <Ionicons testID="Posts.locationIcon" name='location-outline' size={13} style={{ marginRight: 4 }} />
-                            {/* Placeholder distance away */}
-                            <Text testID="Posts.locationText" style={globalStyles.Small1}>{1} km away</Text>
-                        </View>
+                        {user['username'] !== post.username &&
+                            <View testID="Posts.locationCont" style={styles.locationCont}>
+                                <Ionicons testID="Posts.locationIcon" name='location-outline' size={13} style={{ marginRight: 4 }} />
+                                <Text testID="Posts.locationText" style={globalStyles.Small1}>{post.distance ? post.distance : 'x'} km away</Text>
+                            </View>
+                        }
                     </View>
                     {from === "history" &&
                         <Text style={[globalStyles.Tag, historyStyles.fulfillment,

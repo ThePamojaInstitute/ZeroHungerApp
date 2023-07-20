@@ -1,4 +1,6 @@
 from django.db import models
+from django.conf import settings
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from multiselectfield import MultiSelectField
 from .choices import LOGISTICS_CHOICES, DIET_REQUIREMENTS
@@ -6,6 +8,8 @@ from .choices import LOGISTICS_CHOICES, DIET_REQUIREMENTS
 from .managers import CustomUserManager
 # from .settings import AUTH_USER_MODEL
 from django.contrib.auth.models import PermissionsMixin
+
+import requests
 
 class BasicUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True)
@@ -17,6 +21,7 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     expo_push_token = models.CharField(max_length=50, default="", blank=True)
     postalCode = models.CharField(max_length=7, blank=True)
+    coordinates = models.CharField(max_length=50, blank=True)
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=len(LOGISTICS_CHOICES), default='', blank=True)
     diet = MultiSelectField(choices=DIET_REQUIREMENTS, max_length=len(DIET_REQUIREMENTS), default='', blank=True)
 
@@ -58,4 +63,13 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return self.is_superuser
 
-   
+    def update_coordinates(self):
+        url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{self.postalCode}.json?access_token={settings.MAPBOX_ACCESS_CODE}'
+        res = requests.get(url, headers={'User-Agent': "python-requests/2.31.0"})
+        json = res.json()
+
+        longitude = json['features'][0]['center'][0] 
+        latitude = json['features'][0]['center'][1] 
+        coordinated = f'{longitude},{latitude}'
+
+        self.coordinates = coordinated
