@@ -1,13 +1,13 @@
 import { axiosInstance } from "../../config";
 import { Char } from "../../types";
 
-export const logisticsPreferences = {
+export const LOGISTICSPREFERENCES = {
     PICKUP: 0,
     DELIVERY: 1,
     PUBLIC: 2
 }
 
-export const accessNeedsPreferences = {
+export const ACCESSNEEDSPREFERENCES = {
     NONE: 0,
     WHEELCHAIR: 1,
     DELIVERY: 2
@@ -26,14 +26,13 @@ export const createPost = async (post: {
     postType: Char
 }) => {
     const canadianPostalCodeRegex = /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i
-
     if (!post.postData.title) {
         return { msg: `Please enter a title to your ${post.postType === "r" ? "request" : "offer"}`, res: null }
     } else if (post.postData.title.length > 100) {
         return { msg: "Title should be at most 100 characters", res: null }
     } else if (post.postData.postalCode.length > 0 && !post.postData.postalCode.match(canadianPostalCodeRegex)) {
         return { msg: "Please enter a valid postal code", res: null }
-    } else if (!post.postData.accessNeeds) {
+    } else if (post.postData.accessNeeds === undefined) {
         return { msg: "access needs", res: null }
     }
 
@@ -116,11 +115,11 @@ export const handleImageUpload = async (images: string[]) => {
 
 export const getLogisticsType = (num: number) => {
     switch (num) {
-        case logisticsPreferences.PICKUP:
+        case LOGISTICSPREFERENCES.PICKUP:
             return 'Pick up'
-        case logisticsPreferences.DELIVERY:
+        case LOGISTICSPREFERENCES.DELIVERY:
             return 'Delivery'
-        case logisticsPreferences.PUBLIC:
+        case LOGISTICSPREFERENCES.PUBLIC:
             return 'Meet at a public location'
         default:
             return ''
@@ -161,11 +160,11 @@ export const formatPostalCode = (postalCode: string) => {
 
 export const handleAccessNeeds = (num: number) => {
     switch (num) {
-        case accessNeedsPreferences.NONE:
+        case ACCESSNEEDSPREFERENCES.NONE:
             return 'No access needs'
-        case accessNeedsPreferences.WHEELCHAIR:
+        case ACCESSNEEDSPREFERENCES.WHEELCHAIR:
             return 'Pick up location must be wheelchair accessible'
-        case accessNeedsPreferences.DELIVERY:
+        case ACCESSNEEDSPREFERENCES.DELIVERY:
             return 'Delivery only'
         default:
             return ''

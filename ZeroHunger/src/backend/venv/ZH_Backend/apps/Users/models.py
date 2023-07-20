@@ -66,5 +66,10 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     def update_coordinates(self):
         url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{self.postalCode}.json?access_token={settings.MAPBOX_ACCESS_CODE}'
         res = requests.get(url, headers={'User-Agent': "python-requests/2.31.0"})
+        json = res.json()
 
-        print(res)
+        longitude = json['features'][0]['center'][0] 
+        latitude = json['features'][0]['center'][1] 
+        coordinated = f'{longitude},{latitude}'
+
+        self.coordinates = coordinated

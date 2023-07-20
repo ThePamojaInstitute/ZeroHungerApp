@@ -11,4 +11,5 @@ export interface PostModel {
     logistics: string;
     postalCode: string;
     accessNeeds: number;
+    distance: number;
 }

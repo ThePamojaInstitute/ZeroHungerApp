@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { View, Text } from "react-native"
 import { globalStyles } from "../../styles/globalStyleSheet"
-import { logisticsPreferences } from "../controllers/post"
+import { LOGISTICSPREFERENCES } from "../controllers/post"
 import styles from "../../styles/components/accessNeedsStyleSheet"
 
 
@@ -10,13 +10,13 @@ const Logistics = ({ logistics, setLogistics }) => {
         <View style={styles.container}>
             <View style={styles.choiceContainer}>
                 <MaterialCommunityIcons
-                    name={logistics.includes(logisticsPreferences.PICKUP) ? "checkbox-marked" : "checkbox-blank-outline"}
+                    name={logistics.includes(LOGISTICSPREFERENCES.PICKUP) ? "checkbox-marked" : "checkbox-blank-outline"}
                     size={22}
                     onPress={() => {
-                        if (logistics.includes(logisticsPreferences.PICKUP)) {
-                            setLogistics(logistics.filter((num: number) => num != logisticsPreferences.PICKUP))
+                        if (logistics.includes(LOGISTICSPREFERENCES.PICKUP)) {
+                            setLogistics(logistics.filter((num: number) => num != LOGISTICSPREFERENCES.PICKUP))
                         } else {
-                            setLogistics((oldArray: number[]) => [...oldArray, logisticsPreferences.PICKUP])
+                            setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.PICKUP])
                         }
                     }}
                     style={styles.icon}
@@ -25,13 +25,13 @@ const Logistics = ({ logistics, setLogistics }) => {
             </View>
             <View style={styles.choiceContainer}>
                 <MaterialCommunityIcons
-                    name={logistics.includes(logisticsPreferences.DELIVERY) ? "checkbox-marked" : "checkbox-blank-outline"}
+                    name={logistics.includes(LOGISTICSPREFERENCES.DELIVERY) ? "checkbox-marked" : "checkbox-blank-outline"}
                     size={22}
                     onPress={() => {
-                        if (logistics.includes(logisticsPreferences.DELIVERY)) {
-                            setLogistics(logistics.filter((num: number) => num != logisticsPreferences.DELIVERY))
+                        if (logistics.includes(LOGISTICSPREFERENCES.DELIVERY)) {
+                            setLogistics(logistics.filter((num: number) => num != LOGISTICSPREFERENCES.DELIVERY))
                         } else {
-                            setLogistics((oldArray: number[]) => [...oldArray, logisticsPreferences.DELIVERY])
+                            setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
                         }
                     }}
                     style={styles.icon}
@@ -40,13 +40,13 @@ const Logistics = ({ logistics, setLogistics }) => {
             </View>
             <View style={styles.choiceContainer}>
                 <MaterialCommunityIcons
-                    name={logistics.includes(logisticsPreferences.PUBLIC) ? "checkbox-marked" : "checkbox-blank-outline"}
+                    name={logistics.includes(LOGISTICSPREFERENCES.PUBLIC) ? "checkbox-marked" : "checkbox-blank-outline"}
                     size={22}
                     onPress={() => {
-                        if (logistics.includes(logisticsPreferences.PUBLIC)) {
-                            setLogistics(logistics.filter((num: number) => num != logisticsPreferences.PUBLIC))
+                        if (logistics.includes(LOGISTICSPREFERENCES.PUBLIC)) {
+                            setLogistics(logistics.filter((num: number) => num != LOGISTICSPREFERENCES.PUBLIC))
                         } else {
-                            setLogistics((oldArray: number[]) => [...oldArray, logisticsPreferences.PUBLIC])
+                            setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.PUBLIC])
                         }
                     }}
                     style={styles.icon}
