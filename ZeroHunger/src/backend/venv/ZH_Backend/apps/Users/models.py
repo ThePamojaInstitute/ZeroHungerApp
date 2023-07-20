@@ -16,6 +16,24 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     expo_push_token = models.CharField(max_length=50, default="", blank=True)
 
+    def test_notif_data(): 
+        return [
+            {
+                "type":"t",
+                "user":"test_user",
+                "food":"test_food",
+                "time":"0"
+            },
+            {
+                "type": "t",
+                "user": "Sarah",
+                "food": "Jasmine Rice",
+                "time": "1689865700"
+            }
+        ]
+    
+    notifications = models.JSONField(default=test_notif_data)
+
     REQUIRED_FIELDS = ["email"]
 
     objects = CustomUserManager()
@@ -34,5 +52,3 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return self.is_superuser
-
-   
