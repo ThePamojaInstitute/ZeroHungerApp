@@ -30,7 +30,16 @@ from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
 
 
-from .views import createUser, deleteUser, modifyUser, logIn, logOut, MyTokenObtainPairView
+from .views import (
+    createUser, 
+    deleteUser, 
+    modifyUser, 
+    logIn, 
+    logOut, 
+    MyTokenObtainPairView, 
+    getNotifications, 
+    addNotification
+)
 
 urlpatterns = [
     path('createUser', createUser.as_view()),
@@ -40,6 +49,8 @@ urlpatterns = [
     path('logOut', logOut.as_view()),
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('getNotifications', getNotifications.as_view()),
+    # path('addNotification', addNotifications.as_view()),
       # Password reset links (ref: https://github.com/django/django/blob/master/django/contrib/auth/views.py)
     path('reset_password/', auth_views.PasswordResetView.as_view(template_name="password_reset/password_reset.html"), name="reset_password"),
     path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(template_name="password_reset/password_reset_done.html"), name="password_reset_done"),
