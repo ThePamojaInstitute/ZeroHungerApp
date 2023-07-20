@@ -24,6 +24,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
 import PostsHistory from "../screens/PostsHistory";
+import WrappedLoginScreen from "../screens/Loginscreen";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -72,7 +73,7 @@ const HomeStackNavigator = ({ navigation }) => {
             />
             <Stack.Screen
                 name="LoginScreen"
-                component={LoginScreen}
+                component={WrappedLoginScreen}
                 options={{
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
