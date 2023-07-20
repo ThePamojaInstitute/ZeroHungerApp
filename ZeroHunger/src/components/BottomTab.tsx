@@ -29,9 +29,6 @@ const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
 const HomeStackNavigator = ({ navigation }) => {
-
-    const [modalVisible, setModalVisible] = useState(false)
-
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -182,67 +179,6 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="NotificationsScreen"
                 component={NotificationsScreen}
-                options={{
-                    title: "Notifications",
-                    headerTitleAlign: 'center',
-                    headerShadowVisible: false,
-                    headerRight: () => (
-                        <View>
-                            <Ionicons
-                                name="ellipsis-horizontal"
-                                size={24}
-                                style={{ paddingRight: 16 }}
-                                onPress={() => { setModalVisible(!modalVisible) }}
-                            />
-                            <View>
-                                <Modal
-                                    isVisible={modalVisible}
-                                    animationIn="slideInUp"
-                                    backdropOpacity={0.5}
-                                    onBackButtonPress={() => setModalVisible(!modalVisible)}
-                                    onBackdropPress={() => setModalVisible(!modalVisible)}
-                                    onSwipeComplete={() => setModalVisible(!modalVisible)}
-                                    swipeDirection={['down']}
-                                    style={styles.modal}
-                                >
-                                    <View style={{ marginBottom: 30, marginTop: 12 }}>
-                                        <View style={styles.modalContent}>
-                                            <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>Notifications Options</Text>
-                                        </View>
-                                        <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0, marginRight: 10 }} onPress={() => setModalVisible(!modalVisible)}>
-                                            <Ionicons name="close" size={30} />
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View style={{ padding: 12 }}>
-                                        {/* TODO: Implement mark all as read */}
-                                        <View style={{padding: 12, borderBottomWidth: 1, borderBottomColor: Colors.midLight}}>
-                                            <TouchableOpacity style={{ flexDirection: "row" }} onPress={() => {  }}>
-                                                <Ionicons name="checkmark-circle-outline" size={24} style={{paddingRight: 16}}/>
-                                                <Text style={[globalStyles.Body, {marginTop: 3}]}>Mark all as read</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                        <View style={{ padding: 12 }}>
-                                            <TouchableOpacity style={{ flexDirection: "row" }} 
-                                                onPress={() => { 
-                                                    setModalVisible(!modalVisible)
-                                                    navigation.navigate("NotificationsSettingsScreen") 
-                                                }}
-                                            >
-                                                {/* <Ionicons name="md-cog-outline" size={24} style={{ paddingRight: 16 }}/> */}
-                                                <Image 
-                                                    style={{height: 20, width: 20, marginLeft: 3, marginRight: 16}}
-                                                    source={require('../../assets/notifications_settings_icon.png')}
-                                                />
-                                                <Text style={[globalStyles.Body, {marginTop: 3}]}>Notifications settings</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                </Modal>
-                            </View>
-                        </View>
-                        
-                    )
-                }}
             />
         </Stack.Navigator>
     )
