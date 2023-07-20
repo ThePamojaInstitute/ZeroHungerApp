@@ -14,8 +14,8 @@ from django.conf import settings
 from .models import BasicUser
 from apps.Chat.models import Conversation
 from django.db.models import Q
-from .managers import CustomUserManager
 from .serializers import RegistrationSerializer, LoginSerializer
+from apps.Posts.views import decode_token
 
 import jwt
 
@@ -115,3 +115,39 @@ class logOut(APIView):
         except Exception as e:
            print(e)
            return Response(status=400)
+        
+class userPreferences(APIView):
+    def get(self, request):
+        decoded_token = decode_token(request.headers['Authorization'])
+        user = BasicUser.objects.get(pk=decoded_token['user_id'])
+
+        data = {}
+        try:
+            logistics = user.get_logistics()
+            data['logistics'] = [eval(i) for i in logistics] #convert strings to ints
+            diet = user.get_diet()
+            data['diet'] = [eval(i) for i in diet]
+            data['postalCode'] = user.get_postal_code()
+
+            return Response(data, 200)
+        except Exception as e:
+            print(e)
+            return Response({e.__str__()}, 500)
+
+    def post(self, request, format=None):
+        decoded_token = decode_token(request.data['headers']['Authorization'])
+        data = request.data['data']
+        user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        
+        try:  
+            user.set_logistics(data['logistics'])
+            user.set_diet(data['dietRequirements'])
+            user.set_postal_code(data['postalCode'])
+            user.update_coordinates()
+
+            user.save()   
+        except Exception as e:
+            print(e)
+            return Response({e.__str__()}, 500)
+        
+        return Response({"success!!"}, 200)

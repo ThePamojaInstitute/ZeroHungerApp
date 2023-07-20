@@ -163,7 +163,11 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
             postedOn: item['fields'].postedOn,
             postedBy: item['fields'].postedBy,
             description: item['fields'].description,
+            logistics: item['fields'].logistics,
             fulfilled: item['fields'].fulfilled,
+            postalCode: item['fields'].postalCode,
+            accessNeeds: item['fields'].accessNeeds,
+            distance: item['fields']?.distance,
             postId: item.pk,
             username: item.username,
             type: type

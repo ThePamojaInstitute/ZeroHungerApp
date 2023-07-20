@@ -85,7 +85,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                     testID="Drawer.dietRestBtn"
                     label={() => <Text style={globalStyles.Body}>Preferences</Text>}
                     icon={() => <Image source={require('../../assets/Settings.png')} style={styles.Img} />}
-                    onPress={() => { }}
+                    onPress={() => props.navigation.navigate("Preferences")}
                 />
                 <DrawerItem
                     testID="Drawer.notifSettBtn"

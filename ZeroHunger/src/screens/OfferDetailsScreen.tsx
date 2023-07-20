@@ -14,6 +14,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
+import { formatPostalCode, handleAccessNeeds, handleLogistics } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -63,6 +64,10 @@ export const OfferDetailsScreen = ({ navigation }) => {
         })
     }
 
+    const logistics = handleLogistics(route.params.logistics)
+    const postalCode = formatPostalCode(route.params.postalCode)
+    const accessNeeds = handleAccessNeeds(route.params.accessNeeds)
+
     // const renderItem = ({ item }) => {
     //     return (
     //         <TouchableOpacity>
@@ -99,7 +104,7 @@ export const OfferDetailsScreen = ({ navigation }) => {
                         <View testID="OffDet.location" style={{ flexDirection: "row" }}>
                             <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                             {/* Placeholder postal code */}
-                            <Text testID="OffDet.locationText" style={globalStyles.Small2}>XXXXXX</Text>
+                            <Text testID="OffDet.locationText" style={[globalStyles.Small2, { textTransform: 'uppercase' }]}>{postalCode}</Text>
                         </View>
                         {/* TODO: Implement edit posts */}
                         <View>
@@ -125,7 +130,7 @@ export const OfferDetailsScreen = ({ navigation }) => {
                         <View testID="OffDet.location" style={styles.location}>
                             <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                             {/* Placeholder distance away */}
-                            <Text testID="OffDet.distanceText" style={globalStyles.Small2}>{1} km away</Text>
+                            <Text testID="OffDet.distanceText" style={globalStyles.Small2}>{route.params.distance ? route.params.distance : 'x'} km away</Text>
                         </View>
                     </View>
 
@@ -201,10 +206,10 @@ export const OfferDetailsScreen = ({ navigation }) => {
                         <View style={{ marginRight: 24 }}>
                             <Text testID="OffDet.detailCat" style={[globalStyles.Small1, styles.smallText]}>Food category</Text>
                             <Text testID="OffDet.detailsQuant" style={[globalStyles.Small1, styles.smallText]}>Quantity</Text>
-                            <Text testID="OffDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary Requirements</Text>
+                            <Text testID="OffDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary requirements</Text>
                         </View>
                         {/* Temporary details values */}
-                        <View>
+                        <View style={{ flexShrink: 1 }}>
                             <Text testID="OffDet.detailCatVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
                             <Text testID="OffDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
                             <Text testID="OffDet.detailsReqVal" style={globalStyles.Small1}>N/A</Text>
@@ -215,12 +220,14 @@ export const OfferDetailsScreen = ({ navigation }) => {
                     <Text testID="OffDet.meetPrefLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Meeting Preferences</Text>
                     <View testID="OffDet.meetPrefSubCont" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
-                            <Text testID="OffDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick Up or Delivery Preference</Text>
-                            <Text testID="OffDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal Code</Text>
+                            <Text testID="OffDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick up or delivery preference</Text>
+                            <Text testID="OffDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal code</Text>
+                            <Text testID="OffDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Access needs</Text>
                         </View>
-                        <View>
-                            <Text testID="OffDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>Pick Up, Delivery</Text>
-                            <Text testID="OffDet.meetPrefPostalVal" style={globalStyles.Small1}>XXXXXX</Text>
+                        <View style={{ flexShrink: 1 }}>
+                            <Text testID="OffDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
+                            <Text testID="OffDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase', marginBottom: 8 }]}>{postalCode}</Text>
+                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>{accessNeeds}</Text>
                         </View>
                     </View>
                 </View>

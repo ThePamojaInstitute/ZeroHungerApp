@@ -14,6 +14,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
+import { formatPostalCode, handleAccessNeeds, handleLogistics } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -34,9 +35,6 @@ export const RequestDetailsScreen = ({ navigation }) => {
     }> = useRoute()
 
     const { user } = useContext(AuthContext);
-
-    console.log();
-
 
     const [message, setMessage] = useState("Hi " + route.params.username + ", do you still need this? I have some to share")
     const [inputHeight, setInputHeight] = useState(0)
@@ -65,6 +63,10 @@ export const RequestDetailsScreen = ({ navigation }) => {
             user2: route.params.username, msg: message, post: JSON.stringify(post)
         })
     }
+
+    const logistics = handleLogistics(route.params.logistics)
+    const postalCode = formatPostalCode(route.params.postalCode)
+    const accessNeeds = handleAccessNeeds(route.params.accessNeeds)
 
     // const renderItem = ({ item }) => {
     //     return (
@@ -103,7 +105,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                             <View testID="ReqDet.location" style={{ flexDirection: "row" }}>
                                 <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                                 {/* Placeholder postal code */}
-                                <Text testID="ReqDet.locationText" style={globalStyles.Small2}>XXXXXX</Text>
+                                <Text testID="ReqDet.locationText" style={[globalStyles.Small2, { textTransform: 'uppercase' }]}>{postalCode}</Text>
                             </View>
                             {/* TODO: Implement edit posts */}
                             <View>
@@ -130,7 +132,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                         <View testID="ReqDet.location" style={styles.location}>
                             <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                             {/* Placeholder distance away */}
-                            <Text testID="ReqDet.distanceText" style={globalStyles.Small2}>{1} km away</Text>
+                            <Text testID="ReqDet.distanceText" style={globalStyles.Small2}>{route.params.distance ? route.params.distance : 'x'} km away</Text>
                         </View>
 
                         {/* Temporary need by date */}
@@ -211,10 +213,10 @@ export const RequestDetailsScreen = ({ navigation }) => {
                         <View style={{ marginRight: 24 }}>
                             <Text testID="ReqDet.detailCat" style={[globalStyles.Small1, styles.smallText]}>Food category</Text>
                             <Text testID="ReqDet.detailsQuant" style={[globalStyles.Small1, styles.smallText]}>Quantity</Text>
-                            <Text testID="ReqDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary Requirements</Text>
+                            <Text testID="ReqDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary requirements</Text>
                         </View>
                         {/* Temporary details values */}
-                        <View>
+                        <View style={{ flexShrink: 1 }}>
                             <Text testID="ReqDet.detailCatVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
                             <Text testID="ReqDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
                             <Text testID="ReqDet.detailsReqVal" style={globalStyles.Small1}>N/A</Text>
@@ -225,12 +227,14 @@ export const RequestDetailsScreen = ({ navigation }) => {
                     <Text testID="ReqDet.meetPrefLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Meeting Preferences</Text>
                     <View testID="ReqDet.meetPrefSubCont" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
-                            <Text testID="ReqDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick Up or Delivery Preference</Text>
-                            <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal Code</Text>
+                            <Text testID="ReqDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick up or delivery preference</Text>
+                            <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal code</Text>
+                            <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Access needs</Text>
                         </View>
-                        <View>
-                            <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>Pick Up, Delivery</Text>
-                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>XXXXXX</Text>
+                        <View style={{ flexShrink: 1 }}>
+                            <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
+                            <Text testID="ReqDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase', marginBottom: 8 }]}>{postalCode}</Text>
+                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>{accessNeeds}</Text>
                         </View>
                     </View>
                 </View>

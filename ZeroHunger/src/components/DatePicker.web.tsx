@@ -18,7 +18,7 @@ const DatePicker = () => {
     }
 
     return (
-        <View testID="DatePickerWeb.container">
+        <View testID="DatePickerWeb.container" style={{ marginBottom: 15 }}>
             <ReactDatePicker
                 portalId="id"
                 id="datePicker"
