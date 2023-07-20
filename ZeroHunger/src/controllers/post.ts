@@ -32,8 +32,8 @@ export const createPost = async (post: {
         return { msg: "Title should be at most 100 characters", res: null }
     } else if (post.postData.postalCode.length > 0 && !post.postData.postalCode.match(canadianPostalCodeRegex)) {
         return { msg: "Please enter a valid postal code", res: null }
-    } else if (post.postData.accessNeeds === undefined) {
-        return { msg: "access needs", res: null }
+    } else if (!post.postData.postalCode) {
+        return { msg: "Please enter a postal code", res: null }
     }
 
     try {

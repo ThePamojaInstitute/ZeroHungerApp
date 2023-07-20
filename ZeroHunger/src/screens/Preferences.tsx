@@ -20,8 +20,6 @@ export const Preferences = ({ navigation }) => {
 
     useEffect(() => {
         getPreferences(accessToken).then(data => {
-            console.log(data);
-
             setPostalCode(data['postalCode'])
             setDietRequirements(data['diet'])
             setLogistics(data['logistics'])
