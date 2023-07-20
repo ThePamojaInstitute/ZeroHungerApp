@@ -205,7 +205,7 @@ const HomeStackNavigator = ({ navigation }) => {
                                     swipeDirection={['down']}
                                     style={styles.modal}
                                 >
-                                    <View style={{ marginBottom: 30 }}>
+                                    <View style={{ marginBottom: 30, marginTop: 12 }}>
                                         <View style={styles.modalContent}>
                                             <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>Notifications Options</Text>
                                         </View>
@@ -389,7 +389,7 @@ const BottomTab = () => {
                                     swipeDirection={['down']}
                                     style={styles.modal}
                                 >
-                                    <View style={{ marginBottom: 30 }}>
+                                    <View style={{ marginBottom: 30, marginTop: 12 }}>
                                         <View style={styles.modalContent}>
                                             <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>What would you like to post?</Text>
                                         </View>
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
     },
     modal: {
         margin: 0,
-        marginTop: Dimensions.get('window').height * 0.74,
+        marginTop: Dimensions.get('window').height * 0.70,
         backgroundColor: Colors.offWhite,
         borderRadius: 10,
         elevation: 0,
