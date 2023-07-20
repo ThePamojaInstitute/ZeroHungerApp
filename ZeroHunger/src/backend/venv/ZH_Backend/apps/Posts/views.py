@@ -10,6 +10,8 @@ import uuid
 
 import json
 import jwt
+import requests
+import math
 
 from .models import OfferPost, RequestPost
 from .serializers import createOfferSerializer, createRequestSerializer
@@ -142,9 +144,74 @@ def serialize_posts(posts):
     data = serializers.serialize('json', posts)
     return json.loads(data)
 
+def get_coordinates(postal_code):
+    if len(postal_code) > 6:
+        seperator = postal_code[3]
+        postal_code = postal_code.replace(seperator, '')
+    
+    print(postal_code)
+
+    url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{postal_code}.json?access_token={settings.MAPBOX_ACCESS_CODE}'
+    res = requests.get(url, headers={'User-Agent': "python-requests/2.31.0"}).json()
+
+    longitude = res['features'][0]['center'][0] 
+    latitude = res['features'][0]['center'][1] 
+    coordinated = f'{longitude},{latitude}'
+
+    return coordinated
+
+def parse_coordinates(coord):
+    coords = coord.split(',')
+
+    lng = float(coords[0])
+    lat = float(coords[1])
+
+    return lng, lat
+
+def get_distance(coord1, coord2):
+    """
+    Calculate the great circle distance in kilometers between two points 
+    on the earth (specified in decimal degrees)
+    """
+    lng1 = coord1[0]
+    lat1 = coord1[1]
+    lng2 = coord2[0]
+    lat2 = coord2[1]
+
+    # convert decimal degrees to radians 
+    lng1, lat1, lng2, lat2 = map(math.radians, [lng1, lat1, lng2, lat2])
+
+    # haversine formula 
+    dlon = lng2 - lng1 
+    dlat = lat2 - lat1 
+    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+    c = 2 * math.asin(math.sqrt(a)) 
+    r = 6371 # Radius of earth in kilometers. Use 3956 for miles. Determines return value units.
+    return c * r
+
+def add_distance(user, data):
+    try:
+        if(len(user.coordinates) > 0):
+                coord = user.coordinates
+                user_coordinates = parse_coordinates(coord) 
+
+                for post in data:
+                    coordinates = post['fields']['coordinates']
+                    if(len(coordinates) > 0):
+                        coordinates = parse_coordinates(coordinates)
+                        distance = get_distance(user_coordinates, coordinates)
+                        post['fields']['distance'] = round(distance, 1)
+    except Exception as e:
+        return Response(e, status=500)
 
 class createPost(APIView):
     def post(self, request, format=JSONParser):
+        postal_code = request.data['postData']['postalCode']
+        if(postal_code):
+            request.data['postData']['coordinates'] = get_coordinates(postal_code)
+        else:
+            request.data['postData']['coordinates'] = ''
+
         if (request.data['postType'] == "r"): 
             serializer = createRequestSerializer(data=request.data['postData'])
         elif (request.data['postType'] == "o"):
@@ -176,6 +243,13 @@ class deletePost(APIView):
 #https://stackoverflow.com/questions/57031455/infinite-scrolling-using-django
 class requestPostsForFeed(APIView):
     def get(self, request):
+        user = ''
+        try:
+            decoded_token = decode_token(request.headers['Authorization'])
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except Exception:
+            return Response("User not found", 404)
+
         page = int(request.GET.get('page',0))
         postsType = request.GET.get('postsType',"r")
 
@@ -184,6 +258,7 @@ class requestPostsForFeed(APIView):
         data = serialize_posts(posts)
 
         add_username(data)
+        add_distance(user, data)
         
         return Response(data, status=201)
      
