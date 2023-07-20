@@ -1,30 +1,61 @@
-import React, { forwardRef, useContext, useEffect, useRef } from "react";
-import { Text, ActivityIndicator } from "react-native"
+import React, { forwardRef, useContext, useEffect, useRef, useState } from "react";
+import { Text, RefreshControl, ActivityIndicator } from "react-native";
+import styles from "../../styles/components/postRendererStyleSheet"
+import { Colors } from "../../styles/globalStyleSheet";
+import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
-import { Colors } from "../../styles/globalStyleSheet";
-import rendererStyles from "../../styles/components/postRendererStyleSheet";
 import { deletePost, markAsFulfilled } from "../controllers/post";
-import { useAlert } from "../context/Alert";
-import useFetchHistoryPosts from "../hooks/useFetchHistoryPosts";
-import { PostModel } from "../models/Post";
+import {
+    useFonts,
+    PublicSans_600SemiBold,
+    PublicSans_500Medium,
+    PublicSans_400Regular
+} from '@expo-google-fonts/public-sans';
+import useFetchFeedPosts from "../hooks/useFetchFeedPosts";
+import { useIsFocused } from '@react-navigation/native';
 import { Post } from "./Post";
+import { PostModel } from "../models/Post";
 import { default as _MyPostModal } from "./MyPostModal";
+import {
+    BlobServiceClient,
+    generateAccountSASQueryParameters,
+    AccountSASPermissions,
+    AccountSASServices,
+    AccountSASResourceTypes,
+    StorageSharedKeyCredential,
+    SASProtocol
+} from '@azure/storage-blob';
 
 
 const MyPostModal = forwardRef(_MyPostModal)
 
-export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderByNewest }) => {
-    const { user, accessToken } = useContext(AuthContext);
-    const { dispatch: alert } = useAlert()
+export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
+    const [loaded, setLoaded] = useState(false)
+    let [fontsLoaded] = useFonts({
+        PublicSans_400Regular,
+        PublicSans_500Medium,
+        PublicSans_600SemiBold
+    })
 
-    // const [refreshing, setRefreshing] = useState(false)
+    useEffect(() => {
+        setLoaded(fontsLoaded)
+    }, [fontsLoaded])
+
+
+    const { dispatch: alert } = useAlert()
+    const { user, accessToken } = useContext(AuthContext);
+
+    const [refreshing, setRefreshing] = useState(false)
+
     const selectedPost = useRef(0)
     const modalRef = useRef(null)
 
     const openModal = () => {
         modalRef.current.publicHandler()
     }
+
+    const isFocused = useIsFocused();
 
     const {
         data,
@@ -33,13 +64,20 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchHistoryPosts(accessToken, type, orderByNewest)
+    } = useFetchFeedPosts(accessToken, type, true)
 
+    // on navigation
     useEffect(() => {
-        refetch()
-    }, [orderByNewest])
+        if (isFocused) {
+            refetch()
+        } else return
+    }, [isFocused])
 
-    if (!user) navigation.navigate('LoginScreen')
+    if (!user) return navigation.navigate('LoginScreen')
+
+    if (!loaded) return <Text>Loading...</Text>
+
+    if (!data) return <Text>An error occurred while fetching data</Text>
 
     if (isLoading) return <ActivityIndicator animating size="large" color={Colors.primary} />
 
@@ -50,7 +88,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
     if (flattenData.length === 0) {
         return <Text
             testID="Posts.noPostsText"
-            style={rendererStyles.noPostsText}
+            style={styles.noPostsText}
         >No {type === "r" ? 'requests' : 'offers'} available</Text>
     }
 
@@ -82,6 +120,40 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
         })
     }
 
+    // const constants = {
+    //     accountName:
+    //     accountKey: 
+    // };
+    // const sharedKeyCredential = new StorageSharedKeyCredential(
+    //     constants.accountName,
+    //     constants.accountKey
+    // );
+
+    // async function createAccountSas() {
+
+    //     const sasOptions = {
+
+    //         services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
+    //         resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
+    //         permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
+    //         protocol: SASProtocol.Https,
+    //         startsOn: new Date(),
+    //         expiresOn: new Date(new Date().valueOf() + (10 * 60 * 1000)),   // 10 minutes
+    //     };
+
+    //     // const sasToken = generateAccountSASQueryParameters(
+    //     //     sasOptions,
+    //     //     sharedKeyCredential 
+    //     // ).toString();
+
+    //     console.log(`sasToken = '${sasToken}'\n`);
+
+    //     // prepend sasToken with `?`
+    //     return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
+    // }
+
+
+
     const renderItem = ({ item }) => {
         if (!item || !item.pk) return
 
@@ -107,7 +179,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
                 openModal={openModal}
                 selectedPost={selectedPost}
                 setShowRequests={setShowRequests}
-                from="history"
+                from="home"
                 key={item.pk}
             />
         )
@@ -116,13 +188,17 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
     return (
         <>
             <FlashList
-                data={flattenData}
+                testID="Posts.list"
                 renderItem={renderItem}
+                data={flattenData}
                 onEndReached={loadNext}
                 onEndReachedThreshold={0.3}
-                estimatedItemSize={125}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
+                estimatedItemSize={125}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
+                }
             />
             <MyPostModal
                 ref={modalRef}
@@ -134,4 +210,4 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
     )
 }
 
-export default React.memo(HistoryPostRenderer)
+export default FeedPostRenderer

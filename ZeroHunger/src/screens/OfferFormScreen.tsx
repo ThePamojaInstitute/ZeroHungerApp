@@ -17,7 +17,8 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
-import moment from "moment";
+import Logistics from "../components/Logistics";
+import AccessNeeds from "../components/AccessNeeds";
 
 export const OfferFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -39,8 +40,9 @@ export const OfferFormScreen = ({ navigation }) => {
     const [desc, setDesc] = useState("")
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
-
-    
+    const [logistics, setLogistics] = useState<number[]>([])
+    const [postalCode, setPostalCode] = useState('')
+    const [accessNeeds, setAccessNeeds] = useState<number>()
 
     useEffect(() => {
         if (!loaded) return
@@ -61,7 +63,7 @@ export const OfferFormScreen = ({ navigation }) => {
                 </TouchableOpacity>
             )
         })
-    }, [title, images, desc, loading, loaded])
+    }, [title, images, desc, loading, loaded, logistics, postalCode, accessNeeds])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
@@ -81,8 +83,10 @@ export const OfferFormScreen = ({ navigation }) => {
                         title: title,
                         images: imageURL,
                         postedBy: user['user_id'],
-                        postedOn:moment(moment.now()).format('YYYY-MM-DD HH:mm:SS'), // converts time to unix timestamp
                         description: desc,
+                        logistics: logistics,
+                        postalCode: postalCode,
+                        accessNeeds: accessNeeds,
                     },
                     postType: 'o'
                 }).then(res => {
@@ -97,12 +101,11 @@ export const OfferFormScreen = ({ navigation }) => {
                     }
                 }).finally(() => setLoading(false))
             })
+
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
         }
     }
-
-   
 
     return (
         <ScrollView testID="Offer.formContainer" style={styles.formContainer}>
@@ -110,8 +113,12 @@ export const OfferFormScreen = ({ navigation }) => {
             {loaded &&
                 <>
                     <View>
-                        <Text testID="Offer.titleLabel" style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.titleDesc" style={styles.formDescText}>Create a descriptive title for the food you are offering</Text>
+                        <Text
+                            testID="Offer.titleLabel"
+                            style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}
+                        >Title <Text style={{ color: Colors.alert2 }}>*</Text>
+                        </Text>
+                        <Text testID="Offer.titleDesc" style={styles.formDescText}>Create a descriptive title for your offering.</Text>
                     </View>
                     <View testID="Offer.formInputContainer" style={styles.formInputContainer}>
                         <TextInput
@@ -132,17 +139,17 @@ export const OfferFormScreen = ({ navigation }) => {
                     {errMsg && <Text testID="Offer.titleErrMsg" style={styles.formErrorMsg}>{errMsg}</Text>}
                     <View>
                         <Text testID="Offer.photoLabel" style={styles.formTitleText}>Photo</Text>
-                        <Text testID="Offer.photoDesc" style={styles.formDescText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
+                        <Text testID="Offer.photoDesc" style={styles.formDescText}>Add photo(s) to help community members understand what you are offering.</Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
-                    <View>
+                    <View style={{ opacity: 0.5 }}>
                         <Text testID="Offer.categoryLabel" style={styles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.categoryDesc" style={styles.formDescText}>Please select all the food category type that applies</Text>
+                        <Text testID="Offer.categoryDesc" style={styles.formDescText}>Please select all the food categories that apply.</Text>
                         <FoodCategories />
                     </View>
-                    <View>
+                    <View style={{ opacity: 0.5 }}>
                         <Text testID="Offer.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.quantityDesc" style={styles.formDescText}>Please input the quantity of the food you are giving away</Text>
+                        <Text testID="Offer.quantityDesc" style={styles.formDescText}>Please input the quantity of the food you are offering.</Text>
                         <Quantity />
                     </View>
                     {/* <View>
@@ -151,8 +158,38 @@ export const OfferFormScreen = ({ navigation }) => {
                 <DatePicker />
             </View> */}
                     <View>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery preferences</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>Select all that apply.</Text>
+                        <Logistics logistics={logistics} setLogistics={setLogistics} />
+                    </View>
+                    <View>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery location</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate the postal code of your desired pick up or delivery location.</Text>
+                        <View testID="Request.formInputContainer" style={styles.formInputContainer}>
+                            <TextInput
+                                value={postalCode}
+                                nativeID="postalCode"
+                                testID="Request.postalCodeInput"
+                                placeholder="XXX XXX"
+                                placeholderTextColor="#656565"
+                                style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                                onChangeText={newText => {
+                                    setPostalCode(newText)
+                                    setErrMsg("")
+                                }}
+                                onChange={() => setErrMsg("")}
+                                maxLength={7}
+                            />
+                        </View>
+                    </View>
+                    <View>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Access needs for pick up or delivery</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate if you have any access needs for sharing the food you are offering.</Text>
+                        <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} />
+                    </View>
+                    <View>
                         <Text testID="Offer.descTitle" style={styles.formTitleText}>Description</Text>
-                        <Text testID="Offer.descDesc" style={styles.formDescText}>Optional: Describe your offer in detail</Text>
+                        <Text testID="Offer.descDesc" style={styles.formDescText}>Describe your offer in detail.</Text>
                     </View>
                     <View style={styles.formDescInputView}>
                         <TextInput

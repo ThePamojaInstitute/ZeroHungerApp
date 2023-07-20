@@ -13,20 +13,25 @@ import {
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { PostModel } from "../models/Post";
+import { formatPostalCode, handleAccessNeeds, handleLogistics } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
 export const RequestDetailsScreen = ({ navigation }) => {
+    const [loaded, setLoaded] = useState(false)
+    let [fontsLoaded] = useFonts({
+        PublicSans_400Regular,
+        PublicSans_500Medium,
+        PublicSans_600SemiBold
+    })
+
+    useEffect(() => {
+        setLoaded(fontsLoaded)
+    }, [fontsLoaded])
+
     let route: RouteProp<{
-        params: {
-            title: string,
-            imagesLink: string,
-            postedOn: string,
-            postedBy: string,
-            description: string,
-            postId: Number,
-            username: string,
-        }
+        params: PostModel
     }> = useRoute()
 
     const { user } = useContext(AuthContext);
@@ -34,6 +39,8 @@ export const RequestDetailsScreen = ({ navigation }) => {
     const [message, setMessage] = useState("Hi " + route.params.username + ", do you still need this? I have some to share")
     const [inputHeight, setInputHeight] = useState(0)
     const [alertMsg, setAlertMsg] = useState('')
+
+    if (!loaded) return <Text>Loading...</Text>
 
     const sendMsg = () => {
         if (!message) {
@@ -43,7 +50,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
 
         const post = {
             title: route.params.title,
-            images: route.params.imagesLink,
+            images: route.params.imageLink,
             postedOn: route.params.postedOn,
             postedBy: route.params.postedBy,
             description: route.params.description,
@@ -57,41 +64,38 @@ export const RequestDetailsScreen = ({ navigation }) => {
         })
     }
 
-    const renderItem = ({ item }) => {
-        return (
-            <TouchableOpacity>
-                <Image
-                    style={{ height: 200, width: 200 }}
-                    source={{ uri: item.imagesLink }}
-                />
-            </TouchableOpacity>
-        )
-    }
+    const logistics = handleLogistics(route.params.logistics)
+    const postalCode = formatPostalCode(route.params.postalCode)
+    const accessNeeds = handleAccessNeeds(route.params.accessNeeds)
 
-    const images = [
-        { imagesLink: route.params.imagesLink }
-    ]
-
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
+    // const renderItem = ({ item }) => {
+    //     return (
+    //         <TouchableOpacity>
+    //             <Image
+    //                 style={{ height: 200, width: 200 }}
+    //                 source={{ uri: item.imageLink }}
+    //             />
+    //         </TouchableOpacity>
+    //     )
+    // }
 
     return (
         <ScrollView testID="ReqDet.container" style={styles.container}>
-            <FlashList
+            {/* <FlashList
                 renderItem={renderItem}
                 data={images}
                 horizontal={true}
                 estimatedItemSize={166}
                 testID="ReqDet.imgsList"
-            />
+            /> */}
+            {route.params.imageLink &&
+                <TouchableOpacity>
+                    <Image
+                        style={{ height: 200, width: 200 }}
+                        source={{ uri: route.params.imageLink }}
+                    />
+                </TouchableOpacity>
+            }
             <View>
                 <Text testID="ReqDet.title" style={[globalStyles.H2, { paddingTop: 12 }]}>{route.params.title}</Text>
                 {/* Your post */}
@@ -101,7 +105,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                             <View testID="ReqDet.location" style={{ flexDirection: "row" }}>
                                 <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                                 {/* Placeholder postal code */}
-                                <Text testID="ReqDet.locationText" style={globalStyles.Small2}>XXXXXX</Text>
+                                <Text testID="ReqDet.locationText" style={[globalStyles.Small2, { textTransform: 'uppercase' }]}>{postalCode}</Text>
                             </View>
                             {/* TODO: Implement edit posts */}
                             <View>
@@ -209,10 +213,10 @@ export const RequestDetailsScreen = ({ navigation }) => {
                         <View style={{ marginRight: 24 }}>
                             <Text testID="ReqDet.detailCat" style={[globalStyles.Small1, styles.smallText]}>Food category</Text>
                             <Text testID="ReqDet.detailsQuant" style={[globalStyles.Small1, styles.smallText]}>Quantity</Text>
-                            <Text testID="ReqDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary Requirements</Text>
+                            <Text testID="ReqDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary requirements</Text>
                         </View>
                         {/* Temporary details values */}
-                        <View>
+                        <View style={{ flexShrink: 1 }}>
                             <Text testID="ReqDet.detailCatVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
                             <Text testID="ReqDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
                             <Text testID="ReqDet.detailsReqVal" style={globalStyles.Small1}>N/A</Text>
@@ -223,12 +227,14 @@ export const RequestDetailsScreen = ({ navigation }) => {
                     <Text testID="ReqDet.meetPrefLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Meeting Preferences</Text>
                     <View testID="ReqDet.meetPrefSubCont" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
-                            <Text testID="ReqDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick Up or Delivery Preference</Text>
-                            <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal Code</Text>
+                            <Text testID="ReqDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick up or delivery preference</Text>
+                            <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal code</Text>
+                            <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Access needs</Text>
                         </View>
-                        <View>
-                            <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>Pick Up, Delivery</Text>
-                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>XXXXXX</Text>
+                        <View style={{ flexShrink: 1 }}>
+                            <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
+                            <Text testID="ReqDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase', marginBottom: 8 }]}>{postalCode}</Text>
+                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>{accessNeeds}</Text>
                         </View>
                     </View>
                 </View>

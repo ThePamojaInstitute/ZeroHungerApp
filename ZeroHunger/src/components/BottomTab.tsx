@@ -24,6 +24,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
 import PostsHistory from "../screens/PostsHistory";
+import Preferences from "../screens/Preferences";
 import WrappedLoginScreen from "../screens/Loginscreen";
 
 const Tab = createBottomTabNavigator()
@@ -162,6 +163,18 @@ const HomeStackNavigator = ({ navigation }) => {
                 options={{
                     headerShown: true,
                     title: "Request & Offer History",
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                }}
+            />
+            <Stack.Screen
+                name="Preferences"
+                component={Preferences}
+                options={{
+                    headerShown: true,
+                    title: "Edit Preferences",
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
@@ -336,7 +349,7 @@ const BottomTab = () => {
                                     onSwipeComplete={() => setModalVisible(!modalVisible)}
                                     swipeDirection={['down']}
                                     style={[styles.modal,
-                                    { marginTop: Dimensions.get('window').height * 0.74 }]}
+                                    { marginTop: Dimensions.get('window').height * 0.69 }]}
                                 >
                                     <View style={{ marginBottom: 30 }}>
                                         <View
@@ -357,7 +370,7 @@ const BottomTab = () => {
                                     </View>
                                     <View style={{ alignItems: "center" }}>
                                         <TouchableOpacity
-                                            style={[globalStyles.defaultBtn, { marginTop: 10 }]}
+                                            style={[globalStyles.secondaryBtn, { marginTop: 10 }]}
                                             onPress={() => {
                                                 setModalVisible(false)
                                                 navigation.navigate("RequestFormScreen")
@@ -366,11 +379,11 @@ const BottomTab = () => {
                                         >
                                             <Text
                                                 testID="Bottom.postNavModalReqLabel"
-                                                style={[globalStyles.defaultBtnLabel, { color: '#E8E3D9' }]}
+                                                style={[globalStyles.secondaryBtnLabel]}
                                             >A Request for Food</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
-                                            style={[globalStyles.secondaryBtn, { marginTop: 16 }]}
+                                            style={[globalStyles.secondaryBtn, { marginTop: 16, marginBottom: 15 }]}
                                             onPress={() => {
                                                 setModalVisible(false)
                                                 navigation.navigate("OfferFormScreen")
@@ -379,7 +392,7 @@ const BottomTab = () => {
                                         >
                                             <Text
                                                 testID="Bottom.postNavModalOffLabel"
-                                                style={[globalStyles.secondaryBtnLabel, { color: Colors.primaryDark }]}
+                                                style={[globalStyles.secondaryBtnLabel]}
                                             >An Offering of Food</Text>
                                         </TouchableOpacity>
                                     </View>

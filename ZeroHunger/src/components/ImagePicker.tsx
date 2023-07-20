@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { FlatList, ImageBackground, Pressable, StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { FlatList, ImageBackground, Pressable, TouchableHighlight, View } from "react-native";
 import styles from "../../styles/components/ImagePickerStyleSheet"
 import { useAlert } from "../context/Alert";
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -28,7 +27,7 @@ const ImagePicker = (props: { images: string[], setImages: React.Dispatch<React.
             if (result.assets.length + props.images.length > 1) {
                 alert!({ type: 'open', message: 'The limit is 1 image per post', alertType: 'error' })
             }
-            result.assets.slice(0, 5 - props.images.length).forEach((img: { uri: string; }) => {
+            result.assets.slice(0, 1 - props.images.length).forEach((img: { uri: string; }) => {
                 props.setImages(oldArr => [...oldArr, img.uri])
             })
         }

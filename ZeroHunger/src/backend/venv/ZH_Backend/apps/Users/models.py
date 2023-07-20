@@ -1,6 +1,7 @@
 from django.db import models
-from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.urls import reverse
+from django.contrib.auth.base_user import AbstractBaseUser
+from multiselectfield import MultiSelectField
+from .choices import LOGISTICS_CHOICES, DIET_REQUIREMENTS
 
 from .managers import CustomUserManager
 # from .settings import AUTH_USER_MODEL
@@ -15,6 +16,10 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     expo_push_token = models.CharField(max_length=50, default="", blank=True)
+    postalCode = models.CharField(max_length=7, blank=True)
+    logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=len(LOGISTICS_CHOICES), default='', blank=True)
+    diet = MultiSelectField(choices=DIET_REQUIREMENTS, max_length=len(DIET_REQUIREMENTS), default='', blank=True)
+
 
     REQUIRED_FIELDS = ["email"]
 
@@ -28,6 +33,24 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     
     def set_expo_push_token(self, token):
         self.expo_push_token = token
+
+    def get_postal_code(self):
+        return self.postalCode
+
+    def set_postal_code(self, postal_code):
+        self.postalCode = postal_code
+
+    def get_logistics(self):
+        return self.logistics
+
+    def set_logistics(self, logistics):
+        self.logistics = logistics
+
+    def get_diet(self):
+        return self.diet
+
+    def set_diet(self, diet):
+        self.diet = diet
     
     def has_perm(self, perm, obj=None):
         return self.is_superuser
