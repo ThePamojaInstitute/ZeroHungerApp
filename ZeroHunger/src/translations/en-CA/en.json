@@ -1,0 +1,402 @@
+{
+	"app" : {
+		"title": "Zero Hunger",
+		"sponsor": "The Pamoja Institute",
+		"strings" : {
+			"back": "Back",
+			"next": "Next",
+			"skip":	"Skip",
+			"continue": "Continue"
+		},
+		"home":	{
+			"label" : "Home"
+		},
+		"post":	{
+			"label" : "Post"
+		},
+		"messages":	{
+			"label" : "Messages"
+		},
+		"foodCategory": {
+			"label" : "Food category",
+			"options": [
+				{
+					"label": "Fruits",
+					"value": "fruits"
+				},
+				{
+					"label": "Vegetables",
+					"value": "vegetables"
+				},
+				{
+					"label": "Grains",
+					"value": "grains"
+				},
+				{
+					"label": "Dairy",
+					"value": "dairy"
+				},
+				{
+					"label": "Dairy alternatives",
+					"value": "dairy_alt"
+				},
+				{
+					"label": "Meat / Poultry",
+					"value": "meat_poultry"
+				},
+				{
+					"label": "Fish",
+					"value": "fish"
+				},
+				{
+					"label": "Legumes",
+					"value": "legumes"
+				},
+				{
+					"label": "Baked goods",
+					"value": "baked_goods"
+				},
+				{
+					"label": "Snacks",
+					"value": "snacks"
+				},
+				{
+					"label": "Condiments",
+					"value": "condiments"
+				},
+				{
+					"label": "Other",
+					"value": "other"
+				}
+			]
+		},
+		"diet": {
+			"label": "Dietary preferences",
+			"options": [
+				{
+					"label": "Halal",
+					"value": "halal"
+				},
+				{
+					"label": "Vegetarian",
+					"value": "vegetarian"
+				},
+				{
+					"label": "Vegan",
+					"value": "vegan"
+				},
+				{
+					"label": "Lactose free",
+					"value": "lactose_free"
+				},{
+					"label": "Nut free",
+					"value": "nut_free"
+				},
+				{
+					"label": "Gluten free",
+					"value": "gluten_free"
+				},
+				{
+					"label": "Sugar free",
+					"value": "sugar_free"
+				},
+				{
+					"label": "Shellfish free",
+					"value": "shellfish_free"
+				},
+				{
+					"label": "Other",
+					"value": "other"
+				}
+			]
+		},
+		"pickup": {
+			"label": "Pick up or delivery preferences",
+			"options": [
+				{
+					"label": "Pick up",
+					"value": "pick_up"
+				},
+				{
+					"label": "Delivery",
+					"value": "delivery"
+				},
+				{
+					"label": "Meet at a public location",
+					"value": "public_location"
+				}
+			]
+		},
+		"access": {
+			"label": "Access needs for pick up or delivery",
+			"options": [
+				{
+					"label": "No access needs",
+					"value": "none"
+				},
+				{
+					"label": "Pick up location must be wheelchair accessible",
+					"value": "wheelchair"
+				},
+				{
+					"label": "Delivery only",
+					"value": "delivery_only"
+				}
+			]
+		},
+		"quantity": {
+			"label": "Quantity",
+			"measurement": {
+				"placeholder": "Measurement",
+				"options": [
+					{
+						"label": {
+							"singular": "Piece",
+							"plural": "Pieces"
+						},
+						"value": "piece"
+					},
+					{
+						"label": {
+							"singular": "Cup",
+							"plural": "Cups"
+						},
+						"value": "cup"
+					},
+					{
+						"label": {
+							"singular": "Gram",
+							"plural": "Grams"
+						},
+						"value": "gram"
+					},
+					{
+						"label": {
+							"singular": "Ounce",
+							"plural": "Ounces"
+						},
+						"value": "ounce"
+					}
+				]
+			}
+		}
+	},
+
+	"menu": {
+		"account":	{
+			"label": "Account Settings"
+		},
+		"history":	{
+			"label": "Request and Offer History"
+		},
+		"diet": {
+			"label": "Dietary Preferences"
+		},
+		"notifications": {
+			"label": "Notifications Settings"
+		},
+		"faq":	{
+			"label": "FAQs"
+		},
+		"terms": {
+			"label": "Terms and Conditions"
+		},
+		"privacy":	{
+			"label": "Privacy Policy"
+		}
+	},
+	
+	"onboarding": [
+		{
+			"heading": "Respond to Requests",
+			"text": "Browse through and fulfill requests made by other users who need help with food."
+		},
+		{
+			"heading": "Accept Offers",
+			"text": "Explore and pick-up offers made by other users who want to share food and provide assistance."
+		},
+		{
+			"heading": "Make Requests & Offers",
+			"text": "Create your own requests or offers of food assistance."
+		}
+	],
+
+	"account": {
+		"signin": {
+			"loading.label":"Loading",
+			"username.label" :"Username",
+			"email.label": "Email",
+			"pass.label": "Password",
+			"passForgot.label": "Forgot password?",
+			"submit.label": "Sign in",
+			"or": "or",
+			"create": "Create an account",
+			"error": {
+				"incorrect": "The email address or password you have entered is incorrect.",
+				"noUser": "There is no account registered with this email address. Create an account"
+			}
+		},
+		"signup": {
+			"user.label":	"Username",
+			"display.label": "Display name",
+			"email.label":	"Email Address",
+			"pass.label": "Password",
+			"passConfirm.label": "Confirm Password",
+			"terms" : {
+				"label":	"Terms and conditions",
+				"desc": "Read our terms and conditions.",
+				"accept.label": "I accept"
+			},
+			"submit.label": "Sign up",
+			"error": {
+				"required": "Please fill out all of the required fields.",
+				"userTaken": "This username is already taken. Please try again.",
+				"email": "Please enter a valid email address.",
+				"passShort": "The password you entered is too short",
+				"passMatch": "The passwords you have entered do not match.",
+				"terms": "You must accept the terms and conditions to create an account."
+			}	
+		}
+	},
+
+	"permissions": {
+		"location": {
+			"heading": "See food offers and requests in your area",
+			"text": "We’ll show you requests and offers based on your location. No other users will see your location.",
+			"submit.label": "Use my current location",
+			"alt.label": "Input postal code"
+		},
+		"notifications": {
+			"heading": "Never miss a thing",
+			"text": "Get push notifications to keep you up to date on new messages about your requests and offers!",
+			"submit.label": "Yes, please",
+			"alt.label": "Maybe later"
+		}
+	},
+
+	"home": {
+		"requests.label": "Requests",
+		"offers.label": "Offers"
+	},
+	
+	"request": {
+		"form": {
+			"heading": "Request Food",
+			"fields": [
+				{
+					"label": "Title",
+					"desc": "Create a descriptive title for your request.",
+					"required": true
+				},
+				{
+					"label": "Photo(s)",
+					"desc": "Add photo(s) to help community members understand what you are looking for.",
+					"required": false
+				},
+				{
+					"label": "Description",
+					"desc": "Describe your food request in detail",
+					"required": false
+				},
+				{
+					"label": "Food category",
+					"desc": "Please select all the food categories that apply.",
+					"required": false,
+					"options": "[ /* see app.foodCategory.options*/ ]"
+				},
+				{
+					"label": "Dietary preferences",
+					"desc": "Please indicate any dietary preferences or allergies that need to be respected in your request.",
+					"required": false,
+					"options": "[ /* see app.diet.options*/ ]"
+				},
+				{
+					"label": "Quantity",
+					"desc": "Please input the desired quantity of the food item you need.",
+					"required": false,
+					"measurement": "[ /* see app.quantity.measurement */ ]"
+				},
+				{
+					"label": "Need by date",
+					"desc": "Please select a date you would need this item by. Your request will expire on this date.",
+					"required": false
+				},
+				{
+					"label": "Pick up or delivery preferences",
+					"desc": "Select all that apply",
+					"required": false,
+					"options": "[ /* see app.pickup.options*/ ]"
+				},
+				{
+					"label": "Pick up or delivery location",
+					"desc": "Please indicate the postal code of your desired pick up or delivery location.",
+					"required": false
+				},
+				{
+					"label": "Access needs for pick up or delivery",
+					"desc": "Please indicate if you have any access needs for receiving your requested food.",
+					"required": false,
+					"options":"[ /* see app.access.options*/ ]"
+				}
+			]
+		}
+	},
+
+	"offer": {
+		"form": {
+			"heading": "Offer Food",
+			"fields": [
+				{
+					"label": "Title",
+					"desc": "Create a descriptive title for your offer.",
+					"required": true
+				},
+				{
+					"label": "Photo(s)",
+					"desc": "Add photo(s) to help community members understand what you are offering.",
+					"required": false
+				},
+				{
+					"label": "Description",
+					"desc": "Describe your food offer in detail",
+					"required": false
+				},
+				{
+					"label": "Food category",
+					"desc": "Please select all the food categories that apply.",
+					"required": false,
+					"options": "[ /* see app.foodCategory.options*/ ]"
+				},
+				{
+					"label": "Dietary preferences",
+					"desc": "Please indicate any dietary preferences or allergies that apply to the food you are offering.",
+					"required": false,
+					"options": "[ /* see app.diet.options*/ ]"
+				},
+				{
+					"label": "Quantity",
+					"desc": "Please input the quantity of the food item you are offering.",
+					"required": false,
+					"measurement": "[ /* see app.quantity.measurement */ ]"
+				},
+				{
+					"label": "Pick up or delivery preferences",
+					"desc": "Select all that apply",
+					"required": false,
+					"options": "[ /* see app.pickup.options*/ ]"
+				},
+				{
+					"label": "Pick up or delivery location",
+					"desc": "Please indicate the postal code of your desired pick up or delivery location.",
+					"required": false
+				},
+				{
+					"label": "Access needs for pick up or delivery",
+					"desc": "Please indicate if you have any access needs for sharing the food you are offering.",
+					"required": false,
+					"options": "[ /* see app.access.options*/ ]"
+				}
+			]
+		}
+	}
+}

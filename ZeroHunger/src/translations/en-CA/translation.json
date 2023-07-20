@@ -1,5 +1,6 @@
 {
-    "loginScreen": {
-    "UsernameLabel":"Username"
+    "loginScreen": 
+    {
+        "UsernameLabel":"Username"
     }
 }
