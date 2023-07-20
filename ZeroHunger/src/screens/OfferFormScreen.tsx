@@ -9,7 +9,6 @@ import Quantity from "../components/Quantity";
 import { createPost } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
-import { axiosInstance } from "../../config";
 import { handleImageUpload } from "../controllers/post";
 import {
     useFonts,
@@ -19,6 +18,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import Logistics from "../components/Logistics";
 import AccessNeeds from "../components/AccessNeeds";
+import { intitializePreferences } from "../controllers/preferences";
 
 export const OfferFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -32,8 +32,12 @@ export const OfferFormScreen = ({ navigation }) => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
 
-    const { user } = useContext(AuthContext)
+    const { user, accessToken } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
+
+    useEffect(() => {
+        intitializePreferences(accessToken, setAccessNeeds, setLogistics, setPostalCode)
+    }, [])
 
     const [title, setTitle] = useState("")
     const [images, setImages] = useState([])

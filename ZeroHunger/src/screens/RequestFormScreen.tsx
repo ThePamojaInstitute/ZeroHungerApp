@@ -18,6 +18,7 @@ import {
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import Logistics from "../components/Logistics";
 import AccessNeeds from "../components/AccessNeeds";
+import { intitializePreferences } from "../controllers/preferences";
 
 export const RequestFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -31,8 +32,12 @@ export const RequestFormScreen = ({ navigation }) => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
 
-    const { user } = useContext(AuthContext)
+    const { user, accessToken } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
+
+    useEffect(() => {
+        intitializePreferences(accessToken, setAccessNeeds, setLogistics, setPostalCode)
+    }, [])
 
     const [title, setTitle] = useState("")
     const [images, setImages] = useState([])
