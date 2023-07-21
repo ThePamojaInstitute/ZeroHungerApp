@@ -104,7 +104,8 @@ export const intitializePreferences = (
     accessToken: string,
     setAccessNeeds: React.Dispatch<React.SetStateAction<number>>,
     setLogistics: React.Dispatch<React.SetStateAction<number[]>>,
-    setPostalCode: React.Dispatch<React.SetStateAction<string>>
+    setPostalCode: React.Dispatch<React.SetStateAction<string>>,
+    setDiet: React.Dispatch<React.SetStateAction<number[]>>,
 ) => {
     getPreferences(accessToken).then(data => {
         if (data['logistics'].length === 0) {
@@ -134,6 +135,14 @@ export const intitializePreferences = (
 
         if (data['postalCode']) {
             setPostalCode(data['postalCode'])
+        }
+
+        if (data['diet']) {
+            Object.keys(DIETREQUIREMENTS).map(value => {
+                if (data['diet'].includes(DIETREQUIREMENTS[value])) {
+                    setDiet((oldArray: number[]) => [...oldArray, DIETREQUIREMENTS[value]])
+                }
+            })
         }
     })
 }
