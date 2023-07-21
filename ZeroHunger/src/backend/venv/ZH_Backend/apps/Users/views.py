@@ -137,3 +137,24 @@ class addNotification(APIView):
         except Exception as e:
             print(e)
             return Response(status=400)
+
+class deleteNotification(APIView):
+    def post(self, request, format=None):
+        try:
+            user = BasicUser.objects.get(username=request.data['username'])
+            id = request.data['id']
+            return Response(status=200)
+        except Exception as e:
+            print(e)
+            return Response(status=400)
+        
+class clearAllNotifications(APIView):
+    def post(self, request, format=None):
+        try:
+            user = BasicUser.objects.get(username=request.data['username'])
+            setattr(user, 'notifications', [])
+            user.save()
+            return Response(status=200)
+        except Exception as e:
+            print(e)
+            return Response(status=400)
