@@ -80,28 +80,13 @@ const FoodCategories = () => {
 
     const ArrayForSize:Object[] = t("app.foodCategory.options", {returnObjects:true})
     //Food categories placeholder
-    const foods = [
-        // { name: t("app.foodCategory.options.0.label" ) },
-        // { name: t("app.foodCategory.options.1.label" ) },
-        // { name: t("app.foodCategory.options.2.label" ) },
-        // { name: t("app.foodCategory.options.3.label" ) },
-        // { name: t("app.foodCategory.options.4.label" ) },
-        // { name: t("app.foodCategory.options.5.label" ) },
-        // { name: t("app.foodCategory.options.6.label" ) },
-        // { name: t("app.foodCategory.options.7.label" )},
-        // { name: t("app.foodCategory.options.8.label" )},
-        // { name: t("app.foodCategory.options.9.label" ) },
-        // { name: t("app.foodCategory.options.10.label" ) },
-        // { name: t("app.foodCategory.options.11.label" ) },
-    ]
+    const foods = [];
     for (let i = 0; i < ArrayForSize.length; i++)
     {   
         var ObjectInJsonPath:string = "app.foodCategory.options.";
-        ObjectInJsonPath + i.toString();
-        ObjectInJsonPath + ".label";
-        console.log(ObjectInJsonPath)
-        foods.push(t(ObjectInJsonPath))
-
+        ObjectInJsonPath = ObjectInJsonPath.concat(i.toString());
+        ObjectInJsonPath = ObjectInJsonPath.concat(".label");
+        foods.push( {name: t(ObjectInJsonPath) });
     }
   
     const renderItem = ({ item }) => (
@@ -109,9 +94,11 @@ const FoodCategories = () => {
             <Item name={item.name} />
         </View>
     );
-
+    console.log(foods);
     return (
+
         <View testID="FoodCategories.container">
+            
             <FlatList
                 testID="FoodCategories.list"
                 data={foods}
