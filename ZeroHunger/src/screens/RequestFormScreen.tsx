@@ -18,6 +18,7 @@ import {
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import Logistics from "../components/Logistics";
 import AccessNeeds from "../components/AccessNeeds";
+import { useTranslation } from "react-i18next";
 
 export const RequestFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -30,7 +31,7 @@ export const RequestFormScreen = ({ navigation }) => {
     useEffect(() => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
-
+    const {t, i18n} = useTranslation();
     const { user } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
 
@@ -46,7 +47,7 @@ export const RequestFormScreen = ({ navigation }) => {
     useEffect(() => {
         if (!loaded) return
         navigation.setOptions({
-            title: "Request Food",
+            title:t("request.form.heading"),
             headerTitleAlign: 'center',
             headerStyle: {
                 backgroundColor: Colors.Background

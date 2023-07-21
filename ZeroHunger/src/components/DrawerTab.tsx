@@ -23,6 +23,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { logOutUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
+import { useTranslation } from "react-i18next";
 
 
 const Drawer = createDrawerNavigator()
@@ -54,7 +55,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
         })
     }
-
+    const {t, i18n} = useTranslation();
     return (
         <DrawerContentScrollView {...props}>
             {!loaded && <Text>Loading...</Text>}

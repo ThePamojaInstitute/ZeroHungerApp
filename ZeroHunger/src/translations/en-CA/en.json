@@ -12,7 +12,10 @@
 			"label" : "Home"
 		},
 		"post":	{
-			"label" : "Post"
+			"label" : "Post",
+			"requestButton":"A Request For Food",
+			"offerButton":"An Offer For Food"
+
 		},
 		"messages":	{
 			"label" : "Messages"
@@ -189,6 +192,10 @@
 		"history":	{
 			"label": "Request and Offer History"
 		},
+		"preferences":
+		{
+			"label": "Edit Preferences"
+		},
 		"diet": {
 			"label": "Dietary Preferences"
 		},
@@ -285,6 +292,7 @@
 	"request": {
 		"form": {
 			"heading": "Request Food",
+			"detailsHeading":"Request",
 			"fields": [
 				{
 					"label": "Title",
@@ -348,6 +356,7 @@
 	"offer": {
 		"form": {
 			"heading": "Offer Food",
+			"detailsHeading":"Offer",
 			"fields": [
 				{
 					"label": "Title",

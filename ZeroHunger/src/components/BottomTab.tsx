@@ -26,18 +26,21 @@ import Modal from 'react-native-modal';
 import PostsHistory from "../screens/PostsHistory";
 import Preferences from "../screens/Preferences";
 import WrappedLoginScreen from "../screens/Loginscreen";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
 const HomeStackNavigator = ({ navigation }) => {
+    const {t, i18n} = useTranslation();
     return (
         <Stack.Navigator>
             <Stack.Screen
                 name="HomeScreen"
                 component={HomeScreen}
                 options={{
-                    title: "Zero Hunger",
+                    title: t("app.title"),
                     headerTitleAlign: 'left',
                     headerShadowVisible: false,
                     headerStyle: {
@@ -76,7 +79,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="LoginScreen"
                 component={LoginScreen}
                 options={{
-                    title: "Zero Hunger",
+                    title: t("app.title"),
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.Background,
@@ -88,7 +91,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="CreateAccountScreen"
                 component={CreateAccountScreen}
                 options={{
-                    title: "Zero Hunger",
+                    title: t("app.title"),
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.Background
@@ -103,7 +106,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="RequestDetailsScreen"
                 component={RequestDetailsScreen}
                 options={{
-                    title: "Request",
+                    title:t("request.form.detailsHeading"),
                     headerTitleAlign: "center",
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
@@ -126,7 +129,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="OfferDetailsScreen"
                 component={OfferDetailsScreen}
                 options={{
-                    title: "Offer",
+                    title: t("offer.form.detailsHeading"),
                     headerTitleAlign: "center",
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
@@ -142,11 +145,11 @@ const HomeStackNavigator = ({ navigation }) => {
                 }}
             />
             <Stack.Screen
-                name="Chat"
+                name= {t("app.messages.label")}
                 component={Chat}
                 options={{
                     headerShown: true,
-                    title: "Chat",
+                    title: t("app.messages.label"),
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.Background,
@@ -162,7 +165,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 component={PostsHistory}
                 options={{
                     headerShown: true,
-                    title: "Request & Offer History",
+                    title: t("menu.history.label"),
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
@@ -174,7 +177,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 component={Preferences}
                 options={{
                     headerShown: true,
-                    title: "Edit Preferences",
+                    title: t("menu.preferences.label"),
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
@@ -193,7 +196,7 @@ const ChatStackNavigator = () => {
                 component={Conversations}
                 options={{
                     headerShown: true,
-                    title: "Messages",
+                    title: t("app.messages.label"),
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.Background,
@@ -206,7 +209,7 @@ const ChatStackNavigator = () => {
                 component={Chat}
                 options={{
                     headerShown: true,
-                    title: "Chat",
+                    title: t("app.messages.label"),
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.Background,
@@ -217,7 +220,7 @@ const ChatStackNavigator = () => {
                 name="RequestDetailsScreen"
                 component={RequestDetailsScreen}
                 options={{
-                    title: "Request",
+                    title: t("request.form.detailsHeading"),
                     headerTitleAlign: "center",
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
@@ -236,7 +239,7 @@ const ChatStackNavigator = () => {
                 name="OfferDetailsScreen"
                 component={OfferDetailsScreen}
                 options={{
-                    title: "Offer",
+                    title: t("offer.form.detailsHeading"),
                     headerTitleAlign: "center",
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
@@ -335,7 +338,7 @@ const BottomTab = () => {
                                     <Text
                                         testID="Bottom.postNavLabel"
                                         style={styles.bottomBarText}
-                                    >Post</Text>
+                                    > { t("app.post.label") } </Text>
                                 </TouchableOpacity>
                             </View>
                             <View>
