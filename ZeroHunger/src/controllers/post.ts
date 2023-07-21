@@ -13,6 +13,33 @@ export const ACCESSNEEDSPREFERENCES = {
     DELIVERY: 2
 }
 
+export const FOODCATEGORIES = {
+    Fruits: 0,
+    Vegetables: 1,
+    Grains: 2,
+    Dairy: 3,
+    DairyAlternatives: 4,
+    MeatPoultry: 5,
+    Fish: 6,
+    Legumes: 7,
+    BakedGoods: 8,
+    Snacks: 9,
+    Condiments: 10,
+    Other: 11,
+}
+
+export const DIETPREFERENCES = {
+    Halal: 0,
+    Vegetarian: 1,
+    Vegan: 2,
+    LactoseFree: 3,
+    NutFree: 4,
+    GlutenFree: 5,
+    SugarFree: 6,
+    ShellfishFree: 7,
+    Other: 8,
+}
+
 export const createPost = async (post: {
     postData: {
         title: string
@@ -22,6 +49,8 @@ export const createPost = async (post: {
         logistics: number[],
         postalCode: string,
         accessNeeds: number,
+        categories: number[],
+        diet: number[],
     }
     postType: Char
 }) => {
@@ -30,10 +59,10 @@ export const createPost = async (post: {
         return { msg: `Please enter a title to your ${post.postType === "r" ? "request" : "offer"}`, res: null }
     } else if (post.postData.title.length > 100) {
         return { msg: "Title should be at most 100 characters", res: null }
+    } else if (post.postData.categories.length === 0) {
+        return { msg: "Please select a food category", res: null }
     } else if (post.postData.postalCode.length > 0 && !post.postData.postalCode.match(canadianPostalCodeRegex)) {
         return { msg: "Please enter a valid postal code", res: null }
-    } else if (!post.postData.postalCode) {
-        return { msg: "Please enter a postal code", res: null }
     }
 
     try {
@@ -126,18 +155,18 @@ export const getLogisticsType = (num: number) => {
     }
 }
 
-export const handleLogistics = (str: string) => {
+export const handlePreferences = (str: string, getType: (num: number) => string) => {
     if (!str) return 'None'
 
     const arr = str.split(',')
     if (arr.length === 1) {
-        return getLogisticsType(parseInt(arr[0]))
+        return getType(parseInt(arr[0]))
     }
 
     let preferences = ''
 
     arr.forEach((num, i) => {
-        const type = getLogisticsType(parseInt(num))
+        const type = getType(parseInt(num))
         if (preferences.length > 0) {
             preferences += `, ${type}`
         } else {
@@ -168,5 +197,63 @@ export const handleAccessNeeds = (num: number) => {
             return 'Delivery only'
         default:
             return ''
+    }
+}
+
+export const getCategory = (num: number) => {
+    switch (num) {
+        case FOODCATEGORIES.DairyAlternatives:
+            return 'Dairy alternatives'
+        case FOODCATEGORIES.MeatPoultry:
+            return 'Meat / Poultry'
+        case FOODCATEGORIES.BakedGoods:
+            return 'Baked goods'
+        case FOODCATEGORIES.Fruits:
+            return 'Fruits'
+        case FOODCATEGORIES.Vegetables:
+            return 'Vegetables'
+        case FOODCATEGORIES.Grains:
+            return 'Grains'
+        case FOODCATEGORIES.Dairy:
+            return 'Dairy'
+        case FOODCATEGORIES.Fish:
+            return 'Fish'
+        case FOODCATEGORIES.Legumes:
+            return 'Legumes'
+        case FOODCATEGORIES.BakedGoods:
+            return 'Baked goods'
+        case FOODCATEGORIES.Snacks:
+            return 'Snacks'
+        case FOODCATEGORIES.Condiments:
+            return 'Condiments'
+        case FOODCATEGORIES.Other:
+            return 'Other'
+        default:
+            return 'Other'
+    }
+}
+
+export const getDiet = (num: number) => {
+    switch (num) {
+        case DIETPREFERENCES.Halal:
+            return 'Halal'
+        case DIETPREFERENCES.Vegetarian:
+            return 'Vegetarian'
+        case DIETPREFERENCES.Vegan:
+            return 'Vegan'
+        case DIETPREFERENCES.LactoseFree:
+            return 'Lactose free'
+        case DIETPREFERENCES.NutFree:
+            return 'Nut free'
+        case DIETPREFERENCES.GlutenFree:
+            return 'Gluten free'
+        case DIETPREFERENCES.SugarFree:
+            return 'Sugar free'
+        case DIETPREFERENCES.ShellfishFree:
+            return 'Shellfish free'
+        case DIETPREFERENCES.Other:
+            return 'Other'
+        default:
+            return 'Other'
     }
 }
