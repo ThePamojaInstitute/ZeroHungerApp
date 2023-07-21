@@ -6,7 +6,9 @@
 			"back": "Back",
 			"next": "Next",
 			"skip":	"Skip",
-			"continue": "Continue"
+			"continue": "Continue",
+			"cancel":"Cancel",
+			"loading":"Loading..."
 		},
 		"home":	{
 			"label" : "Home"
@@ -210,7 +212,11 @@
 		},
 		"privacy":	{
 			"label": "Privacy Policy"
+		},
+		"logout": {
+			"label": "Log Out"
 		}
+
 	},
 	
 	"onboarding": [

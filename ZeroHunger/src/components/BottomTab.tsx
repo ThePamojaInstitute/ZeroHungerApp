@@ -277,7 +277,7 @@ const BottomTab = () => {
     return (
         <Tab.Navigator>
             <Tab.Screen
-                name="Home"
+                name={t("app.home.label")}
                 component={HomeStackNavigator}
                 options={({ route }) => ({
                     headerShown: false,
@@ -316,7 +316,7 @@ const BottomTab = () => {
                 })}
             />
             <Tab.Screen
-                name="Post"
+                name={t("app.post.label")}
                 component={PostComponent}
                 //Post button + modal
                 options={({ navigation }) => ({
@@ -383,7 +383,7 @@ const BottomTab = () => {
                                             <Text
                                                 testID="Bottom.postNavModalReqLabel"
                                                 style={[globalStyles.secondaryBtnLabel]}
-                                            >A Request for Food</Text>
+                                            > A Request for Food </Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={[globalStyles.secondaryBtn, { marginTop: 16, marginBottom: 15 }]}
@@ -405,7 +405,7 @@ const BottomTab = () => {
                 })}
             />
             <Tab.Screen
-                name="Messages"
+                name={t("app.messages.label")}
                 component={ChatStackNavigator}
                 options={({ route }) => ({
                     tabBarIcon: ({ focused }) => (
