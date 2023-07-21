@@ -19,12 +19,14 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     def test_notif_data(): 
         return [
             {
+                "id":"0",
                 "type":"t",
                 "user":"test_user",
                 "food":"test_food",
                 "time":"0"
             },
             {
+                "id":"1",
                 "type": "t",
                 "user": "Sarah",
                 "food": "Jasmine Rice",
@@ -33,6 +35,7 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
         ]
     
     notifications = models.JSONField(default=test_notif_data)
+    # notifications = models.JSONField(default=lambda: [])
 
     REQUIRED_FIELDS = ["email"]
 
