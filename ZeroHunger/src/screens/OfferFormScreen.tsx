@@ -4,9 +4,9 @@ import styles from "../../styles/screens/postFormStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
-import FoodCategories from "../components/FoodCategories";
+import FoodCategories from "../components/FoodFilters";
 import Quantity from "../components/Quantity";
-import { createPost } from "../controllers/post";
+import { DIETPREFERENCES, FOODCATEGORIES, createPost, getCategory, getDiet } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import { handleImageUpload } from "../controllers/post";
@@ -19,6 +19,7 @@ import {
 import Logistics from "../components/Logistics";
 import AccessNeeds from "../components/AccessNeeds";
 import { intitializePreferences } from "../controllers/preferences";
+import FoodFilters from "../components/FoodFilters";
 
 export const OfferFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -36,17 +37,21 @@ export const OfferFormScreen = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
 
     useEffect(() => {
-        intitializePreferences(accessToken, setAccessNeeds, setLogistics, setPostalCode)
+        intitializePreferences(accessToken, setAccessNeeds, setLogistics, setPostalCode, setDiet)
     }, [])
 
     const [title, setTitle] = useState("")
     const [images, setImages] = useState([])
     const [desc, setDesc] = useState("")
-    const [errMsg, setErrMsg] = useState("")
+    const [titleErr, setTitleErr] = useState("")
+    const [categoryErr, setCategoryErr] = useState("")
+    const [postalErr, setPostalErr] = useState("")
     const [loading, setLoading] = useState(false)
     const [logistics, setLogistics] = useState<number[]>([])
     const [postalCode, setPostalCode] = useState('')
     const [accessNeeds, setAccessNeeds] = useState<number>()
+    const [categories, setCategories] = useState<number[]>([])
+    const [diet, setDiet] = useState<number[]>([])
 
     useEffect(() => {
         if (!loaded) return
@@ -67,7 +72,11 @@ export const OfferFormScreen = ({ navigation }) => {
                 </TouchableOpacity>
             )
         })
-    }, [title, images, desc, loading, loaded, logistics, postalCode, accessNeeds])
+    }, [title, images, desc, loading, loaded, logistics, postalCode, accessNeeds, categories, diet])
+
+    useEffect(() => {
+        setCategoryErr('')
+    }, [categories])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
@@ -91,6 +100,8 @@ export const OfferFormScreen = ({ navigation }) => {
                         logistics: logistics,
                         postalCode: postalCode,
                         accessNeeds: accessNeeds,
+                        categories: categories,
+                        diet: diet,
                     },
                     postType: 'o'
                 }).then(res => {
@@ -100,8 +111,15 @@ export const OfferFormScreen = ({ navigation }) => {
                     } else if (res.msg === "failure") {
                         alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
                     } else {
-                        // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
-                        setErrMsg(res.msg ? res.msg : 'An error occured!')
+                        if (res.msg.toLowerCase().includes('title')) {
+                            setTitleErr(res.msg)
+                        } else if (res.msg.toLowerCase().includes('category')) {
+                            setCategoryErr(res.msg)
+                        } else if (res.msg.toLowerCase().includes('postal')) {
+                            setPostalErr(res.msg)
+                        } else {
+                            alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                        }
                     }
                 }).finally(() => setLoading(false))
             })
@@ -119,7 +137,7 @@ export const OfferFormScreen = ({ navigation }) => {
                     <View>
                         <Text
                             testID="Offer.titleLabel"
-                            style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}
+                            style={[styles.formTitleText, { color: titleErr ? Colors.alert2 : Colors.dark }]}
                         >Title <Text style={{ color: Colors.alert2 }}>*</Text>
                         </Text>
                         <Text testID="Offer.titleDesc" style={styles.formDescText}>Create a descriptive title for your offering.</Text>
@@ -131,25 +149,30 @@ export const OfferFormScreen = ({ navigation }) => {
                             testID="Offer.titleInput"
                             placeholder="Enter name of food offering"
                             placeholderTextColor="#656565"
-                            style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                            style={[styles.formInput, { borderColor: titleErr ? Colors.alert2 : Colors.midLight }]}
                             onChangeText={newText => {
                                 setTitle(newText)
-                                setErrMsg("")
+                                setTitleErr("")
                             }}
-                            onChange={() => setErrMsg("")}
+                            onChange={() => setTitleErr("")}
                             maxLength={100}
                         />
                     </View>
-                    {errMsg && <Text testID="Offer.titleErrMsg" style={styles.formErrorMsg}>{errMsg}</Text>}
+                    {titleErr && <Text testID="Offer.titleErrMsg" style={styles.formErrorMsg}>{titleErr}</Text>}
                     <View>
                         <Text testID="Offer.photoLabel" style={styles.formTitleText}>Photo</Text>
                         <Text testID="Offer.photoDesc" style={styles.formDescText}>Add photo(s) to help community members understand what you are offering.</Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
-                    <View style={{ opacity: 0.5 }}>
-                        <Text testID="Offer.categoryLabel" style={styles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.categoryDesc" style={styles.formDescText}>Please select all the food categories that apply.</Text>
-                        <FoodCategories />
+                    <View>
+                        <Text testID="Request.categoryLabel" style={[styles.formTitleText, { color: categoryErr ? Colors.alert2 : Colors.dark }]}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Request.categoryDesc" style={styles.formDescText}>Please select all the food categories that apply.</Text>
+                        <FoodFilters state={categories} setState={setCategories} foodType={FOODCATEGORIES} getType={getCategory} />
+                    </View>
+                    <View>
+                        <Text testID="Request.categoryLabel" style={styles.formTitleText}>Dietary preferences</Text>
+                        <Text testID="Request.categoryDesc" style={styles.formDescText}>Please indicate any dietary preferences or allergies that apply to the food you are offering.</Text>
+                        <FoodFilters state={diet} setState={setDiet} foodType={DIETPREFERENCES} getType={getDiet} />
                     </View>
                     <View style={{ opacity: 0.5 }}>
                         <Text testID="Offer.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
@@ -167,7 +190,7 @@ export const OfferFormScreen = ({ navigation }) => {
                         <Logistics logistics={logistics} setLogistics={setLogistics} />
                     </View>
                     <View>
-                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery location</Text>
+                        <Text testID="Request.dateLabel" style={[styles.formTitleText, { color: postalErr ? Colors.alert2 : Colors.dark }]}>Pick up or delivery location</Text>
                         <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate the postal code of your desired pick up or delivery location.</Text>
                         <View testID="Request.formInputContainer" style={styles.formInputContainer}>
                             <TextInput
@@ -176,16 +199,17 @@ export const OfferFormScreen = ({ navigation }) => {
                                 testID="Request.postalCodeInput"
                                 placeholder="XXX XXX"
                                 placeholderTextColor="#656565"
-                                style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                                style={[styles.formInput, { borderColor: postalErr ? Colors.alert2 : Colors.midLight }]}
                                 onChangeText={newText => {
                                     setPostalCode(newText)
-                                    setErrMsg("")
+                                    setPostalErr("")
                                 }}
-                                onChange={() => setErrMsg("")}
+                                onChange={() => setPostalErr("")}
                                 maxLength={7}
                             />
                         </View>
                     </View>
+                    {postalErr && <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{postalErr}</Text>}
                     <View>
                         <Text testID="Request.dateLabel" style={styles.formTitleText}>Access needs for pick up or delivery</Text>
                         <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate if you have any access needs for sharing the food you are offering.</Text>
@@ -206,7 +230,6 @@ export const OfferFormScreen = ({ navigation }) => {
                             multiline={true}
                             onChangeText={newText => {
                                 setDesc(newText)
-                                setErrMsg("")
                             }}
                             maxLength={1024}
                         />

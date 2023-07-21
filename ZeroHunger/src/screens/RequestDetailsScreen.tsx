@@ -14,7 +14,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
-import { formatPostalCode, handleAccessNeeds, handleLogistics } from "../controllers/post";
+import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleAccessNeeds, handlePreferences } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -64,9 +64,11 @@ export const RequestDetailsScreen = ({ navigation }) => {
         })
     }
 
-    const logistics = handleLogistics(route.params.logistics)
+    const logistics = handlePreferences(route.params.logistics, getLogisticsType)
     const postalCode = formatPostalCode(route.params.postalCode)
     const accessNeeds = handleAccessNeeds(route.params.accessNeeds)
+    const categories = handlePreferences(route.params.categories, getCategory)
+    const diet = handlePreferences(route.params.diet, getDiet)
 
     // const renderItem = ({ item }) => {
     //     return (
@@ -217,9 +219,9 @@ export const RequestDetailsScreen = ({ navigation }) => {
                         </View>
                         {/* Temporary details values */}
                         <View style={{ flexShrink: 1 }}>
-                            <Text testID="ReqDet.detailCatVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
+                            <Text testID="ReqDet.detailCatVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{categories}</Text>
                             <Text testID="ReqDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
-                            <Text testID="ReqDet.detailsReqVal" style={globalStyles.Small1}>N/A</Text>
+                            <Text testID="ReqDet.detailsReqVal" style={globalStyles.Small1}>{diet}</Text>
                         </View>
                     </View>
                 </View>

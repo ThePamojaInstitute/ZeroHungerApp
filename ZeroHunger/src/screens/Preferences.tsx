@@ -75,7 +75,7 @@ export const Preferences = ({ navigation }) => {
 
     return (
         <ScrollView style={{ padding: 10, flex: 1, backgroundColor: Colors.offWhite }}>
-            <Text style={[globalStyles.H3, { marginBottom: 5 }]}>Postal code</Text>
+            <Text style={[globalStyles.H3, { marginBottom: 5, color: errMsg ? Colors.alert2 : Colors.dark }]}>Postal code</Text>
             <Text
                 style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: 5 }]}>
                 This will be your default postal code when you make a new offer or request.{"\n\n"}
