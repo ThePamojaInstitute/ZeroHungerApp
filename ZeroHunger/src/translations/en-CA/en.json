@@ -278,7 +278,8 @@
 
 	"home": {
 		"requests.label": "Requests",
-		"offers.label": "Offers"
+		"offers.label": "Offers",
+		"loading.label":"Loading..."
 	},
 	
 	"request": {

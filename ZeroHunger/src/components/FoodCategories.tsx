@@ -2,8 +2,13 @@ import { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View, Pressable } from "react-native";
 import styles from "../../styles/components/FoodCategoriesStyleSheet"
 import { Colors } from "../../styles/globalStyleSheet";
+import { useTranslation } from "react-i18next";
+
+
 
 const FoodCategories = () => {
+
+    const {t, i18n} = useTranslation();
     //Flatlist data
     const Item = ({ name }) => {
         const [pressed, setPressed] = useState(false)
@@ -64,7 +69,6 @@ const FoodCategories = () => {
                 </View>
             );
         }
-
         return (
             <View style={styles.item}>
                 <TouchableOpacity style={[styles.secondaryBtn, { backgroundColor: pressed ? Colors.primaryMid : Colors.primaryLight }]} onPress={onPress}>
@@ -74,20 +78,32 @@ const FoodCategories = () => {
         );
     }
 
+    const ArrayForSize:Object[] = t("app.foodCategory.options", {returnObjects:true})
     //Food categories placeholder
     const foods = [
-        { name: 'Fruits' },
-        { name: 'Vegetables' },
-        { name: 'Grains' },
-        { name: 'Dairy' },
-        { name: 'Dairy Alternatives' },
-        { name: 'Meat / Poultry' },
-        { name: 'Legumes' },
-        { name: 'Food8' },
-        { name: 'Food9' },
-        { name: 'Food10' },
+        // { name: t("app.foodCategory.options.0.label" ) },
+        // { name: t("app.foodCategory.options.1.label" ) },
+        // { name: t("app.foodCategory.options.2.label" ) },
+        // { name: t("app.foodCategory.options.3.label" ) },
+        // { name: t("app.foodCategory.options.4.label" ) },
+        // { name: t("app.foodCategory.options.5.label" ) },
+        // { name: t("app.foodCategory.options.6.label" ) },
+        // { name: t("app.foodCategory.options.7.label" )},
+        // { name: t("app.foodCategory.options.8.label" )},
+        // { name: t("app.foodCategory.options.9.label" ) },
+        // { name: t("app.foodCategory.options.10.label" ) },
+        // { name: t("app.foodCategory.options.11.label" ) },
     ]
+    for (let i = 0; i < ArrayForSize.length; i++)
+    {   
+        var ObjectInJsonPath:string = "app.foodCategory.options.";
+        ObjectInJsonPath + i.toString();
+        ObjectInJsonPath + ".label";
+        console.log(ObjectInJsonPath)
+        foods.push(t(ObjectInJsonPath))
 
+    }
+  
     const renderItem = ({ item }) => (
         <View>
             <Item name={item.name} />

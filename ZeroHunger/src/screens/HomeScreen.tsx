@@ -18,6 +18,7 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
+import { useTranslation } from "react-i18next";
 
 export const HomeScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -62,10 +63,11 @@ export const HomeScreen = ({ navigation }) => {
         }
     }, [unreadMessageCount])
 
+    const {t, i18n} = useTranslation();
     return (
 
         <View testID="Home.container" style={styles.container}>
-            {!loaded && <Text>Loading...</Text>}
+            {!loaded && <Text> {t("home.loading.label")} </Text>}
             {loaded &&
                 <>
                     <View testID="Home.subContainer" style={styles.subContainer}>
@@ -81,7 +83,7 @@ export const HomeScreen = ({ navigation }) => {
                                 onPress={() => setShowRequests(true)}
                                 testID="Home.requestsBtn"
                             >
-                                <Text testID="Home.requestsLabel" style={globalStyles.H3}>Requests</Text>
+                                <Text testID="Home.requestsLabel" style={globalStyles.H3}> {t("home.requests.label")} </Text>
                             </Pressable>
                         </View>
                         <View testID="Home.offersContainer" style={[
@@ -96,7 +98,7 @@ export const HomeScreen = ({ navigation }) => {
                                 onPress={() => setShowRequests(false)}
                                 testID="Home.offersBtn"
                             >
-                                <Text testID="Home.offersLabel" style={globalStyles.H3}>Offers</Text>
+                                <Text testID="Home.offersLabel" style={globalStyles.H3}> {t("home.offers.label")} </Text>
                             </Pressable>
                         </View>
                     </View>
