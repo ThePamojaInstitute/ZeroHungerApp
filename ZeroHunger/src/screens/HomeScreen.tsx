@@ -11,7 +11,6 @@ import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import FeedPostRenderer from "../components/FeedPostRenderer";
-import FoodCategories from "../components/FoodCategories";
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -101,7 +100,7 @@ export const HomeScreen = ({ navigation }) => {
                             </View>
                         </View>
                         <View testID="Home.categoriesContainer" style={styles.categoriesContainer}>
-                            <FoodCategories />
+                            {/* <FoodCategories /> */}
                         </View>
                         {showRequests &&
                             <FeedPostRenderer
