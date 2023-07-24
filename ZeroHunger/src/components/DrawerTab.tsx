@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, GestureResponderEvent, Image } from "react-native"
 import styles from "../../styles/components/drawerTabStyleSheet"
 import { globalStyles } from "../../styles/globalStyleSheet";
 import { DrawerActions } from '@react-navigation/native';
@@ -12,7 +11,6 @@ import {
 } from "@react-navigation/drawer";
 import { DrawerContentComponentProps } from "@react-navigation/drawer/lib/typescript/src/types";
 import { AuthContext } from "../context/AuthContext";
-import BottomTab from "./BottomTab";
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -129,7 +127,7 @@ const DrawerTab = () => {
         <Drawer.Navigator drawerContent={props => <CustomDrawer {...props} />}>
             <Drawer.Screen
                 name="BottomTab"
-                component={BottomTab}
+                component={DrawerTab}
                 options={{
                     headerShown: false,
                     drawerItemStyle: { height: 0 }
