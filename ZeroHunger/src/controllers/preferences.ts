@@ -1,4 +1,5 @@
 import { axiosInstance } from "../../config"
+import { LOGISTICSPREFERENCES } from "./post"
 
 export const LOGISTICS = {
     PICKUP: 0,
@@ -97,4 +98,51 @@ export const getPreferences = async (accessToken: string) => {
     } catch (err) {
         console.log(err);
     }
-} 
+}
+
+export const intitializePreferences = (
+    accessToken: string,
+    setAccessNeeds: React.Dispatch<React.SetStateAction<number>>,
+    setLogistics: React.Dispatch<React.SetStateAction<number[]>>,
+    setPostalCode: React.Dispatch<React.SetStateAction<string>>,
+    setDiet: React.Dispatch<React.SetStateAction<number[]>>,
+) => {
+    getPreferences(accessToken).then(data => {
+        if (data['logistics'].length === 0) {
+            setAccessNeeds(0)
+        } else {
+            if (data['logistics'].includes(0)) {
+                setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.PICKUP])
+            }
+
+            if (data['logistics'].includes(1)) {
+                setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
+                setAccessNeeds(2)
+            }
+
+            if (data['logistics'].includes(2)) {
+                setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.PUBLIC])
+            }
+
+            if (data['logistics'].includes(3)) {
+                setAccessNeeds(1)
+            }
+
+            if (!data['logistics'].includes(1) && !data['logistics'].includes(3)) {
+                setAccessNeeds(0)
+            }
+        }
+
+        if (data['postalCode']) {
+            setPostalCode(data['postalCode'])
+        }
+
+        if (data['diet']) {
+            Object.keys(DIETREQUIREMENTS).map(value => {
+                if (data['diet'].includes(DIETREQUIREMENTS[value])) {
+                    setDiet((oldArray: number[]) => [...oldArray, DIETREQUIREMENTS[value]])
+                }
+            })
+        }
+    })
+}
