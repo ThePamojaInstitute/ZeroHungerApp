@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, Dimensions } from "react-native";
-import styles from "../../styles/components/bottomTabStyleSheet"
-import { Colors, globalStyles } from '../../styles/globalStyleSheet';
+import { View, TouchableOpacity, Text, StyleSheet, Dimensions, Image } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
 import LoginScreen from '../screens/Loginscreen';
@@ -26,12 +24,18 @@ import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
+import PostsHistory from "../screens/PostsHistory";
+import Preferences from "../screens/Preferences";
+import WrappedLoginScreen from "../screens/Loginscreen";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import  styles from "../../styles/components/bottomTabStyleSheet";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
 const HomeStackNavigator = ({ navigation }) => {
-    const { t, i18n } = useTranslation();
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -103,7 +107,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="RequestDetailsScreen"
                 component={RequestDetailsScreen}
                 options={{
-                    title: t("request.form.detailsHeading"),
+                    title: "Request",
                     headerTitleAlign: "center",
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
@@ -142,7 +146,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 }}
             />
             <Stack.Screen
-                name={t("app.messages.label")}
+                name="Chat"
                 component={Chat}
                 options={{
                     headerShown: true,
@@ -158,37 +162,6 @@ const HomeStackNavigator = ({ navigation }) => {
                 component={AccountSettingsScreen}
             />
             <Stack.Screen
-            <Stack.Screen
-                name="Preferences"
-                component={Preferences}
-                name="PostsHistory"
-                component={PostsHistory}
-                options={{
-                    headerShown: true,
-                    title: "Request & Offer History",
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite,
-                    },
-                }}
-            />
-                options={{
-                    headerShown: true,
-                    title: "Edit Preferences",
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite,
-                    },
-                }}
-            />
-                name="NotificationsSettingsScreen"
-                component={NotificationsSettingsScreen}
-                options={{
-                    title: "Notifications Settings",
-                    headerTitleAlign: "center",
-                    headerShadowVisible: false,
-                }}
-            />
             <Stack.Screen
                 name="NotificationsScreen"
                 component={NotificationsScreen}
@@ -320,22 +293,9 @@ const BottomTab = () => {
                     tabBarButton: () =>
                         <View>
                             <View>
-                                <TouchableOpacity
-                                    testID="Bottom.postNavButton"
-                                    style={styles.postButton}
-                                    onPress={() => setModalVisible(!modalVisible)}
-                                >
-                                    <Ionicons
-                                        testID="Bottom.postNavIcon"
-                                        name="add-circle-outline"
-                                        size={28}
-                                        color={Colors.primary}
-                                        style={{ marginLeft: 3 }}
-                                    />
-                                    <Text
-                                        testID="Bottom.postNavLabel"
-                                        style={styles.bottomBarText}
-                                    > {t("app.post.label")} </Text>
+                                <TouchableOpacity style={styles.postButton} onPress={() => setModalVisible(!modalVisible)}>
+                                    <Ionicons name="add-circle-outline" size={28} color={Colors.primary} style={{ marginLeft: 3 }} />
+                                    <Text style={styles.bottomBarText}>Post</Text>
                                 </TouchableOpacity>
                             </View>
                             <View>

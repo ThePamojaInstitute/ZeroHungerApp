@@ -44,6 +44,8 @@ from .views import (
     userPreferences
 )
 
+
+
 urlpatterns = [
     path('createUser', createUser.as_view()),
     path('deleteUser', deleteUser.as_view()),

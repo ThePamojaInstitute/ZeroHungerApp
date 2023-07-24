@@ -52,8 +52,10 @@ export const OfferFormScreen = ({ navigation }) => {
     const [logistics, setLogistics] = useState<number[]>([])
     const [postalCode, setPostalCode] = useState('')
     const [accessNeeds, setAccessNeeds] = useState<number>()
+    const {t, i18n} = useTranslation();
     const [categories, setCategories] = useState<number[]>([])
     const [diet, setDiet] = useState<number[]>([])
+
 
     useEffect(() => {
         if (!loaded) return
@@ -139,8 +141,8 @@ export const OfferFormScreen = ({ navigation }) => {
                     <View>
                         <Text
                             testID="Offer.titleLabel"
-                            style={[styles.formTitleText, { color: titleErr ? Colors.alert2 : Colors.dark }]}
-                        >{t("offer.form.fields.0.label")} <Text style={{ color: Colors.alert2 }}>*</Text>
+                            style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}
+                        > {t("offer.form.fields.0.label")} <Text style={{ color: Colors.alert2 }}>*</Text>
                         </Text>
                         <Text testID="Offer.titleDesc" style={styles.formDescText}>{t("offer.form.fields.0.desc")}</Text>
                     </View>
@@ -166,9 +168,9 @@ export const OfferFormScreen = ({ navigation }) => {
                         <Text testID="Offer.photoDesc" style={styles.formDescText}>{t("offer.form.fields.1.desc")}</Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
+                        <Text testID="Offer.categoryLabel" style={styles.formTitleText}> {t("offer.form.fields.3.label")} <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Offer.categoryDesc" style={styles.formDescText}>{t("offer.form.fields.3.desc")}</Text>
                     <View>
-                        <Text testID="Request.categoryLabel" style={[styles.formTitleText, { color: categoryErr ? Colors.alert2 : Colors.dark }]}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Request.categoryDesc" style={styles.formDescText}>Please select all the food categories that apply.</Text>
                         <FoodFilters state={categories} setState={setCategories} foodType={FOODCATEGORIES} getType={getCategory} />
                     </View>
                     <View>
@@ -192,8 +194,8 @@ export const OfferFormScreen = ({ navigation }) => {
                         <Logistics logistics={logistics} setLogistics={setLogistics} />
                     </View>
                     <View>
-                        <Text testID="Request.dateLabel" style={[styles.formTitleText, { color: postalErr ? Colors.alert2 : Colors.dark }]}>{t("offer.form.fields.7.label")}</Text>
-                        <Text testID="Request.dateDesc" style={styles.formDescText}>{t("offer.form.fields.7.desc")}</Text>
+                        <Text testID="Request.locationLabel" style={styles.formTitleText}>{t("offer.form.fields.7.label")}</Text>
+                        <Text testID="Request.locationDesc" style={styles.formDescText}>{t("offer.form.fields.7.desc")}</Text>
                         <View testID="Request.formInputContainer" style={styles.formInputContainer}>
                             <TextInput
                                 value={postalCode}
