@@ -18,6 +18,7 @@ import {
     clearAllNotifications 
 } from "../controllers/notifications";
 import { useAlert } from "../context/Alert";
+import styles from "../../styles/screens/notificationsStyleSheet";
 
 export const NotificationsScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -274,8 +275,8 @@ export const NotificationsScreen = ({ navigation }) => {
                             {" "} that you need!
                         </Text>
                         <View style={{flexDirection: "row"}}>
-                            <View style={globalStyles.postTag}>
-                                <Text style={globalStyles.postTagLabel}>Offer</Text>
+                            <View style={styles.postTag}>
+                                <Text style={styles.postTagLabel}>Offer</Text>
                             </View>
                             <Text style={[globalStyles.Small2, styles.time]}>{time} hrs ago</Text>
                         </View>
@@ -292,8 +293,8 @@ export const NotificationsScreen = ({ navigation }) => {
                             {" "} that you are offering!
                         </Text>
                         <View style={{flexDirection: "row"}}>
-                            <View style={globalStyles.postTag}>
-                                <Text style={globalStyles.postTagLabel}>Request</Text>
+                            <View style={styles.postTag}>
+                                <Text style={styles.postTagLabel}>Request</Text>
                             </View>
                             <Text style={[globalStyles.Small2, styles.time]}>{time} hrs ago</Text>
                         </View>
@@ -310,8 +311,8 @@ export const NotificationsScreen = ({ navigation }) => {
                             <Text style={{fontWeight: "bold"}}>{food}</Text>
                         </Text>
                         <View style={{flexDirection: "row"}}>
-                            <View style={globalStyles.postTag}>
-                                <Text style={globalStyles.postTagLabel}>Test</Text>
+                            <View style={styles.postTag}>
+                                <Text style={styles.postTagLabel}>Test</Text>
                             </View>
                             <Text style={[globalStyles.Small2, styles.time]}>{time} hrs ago</Text>
                         </View>
@@ -387,30 +388,5 @@ export const NotificationsScreen = ({ navigation }) => {
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    notification: {
-        flexDirection: "row",
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.midLight,
-        paddingTop: 12,
-    },
-    time: {
-        marginLeft: "auto",
-        paddingTop: 4,
-    },
-    modal: {
-        margin: 0,
-        marginTop: Dimensions.get('window').height * 0.70,
-        backgroundColor: Colors.offWhite,
-        borderRadius: 10,
-        elevation: 0,
-    },
-    modalContent: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-    }
-})
 
 export default NotificationsScreen
