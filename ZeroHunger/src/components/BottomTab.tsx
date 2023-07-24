@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, TouchableOpacity, Text, StyleSheet, Dimensions, Image } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { getFocusedRouteNameFromRoute, useIsFocused } from "@react-navigation/native"
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
 import LoginScreen from '../screens/Loginscreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen'
 import HomeScreen from '../screens/HomeScreen';
@@ -10,7 +10,6 @@ import RequestDetailsScreen from '../screens/RequestDetailsScreen';
 import OfferFormScreen from '../screens/OfferFormScreen';
 import OfferDetailsScreen from '../screens/OfferDetailsScreen';
 import AccountSettingsScreen from '../screens/AccountSettingsScreen';
-import NotificationsSettingsScreen from '../screens/NotificationsSettingsScreen';
 import Conversations from '../screens/Conversations';
 import Chat from './Chat';
 import NotificationsScreen from '../screens/NotificationsScreen';
@@ -75,7 +74,6 @@ const HomeStackNavigator = ({ navigation }) => {
                     // headerShown: false,
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
-                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background,
                     },
@@ -89,7 +87,6 @@ const HomeStackNavigator = ({ navigation }) => {
                     // headerShown: false,
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
-                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background
                     }
@@ -98,9 +95,6 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="RequestFormScreen"
                 component={RequestFormScreen}
-                options={{
-                    headerShadowVisible: false,
-                }}
             />
             <Stack.Screen
                 name="RequestDetailsScreen"
@@ -108,7 +102,6 @@ const HomeStackNavigator = ({ navigation }) => {
                 options={{
                     title: "Request",
                     headerTitleAlign: "center",
-                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -125,9 +118,6 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="OfferFormScreen"
                 component={OfferFormScreen}
-                options={{
-                    headerShadowVisible: false,
-                }}
             />
             <Stack.Screen
                 name="OfferDetailsScreen"
@@ -135,7 +125,6 @@ const HomeStackNavigator = ({ navigation }) => {
                 options={{
                     title: "Offer",
                     headerTitleAlign: "center",
-                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -164,11 +153,31 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="AccountSettingsScreen"
                 component={AccountSettingsScreen}
-                options={{
-                    headerShadowVisible: false,
-                }}
             />
             <Stack.Screen
+            <Stack.Screen
+                name="Preferences"
+                component={Preferences}
+                name="PostsHistory"
+                component={PostsHistory}
+                options={{
+                    headerShown: true,
+                    title: "Request & Offer History",
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                }}
+            />
+                options={{
+                    headerShown: true,
+                    title: "Edit Preferences",
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite,
+                    },
+                }}
+            />
                 name="NotificationsSettingsScreen"
                 component={NotificationsSettingsScreen}
                 options={{
@@ -219,7 +228,6 @@ const ChatStackNavigator = () => {
                 options={{
                     title: "Request",
                     headerTitleAlign: "center",
-                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -239,7 +247,6 @@ const ChatStackNavigator = () => {
                 options={{
                     title: "Offer",
                     headerTitleAlign: "center",
-                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },

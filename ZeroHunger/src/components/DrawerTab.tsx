@@ -2,10 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import styles from "../../styles/components/drawerTabStyleSheet"
 import { globalStyles } from "../../styles/globalStyleSheet";
 import { DrawerActions } from '@react-navigation/native';
-
-import { View, Text, TouchableOpacity, StyleSheet, GestureResponderEvent, Image } from "react-native"
-
-        
 import {
     createDrawerNavigator,
     DrawerContentScrollView,
@@ -93,13 +89,8 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                 <DrawerItem
                     testID="Drawer.notifSettBtn"
                     label={() => <Text style={globalStyles.Body}>Notifications Settings</Text>}
-
-                    // icon={() => <Ionicons name="md-cog-outline" size={24} />}
-                    icon={() => <Image 
-                        style={{height: 20, width: 20, marginLeft: 3}}
-                        source={require('../../assets/notifications_settings_icon.png')}/>}
-                    onPress={() => { props.navigation.navigate("NotificationsSettingsScreen") }}
-
+                    icon={() => <Image source={require('../../assets/Notifications_Settings.png')} style={styles.Img} />}
+                    onPress={() => { }}
                 />
                 <DrawerItem
                     testID="Drawer.FAQBtn"
