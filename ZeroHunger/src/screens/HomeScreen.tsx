@@ -81,7 +81,7 @@ export const HomeScreen = ({ navigation }) => {
                                 onPress={() => setShowRequests(true)}
                                 testID="Home.requestsBtn"
                             >
-                                <Text testID="Home.requestsLabel" style={globalStyles.H3}> {t("home.requests.label")} </Text>
+                                <Text testID="Home.requestsLabel" style={globalStyles.H3}>{t("home.requests.label")}</Text>
                             </Pressable>
                         </View>
                         <View testID="Home.offersContainer" style={[
@@ -96,22 +96,25 @@ export const HomeScreen = ({ navigation }) => {
                                 onPress={() => setShowRequests(false)}
                                 testID="Home.offersBtn"
                             >
-                                <Text testID="Home.offersLabel" style={globalStyles.H3}> {t("home.offers.label")} </Text>
+                                <Text testID="Home.offersLabel" style={globalStyles.H3}>{t("home.offers.label")}</Text>
                             </Pressable>
                         </View>
-                        {showRequests &&
-                            <FeedPostRenderer
-                                type={"r"}
-                                navigation={navigation}
-                                setShowRequests={setShowRequests}
-                            />}
-                        {!showRequests &&
-                            <FeedPostRenderer
-                                type={"o"}
-                                navigation={navigation}
-                                setShowRequests={setShowRequests}
-                            />}
                     </View>
+                    <View testID="Home.categoriesContainer" style={styles.categoriesContainer}>
+                        {/* <FoodCategories /> */}
+                    </View>
+                    {showRequests &&
+                        <FeedPostRenderer
+                            type={"r"}
+                            navigation={navigation}
+                            setShowRequests={setShowRequests}
+                        />}
+                    {!showRequests &&
+                        <FeedPostRenderer
+                            type={"o"}
+                            navigation={navigation}
+                            setShowRequests={setShowRequests}
+                        />}
                 </>
             }
         </View>
