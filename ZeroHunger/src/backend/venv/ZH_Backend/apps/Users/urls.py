@@ -44,7 +44,6 @@ from .views import (
     clearAllNotifications, 
     userPreferences)
 
-from .views import createUser, deleteUser, modifyUser, logIn, logOut, MyTokenObtainPairView, 
 
 
 urlpatterns = [
