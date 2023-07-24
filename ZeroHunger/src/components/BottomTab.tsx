@@ -28,6 +28,8 @@ import Preferences from "../screens/Preferences";
 import WrappedLoginScreen from "../screens/Loginscreen";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import  styles from "../../styles/components/bottomTabStyleSheet";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -446,39 +448,3 @@ const BottomTab = () => {
 }
 
 export default BottomTab
-
-const styles = StyleSheet.create({
-    bottomBarText: {
-        // marginBottom: 14,
-        fontSize: 11,
-        color: Colors.primary,
-        marginBottom: 14,
-        textAlign: "center"
-    },
-    bottomBarTab: {
-        height: 69,
-        backgroundColor: Colors.offWhite,
-        borderTopWidth: 0,
-    },
-    postButton: {
-        marginTop: 9,
-        alignItems: "center",
-        justifyContent: "center",
-        // position: "absolute",
-        // zIndex: 100,
-        // width: "70%"
-        paddingHorizontal: 40,
-    },
-    modal: {
-        margin: 0,
-        marginTop: Dimensions.get('window').height * 0.70,
-        backgroundColor: Colors.offWhite,
-        borderRadius: 10,
-        elevation: 0,
-    },
-    modalContent: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-    }
-})
