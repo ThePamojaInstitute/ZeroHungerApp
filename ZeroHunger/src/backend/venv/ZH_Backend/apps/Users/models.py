@@ -26,6 +26,7 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     diet = MultiSelectField(choices=DIET_REQUIREMENTS, max_length=len(DIET_REQUIREMENTS), default='', blank=True)
     notifications = models.JSONField(default=list)
 
+
     REQUIRED_FIELDS = ["email"]
 
     objects = CustomUserManager()

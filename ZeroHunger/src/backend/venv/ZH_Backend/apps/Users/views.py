@@ -11,9 +11,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 
-import json
-import time
-
 from .models import BasicUser
 from apps.Chat.models import Conversation
 from django.db.models import Q
