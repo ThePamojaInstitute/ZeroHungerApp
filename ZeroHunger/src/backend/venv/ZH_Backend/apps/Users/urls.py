@@ -30,8 +30,6 @@ from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
 
 
-from .views import createUser, deleteUser, modifyUser, logIn, logOut, MyTokenObtainPairView, userPreferences
-
 from .views import (
     createUser, 
     deleteUser, 
@@ -43,7 +41,7 @@ from .views import (
     addNotification,
     clearNotification,
     clearAllNotifications, 
-    userPreferences)
+)
 
 
 

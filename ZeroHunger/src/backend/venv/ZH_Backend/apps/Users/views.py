@@ -151,3 +151,65 @@ class userPreferences(APIView):
             return Response({e.__str__()}, 500)
         
         return Response({"success!!"}, 200)
+
+
+class getNotifications(APIView):
+    def post(self, request, format=None):
+        try:
+            user = BasicUser.objects.get(username=request.data['username'])
+            notifications = user.notifications
+            return Response(json.dumps(notifications, indent=1), status=200)
+        except Exception as e:
+            print(e)
+            return Response(status=400)
+        
+class addNotification(APIView):
+    def post(self, request, format=None):
+        try:
+            user = BasicUser.objects.get(username=request.data['user']['username'])
+            data = request.data['notification']
+            notifications = user.notifications
+
+            notification = {
+                "type" : data['type'],
+                "user" : data['user'],
+                "food" : data['food'],
+                "time" : time.time()
+            }
+            notifications.append(notification)
+            user.save()
+
+            return Response(status=200)
+            
+        except Exception as e:
+            print(e)
+            return Response(status=400)
+
+class clearNotification(APIView):
+    def post(self, request, format=None):
+        try:
+            user = BasicUser.objects.get(username=request.data['user']['username'])
+            timestamp = request.data['timestamp']
+            notifications = user.notifications
+
+            for notif in notifications:
+                if notif['time'] == timestamp:
+                    notifications.remove(notif)
+
+            user.save()
+            
+            return Response(status=200)
+        except Exception as e:
+            print(e)
+            return Response(status=400)
+        
+class clearAllNotifications(APIView):
+    def post(self, request, format=None):
+        try:
+            user = BasicUser.objects.get(username=request.data['username'])
+            setattr(user, 'notifications', [])
+            user.save()
+            return Response(status=200)
+        except Exception as e:
+            print(e)
+            return Response(status=400)

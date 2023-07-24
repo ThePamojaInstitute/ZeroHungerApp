@@ -11,6 +11,7 @@ import {
 } from "@react-navigation/drawer";
 import { DrawerContentComponentProps } from "@react-navigation/drawer/lib/typescript/src/types";
 import { AuthContext } from "../context/AuthContext";
+import BottomTab from "./BottomTab";
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -87,10 +88,12 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                     onPress={() => props.navigation.navigate("Preferences")}
                 />
                 <DrawerItem
-                    testID="Drawer.notifSettBtn"
                     label={() => <Text style={globalStyles.Body}>Notifications Settings</Text>}
-                    icon={() => <Image source={require('../../assets/Notifications_Settings.png')} style={styles.Img} />}
-                    onPress={() => { }}
+                    // icon={() => <Ionicons name="md-cog-outline" size={24} />}
+                    icon={() => <Image 
+                        style={{height: 20, width: 20, marginLeft: 3}}
+                        source={require('../../assets/notifications_settings_icon.png')}/>}
+                    onPress={() => { props.navigation.navigate("NotificationsSettingsScreen") }}
                 />
                 <DrawerItem
                     testID="Drawer.FAQBtn"

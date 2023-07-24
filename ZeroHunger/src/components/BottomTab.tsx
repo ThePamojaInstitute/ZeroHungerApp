@@ -24,6 +24,13 @@ import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
+import PostsHistory from "../screens/PostsHistory";
+import Preferences from "../screens/Preferences";
+import WrappedLoginScreen from "../screens/Loginscreen";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import  styles from "../../styles/components/bottomTabStyleSheet";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -155,37 +162,6 @@ const HomeStackNavigator = ({ navigation }) => {
                 component={AccountSettingsScreen}
             />
             <Stack.Screen
-            <Stack.Screen
-                name="Preferences"
-                component={Preferences}
-                name="PostsHistory"
-                component={PostsHistory}
-                options={{
-                    headerShown: true,
-                    title: "Request & Offer History",
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite,
-                    },
-                }}
-            />
-                options={{
-                    headerShown: true,
-                    title: "Edit Preferences",
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite,
-                    },
-                }}
-            />
-                name="NotificationsSettingsScreen"
-                component={NotificationsSettingsScreen}
-                options={{
-                    title: "Notifications Settings",
-                    headerTitleAlign: "center",
-                    headerShadowVisible: false,
-                }}
-            />
             <Stack.Screen
                 name="NotificationsScreen"
                 component={NotificationsScreen}
