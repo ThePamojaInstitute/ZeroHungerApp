@@ -12,4 +12,6 @@ export interface PostModel {
     postalCode: string;
     accessNeeds: number;
     distance: number;
+    categories: string;
+    diet: string;
 }

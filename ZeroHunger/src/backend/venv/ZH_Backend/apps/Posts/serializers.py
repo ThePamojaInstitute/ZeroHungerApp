@@ -1,6 +1,6 @@
 from rest_framework import serializers, fields
 from .models import RequestPost, OfferPost
-from .choices import LOGISTICS_CHOICES, ACCESS_NEEDS_CHOICES
+from .choices import LOGISTICS_CHOICES, ACCESS_NEEDS_CHOICES, FOOD_CATEGORIES, DIET_PREFERENCES
 from apps.Users.models import BasicUser
 from django.db import models
 from datetime import datetime 
@@ -16,12 +16,14 @@ class createRequestSerializer (serializers.ModelSerializer):
     postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
     coordinates = serializers.CharField(max_length=50, required=False, allow_blank=True)
     accessNeeds = serializers.IntegerField()
+    categories = fields.MultipleChoiceField(choices=FOOD_CATEGORIES, required=False)
+    diet = fields.MultipleChoiceField(choices=DIET_PREFERENCES, required=False)
 
     class Meta:
         model=RequestPost
         fields = ['title', 'images', 'postedOn', 'postedBy', 
                 'description', 'fulfilled', 'logistics', 'postalCode',
-                'accessNeeds', 'coordinates']
+                'accessNeeds', 'coordinates', 'categories', 'diet']
     def save(self):
         post=RequestPost(title=self.validated_data['title'],
                        images=self.validated_data['images'],
@@ -32,7 +34,9 @@ class createRequestSerializer (serializers.ModelSerializer):
                        logistics=self.validated_data['logistics'],
                        postalCode=self.validated_data['postalCode'],
                        accessNeeds=self.validated_data['accessNeeds'],
-                       coordinates=self.validated_data['coordinates'])
+                       coordinates=self.validated_data['coordinates'],
+                       categories=self.validated_data['categories'],
+                       diet=self.validated_data['diet'],)
         post.save()
 
 class createOfferSerializer (serializers.ModelSerializer):
@@ -45,12 +49,14 @@ class createOfferSerializer (serializers.ModelSerializer):
     logistics = fields.MultipleChoiceField(choices=LOGISTICS_CHOICES, required=False)
     postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
     accessNeeds = serializers.IntegerField()
+    categories = fields.MultipleChoiceField(choices=FOOD_CATEGORIES, required=False)
+    diet = fields.MultipleChoiceField(choices=DIET_PREFERENCES, required=False)
 
     class Meta:
         model=OfferPost
         fields = ['title', 'images', 'postedOn', 'postedBy', 
                 'description', 'fulfilled', 'logistics', 'postalCode',
-                'accessNeeds', 'coordinates']
+                'accessNeeds', 'coordinates', 'categories', 'diet']
     def save(self):
         post=OfferPost(title=self.validated_data['title'],
                        images=self.validated_data['images'],
@@ -61,5 +67,7 @@ class createOfferSerializer (serializers.ModelSerializer):
                        logistics=self.validated_data['logistics'],
                        postalCode=self.validated_data['postalCode'],
                        accessNeeds=self.validated_data['accessNeeds'],
-                       coordinates=self.validated_data['coordinates'])
+                       coordinates=self.validated_data['coordinates'],
+                       categories=self.validated_data['categories'],
+                       diet=self.validated_data['diet'],)
         post.save()

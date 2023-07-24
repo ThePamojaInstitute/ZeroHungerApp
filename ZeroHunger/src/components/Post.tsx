@@ -74,7 +74,7 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                         {from === "home" &&
                             <Text testID="Posts.username" style={globalStyles.Small1}>{post.username}</Text>
                         }
-                        {user['username'] !== post.username &&
+                        {(user['username'] !== post.username) && post.distance &&
                             <View testID="Posts.locationCont" style={styles.locationCont}>
                                 <Ionicons testID="Posts.locationIcon" name='location-outline' size={13} style={{ marginRight: 4 }} />
                                 <Text testID="Posts.locationText" style={globalStyles.Small1}>{post.distance ? post.distance : 'x'} km away</Text>
@@ -83,10 +83,12 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                     </View>
                     {from === "history" &&
                         <Text style={[globalStyles.Tag, historyStyles.fulfillment,
-                        { color: post.fulfilled ? Colors.primaryDark : Colors.alert2 }]}
+                        { marginTop: 15, color: post.fulfilled ? Colors.primaryDark : Colors.alert2 }]}
                         >{post.fulfilled ? 'Fulfilled' : 'Not fulfilled'}</Text>
                     }
-                    <View testID="Posts.tag" style={styles.postTag}>
+                    <View
+                        testID="Posts.tag"
+                        style={[styles.postTag, [(user['username'] === post.username && from !== "history") ? { marginTop: 20 } : {}]]}>
                         {/* Placeholder need by date */}
                         <Text testID="Posts.tagLabel" style={styles.postTagLabel}>Need in {3} days</Text>
                     </View>
