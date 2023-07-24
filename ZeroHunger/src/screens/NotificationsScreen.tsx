@@ -12,13 +12,14 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
+import { 
+    addNotification, 
+    clearNotification, 
+    clearAllNotifications 
+} from "../controllers/notifications";
+import { useAlert } from "../context/Alert";
 
 export const NotificationsScreen = ({ navigation }) => {
-    //Time threshold for notifications to become "old"
-    let old_threshold = 3600 * 48 //48 hours
-    //Time threshold for notifications to be deleted
-    let purge_threshold = 3600 * 168 //1 week
-
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
         PublicSans_400Regular,
@@ -67,7 +68,7 @@ export const NotificationsScreen = ({ navigation }) => {
                             </View>
                             <View style={{ padding: 12 }}>
                                 <View style={{padding: 12, borderBottomWidth: 1, borderBottomColor: Colors.midLight}}>
-                                    <TouchableOpacity style={{ flexDirection: "row" }} onPress={ markAllAsRead }>
+                                    <TouchableOpacity style={{ flexDirection: "row" }} onPress={ handleClearAllNotifications }>
                                         <Ionicons name="checkmark-circle-outline" size={24} style={{paddingRight: 16}}/>
                                         <Text style={[globalStyles.Body, {marginTop: 3}]}>Mark all as read</Text>
                                     </TouchableOpacity>
@@ -95,6 +96,12 @@ export const NotificationsScreen = ({ navigation }) => {
         })
     })
 
+    //Time threshold for notifications to become "old"
+    const old_threshold = 3600 * 24 * 2 //2 days
+    //Time threshold for notifications to be deleted
+    const purge_threshold = 3600 * 24 * 7 //1 week
+
+    const { dispatch: alert } = useAlert()
     const { user } = useContext(AuthContext);
 
     const [newNotifications, setNewNotifications] = useState([])
@@ -110,7 +117,23 @@ export const NotificationsScreen = ({ navigation }) => {
         setTimeout(() => setRefreshing(false), 2500)
     }
 
+    useEffect(() => {
+        getNotifications()
+    }, [])
+
+    useEffect(() => {
+        if(newNotifications.length === 0) {
+            setNoNewNotifications(true)
+        }
+        if(oldNotifications.length === 0) {
+            setNoOldNotifications(true)
+        }
+    })
+
     const getNotifications = async () => {
+        setNewNotifications([])
+        setOldNotifications([])
+
         await axiosInstance.post("users/getNotifications", user, {
         }).then((res) => {
             length = res.data.length
@@ -126,22 +149,27 @@ export const NotificationsScreen = ({ navigation }) => {
                     const data = JSON.parse(res.data)[i]
                     // console.log(data)
 
-                    //Calculate time in hours since notification received
-                    let timestamp = Math.floor((Math.floor(new Date().getTime() / 1000) - data.time)/3600)
+                    //Other notification types
+                    // if(data.type != "t" && data.type != "r" && data.type != "o") continue
 
-                    if(timestamp > purge_threshold) {
-                        clearNotification(data.id)
+                    //Calculate time in hours since notification received
+                    let time = (Math.floor(new Date().getTime() / 1000) - data.time)
+                    if(time < 0) time = 0
+
+                    if(time > purge_threshold) {
+                        handleClearNotification(data.time)
                         continue
                     }
-                
+                    
                     let notification = {
-                        id: data.id,
                         type: data.type,
                         user: data.user,
                         food: data.food,
-                        time: timestamp
+                        timestamp: data.time,
+                        time: Math.floor(time / 3600)
                     }
-                    if(timestamp <= old_threshold) {
+
+                    if(time <= old_threshold) {
                         setNewNotifications(newNotifications => [...newNotifications, notification])
                     }
                     else {
@@ -155,13 +183,79 @@ export const NotificationsScreen = ({ navigation }) => {
         })
     }
 
-    useEffect(() => {
-        getNotifications()
-    }, [])
+    //Temporary add notification function
+    const handleAddNotification = async () => {
+        const notification = {
+            type: "t",
+            user: "Test user",
+            food: "Test food"
+        }
+        try {
+            addNotification(user, notification).then(res => {
+                if(res.msg === "success") {
+                    try {
+                        getNotifications()
+                    }
+                    catch (e) {
+                        console.log(e)
+                        alert!({ type: 'open', message: res, alertType: 'error' })
+                    }
+                }
+                else {
+                    console.log(res)
+                    alert!({ type: 'open', message: res, alertType: 'error' })
+                }
+            })
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
 
-    const Notification = ({ id, type, user, food, time }) => {
+    const handleClearNotification = async (timestamp: number) => {
+        try {
+            clearNotification(user, timestamp).then(res => {
+                if(res.msg === "success") {
+                    try {
+                        setNewNotifications(newNotifications.filter(notification => notification['timestamp'] != timestamp))
+                    }
+                    catch (e) {
+                        console.log(e)
+                        alert!({ type: 'open', message: res, alertType: 'error '})
+                    }
+                }
+                else {
+                    console.log(res)
+                    alert!({ type: 'open', message: res, alertType: 'error '})
+                }
+            })
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
+    const handleClearAllNotifications = async () => {
+        clearAllNotifications(user).then(res => {
+            if(res === "success") {
+                try {
+                    setModalVisible(!modalVisible)
+                    setNewNotifications([])
+                    setOldNotifications([])
+                    setNoNewNotifications(true)
+                    setNoOldNotifications(true)
+                }
+                catch (e) {
+                    console.log(e)
+                    alert!({ type: 'open', message: res, alertType: 'error' })
+                }
+            }
+        })
+    }
+
+    const Notification = ({ type, user, food, timestamp, time }) => {
         return (
-            <TouchableOpacity style={styles.notification}>
+            <TouchableOpacity style={styles.notification} onPress={() => handleClearNotification(timestamp)}>
                 <Image 
                     style={{height: 68, width: 68, paddingRight: 12}}
                     source={{
@@ -172,7 +266,7 @@ export const NotificationsScreen = ({ navigation }) => {
                 
                 {/* Offer notification */}
                 {type == "o" && <>
-                    <View style={{paddingLeft: 12}}>
+                    <View style={{paddingLeft: 12, width: "95%", paddingRight: 12}}>
                         <Text style={[globalStyles.Body, {paddingBottom: 8}]}>
                             <Text style={{fontWeight: "bold"}}>{user}</Text>
                             {" "} is offering the {" "}
@@ -190,7 +284,7 @@ export const NotificationsScreen = ({ navigation }) => {
                 
                 {/* Request notification */}
                 {type == "r" && <>
-                    <View style={{paddingLeft: 12}}>
+                    <View style={{paddingLeft: 12, width: "95%", paddingRight: 12}}>
                         <Text style={[globalStyles.Body, {paddingBottom: 8}]}>
                             <Text style={{fontWeight: "bold"}}>{user}</Text>
                             {" "} needs the {" "}
@@ -231,41 +325,13 @@ export const NotificationsScreen = ({ navigation }) => {
     const renderItem = ({ item }) => {
         return (
             <Notification
-                id={item.id}
                 type={item.type}
                 user={item.user}
                 food={item.food}
+                timestamp={item.timestamp}
                 time={item.time}
             />
         )
-    }
-
-    const clearNotification = async (id) => {
-        await axiosInstance.post("users/deleteNotification", {user, id}, {
-        }).then((res) => {
-            try {
-
-            }
-            catch (e) {
-                console.log(e)
-            }
-        })
-    }
-
-    const markAllAsRead = async () => {
-        await axiosInstance.post("users/clearAllNotifications", user, {
-        }).then((res) => {
-            try {
-                setModalVisible(!modalVisible)
-                setNewNotifications([])
-                setOldNotifications([])
-                setNoNewNotifications(true)
-                setNoOldNotifications(true)
-            }
-            catch (e) {
-                console.log(e)
-            }
-        })
     }
 
     return (
@@ -307,7 +373,12 @@ export const NotificationsScreen = ({ navigation }) => {
                         <Text style={{fontSize: 36, padding: 15}}>No Notifications</Text>
                     </>}
 
-                    {/* Button to test notification loading */}
+                    {/* Test add notification button */}
+                    <TouchableOpacity onPress={handleAddNotification}>
+                        <Text>Test add notification</Text>
+                    </TouchableOpacity>
+
+                    {/* Button to test notification load */}
                     {/* <TouchableOpacity onPress={getNotifications}>
                         <Text>test load notifs</Text>
                     </TouchableOpacity> */}
