@@ -41,6 +41,7 @@ from .views import (
     addNotification,
     clearNotification,
     clearAllNotifications, 
+    userPreferences
 )
 
 urlpatterns = [
