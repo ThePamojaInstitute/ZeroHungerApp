@@ -16,20 +16,17 @@ import NotificationsSettingsScreen from '../screens/NotificationsSettingsScreen'
 import Conversations from '../screens/Conversations';
 import Chat from './Chat';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import styles from '../../styles/components/bottomTabStyleSheet'
 import {
     useFonts,
     PublicSans_600SemiBold,
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
+import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
-import PostsHistory from "../screens/PostsHistory";
-import Preferences from "../screens/Preferences";
-import WrappedLoginScreen from "../screens/Loginscreen";
-import { useTranslation } from "react-i18next";
-import { t } from "i18next";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -42,7 +39,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="HomeScreen"
                 component={HomeScreen}
                 options={{
-                    title: t("app.title"),
+                    title: "Zero Hunger",
                     headerTitleAlign: 'left',
                     headerShadowVisible: false,
                     headerStyle: {
@@ -54,7 +51,6 @@ const HomeStackNavigator = ({ navigation }) => {
                             name="menu"
                             size={24}
                             onPress={navigation.openDrawer}
-                            testID="Home.drawerBtn"
                         />
                     ),
                     headerRight: () => (
@@ -64,7 +60,6 @@ const HomeStackNavigator = ({ navigation }) => {
                                 name="md-search"
                                 size={22}
                                 onPress={() => { }}
-                                testID="Home.searchBtn"
                             />
                             <Ionicons
                                 style={{ padding: 16 }}
@@ -80,7 +75,8 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="LoginScreen"
                 component={LoginScreen}
                 options={{
-                    title: t("app.title"),
+                    // headerShown: false,
+                    title: "Zero Hunger",
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
                     headerStyle: {
@@ -93,7 +89,8 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="CreateAccountScreen"
                 component={CreateAccountScreen}
                 options={{
-                    title: t("app.title"),
+                    // headerShown: false,
+                    title: "Zero Hunger",
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
                     headerStyle: {
@@ -139,7 +136,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="OfferDetailsScreen"
                 component={OfferDetailsScreen}
                 options={{
-                    title: t("offer.form.detailsHeading"),
+                    title: "Offer",
                     headerTitleAlign: "center",
                     headerShadowVisible: false,
                     headerStyle: {
@@ -160,7 +157,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 component={Chat}
                 options={{
                     headerShown: true,
-                    title: t("app.messages.label"),
+                    title: "Chat",
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.Background,
@@ -187,30 +184,6 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="NotificationsScreen"
                 component={NotificationsScreen}
             />
-            <Stack.Screen
-                name="PostsHistory"
-                component={PostsHistory}
-                options={{
-                    headerShown: true,
-                    title: t("menu.history.label"),
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite,
-                    },
-                }}
-            />
-            <Stack.Screen
-                name="Preferences"
-                component={Preferences}
-                options={{
-                    headerShown: true,
-                    title: t("menu.preferences.label"),
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite,
-                    },
-                }}
-            />
         </Stack.Navigator>
     )
 }
@@ -223,7 +196,7 @@ const ChatStackNavigator = () => {
                 component={Conversations}
                 options={{
                     headerShown: true,
-                    title: t("app.messages.label"),
+                    title: "Messages",
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.Background,
@@ -236,7 +209,7 @@ const ChatStackNavigator = () => {
                 component={Chat}
                 options={{
                     headerShown: true,
-                    title: t("app.messages.label"),
+                    title: "Chat",
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.Background,
@@ -247,7 +220,7 @@ const ChatStackNavigator = () => {
                 name="RequestDetailsScreen"
                 component={RequestDetailsScreen}
                 options={{
-                    title: t("request.form.detailsHeading"),
+                    title: "Request",
                     headerTitleAlign: "center",
                     headerShadowVisible: false,
                     headerStyle: {
@@ -267,7 +240,7 @@ const ChatStackNavigator = () => {
                 name="OfferDetailsScreen"
                 component={OfferDetailsScreen}
                 options={{
-                    title: t("offer.form.detailsHeading"),
+                    title: "Offer",
                     headerTitleAlign: "center",
                     headerShadowVisible: false,
                     headerStyle: {
@@ -306,27 +279,15 @@ const BottomTab = () => {
     return (
         <Tab.Navigator>
             <Tab.Screen
-                name={t("app.home.label")}
+                name="Home"
                 component={HomeStackNavigator}
                 options={({ route }) => ({
                     headerShown: false,
                     tabBarIcon: ({ focused }) => (
-                        <View testID="Bottom.homeNav" style={styles.homeButton}>
+                        <View style={{ flex: 0, alignItems: "center", justifyContent: "center" }}>
                             {focused
-                                ? <Ionicons
-                                    testID="Bottom.homeNavIcon"
-                                    name="home"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
-                                : <Ionicons
-                                    testID="Bottom.homeNavIconOutline"
-                                    name="home-outline"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
+                                ? <Ionicons name="home" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                                : <Ionicons name="home-outline" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
                             }
                         </View>
                     ),
@@ -345,12 +306,12 @@ const BottomTab = () => {
                 })}
             />
             <Tab.Screen
-                name={t("app.post.label")}
+                name="Post"
                 component={PostComponent}
                 //Post button + modal
                 options={({ navigation }) => ({
                     tabBarButton: () =>
-                        <View testID="Bottom.postNav">
+                        <View>
                             <View>
                                 <TouchableOpacity
                                     testID="Bottom.postNavButton"
@@ -372,7 +333,6 @@ const BottomTab = () => {
                             </View>
                             <View>
                                 <Modal
-                                    testID="Bottom.postNavModal"
                                     isVisible={modalVisible}
                                     animationIn="slideInUp"
                                     backdropOpacity={0.5}
@@ -380,47 +340,34 @@ const BottomTab = () => {
                                     onBackdropPress={() => setModalVisible(!modalVisible)}
                                     onSwipeComplete={() => setModalVisible(!modalVisible)}
                                     swipeDirection={['down']}
-                                    style={[styles.modal,
-                                    { marginTop: Dimensions.get('window').height * 0.69 }]}
+                                    style={styles.modal}
                                 >
                                     <View style={{ marginBottom: 30, marginTop: 12 }}>
                                         <View style={styles.modalContent}>
                                             <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>What would you like to post?</Text>
                                         </View>
-                                        <TouchableOpacity
-                                            testID="Bottom.postNavModalClose"
-                                            style={styles.modalClose}
-                                            onPress={() => setModalVisible(!modalVisible)}
-                                        >
+                                        <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0, marginRight: 10 }} onPress={() => setModalVisible(!modalVisible)}>
                                             <Ionicons name="close" size={30} />
                                         </TouchableOpacity>
                                     </View>
                                     <View style={{ alignItems: "center" }}>
                                         <TouchableOpacity
-                                            style={[globalStyles.secondaryBtn, { marginTop: 10 }]}
+                                            style={[globalStyles.defaultBtn, { marginTop: 10 }]}
                                             onPress={() => {
                                                 setModalVisible(false)
                                                 navigation.navigate("RequestFormScreen")
                                             }}
-                                            testID="Bottom.postNavModalReqBtn"
                                         >
-                                            <Text
-                                                testID="Bottom.postNavModalReqLabel"
-                                                style={[globalStyles.secondaryBtnLabel]}
-                                            > A Request for Food </Text>
+                                            <Text style={[globalStyles.defaultBtnLabel, { color: '#E8E3D9' }]}>A Request for Food</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
-                                            style={[globalStyles.secondaryBtn, { marginTop: 16, marginBottom: 15 }]}
+                                            style={[globalStyles.secondaryBtn, { marginTop: 16 }]}
                                             onPress={() => {
                                                 setModalVisible(false)
                                                 navigation.navigate("OfferFormScreen")
                                             }}
-                                            testID="Bottom.postNavModalOffBtn"
                                         >
-                                            <Text
-                                                testID="Bottom.postNavModalOffLabel"
-                                                style={[globalStyles.secondaryBtnLabel]}
-                                            >An Offering of Food</Text>
+                                            <Text style={[globalStyles.secondaryBtnLabel, { color: Colors.primaryDark }]}>An Offering of Food</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </Modal>
@@ -429,29 +376,14 @@ const BottomTab = () => {
                 })}
             />
             <Tab.Screen
-                name={t("app.messages.label")}
+                name="Messages"
                 component={ChatStackNavigator}
                 options={({ route }) => ({
                     tabBarIcon: ({ focused }) => (
-                        <View
-                            testID="Bottom.messagesNav"
-                            style={styles.messagesButton}
-                        >
+                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
                             {focused
-                                ? <Ionicons
-                                    testID="Bottom.messagesNavIcon"
-                                    name="chatbox-ellipses"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
-                                : <Ionicons
-                                    testID="Bottom.messagesNavIconOutline"
-                                    name="chatbox-ellipses-outline"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
+                                ? <Ionicons name="chatbox-ellipses" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
+                                : <Ionicons name="chatbox-ellipses-outline" size={24} color={Colors.primary} style={{ marginBottom: -10 }} />
                             }
                         </View>
                     ),
