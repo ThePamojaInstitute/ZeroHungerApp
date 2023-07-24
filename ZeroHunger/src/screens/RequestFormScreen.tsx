@@ -3,9 +3,8 @@ import styles from "../../styles/screens/postFormStyleSheet"
 import { ScrollView, TextInput, TouchableOpacity, Text, View, GestureResponderEvent } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
-import FoodCategories from "../components/FoodCategories";
 import Quantity from "../components/Quantity";
-import { createPost } from "../controllers/post";
+import { DIETPREFERENCES, FOODCATEGORIES, createPost, getCategory, getDiet } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import { handleImageUpload } from "../controllers/post";
@@ -19,6 +18,8 @@ import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import Logistics from "../components/Logistics";
 import AccessNeeds from "../components/AccessNeeds";
 import { useTranslation } from "react-i18next";
+import { intitializePreferences } from "../controllers/preferences";
+import FoodFilters from "../components/FoodFilters";
 
 export const RequestFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -31,18 +32,26 @@ export const RequestFormScreen = ({ navigation }) => {
     useEffect(() => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
-    const { user } = useContext(AuthContext)
+
+    const { user, accessToken } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
-    
+
+    useEffect(() => {
+        intitializePreferences(accessToken, setAccessNeeds, setLogistics, setPostalCode, setDiet)
+    }, [])
+
     const [title, setTitle] = useState("")
     const [images, setImages] = useState([])
     const [desc, setDesc] = useState("")
-    const [errMsg, setErrMsg] = useState("")
+    const [titleErr, setTitleErr] = useState("")
+    const [categoryErr, setCategoryErr] = useState("")
+    const [postalErr, setPostalErr] = useState("")
     const [loading, setLoading] = useState(false)
     const [logistics, setLogistics] = useState<number[]>([])
     const [postalCode, setPostalCode] = useState('')
     const [accessNeeds, setAccessNeeds] = useState<number>()
-    
+    const [categories, setCategories] = useState<number[]>([])
+    const [diet, setDiet] = useState<number[]>([])
     const {t, i18n} = useTranslation();
 
     useEffect(() => {
@@ -64,7 +73,11 @@ export const RequestFormScreen = ({ navigation }) => {
                 </TouchableOpacity>
             )
         })
-    }, [title, images, desc, loading, loaded, logistics, postalCode, accessNeeds])
+    }, [title, images, desc, loading, loaded, logistics, postalCode, accessNeeds, categories, diet])
+
+    useEffect(() => {
+        setCategoryErr('')
+    }, [categories])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
@@ -88,6 +101,8 @@ export const RequestFormScreen = ({ navigation }) => {
                         logistics: logistics,
                         postalCode: postalCode,
                         accessNeeds: accessNeeds,
+                        categories: categories,
+                        diet: diet,
                     },
                     postType: 'r'
                 }).then(res => {
@@ -97,8 +112,16 @@ export const RequestFormScreen = ({ navigation }) => {
                     } else if (res.msg === "failure") {
                         alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
                     } else {
-                        // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
-                        setErrMsg(res.msg ? res.msg : 'An error occured!')
+                        // setErrMsg(res.msg ? res.msg : 'An error occured!')
+                        if (res.msg.toLowerCase().includes('title')) {
+                            setTitleErr(res.msg)
+                        } else if (res.msg.toLowerCase().includes('category')) {
+                            setCategoryErr(res.msg)
+                        } else if (res.msg.toLowerCase().includes('postal')) {
+                            setPostalErr(res.msg)
+                        } else {
+                            alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                        }
                     }
                 }).finally(() => setLoading(false))
             })
@@ -108,19 +131,6 @@ export const RequestFormScreen = ({ navigation }) => {
         }
     }
 
-
-    //https://stackoverflow.com/questions/42521679/how-can-i-upload-a-photo-with-expo
-    // function handleImageUpload()
-    // { //test function for image uploads
-
-    //     imageString = imageString.substring(imageString.indexOf(",") + 1);
-    //     axiosInstance.post("posts/testBlobImage", { "IMAGE":imageString}).then((response) => {
-    //      return (response.data).toString()
-    //      })
-    //    //  return "FailedUpload"
-    // }
-
-
     return (
         <ScrollView testID="Request.formContainer" style={styles.formContainer}>
             {(!loaded || loading) && <Text> {t("app.strings.loading")} </Text>}
@@ -129,6 +139,8 @@ export const RequestFormScreen = ({ navigation }) => {
                     <View>
                         <Text
                             testID="Request.titleLabel"
+                            style={[styles.formTitleText, { color: titleErr ? Colors.alert2 : Colors.dark }]}
+                        >Title <Text style={{ color: Colors.alert2 }}>*</Text>
                             style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}
                         > {t("request.form.fields.0.label")} <Text style={{ color: Colors.alert2 }}> * </Text>
                         </Text>
@@ -141,25 +153,30 @@ export const RequestFormScreen = ({ navigation }) => {
                             testID="Request.titleInput"
                             placeholder="Enter name of food"
                             placeholderTextColor="#656565"
-                            style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                            style={[styles.formInput, { borderColor: titleErr ? Colors.alert2 : Colors.midLight }]}
                             onChangeText={newText => {
                                 setTitle(newText)
-                                setErrMsg("")
+                                setTitleErr("")
                             }}
-                            onChange={() => setErrMsg("")}
+                            onChange={() => setTitleErr("")}
                             maxLength={100}
                         />
                     </View>
-                    {errMsg && <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{errMsg}</Text>}
+                    {titleErr && <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{titleErr}</Text>}
                     <View>
                         <Text testID="Request.photoLabel" style={styles.formTitleText}> {t("request.form.fields.1.label")} </Text>
                         <Text testID="Request.photoDesc" style={styles.formDescText}>{t("request.form.fields.1.desc")} </Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
-                    <View style={{ opacity: 0.5 }}>
+                    <View>
+                        <FoodFilters state={categories} setState={setCategories} foodType={FOODCATEGORIES} getType={getCategory} />
                         <Text testID="Request.categoryLabel" style={styles.formTitleText}>{t("request.form.fields.3.label")}  <Text style={{ color: Colors.alert2 }}>*</Text></Text>
                         <Text testID="Request.categoryDesc" style={styles.formDescText}>{t("request.form.fields.3.desc")} </Text>
-                        <FoodCategories />
+                    </View>
+                    <View>
+                        <Text testID="Request.categoryLabel" style={styles.formTitleText}>Dietary preferences</Text>
+                        <Text testID="Request.categoryDesc" style={styles.formDescText}>Please indicate any dietary preferences or allergies that need to be respected in your request.</Text>
+                        <FoodFilters state={diet} setState={setDiet} foodType={DIETPREFERENCES} getType={getDiet} />
                     </View>
                     <View style={{ opacity: 0.5 }}>
                         <Text testID="Request.quantityLabel" style={styles.formTitleText}> {t("request.form.fields.5.label")}  <Text style={{ color: Colors.alert2 }}>*</Text></Text>
@@ -188,16 +205,17 @@ export const RequestFormScreen = ({ navigation }) => {
                                 testID="Request.postalCodeInput"
                                 placeholder="XXX XXX"
                                 placeholderTextColor="#656565"
-                                style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                                style={[styles.formInput, { borderColor: postalErr ? Colors.alert2 : Colors.midLight }]}
                                 onChangeText={newText => {
                                     setPostalCode(newText)
-                                    setErrMsg("")
+                                    setPostalErr("")
                                 }}
-                                onChange={() => setErrMsg("")}
+                                onChange={() => setPostalErr("")}
                                 maxLength={7}
                             />
                         </View>
                     </View>
+                    {postalErr && <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{postalErr}</Text>}
                     <View>
                         <Text testID="Request.accessLabel" style={styles.formTitleText}>{t("request.form.fields.9.label")}</Text>
                         <Text testID="Request.accessDesc" style={styles.formDescText}>{t("request.form.fields.9.desc")}</Text>
@@ -218,7 +236,6 @@ export const RequestFormScreen = ({ navigation }) => {
                             multiline={true}
                             onChangeText={newText => {
                                 setDesc(newText)
-                                setErrMsg("")
                             }}
                             maxLength={1024}
                         />

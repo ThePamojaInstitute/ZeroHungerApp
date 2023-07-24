@@ -168,6 +168,8 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
             postalCode: item['fields'].postalCode,
             accessNeeds: item['fields'].accessNeeds,
             distance: item['fields']?.distance,
+            categories: item['fields']?.categories,
+            diet: item['fields']?.diet,
             postId: item.pk,
             username: item.username,
             type: type

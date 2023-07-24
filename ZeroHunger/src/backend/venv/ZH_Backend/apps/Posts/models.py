@@ -2,7 +2,7 @@ from django.db import models
 from apps.Users.models import BasicUser
 from datetime import datetime 
 from multiselectfield import MultiSelectField
-from .choices import LOGISTICS_CHOICES, ACCESS_NEEDS_CHOICES
+from .choices import LOGISTICS_CHOICES, ACCESS_NEEDS_CHOICES, FOOD_CATEGORIES, DIET_PREFERENCES
 
 class RequestPost(models.Model):
     title = models.CharField(max_length=128, default="Untitled")
@@ -15,6 +15,8 @@ class RequestPost(models.Model):
     postalCode = models.CharField(max_length=7, blank=True)
     coordinates = models.CharField(max_length=50, blank=True)
     accessNeeds = models.IntegerField(choices=ACCESS_NEEDS_CHOICES, default=0)
+    categories = MultiSelectField(choices=FOOD_CATEGORIES, max_length=12, default='')
+    diet = MultiSelectField(choices=DIET_PREFERENCES, max_length=9, default='')
 
     def __str__(self):
         return self.title
@@ -29,6 +31,8 @@ class OfferPost(models.Model):
     postalCode = models.CharField(max_length=7, blank=True)
     coordinates = models.CharField(max_length=50, blank=True)
     accessNeeds = models.IntegerField(choices=ACCESS_NEEDS_CHOICES, default=0)
+    categories = MultiSelectField(choices=FOOD_CATEGORIES, max_length=12, default='')
+    diet = MultiSelectField(choices=DIET_PREFERENCES, max_length=9, default='')
     
     def __str__(self):
         return self.title
