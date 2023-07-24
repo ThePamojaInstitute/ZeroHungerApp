@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { FlatList, ImageBackground, Pressable, StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { FlatList, ImageBackground, Pressable, TouchableHighlight, View } from "react-native";
+import styles from "../../styles/components/ImagePickerStyleSheet"
 import { useAlert } from "../context/Alert";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ExpoImagePicker from 'expo-image-picker';
@@ -7,13 +7,12 @@ import { Image } from "react-native";
 import { Platform } from "react-native";
 
 
-const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<string>> }) => {
+const ImagePicker = (props: { images: string[], setImages: React.Dispatch<React.SetStateAction<string[]>> }) => {
     const { dispatch: alert } = useAlert()
-    const [images, setImages] = useState([])
 
     const pickImages = async () => {
-        if (images.length >= 5) {
-            alert!({ type: 'open', message: 'The limit is 5 images per post', alertType: 'error' })
+        if (props.images.length >= 1) {
+            alert!({ type: 'open', message: 'The limit is 1 image per post', alertType: 'error' })
             return
         }
         let result = await ExpoImagePicker.launchImageLibraryAsync({
@@ -21,21 +20,21 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
             aspect: [4, 3],
             quality: 0.3, //  compression, from 0 to 1
             allowsMultipleSelection: true,
-            selectionLimit: 5 // only for ios 14+
+            selectionLimit: 1 // only for ios 14+
         });
 
         if (!result.canceled && result.assets) {
-            if (result.assets.length + images.length > 5) {
-                alert!({ type: 'open', message: 'The limit is 5 images per post', alertType: 'error' })
+            if (result.assets.length + props.images.length > 1) {
+                alert!({ type: 'open', message: 'The limit is 1 image per post', alertType: 'error' })
             }
-            result.assets.slice(0, 5 - images.length).forEach((img: { uri: string; }) => {
-                setImages(oldArr => [...oldArr, img.uri])
+            result.assets.slice(0, 1 - props.images.length).forEach((img: { uri: string; }) => {
+                props.setImages(oldArr => [...oldArr, img.uri])
             })
         }
     };
 
     const deleteImg = (item: string) => {
-        setImages(images.filter((img: string) => img !== item))
+        props.setImages(props.images.filter((img: string) => img !== item))
     }
 
     const renderItem = ({ item }) => (
@@ -73,7 +72,7 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
             <View testID="ImagePicker.imagesContainer" style={{ marginLeft: 20 }}>
                 <FlatList
                     testID="ImagePicker.imagesList"
-                    data={images}
+                    data={props.images}
                     renderItem={renderItem}
                     horizontal
                     style={styles.imgList}
@@ -84,27 +83,3 @@ const ImagePicker = (props: { setImages: React.Dispatch<React.SetStateAction<str
 }
 
 export default ImagePicker
-
-const styles = StyleSheet.create({
-    Img: {
-        marginTop: 20,
-        marginLeft: 20,
-        width: 100,
-        height: 100,
-        resizeMode: 'cover'
-    },
-    imgList: {
-        left: -40,
-        marginRight: -40
-    },
-    imgInput: {
-        marginTop: 5,
-        width: '100%',
-        height: 123,
-        resizeMode: 'contain'
-    },
-    topRight: {
-        position: 'absolute',
-        right: 0,
-    }
-})

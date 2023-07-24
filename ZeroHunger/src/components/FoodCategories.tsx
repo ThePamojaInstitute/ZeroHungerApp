@@ -1,8 +1,14 @@
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, Pressable } from "react-native";
 import { useState } from "react";
+import { FlatList, Text, TouchableOpacity, View, Pressable } from "react-native";
+import styles from "../../styles/components/FoodCategoriesStyleSheet"
 import { Colors } from "../../styles/globalStyleSheet";
+import { useTranslation } from "react-i18next";
+
+
 
 const FoodCategories = () => {
+
+    const {t, i18n} = useTranslation();
     //Flatlist data
     const Item = ({ name }) => {
         const [pressed, setPressed] = useState(false)
@@ -63,7 +69,6 @@ const FoodCategories = () => {
                 </View>
             );
         }
-
         return (
             <View style={styles.item}>
                 <TouchableOpacity style={[styles.secondaryBtn, { backgroundColor: pressed ? Colors.primaryMid : Colors.primaryLight }]} onPress={onPress}>
@@ -73,28 +78,27 @@ const FoodCategories = () => {
         );
     }
 
+    const ArrayForSize:Object[] = t("app.foodCategory.options", {returnObjects:true})
     //Food categories placeholder
-    const foods = [
-        { name: 'Fruits' },
-        { name: 'Vegetables' },
-        { name: 'Grains' },
-        { name: 'Dairy' },
-        { name: 'Dairy Alternatives' },
-        { name: 'Meat / Poultry' },
-        { name: 'Legumes' },
-        { name: 'Food8' },
-        { name: 'Food9' },
-        { name: 'Food10' },
-    ]
-
+    const foods = [];
+    for (let i = 0; i < ArrayForSize.length; i++)
+    {   
+        var ObjectInJsonPath:string = "app.foodCategory.options.";
+        ObjectInJsonPath = ObjectInJsonPath.concat(i.toString());
+        ObjectInJsonPath = ObjectInJsonPath.concat(".label");
+        foods.push( {name: t(ObjectInJsonPath) });
+    }
+  
     const renderItem = ({ item }) => (
         <View>
             <Item name={item.name} />
         </View>
     );
-
+    console.log(foods);
     return (
+
         <View testID="FoodCategories.container">
+            
             <FlatList
                 testID="FoodCategories.list"
                 data={foods}
@@ -105,93 +109,5 @@ const FoodCategories = () => {
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    text: {
-        fontSize: 50,
-        fontWeight: 'bold',
-    },
-    item: {
-        backgroundColor: '#FFFFFF',
-        // padding: 10,
-        // marginVertical: 10,
-        marginTop: 5,
-        marginBottom: 15,
-        // marginHorizontal: 4,
-        marginRight: 8,
-        borderRadius: 10,
-    },
-    btn: {
-        backgroundColor: '#FFFFFF',
-        padding: 10,
-        borderRadius: 10,
-    },
-    btnPressed: {
-        backgroundColor: '#000000',
-        padding: 10,
-        borderRadius: 10,
-    },
-    titleText: {
-        flex: 1,
-        fontSize: 24,
-        marginBottom: 5,
-        marginTop: 10,
-    },
-    descText: {
-        flex: 1,
-        fontSize: 14,
-        marginBottom: 5,
-        color: "#000000"
-    },
-    titleInputView: {
-        backgroundColor: "#D3D3D3",
-        borderRadius: 30,
-        width: "100%",
-        height: 45,
-        marginBottom: 25,
-        marginTop: 10,
-    },
-    btnItem: {
-        flexDirection: 'row',
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // padding: 10,
-    },
-    halalBtn: {
-        // backgroundColor: '#FFFFFF',
-        borderStyle: 'solid',
-        borderColor: '#099999',
-        borderWidth: 5,
-        width: 40,
-        height: 40,
-        padding: 10,
-        borderRadius: 20,
-    },
-    secondaryBtn: {
-        display: "flex",
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: "center",
-        // width: "90%",
-        gap: 10,
-        // position: 'relative',
-        // marginTop: 30,
-        // height: 42,
-        paddingVertical: 7,
-        paddingHorizontal: 10,
-        borderRadius: 100,
-        backgroundColor: Colors.primaryLight,
-    },
-    secondaryBtnLabel: {
-        fontFamily: 'PublicSans_500Medium',
-        fontSize: 12,
-        display: 'flex',
-        alignItems: 'center',
-        color: Colors.dark,
-    },
-})
 
 export default FoodCategories

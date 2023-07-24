@@ -1,5 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react-native"
-import { NavigationContainer, NavigationContext } from "@react-navigation/native";
+import { act, fireEvent, render } from "@testing-library/react-native"
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Utils from "../../src/controllers/post";
 import { axiosInstance } from "../../config";
@@ -7,12 +7,12 @@ import { AuthContext } from "../../src/context/AuthContext"
 import { AlertContext, AlertContextFields, AlertContextType } from "../../src/context/Alert"
 import { mock } from "jest-mock-extended";
 import MockAdapter from "axios-mock-adapter";
+import styles from "../../styles/screens/postFormStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useFonts } from '@expo-google-fonts/public-sans';
 import LoginScreen from "../../src/screens/Loginscreen";
 import OfferFormScreen from "../../src/screens/OfferFormScreen";
 
-window.alert = () => { }
 
 jest.mock('@expo-google-fonts/public-sans', () => ({
     useFonts: jest.fn()
@@ -140,27 +140,27 @@ describe('onload', () => {
         it('renders default styles', () => {
             const { getByTestId } = render(<TestComponent />)
 
-            expect(getByTestId('Offer.cancelBtnLabel').props.style).toBe(globalStyles.formCancelBtn)
+            expect(getByTestId('Offer.cancelBtnLabel').props.style).toBe(styles.formCancelBtn)
             expect(getByTestId('Offer.createBtn').parent.parent.props.style[0]).toBe(globalStyles.navDefaultBtn)
             expect(getByTestId('Offer.createBtnLabel').props.style).toBe(globalStyles.defaultBtnLabel)
-            expect(getByTestId('Offer.formContainer').props.style).toBe(globalStyles.formContainer)
-            expect(getByTestId('Offer.titleLabel').props.style[0]).toBe(globalStyles.formTitleText)
+            expect(getByTestId('Offer.formContainer').props.style).toBe(styles.formContainer)
+            expect(getByTestId('Offer.titleLabel').props.style[0]).toBe(styles.formTitleText)
             expect(getByTestId('Offer.titleLabel').props.style[1].color).toBe(Colors.dark)
-            expect(getByTestId('Offer.titleDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Offer.formInputContainer').props.style).toBe(globalStyles.formInputContainer)
-            expect(getByTestId('Offer.titleInput').props.style[0]).toBe(globalStyles.formInput)
+            expect(getByTestId('Offer.titleDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Offer.formInputContainer').props.style).toBe(styles.formInputContainer)
+            expect(getByTestId('Offer.titleInput').props.style[0]).toBe(styles.formInput)
             expect(getByTestId('Offer.titleInput').props.style[1].borderColor).toBe(Colors.midLight)
-            expect(getByTestId('Offer.photoLabel').props.style).toBe(globalStyles.formTitleText)
-            expect(getByTestId('Offer.photoDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Offer.categoryLabel').props.style).toBe(globalStyles.formTitleText)
-            expect(getByTestId('Offer.categoryDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Offer.quantityLabel').props.style).toBe(globalStyles.formTitleText)
-            expect(getByTestId('Offer.quantityDesc').props.style).toBe(globalStyles.formDescText)
-            // expect(getByTestId('Offer.dateLabel').props.style).toBe(globalStyles.formTitleText)
-            // expect(getByTestId('Offer.dateDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Offer.descTitle').props.style).toBe(globalStyles.formTitleText)
-            expect(getByTestId('Offer.descDesc').props.style).toBe(globalStyles.formDescText)
-            expect(getByTestId('Offer.descInput').props.style).toBe(globalStyles.formInputText)
+            expect(getByTestId('Offer.photoLabel').props.style).toBe(styles.formTitleText)
+            expect(getByTestId('Offer.photoDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Offer.categoryLabel').props.style).toBe(styles.formTitleText)
+            expect(getByTestId('Offer.categoryDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Offer.quantityLabel').props.style).toBe(styles.formTitleText)
+            expect(getByTestId('Offer.quantityDesc').props.style).toBe(styles.formDescText)
+            // expect(getByTestId('Offer.dateLabel').props.style).toBe(styles.formTitleText)
+            // expect(getByTestId('Offer.dateDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Offer.descTitle').props.style).toBe(styles.formTitleText)
+            expect(getByTestId('Offer.descDesc').props.style).toBe(styles.formDescText)
+            expect(getByTestId('Offer.descInput').props.style).toBe(styles.formInputText)
         })
     })
 
@@ -266,7 +266,7 @@ describe('on post submit', () => {
             const titleErrMsg = getByTestId('Offer.titleErrMsg')
 
             expect(queryAllByText('Please enter a title to your offer').length).toBe(1)
-            expect(titleErrMsg.props.style).toBe(globalStyles.formErrorMsg)
+            expect(titleErrMsg.props.style).toBe(styles.formErrorMsg)
         })
 
         it('changes username label and text input\'s styles', async () => {
@@ -326,7 +326,7 @@ describe('on post submit', () => {
             const titleErrMsg = getByTestId('Offer.titleErrMsg')
 
             expect(queryAllByText('Title should be at most 100 characters').length).toBe(1)
-            expect(titleErrMsg.props.style).toBe(globalStyles.formErrorMsg)
+            expect(titleErrMsg.props.style).toBe(styles.formErrorMsg)
         })
 
         it('changes username label and text input\'s styles', async () => {
@@ -394,16 +394,46 @@ describe('createPost', () => {
         })
 
         expect(spyCreatePost).toBeCalledTimes(1)
-        expect(spyCreatePost).toBeCalledWith({
-            "postData": {
-                "description": "test desc",
-                "images": "",
-                "postedBy": "1",
-                "postedOn": Math.floor(new Date().getTime() / 1000) || Math.floor(new Date().getTime() / 1000) + 1,
-                "title": "test title"
-            },
-            "postType": "o",
-        })
+        try {
+            expect(spyCreatePost).toBeCalledWith({
+                "postData": {
+                    "description": "test desc",
+                    "images": "",
+                    "postedBy": "1",
+                    "postedOn": Math.floor(new Date().getTime() / 1000),
+                    "title": "test title"
+                },
+                "postType": "o",
+            })
+        } catch {
+            try {
+                expect(spyCreatePost).toBeCalledWith({
+                    "postData": {
+                        "description": "test desc",
+                        "images": "",
+                        "postedBy": "1",
+                        "postedOn": Math.floor(new Date().getTime() / 1000) + 1,
+                        "title": "test title"
+                    },
+                    "postType": "o",
+                })
+            } catch {
+                try {
+                    expect(spyCreatePost).toBeCalledWith({
+                        "postData": {
+                            "description": "test desc",
+                            "images": "",
+                            "postedBy": "1",
+                            "postedOn": Math.floor(new Date().getTime() / 1000) - 1,
+                            "title": "test title"
+                        },
+                        "postType": "o",
+                    })
+                } catch {
+                    throw Error
+                }
+            }
+        }
     })
 
     it('return failure message when request fails', async () => {

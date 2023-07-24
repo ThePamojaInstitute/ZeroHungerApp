@@ -2,17 +2,16 @@ import React from "react";
 import { Linking } from "react-native";
 import LoginScreen from "../../src/screens/Loginscreen";
 import * as Utils from "../../src/controllers/auth";
-import { axiosInstance } from "../../config";
+import { axiosInstance, passwordResetURL } from "../../config";
 import { AuthContext } from "../../src/context/AuthContext";
 import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import MockAdapter from "axios-mock-adapter"
 import { AlertContext, AlertContextFields, AlertContextType } from "../../src/context/Alert";
 import { mock } from "jest-mock-extended";
 import { NavigationContext } from "@react-navigation/native"
+import styles from "../../styles/screens/loginStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useFonts } from '@expo-google-fonts/public-sans';
-
-window.alert = () => { }
 
 
 jest.mock('@expo-google-fonts/public-sans', () => ({
@@ -60,7 +59,6 @@ const authContextValues = {
     error: "",
     dispatch: mockDispatch
 }
-const passwordResetURL = 'zh-backend-azure-webapp.azurewebsites.net/users/reset_password/'
 
 const testComponent = (
     <AuthContext.Provider value={authContextValues}>
@@ -127,28 +125,28 @@ describe('on load', () => {
         const dividerLine2 = getByTestId('dividerLine2')
         const dividerText = getByTestId('dividerText')
 
-        expect(container.props.style).toBe(globalStyles.authContainer)
-        expect(usernameInputContainer.props.style).toBe(globalStyles.inputContainer)
-        expect(usernameLabel.props.style[0]).toBe(globalStyles.inputLabel)
+        expect(container.props.style).toBe(styles.authContainer)
+        expect(usernameInputContainer.props.style).toBe(styles.inputContainer)
+        expect(usernameLabel.props.style[0]).toBe(styles.inputLabel)
         expect(usernameLabel.props.style[1].color).toBe(Colors.dark)
-        expect(usernameInput.props.style[0]).toBe(globalStyles.input)
+        expect(usernameInput.props.style[0]).toBe(styles.input)
         expect(usernameInput.props.style[1].borderColor).toBe(Colors.midLight)
-        expect(passwordInputContainer.props.style).toBe(globalStyles.inputContainer)
-        expect(passwordLabel.props.style[0]).toBe(globalStyles.inputLabel)
+        expect(passwordInputContainer.props.style).toBe(styles.inputContainer)
+        expect(passwordLabel.props.style[0]).toBe(styles.inputLabel)
         expect(passwordLabel.props.style[1].color).toBe(Colors.dark)
-        expect(innerPasswordInputContainer.props.style[0]).toBe(globalStyles.passwordInputContainer)
+        expect(innerPasswordInputContainer.props.style[0]).toBe(styles.passwordInputContainer)
         expect(innerPasswordInputContainer.props.style[1].borderColor).toBe(Colors.midLight)
-        expect(passwordInput.props.style).toBe(globalStyles.passwordInput)
+        expect(passwordInput.props.style).toBe(styles.passwordInput)
         expect(forgotPassword.parent.parent.props.style).toStrictEqual({ width: '90%' })
-        expect(forgotPassword.props.style).toBe(globalStyles.forgotPassword)
+        expect(forgotPassword.props.style).toBe(styles.forgotPassword)
         expect(loginButton.parent.parent.props.style[0]).toBe(globalStyles.defaultBtn)
         expect(loginButtonLabel.props.style).toBe(globalStyles.defaultBtnLabel)
         expect(SignUpButton.parent.parent.props.style[0]).toBe(globalStyles.outlineBtn)
         expect(SignUpButtonLabel.props.style).toBe(globalStyles.outlineBtnLabel)
-        expect(divider.props.style).toBe(globalStyles.divider)
-        expect(dividerLine1.props.style).toBe(globalStyles.dividerLine)
-        expect(dividerLine2.props.style).toBe(globalStyles.dividerLine)
-        expect(dividerText.props.style).toBe(globalStyles.dividerText)
+        expect(divider.props.style).toBe(styles.divider)
+        expect(dividerLine1.props.style).toBe(styles.dividerLine)
+        expect(dividerLine2.props.style).toBe(styles.dividerLine)
+        expect(dividerText.props.style).toBe(styles.dividerText)
     });
 
     it('does not navigate to the home page if user is not logged in', () => {
@@ -196,8 +194,8 @@ describe('events on login button press', () => {
 
             expect(queryAllByText("Please enter a username").length).toBe(1)
             expect(queryAllByText("Please enter a password").length).toBe(0)
-            expect(usernameErrMsgContainer.props.style).toBe(globalStyles.errorMsgContainer)
-            expect(usernameErrMsg.props.style).toBe(globalStyles.errorMsg)
+            expect(usernameErrMsgContainer.props.style).toBe(styles.errorMsgContainer)
+            expect(usernameErrMsg.props.style).toBe(styles.errorMsg)
         })
 
         it('changes username label and text input\'s globalStyles', async () => {
@@ -253,8 +251,8 @@ describe('events on login button press', () => {
 
             expect(queryAllByText("Please enter a password").length).toBe(1)
             expect(queryAllByText("Please enter a username").length).toBe(0)
-            expect(passwordErrMsgContainer.props.style).toBe(globalStyles.errorMsgContainer)
-            expect(passwordErrMsg.props.style).toBe(globalStyles.errorMsg)
+            expect(passwordErrMsgContainer.props.style).toBe(styles.errorMsgContainer)
+            expect(passwordErrMsg.props.style).toBe(styles.errorMsg)
         })
 
         it('changes password label and text input\'s globalStyles', async () => {

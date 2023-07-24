@@ -9,7 +9,8 @@ import { AlertContext, AlertContextFields, AlertContextType } from "../../src/co
 import { mock } from "jest-mock-extended";
 import { NavigationContext } from "@react-navigation/native";
 import { useFonts } from '@expo-google-fonts/public-sans';
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import styles from "../../styles/screens/createAccountStyleSheet"
+import { Colors } from "../../styles/globalStyleSheet";
 
 
 jest.mock('@expo-google-fonts/public-sans', () => ({
@@ -128,36 +129,36 @@ describe('on load', () => {
         const termsAndCondAcceptText = getByTestId('SignUp.termsAndCondAcceptText')
         const checkboxContainer = getByTestId('SignUp.checkboxContainer')
 
-        expect(container.props.style).toBe(globalStyles.authContainer)
-        expect(usernameInputContainer.props.style).toBe(globalStyles.inputContainer)
-        expect(usernameLabel.props.style[0]).toBe(globalStyles.inputLabel)
+        expect(container.props.style).toBe(styles.authContainer)
+        expect(usernameInputContainer.props.style).toBe(styles.inputContainer)
+        expect(usernameLabel.props.style[0]).toBe(styles.inputLabel)
         expect(usernameLabel.props.style[1].color).toBe(Colors.dark)
-        expect(usernameInput.props.style[0]).toBe(globalStyles.input)
+        expect(usernameInput.props.style[0]).toBe(styles.input)
         expect(usernameInput.props.style[1].borderColor).toBe(Colors.midLight)
-        expect(emailInputContainer.props.style).toBe(globalStyles.inputContainer)
-        expect(emailLabel.props.style[0]).toBe(globalStyles.inputLabel)
+        expect(emailInputContainer.props.style).toBe(styles.inputContainer)
+        expect(emailLabel.props.style[0]).toBe(styles.inputLabel)
         expect(emailLabel.props.style[1].color).toBe(Colors.dark)
-        expect(emailInput.props.style[0]).toBe(globalStyles.input)
+        expect(emailInput.props.style[0]).toBe(styles.input)
         expect(emailInput.props.style[1].borderColor).toBe(Colors.midLight)
-        expect(passwordInputContainer.props.style).toBe(globalStyles.inputContainer)
-        expect(passwordLabel.props.style[0]).toBe(globalStyles.inputLabel)
+        expect(passwordInputContainer.props.style).toBe(styles.inputContainer)
+        expect(passwordLabel.props.style[0]).toBe(styles.inputLabel)
         expect(passwordLabel.props.style[1].color).toBe(Colors.dark)
-        expect(innerPasswordInputContainer.props.style[0]).toBe(globalStyles.passwordInputContainer)
+        expect(innerPasswordInputContainer.props.style[0]).toBe(styles.passwordInputContainer)
         expect(innerPasswordInputContainer.props.style[1].borderColor).toBe(Colors.midLight)
-        expect(passwordInput.props.style).toBe(globalStyles.passwordInput)
-        expect(confPasswordInputContainer.props.style).toBe(globalStyles.inputContainer)
-        expect(confPasswordLabel.props.style[0]).toBe(globalStyles.inputLabel)
+        expect(passwordInput.props.style).toBe(styles.passwordInput)
+        expect(confPasswordInputContainer.props.style).toBe(styles.inputContainer)
+        expect(confPasswordLabel.props.style[0]).toBe(styles.inputLabel)
         expect(confPasswordLabel.props.style[1].color).toBe(Colors.dark)
-        expect(innerconfPasswordInputContainer.props.style[0]).toBe(globalStyles.passwordInputContainer)
+        expect(innerconfPasswordInputContainer.props.style[0]).toBe(styles.passwordInputContainer)
         expect(innerconfPasswordInputContainer.props.style[1].borderColor).toBe(Colors.midLight)
-        expect(confPasswordInput.props.style).toBe(globalStyles.passwordInput)
-        expect(termsAndCondContainer.props.style).toBe(globalStyles.termsAndCondContainer)
-        expect(termsInputLabel.props.style[0]).toBe(globalStyles.inputLabel)
+        expect(confPasswordInput.props.style).toBe(styles.passwordInput)
+        expect(termsAndCondContainer.props.style).toBe(styles.termsAndCondContainer)
+        expect(termsInputLabel.props.style[0]).toBe(styles.inputLabel)
         expect(termsInputLabel.props.style[1].color).toBe(Colors.dark)
-        expect(termsAndCondText.props.style).toBe(globalStyles.termsAndCondText)
+        expect(termsAndCondText.props.style).toBe(styles.termsAndCondText)
         expect(termsAndCondLink.props.style).toStrictEqual({ textDecorationLine: 'underline' })
         expect(checkboxContainer.props.style).toStrictEqual({ flexDirection: 'row' })
-        expect(termsAndCondAcceptText.props.style).toBe(globalStyles.termsAndCondAcceptText)
+        expect(termsAndCondAcceptText.props.style).toBe(styles.termsAndCondAcceptText)
     });
 
     it('does not navigate to the home page if user is not logged in', () => {
@@ -203,8 +204,8 @@ describe('events on Sign Up button press', () => {
             const usernameErrMsg = getByTestId('SignUp.usernameErrMsg')
 
             expect(queryAllByText("Please enter a username").length).toBe(1)
-            expect(usernameErrMsgContainer.props.style).toBe(globalStyles.errorMsgContainer)
-            expect(usernameErrMsg.props.style).toBe(globalStyles.errorMsg)
+            expect(usernameErrMsgContainer.props.style).toBe(styles.errorMsgContainer)
+            expect(usernameErrMsg.props.style).toBe(styles.errorMsg)
         })
 
         it('changes username label and text input\'s styles', async () => {
@@ -361,8 +362,8 @@ describe('events on Sign Up button press', () => {
             const emailErrMsg = getByTestId('SignUp.emailErrMsg')
 
             expect(queryAllByText("Please enter an email").length).toBe(1)
-            expect(emailErrMsgContainer.props.style).toBe(globalStyles.errorMsgContainer)
-            expect(emailErrMsg.props.style).toBe(globalStyles.errorMsg)
+            expect(emailErrMsgContainer.props.style).toBe(styles.errorMsgContainer)
+            expect(emailErrMsg.props.style).toBe(styles.errorMsg)
         })
 
         it('changes email label and text input\'s styles', async () => {
@@ -452,8 +453,8 @@ describe('events on Sign Up button press', () => {
             const passwordErrMsg = getByTestId('SignUp.passwordErrMsg')
 
             expect(queryAllByText("Please enter a password").length).toBe(1)
-            expect(passwordErrMsgContainer.props.style).toBe(globalStyles.errorMsgContainer)
-            expect(passwordErrMsg.props.style).toBe(globalStyles.errorMsg)
+            expect(passwordErrMsgContainer.props.style).toBe(styles.errorMsgContainer)
+            expect(passwordErrMsg.props.style).toBe(styles.errorMsg)
         })
 
         it('changes password label and text input\'s styles', async () => {
@@ -569,8 +570,8 @@ describe('events on Sign Up button press', () => {
             const confPasswordErrMsg = getByTestId('SignUp.confPasswordErrMsg')
 
             expect(queryAllByText("Please enter a confirmation password").length).toBe(1)
-            expect(confPasswordErrMsgContainer.props.style).toBe(globalStyles.errorMsgContainer)
-            expect(confPasswordErrMsg.props.style).toBe(globalStyles.errorMsg)
+            expect(confPasswordErrMsgContainer.props.style).toBe(styles.errorMsgContainer)
+            expect(confPasswordErrMsg.props.style).toBe(styles.errorMsg)
         })
 
         it('changes password label and text input\'s styles', async () => {

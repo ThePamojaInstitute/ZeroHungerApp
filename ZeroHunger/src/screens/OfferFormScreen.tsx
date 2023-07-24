@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, View, GestureResponderEvent } from "react-native";
+import { ScrollView, TextInput, TouchableOpacity, Text, View, GestureResponderEvent } from "react-native";
+import styles from "../../styles/screens/postFormStyleSheet"
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import FoodCategories from "../components/FoodCategories";
@@ -7,13 +9,17 @@ import Quantity from "../components/Quantity";
 import { createPost } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import { axiosInstance } from "../../config";
+import { handleImageUpload } from "../controllers/post";
 import {
     useFonts,
     PublicSans_600SemiBold,
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
+import Logistics from "../components/Logistics";
+import AccessNeeds from "../components/AccessNeeds";
+import { useTranslation } from "react-i18next";
 
 export const OfferFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -31,10 +37,15 @@ export const OfferFormScreen = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
 
     const [title, setTitle] = useState("")
-    const [images, setImages] = useState("")
+    const [images, setImages] = useState([])
     const [desc, setDesc] = useState("")
     const [errMsg, setErrMsg] = useState("")
     const [loading, setLoading] = useState(false)
+    const [logistics, setLogistics] = useState<number[]>([])
+    const [postalCode, setPostalCode] = useState('')
+    const [accessNeeds, setAccessNeeds] = useState<number>()
+    const {t, i18n} = useTranslation();
+
 
     useEffect(() => {
         if (!loaded) return
@@ -46,16 +57,16 @@ export const OfferFormScreen = ({ navigation }) => {
             },
             headerLeft: () => (
                 <TouchableOpacity testID="Offer.cancelBtn" onPress={() => navigation.navigate('HomeScreen')}>
-                    <Text testID="Offer.cancelBtnLabel" style={globalStyles.formCancelBtn}>Cancel</Text>
+                    <Text testID="Offer.cancelBtnLabel" style={styles.formCancelBtn}> {t("app.strings.cancel")} </Text>
                 </TouchableOpacity>
             ),
             headerRight: () => (
                 <TouchableOpacity testID="Offer.createBtn" onPress={handlePress} style={globalStyles.navDefaultBtn}>
-                    <Text testID="Offer.createBtnLabel" style={globalStyles.defaultBtnLabel}>Post</Text>
+                    <Text testID="Offer.createBtnLabel" style={globalStyles.defaultBtnLabel}>  {t("app.post.label")} </Text>
                 </TouchableOpacity>
             )
         })
-    }, [title, images, desc, loading, loaded])
+    }, [title, images, desc, loading, loaded, logistics, postalCode, accessNeeds])
 
     const handlePress = async (e: GestureResponderEvent) => {
         e.preventDefault()
@@ -69,48 +80,57 @@ export const OfferFormScreen = ({ navigation }) => {
 
         setLoading(true)
         try {
-            createPost({
-                postData: {
-                    title: title,
-                    images: images,
-                    postedBy: user['user_id'],
-                    postedOn: Math.floor(new Date().getTime() / 1000), // converts time to unix timestamp
-                    description: desc,
-                },
-                postType: 'o'
-            }).then(res => {
-                if (res.msg === "success") {
-                    alert!({ type: 'open', message: 'Offer posted successfully!', alertType: 'success' })
-                    navigation.navigate('HomeScreen')
-                } else if (res.msg === "failure") {
-                    alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
-                } else {
-                    // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
-                    setErrMsg(res.msg ? res.msg : 'An error occured!')
-                }
-            }).finally(() => setLoading(false))
+            handleImageUpload(images).then(imageURL => {
+                createPost({
+                    postData: {
+                        title: title,
+                        images: imageURL,
+                        postedBy: user['user_id'],
+                        description: desc,
+                        logistics: logistics,
+                        postalCode: postalCode,
+                        accessNeeds: accessNeeds,
+                    },
+                    postType: 'o'
+                }).then(res => {
+                    if (res.msg === "success") {
+                        alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
+                        navigation.navigate('HomeScreen')
+                    } else if (res.msg === "failure") {
+                        alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+                    } else {
+                        // alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                        setErrMsg(res.msg ? res.msg : 'An error occured!')
+                    }
+                }).finally(() => setLoading(false))
+            })
+
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
         }
     }
 
     return (
-        <ScrollView testID="Offer.formContainer" style={globalStyles.formContainer}>
-            {(!loaded || loading) && <Text>Loading...</Text>}
+        <ScrollView testID="Offer.formContainer" style={styles.formContainer}>
+            {(!loaded || loading) && <Text> {t("app.strings.loading")} </Text>}
             {loaded &&
                 <>
                     <View>
-                        <Text testID="Offer.titleLabel" style={[globalStyles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}>Title <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.titleDesc" style={globalStyles.formDescText}>Create a descriptive title for the food you are offering</Text>
+                        <Text
+                            testID="Offer.titleLabel"
+                            style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}
+                        > {t("offer.form.fields.0.label")} <Text style={{ color: Colors.alert2 }}>*</Text>
+                        </Text>
+                        <Text testID="Offer.titleDesc" style={styles.formDescText}>{t("offer.form.fields.0.desc")}</Text>
                     </View>
-                    <View testID="Offer.formInputContainer" style={globalStyles.formInputContainer}>
+                    <View testID="Offer.formInputContainer" style={styles.formInputContainer}>
                         <TextInput
                             value={title}
                             nativeID="title"
                             testID="Offer.titleInput"
                             placeholder="Enter name of food offering"
                             placeholderTextColor="#656565"
-                            style={[globalStyles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                            style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
                             onChangeText={newText => {
                                 setTitle(newText)
                                 setErrMsg("")
@@ -119,20 +139,20 @@ export const OfferFormScreen = ({ navigation }) => {
                             maxLength={100}
                         />
                     </View>
-                    {errMsg && <Text testID="Offer.titleErrMsg" style={globalStyles.formErrorMsg}>{errMsg}</Text>}
+                    {errMsg && <Text testID="Offer.titleErrMsg" style={styles.formErrorMsg}>{errMsg}</Text>}
                     <View>
-                        <Text testID="Offer.photoLabel" style={globalStyles.formTitleText}>Photo</Text>
-                        <Text testID="Offer.photoDesc" style={globalStyles.formDescText}>Optional: Add photo(s) to help community members understand what you are sharing</Text>
+                        <Text testID="Offer.photoLabel" style={styles.formTitleText}>{t("offer.form.fields.1.label")}</Text>
+                        <Text testID="Offer.photoDesc" style={styles.formDescText}> {t("offer.form.fields.1.desc")}</Text>
                     </View>
-                    <ImagePicker setImages={setImages} />
-                    <View>
-                        <Text testID="Offer.categoryLabel" style={globalStyles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.categoryDesc" style={globalStyles.formDescText}>Please select all the food category type that applies</Text>
+                    <ImagePicker images={images} setImages={setImages} />
+                    <View style={{ opacity: 0.5 }}>
+                        <Text testID="Offer.categoryLabel" style={styles.formTitleText}> {t("offer.form.fields.3.label")} <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Offer.categoryDesc" style={styles.formDescText}>{t("offer.form.fields.3.desc")}</Text>
                         <FoodCategories />
                     </View>
-                    <View>
-                        <Text testID="Offer.quantityLabel" style={globalStyles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.quantityDesc" style={globalStyles.formDescText}>Please input the quantity of the food you are giving away</Text>
+                    <View style={{ opacity: 0.5 }}>
+                        <Text testID="Offer.quantityLabel" style={styles.formTitleText}> {t("offer.form.fields.5.label")}  <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Offer.quantityDesc" style={styles.formDescText}>{t("offer.form.fields.5.desc")}</Text>
                         <Quantity />
                     </View>
                     {/* <View>
@@ -141,17 +161,47 @@ export const OfferFormScreen = ({ navigation }) => {
                 <DatePicker />
             </View> */}
                     <View>
-                        <Text testID="Offer.descTitle" style={globalStyles.formTitleText}>Description</Text>
-                        <Text testID="Offer.descDesc" style={globalStyles.formDescText}>Optional: Describe your offer in detail</Text>
+                        <Text testID="Request.deliveryPreferenceLabel" style={styles.formTitleText}> {t("offer.form.fields.6.label")}</Text>
+                        <Text testID="Request.deliveryPreferenceDesc" style={styles.formDescText}>{t("offer.form.fields.6.label")}</Text>
+                        <Logistics logistics={logistics} setLogistics={setLogistics} />
                     </View>
-                    <View style={globalStyles.formDescInputView}>
+                    <View>
+                        <Text testID="Request.locationLabel" style={styles.formTitleText}>{t("offer.form.fields.7.label")}</Text>
+                        <Text testID="Request.locationDesc" style={styles.formDescText}>{t("offer.form.fields.7.desc")}</Text>
+                        <View testID="Request.formInputContainer" style={styles.formInputContainer}>
+                            <TextInput
+                                value={postalCode}
+                                nativeID="postalCode"
+                                testID="Request.postalCodeInput"
+                                placeholder="XXX XXX"
+                                placeholderTextColor="#656565"
+                                style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                                onChangeText={newText => {
+                                    setPostalCode(newText)
+                                    setErrMsg("")
+                                }}
+                                onChange={() => setErrMsg("")}
+                                maxLength={7}
+                            />
+                        </View>
+                    </View>
+                    <View>
+                        <Text testID="Request.accessLabel" style={styles.formTitleText}>{t("offer.form.fields.8.label")}</Text>
+                        <Text testID="Request.accessDesc" style={styles.formDescText}>{t("offer.form.fields.8.desc")}</Text>
+                        <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} />
+                    </View>
+                    <View>
+                        <Text testID="Offer.descTitle" style={styles.formTitleText}>{t("offer.form.fields.2.label")}</Text>
+                        <Text testID="Offer.descDesc" style={styles.formDescText}>{t("offer.form.fields.2.label")}</Text>
+                    </View>
+                    <View style={styles.formDescInputView}>
                         <TextInput
                             value={desc}
                             nativeID="desc"
                             testID="Offer.descInput"
                             placeholder="Enter Description"
                             placeholderTextColor="#656565"
-                            style={globalStyles.formInputText}
+                            style={styles.formInputText}
                             multiline={true}
                             onChangeText={newText => {
                                 setDesc(newText)
