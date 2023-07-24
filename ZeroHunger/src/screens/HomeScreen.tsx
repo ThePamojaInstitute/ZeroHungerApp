@@ -63,61 +63,62 @@ export const HomeScreen = ({ navigation }) => {
     }, [unreadMessageCount])
 
     return (
-
-        <View testID="Home.container" style={styles.container}>
-            {!loaded && <Text>Loading...</Text>}
-            {loaded &&
-                <>
-                    <View testID="Home.subContainer" style={styles.subContainer}>
-                        <View testID="Home.requestsContainer" style={[
-                            {
-                                borderBottomColor: showRequests ?
-                                    'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                            },
-                            styles.pressable
-                        ]}>
-                            <Pressable
-                                style={styles.pressableText}
-                                onPress={() => setShowRequests(true)}
-                                testID="Home.requestsBtn"
-                            >
-                                <Text testID="Home.requestsLabel" style={globalStyles.H3}>Requests</Text>
-                            </Pressable>
+        <>
+            {user && <View testID="Home.container" style={styles.container}>
+                {!loaded && <Text>Loading...</Text>}
+                {loaded &&
+                    <>
+                        <View testID="Home.subContainer" style={styles.subContainer}>
+                            <View testID="Home.requestsContainer" style={[
+                                {
+                                    borderBottomColor: showRequests ?
+                                        'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                                },
+                                styles.pressable
+                            ]}>
+                                <Pressable
+                                    style={styles.pressableText}
+                                    onPress={() => setShowRequests(true)}
+                                    testID="Home.requestsBtn"
+                                >
+                                    <Text testID="Home.requestsLabel" style={globalStyles.H3}>Requests</Text>
+                                </Pressable>
+                            </View>
+                            <View testID="Home.offersContainer" style={[
+                                {
+                                    borderBottomColor: !showRequests ?
+                                        'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                                },
+                                styles.pressable
+                            ]}>
+                                <Pressable
+                                    style={styles.pressableText}
+                                    onPress={() => setShowRequests(false)}
+                                    testID="Home.offersBtn"
+                                >
+                                    <Text testID="Home.offersLabel" style={globalStyles.H3}>Offers</Text>
+                                </Pressable>
+                            </View>
                         </View>
-                        <View testID="Home.offersContainer" style={[
-                            {
-                                borderBottomColor: !showRequests ?
-                                    'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                            },
-                            styles.pressable
-                        ]}>
-                            <Pressable
-                                style={styles.pressableText}
-                                onPress={() => setShowRequests(false)}
-                                testID="Home.offersBtn"
-                            >
-                                <Text testID="Home.offersLabel" style={globalStyles.H3}>Offers</Text>
-                            </Pressable>
+                        <View testID="Home.categoriesContainer" style={styles.categoriesContainer}>
+                            <FoodCategories />
                         </View>
-                    </View>
-                    <View testID="Home.categoriesContainer" style={styles.categoriesContainer}>
-                        <FoodCategories />
-                    </View>
-                    {showRequests &&
-                        <FeedPostRenderer
-                            type={"r"}
-                            navigation={navigation}
-                            setShowRequests={setShowRequests}
-                        />}
-                    {!showRequests &&
-                        <FeedPostRenderer
-                            type={"o"}
-                            navigation={navigation}
-                            setShowRequests={setShowRequests}
-                        />}
-                </>
-            }
-        </View>
+                        {showRequests &&
+                            <FeedPostRenderer
+                                type={"r"}
+                                navigation={navigation}
+                                setShowRequests={setShowRequests}
+                            />}
+                        {!showRequests &&
+                            <FeedPostRenderer
+                                type={"o"}
+                                navigation={navigation}
+                                setShowRequests={setShowRequests}
+                            />}
+                    </>
+                }
+            </View>}
+        </>
     )
 }
 
