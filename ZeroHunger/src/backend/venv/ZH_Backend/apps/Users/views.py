@@ -12,6 +12,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 import json
+import time
 
 from .models import BasicUser
 from apps.Chat.models import Conversation
@@ -132,17 +133,38 @@ class getNotifications(APIView):
 class addNotification(APIView):
     def post(self, request, format=None):
         try:
-            user = BasicUser.objects.get(username=request.data['username'])
+            user = BasicUser.objects.get(username=request.data['user']['username'])
+            data = request.data['notification']
+            notifications = user.notifications
+
+            notification = {
+                "type" : data['type'],
+                "user" : data['user'],
+                "food" : data['food'],
+                "time" : time.time()
+            }
+            notifications.append(notification)
+            user.save()
+
+            return Response(status=200)
             
         except Exception as e:
             print(e)
             return Response(status=400)
 
-class deleteNotification(APIView):
+class clearNotification(APIView):
     def post(self, request, format=None):
         try:
-            user = BasicUser.objects.get(username=request.data['username'])
-            id = request.data['id']
+            user = BasicUser.objects.get(username=request.data['user']['username'])
+            timestamp = request.data['timestamp']
+            notifications = user.notifications
+
+            for notif in notifications:
+                if notif['time'] == timestamp:
+                    notifications.remove(notif)
+
+            user.save()
+            
             return Response(status=200)
         except Exception as e:
             print(e)
