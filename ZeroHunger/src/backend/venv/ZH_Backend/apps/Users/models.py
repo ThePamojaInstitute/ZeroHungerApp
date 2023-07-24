@@ -20,11 +20,11 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     expo_push_token = models.CharField(max_length=50, default="", blank=True)
+    notifications = models.JSONField(default=dict)
     postalCode = models.CharField(max_length=7, blank=True)
     coordinates = models.CharField(max_length=50, blank=True)
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=len(LOGISTICS_CHOICES), default='', blank=True)
     diet = MultiSelectField(choices=DIET_REQUIREMENTS, max_length=len(DIET_REQUIREMENTS), default='', blank=True)
-
 
     REQUIRED_FIELDS = ["email"]
 
@@ -61,6 +61,7 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
         return self.is_superuser
 
     def has_module_perms(self, app_label):
+
         return self.is_superuser
 
     def update_coordinates(self):

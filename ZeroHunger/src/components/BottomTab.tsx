@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, Dimensions } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, Dimensions, Image } from "react-native";
 import styles from "../../styles/components/bottomTabStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
+
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
+import { getFocusedRouteNameFromRoute, useIsFocused } from "@react-navigation/native"
 import LoginScreen from '../screens/Loginscreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen'
 import HomeScreen from '../screens/HomeScreen';
@@ -12,8 +13,10 @@ import RequestDetailsScreen from '../screens/RequestDetailsScreen';
 import OfferFormScreen from '../screens/OfferFormScreen';
 import OfferDetailsScreen from '../screens/OfferDetailsScreen';
 import AccountSettingsScreen from '../screens/AccountSettingsScreen';
+import NotificationsSettingsScreen from '../screens/NotificationsSettingsScreen';
 import Conversations from '../screens/Conversations';
 import Chat from './Chat';
+import NotificationsScreen from '../screens/NotificationsScreen';
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -64,8 +67,12 @@ const HomeStackNavigator = ({ navigation }) => {
                                 style={{ padding: 16 }}
                                 name="notifications-sharp"
                                 size={22}
+
+                                onPress={() => { navigation.navigate("NotificationsScreen") }}
+
                                 onPress={() => { }}
                                 testID="Home.notificationBtn"
+
                             />
                         </View>
                     )
@@ -77,6 +84,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 options={{
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background,
                     },
@@ -89,6 +97,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 options={{
                     title: "Zero Hunger",
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background
                     }
@@ -97,6 +106,9 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="RequestFormScreen"
                 component={RequestFormScreen}
+                options={{
+                    headerShadowVisible: false,
+                }}
             />
             <Stack.Screen
                 name="RequestDetailsScreen"
@@ -104,6 +116,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 options={{
                     title: "Request",
                     headerTitleAlign: "center",
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -120,6 +133,9 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="OfferFormScreen"
                 component={OfferFormScreen}
+                options={{
+                    headerShadowVisible: false,
+                }}
             />
             <Stack.Screen
                 name="OfferDetailsScreen"
@@ -127,6 +143,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 options={{
                     title: "Offer",
                     headerTitleAlign: "center",
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -155,6 +172,22 @@ const HomeStackNavigator = ({ navigation }) => {
             <Stack.Screen
                 name="AccountSettingsScreen"
                 component={AccountSettingsScreen}
+                options={{
+                    headerShadowVisible: false,
+                }}
+            />
+            <Stack.Screen
+                name="NotificationsSettingsScreen"
+                component={NotificationsSettingsScreen}
+                options={{
+                    title: "Notifications Settings",
+                    headerTitleAlign: "center",
+                    headerShadowVisible: false,
+                }}
+            />
+            <Stack.Screen
+                name="NotificationsScreen"
+                component={NotificationsScreen}
             />
             <Stack.Screen
                 name="PostsHistory"
@@ -218,6 +251,7 @@ const ChatStackNavigator = () => {
                 options={{
                     title: "Request",
                     headerTitleAlign: "center",
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -237,6 +271,7 @@ const ChatStackNavigator = () => {
                 options={{
                     title: "Offer",
                     headerTitleAlign: "center",
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -350,6 +385,11 @@ const BottomTab = () => {
                                     style={[styles.modal,
                                     { marginTop: Dimensions.get('window').height * 0.69 }]}
                                 >
+
+                                    <View style={{ marginBottom: 30, marginTop: 12 }}>
+                                        <View style={styles.modalContent}>
+                                            <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>What would you like to post?</Text>
+
                                     <View style={{ marginBottom: 30 }}>
                                         <View
                                             testID="Bottom.postNavModalCont"
@@ -358,6 +398,7 @@ const BottomTab = () => {
                                                 testID="Bottom.postNavModalLabel"
                                                 style={[globalStyles.H3, { alignSelf: 'center' }]}
                                             >What would you like to post?</Text>
+
                                         </View>
                                         <TouchableOpacity
                                             testID="Bottom.postNavModalClose"
@@ -444,3 +485,41 @@ const BottomTab = () => {
 }
 
 export default BottomTab
+
+
+const styles = StyleSheet.create({
+    bottomBarText: {
+        // marginBottom: 14,
+        fontSize: 11,
+        color: Colors.primary,
+        marginBottom: 14,
+        textAlign: "center"
+    },
+    bottomBarTab: {
+        height: 69,
+        backgroundColor: Colors.offWhite,
+        borderTopWidth: 0,
+    },
+    postButton: {
+        marginTop: 9,
+        alignItems: "center",
+        justifyContent: "center",
+        // position: "absolute",
+        // zIndex: 100,
+        // width: "70%"
+        paddingHorizontal: 40,
+    },
+    modal: {
+        margin: 0,
+        marginTop: Dimensions.get('window').height * 0.70,
+        backgroundColor: Colors.offWhite,
+        borderRadius: 10,
+        elevation: 0,
+    },
+    modalContent: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+    }
+})
+
