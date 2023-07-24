@@ -32,7 +32,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #django_key = client.get_secret("zh-backend-test-djangoKey").value
 SECRET_KEY = '2g0siigcmxo9%xhb&!gd2aedqyll(!wmsc9qlxi(uz345o)bdq'
 
-
+MAPBOX_ACCESS_CODE = 'pk.eyJ1IjoiemVyb2h1bmdlcmFwcCIsImEiOiJjbGtiOG83N3QwZTJoM2ZsNWsxOXljdmp1In0.Zpgj3_N26AMBWusOEiELuA' 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -194,6 +194,13 @@ AUTH_USER_MODEL = "Users.BasicUser"
 		#"BACKEND": "channels.layers.InMemoryChannelLayer"
 # redis_connection_string = client.get_secret("zh-backend-testing-redisconnectionstring").value
 # azure_redis_password = client.get_secret("AZURE-REDIS-PASSWORD").value
+
+CHANNEL_LAYERS = {
+    "default": {
+        # For production level, don’t use InMemoryChannelLayer use Redis channel instead
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # CHANNEL_LAYERS = {
 #     "default": {

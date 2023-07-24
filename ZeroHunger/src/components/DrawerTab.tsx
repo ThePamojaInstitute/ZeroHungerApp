@@ -1,8 +1,21 @@
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { View, Text, TouchableOpacity, GestureResponderEvent, Image } from "react-native"
+import styles from "../../styles/components/drawerTabStyleSheet"
+import { globalStyles } from "../../styles/globalStyleSheet";
 import { DrawerActions } from '@react-navigation/native';
+
 import { View, Text, TouchableOpacity, StyleSheet, GestureResponderEvent, Image } from "react-native"
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from "@react-navigation/drawer";
+
+        
+import {
+    createDrawerNavigator,
+    DrawerContentScrollView,
+    DrawerItem,
+    DrawerItemList,
+    useDrawerStatus
+} from "@react-navigation/drawer";
+import { DrawerContentComponentProps } from "@react-navigation/drawer/lib/typescript/src/types";
+import { AuthContext } from "../context/AuthContext";
 import BottomTab from "./BottomTab";
 import {
     useFonts,
@@ -12,13 +25,13 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { globalStyles } from "../../styles/globalStyleSheet";
 import { logOutUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
 
+
 const Drawer = createDrawerNavigator()
 
-const CustomDrawer = (props) => {
+const CustomDrawer = (props: DrawerContentComponentProps) => {
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
         PublicSans_400Regular,
@@ -32,6 +45,7 @@ const CustomDrawer = (props) => {
 
     const { user, dispatch } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
+    const status = useDrawerStatus()
 
     const handleLogOut = (e: GestureResponderEvent) => {
         props.navigation.dispatch(DrawerActions.closeDrawer())
@@ -49,58 +63,69 @@ const CustomDrawer = (props) => {
         <DrawerContentScrollView {...props}>
             {!loaded && <Text>Loading...</Text>}
             {loaded && <>
-                <View style={{ flexDirection: "row", marginTop: 12, marginLeft: 12, marginRight: 8, marginBottom: 32, justifyContent: "space-between" }}>
+                <View testID={`Drawer.${status}`} style={styles.drawerContainer}>
                     {/* Temporary default profile picture */}
                     <Ionicons name="person-circle-sharp" color="#B8B8B8" size={64} />
-                    <View style={{ padding: 4, marginLeft: -8 }}>
-                        <Text style={[globalStyles.H2, { paddingBottom: 8 }]}>{user ? user['username'] : "User"}</Text>
-                        <TouchableOpacity onPress={() => props.navigation.navigate("AccountSettingsScreen")}>
-                            <Text style={globalStyles.Body}>Account Settings    </Text>
+                    <View testID="Drawer.usernameCont" style={{ padding: 4, marginLeft: -25 }}>
+                        <Text testID="Drawer.username" style={[globalStyles.H2, { paddingBottom: 8 }]}>{user ? user['username'] : "User"}</Text>
+                        <TouchableOpacity testID="Drawer.accSettBtn" onPress={() => props.navigation.navigate("AccountSettingsScreen")}>
+                            <Text testID="Drawer.accSettBtnLabel" style={globalStyles.Body}>Account Settings</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={{}}>
-                        <TouchableOpacity onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}>
-                            <Ionicons name="close" size={31} />
+                    <View>
+                        <TouchableOpacity testID="Drawer.closeBtn" onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}>
+                            <Ionicons testID="Drawer.closeIcon" name="close" size={31} />
                         </TouchableOpacity>
                     </View>
                 </View>
 
                 <DrawerItem
+                    testID="Drawer.historyBtn"
                     label={() => <Text style={globalStyles.Body}>Request & Offer History</Text>}
-                    icon={() => <MaterialCommunityIcons name="history" size={24} />}
-                    onPress={() => { }}
+                    icon={() => <Image source={require('../../assets/History.png')} style={styles.Img} />}
+                    onPress={() => props.navigation.navigate("PostsHistory")}
                 />
                 <DrawerItem
-                    label={() => <Text style={globalStyles.Body}>Dietary Restrictions</Text>}
-                    icon={() => <MaterialCommunityIcons name="silverware-fork-knife" size={24} />}
-                    onPress={() => { }}
+                    testID="Drawer.dietRestBtn"
+                    label={() => <Text style={globalStyles.Body}>Preferences</Text>}
+                    icon={() => <Image source={require('../../assets/Settings.png')} style={styles.Img} />}
+                    onPress={() => props.navigation.navigate("Preferences")}
                 />
                 <DrawerItem
+                    testID="Drawer.notifSettBtn"
                     label={() => <Text style={globalStyles.Body}>Notifications Settings</Text>}
+
                     // icon={() => <Ionicons name="md-cog-outline" size={24} />}
                     icon={() => <Image 
                         style={{height: 20, width: 20, marginLeft: 3}}
                         source={require('../../assets/notifications_settings_icon.png')}/>}
                     onPress={() => { props.navigation.navigate("NotificationsSettingsScreen") }}
+
+                    icon={() => <Image source={require('../../assets/Notifications_Settings.png')} style={styles.Img} />}
+                    onPress={() => { }}
+
                 />
                 <DrawerItem
-                    label={() => <Text style={globalStyles.Body}>FAQ</Text>}
-                    icon={() => <Ionicons name="help-circle-outline" size={24} />}
+                    testID="Drawer.FAQBtn"
+                    label={() => <Text style={globalStyles.Body}>FAQs</Text>}
+                    icon={() => <Image source={require('../../assets/Help.png')} style={styles.Img} />}
                     onPress={() => { }}
                 />
                 <DrawerItem
+                    testID="Drawer.termsBtn"
                     label={() => <Text style={globalStyles.Body}>Terms and Conditions</Text>}
-                    icon={() => <Ionicons name="document-text-outline" size={24} />}
+                    icon={() => <Image source={require('../../assets/Scroll.png')} style={styles.Img} />}
                     onPress={() => { }}
                 />
                 <DrawerItem
+                    testID="Drawer.policyBtn"
                     label={() => <Text style={globalStyles.Body}>Privacy Policy</Text>}
-                    icon={() => <MaterialCommunityIcons name="shield-lock-outline" size={24} />}
+                    icon={() => <Image source={require('../../assets/Privacy.png')} style={styles.Img} />}
                     onPress={() => { }}
                 />
 
-                <TouchableOpacity testID="LogOut.Button" style={styles.logOutBtn} onPress={handleLogOut}>
-                    <Text style={styles.logOutBtnText}>Log Out</Text>
+                <TouchableOpacity testID="Drawer.logOutBtn" style={[globalStyles.secondaryBtn, { width: '85%', marginLeft: 10 }]} onPress={handleLogOut}>
+                    <Text testID="Drawer.logOutBtnText" style={globalStyles.secondaryBtnLabel}>Log Out</Text>
                 </TouchableOpacity>
 
                 <DrawerItemList {...props} />
@@ -117,7 +142,6 @@ const DrawerTab = () => {
                 component={BottomTab}
                 options={{
                     headerShown: false,
-                    // drawerStyle: { width: "80%" },
                     drawerItemStyle: { height: 0 }
                 }}
             />
@@ -126,37 +150,3 @@ const DrawerTab = () => {
 }
 
 export default DrawerTab
-
-const styles = StyleSheet.create({
-    logOutBtn: {
-        width: "50%",
-        borderRadius: 25,
-        marginTop: 10,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "#6A6A6A",
-        marginRight: 10,
-        marginLeft: 12
-    },
-    logOutBtnText: {
-        color: "#FFFFFF",
-        padding: 15,
-        marginLeft: 10,
-        fontSize: 15,
-    },
-    deleteBtn: {
-        title: "Login",
-        width: "50%",
-        borderRadius: 25,
-        marginTop: 20,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "red",
-    },
-    deleteBtnText: {
-        color: "#FFFFFF",
-        padding: 15,
-        marginLeft: 10,
-        fontSize: 15,
-    },
-})

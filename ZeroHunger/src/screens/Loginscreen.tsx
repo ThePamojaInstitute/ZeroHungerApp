@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
-  StyleSheet,
   Text,
   View,
   TextInput,
@@ -12,11 +11,12 @@ import {
   Pressable,
   Keyboard
 } from "react-native";
+import styles from "../../styles/screens/loginStyleSheet"
 import { useFocusEffect } from '@react-navigation/native';
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
-import { axiosInstance } from "../../config";
+import { axiosInstance, passwordResetURL } from "../../config";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import jwt_decode from "jwt-decode";
 import {
@@ -84,64 +84,74 @@ export const LoginScreen = ({ navigation }) => {
     e.preventDefault()
     Keyboard.dismiss()
     dispatch({ type: "LOGIN_START", payload: null })
-    logInUser({ "username": username, "password": password, "expo_push_token": expoPushToken }).then(async res => {
-      if (res.msg === "success") {
-        await axiosInstance.post("users/token/", { "username": username, "password": password }).then(resp => {
-          dispatch({
-            type: "LOGIN_SUCCESS", payload: {
-              "user": jwt_decode(resp.data['access']),
-              "token": resp.data
-            }
-          })
-        }).then(() => {
+    logInUser({
+      "username": username,
+      "password": password,
+      "expo_push_token": expoPushToken
+    })
+      .then(async res => {
+        if (res.msg === "success") {
+          await axiosInstance.post("users/token/",
+            { "username": username, "password": password })
+            .then(resp => {
+              dispatch({
+                type: "LOGIN_SUCCESS", payload: {
+                  "user": jwt_decode(resp.data['access']),
+                  "token": resp.data
+                }
+              })
+            }).then(() => {
+              setUsername("")
+              setPassword("")
+              // alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
+              navigation.navigate('HomeScreen')
+            })
+        } else if (res.msg === "failure") {
+          dispatch({ type: "LOGIN_FAILURE", payload: res.res })
+          handleErrorMessage('Invalid credentials')
+          // alert!({ type: 'open', message: 'Invalid credentials', alertType: 'error' })
           setUsername("")
           setPassword("")
-          // alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
-          navigation.navigate('HomeScreen')
-        })
-      } else if (res.msg === "failure") {
-        dispatch({ type: "LOGIN_FAILURE", payload: res.res })
-        handleErrorMessage('Invalid credentials')
-        // alert!({ type: 'open', message: 'Invalid credentials', alertType: 'error' })
-        setUsername("")
-        setPassword("")
-      } else {
-        dispatch({ type: "LOGIN_FAILURE", payload: res.res })
-        const error = res.msg ? res.msg : "An error occurred"
-        handleErrorMessage(error)
-      }
-    })
+        } else {
+          dispatch({ type: "LOGIN_FAILURE", payload: res.res })
+          const error = res.msg ? res.msg : "An error occurred"
+          handleErrorMessage(error)
+        }
+      })
   }
 
   const handlePasswordRecovery = () => {
-    const URL = "https://zh-backend-azure-webapp.azurewebsites.net/users/reset_password/"
-    Linking.canOpenURL(URL).then(supported => {
+    Linking.canOpenURL(passwordResetURL).then(supported => {
       if (supported) {
-        Linking.openURL(URL);
+        Linking.openURL(passwordResetURL);
       } else {
-        console.log(`Cannot open URL: ${URL}`);
+        console.log(`Cannot open URL: ${passwordResetURL}`);
       }
     })  //replace this with actual URL later
   }
 
+
+  const TestBlobUpload = () => {
+    axiosInstance.post("posts/testBlobImage")
+  }
   return (
-    <View testID="Login.container" style={globalStyles.authContainer}>
+    <View testID="Login.container" style={styles.authContainer}>
       {!loaded && <Text>Loading...</Text>}
       {loaded &&
         <>
           <Text>{loading && "Loading..."}</Text>
           {(errField === 'general') &&
             <View>
-              <Text style={[globalStyles.errorMsg, { fontSize: 16 }]}>{errMsg}</Text>
+              <Text style={[styles.errorMsg, { fontSize: 16 }]}>{errMsg}</Text>
             </View>}
-          <View testID="Login.usernameInputContainer" style={globalStyles.inputContainer}>
-            <Text testID="Login.usernameLabel" style={[globalStyles.inputLabel,
+          <View testID="Login.usernameInputContainer" style={styles.inputContainer}>
+            <Text testID="Login.usernameLabel" style={[styles.inputLabel,
             { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}>Username</Text>
             <TextInput
               nativeID="Login.usernameInput"
               testID="Login.usernameInput"
               value={username}
-              style={[globalStyles.input,
+              style={[styles.input,
               { borderColor: `${(errField === 'username') ? Colors.alert2 : Colors.midLight}` }]}
               onChangeText={newText => {
                 setUsername(newText)
@@ -157,19 +167,19 @@ export const LoginScreen = ({ navigation }) => {
             />
           </View>
           {(errField === 'username') &&
-            <View testID="Login.usernameErrMsgContainer" style={globalStyles.errorMsgContainer}>
-              <Text testID="Login.usernameErrMsg" style={globalStyles.errorMsg}>{errMsg}</Text>
+            <View testID="Login.usernameErrMsgContainer" style={styles.errorMsgContainer}>
+              <Text testID="Login.usernameErrMsg" style={styles.errorMsg}>{errMsg}</Text>
             </View>}
-          <View testID="Login.passwordInputContainer" style={globalStyles.inputContainer}>
-            <Text testID="Login.passwordLabel" style={[globalStyles.inputLabel,
+          <View testID="Login.passwordInputContainer" style={styles.inputContainer}>
+            <Text testID="Login.passwordLabel" style={[styles.inputLabel,
             { color: `${(errField === 'password') ? Colors.alert2 : Colors.dark}` }]}>Password</Text>
-            <View testID="Login.innerPasswordInputContainer" style={[globalStyles.passwordInputContainer,
+            <View testID="Login.innerPasswordInputContainer" style={[styles.passwordInputContainer,
             { borderColor: `${(errField === 'password') ? Colors.alert2 : Colors.midLight}` }]}>
               <TextInput
                 nativeID="Login.passwordInput"
                 testID="Login.passwordInput"
                 value={password}
-                style={globalStyles.passwordInput}
+                style={styles.passwordInput}
                 secureTextEntry={hidePass}
                 onChangeText={newText => {
                   setPassword(newText)
@@ -187,25 +197,26 @@ export const LoginScreen = ({ navigation }) => {
               <Ionicons testID="eyeIcon"
                 name={hidePass ? "eye-off-outline" : "eye-outline"}
                 size={22}
-                onPress={() => setHidePass(!hidePass)} style={{ padding: 9 }} />
+                onPress={() => setHidePass(!hidePass)}
+                style={{ padding: 9 }} />
             </View>
           </View>
           {(errField === 'password') &&
-            <View testID="Login.passwordErrMsgContainer" style={globalStyles.errorMsgContainer}>
-              <Text testID="Login.passwordErrMsg" style={globalStyles.errorMsg}>{errMsg}</Text>
+            <View testID="Login.passwordErrMsgContainer" style={styles.errorMsgContainer}>
+              <Text testID="Login.passwordErrMsg" style={styles.errorMsg}>{errMsg}</Text>
             </View>}
           <Pressable style={{ width: '90%' }} testID="passwordReset.Button" onPress={handlePasswordRecovery}>
-            <Text testID="Login.forgotPassword" style={globalStyles.forgotPassword}>Forgot password?</Text>
+            <Text testID="Login.forgotPassword" style={styles.forgotPassword}>Forgot password?</Text>
           </Pressable>
           <TouchableOpacity testID="Login.Button" style={globalStyles.defaultBtn} onPress={handleLogin}>
             <Text testID="Login.ButtonLabel" style={globalStyles.defaultBtnLabel}>Login</Text>
           </TouchableOpacity>
-          <View testID="divider" style={globalStyles.divider}>
-            <View testID="dividerLine1" style={globalStyles.dividerLine} />
+          <View testID="divider" style={styles.divider}>
+            <View testID="dividerLine1" style={styles.dividerLine} />
             <View>
-              <Text testID="dividerText" style={globalStyles.dividerText}>OR</Text>
+              <Text testID="dividerText" style={styles.dividerText}>OR</Text>
             </View>
-            <View testID="dividerLine2" style={globalStyles.dividerLine} />
+            <View testID="dividerLine2" style={styles.dividerLine} />
           </View>
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.outlineBtn} onPress={() => {
             setErrField('')
@@ -223,6 +234,8 @@ export const LoginScreen = ({ navigation }) => {
             <Text style={globalStyles.secondaryBtnLabel}>Add an Offer</Text>
           </TouchableOpacity> */}
           <NotificationsTest setExpoToken={setExpoPushToken} />
+
+          <TouchableOpacity onPress={TestBlobUpload}> </TouchableOpacity>
         </>
       }
       {/* <Button
