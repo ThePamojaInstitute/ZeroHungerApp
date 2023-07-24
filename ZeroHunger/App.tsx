@@ -8,7 +8,6 @@ import LandingPageScreen from './src/screens/HomeScreen';
 import RequestDetailsScreen from './src/screens/RequestDetailsScreen';
 import OfferDetailsScreen from './src/screens/OfferDetailsScreen';
 import { AuthContextProvider } from './src/context/AuthContext';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RequestFormScreen } from './src/screens/RequestFormScreen';
