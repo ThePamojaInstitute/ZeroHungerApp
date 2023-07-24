@@ -15,7 +15,7 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     expo_push_token = models.CharField(max_length=50, default="", blank=True)
-    notifications = models.JSONField(default=dict)
+    notifications = models.JSONField(default=list)
 
     REQUIRED_FIELDS = ["email"]
 
