@@ -55,7 +55,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
         })
     }
-    const {t, i18n} = useTranslation();
+    const { t, i18n } = useTranslation();
     return (
         <DrawerContentScrollView {...props}>
             {!loaded && <Text> {t("app.strings.loading")} </Text>}
@@ -92,7 +92,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                     testID="Drawer.notifSettBtn"
                     label={() => <Text style={globalStyles.Body}>{t("menu.notifications.label")}</Text>}
                     icon={() => <Image source={require('../../assets/Notifications_Settings.png')} style={styles.Img} />}
-                    onPress={() => { }}
+                    onPress={() => { props.navigation.navigate("NotificationsSettingsScreen") }}
                 />
                 <DrawerItem
                     testID="Drawer.FAQBtn"
@@ -105,6 +105,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                     label={() => <Text style={globalStyles.Body}> {t("menu.terms.label")}</Text>}
                     icon={() => <Image source={require('../../assets/Scroll.png')} style={styles.Img} />}
                     onPress={() => { }}
+
                 />
                 <DrawerItem
                     testID="Drawer.policyBtn"

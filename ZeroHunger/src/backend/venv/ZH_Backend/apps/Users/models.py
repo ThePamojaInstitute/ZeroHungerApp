@@ -24,7 +24,7 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     coordinates = models.CharField(max_length=50, blank=True)
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=len(LOGISTICS_CHOICES), default='', blank=True)
     diet = MultiSelectField(choices=DIET_REQUIREMENTS, max_length=len(DIET_REQUIREMENTS), default='', blank=True)
-
+    notifications = models.JSONField(default=list)
 
     REQUIRED_FIELDS = ["email"]
 
