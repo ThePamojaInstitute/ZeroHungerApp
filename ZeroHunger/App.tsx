@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import * as React from 'react'
+import {Suspense} from 'react'
 import { TouchableOpacity } from "react-native"
 import LoginScreen from './src/screens/Loginscreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
@@ -24,12 +25,14 @@ import BottomTab from './src/components/BottomTab';
 import DrawerTab from './src/components/DrawerTab';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { useTranslation } from "react-i18next";
 
 const queryClient = new QueryClient();
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
   return (
     <SafeAreaProvider>
       <AuthContextProvider>
@@ -39,79 +42,6 @@ export default function App() {
               <AlertProvider>
                 <>
                   <Stack.Navigator>
-                    {/* <Stack.Screen
-                    name="LandingPageScreenTemp"
-                    component={LandingPageScreen}
-                    options={{
-                      title: "Zero Hunger",
-                      headerTitleAlign: 'center',
-                      headerLeft: () => (
-                        <TouchableOpacity style={styles.buttonPlaceholder}>
-                          <Text>Profile Picture</Text>
-                        </TouchableOpacity>
-                      ),
-                      headerRight: () => (
-                        <TouchableOpacity style={styles.buttonPlaceholder}>
-                          <Text>Notif Icon</Text>
-                        </TouchableOpacity>
-                      )
-                    }}
-                  />
-                  <Stack.Screen
-                    name='Conversations'
-                    component={Conversations}
-                  />
-                  <Stack.Screen
-                    name='Chat'
-                    component={Chat}
-                  />
-                  <Stack.Screen
-                    name="RequestFormScreen"
-                    component={RequestFormScreen}
-                  />
-                  <Stack.Screen
-                    name="OfferFormScreen"
-                    component={OfferFormScreen}
-                  /> 
-                  <Stack.Screen
-                    name="RequestDetailsScreen"
-                    component={RequestDetailsScreen}
-                  />
-                  <Stack.Screen
-                    name="OfferDetailsScreen"
-                    component={OfferDetailsScreen}
-                  />
-                  <Stack.Screen
-                    name="LoginScreen"
-                    component={LoginScreen}
-                    options={{
-                      // headerShown: false,
-                      title: "Zero Hunger",
-                      headerTitleAlign: 'center',
-                      headerStyle: {
-                        backgroundColor: Colors.Background
-                      },
-                      headerLeft: () => (<></>),
-                    }}
-                  />
-                  <Stack.Screen
-                    name="CreateAccountScreen" //Placeholder header to return to login screen
-                    component={CreateAccountScreen}
-                    options={{
-                      // headerShown: false,
-                      title: "Zero Hunger",
-                      headerTitleAlign: 'center',
-                      headerStyle: {
-                        backgroundColor: Colors.Background
-                      }
-                    }}
-                  /> */}
-
-                    {/* <Stack.Screen
-                    name="BottomTab"
-                    component={BottomTab}
-                    options={{headerShown: false}}
-                  /> */}
                     <Stack.Screen
                       name="ZeroHunger"
                       component={DrawerTab}
@@ -127,6 +57,7 @@ export default function App() {
         </QueryClientProvider>
       </AuthContextProvider>
     </SafeAreaProvider>
+
   )
 }
 

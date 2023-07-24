@@ -19,6 +19,7 @@ import {
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
 import { MaterialIcons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 export const Conversations = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -172,10 +173,10 @@ export const Conversations = ({ navigation }) => {
             </TouchableHighlight>
         )
     };
-
+    const {t, i18n} = useTranslation();
     return (
         <View testID="Conversations.container" style={{ backgroundColor: Colors.Background }}>
-            {!loaded && <Text>Loading...</Text>}
+            {!loaded && <Text> t("home.loading.label") </Text>}
             {loaded &&
                 <>
                     {empty && <Text testID="Conversations.noMsgs" style={styles.noMsgs}>No Messages</Text>}

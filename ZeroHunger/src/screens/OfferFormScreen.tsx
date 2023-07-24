@@ -20,6 +20,7 @@ import Logistics from "../components/Logistics";
 import AccessNeeds from "../components/AccessNeeds";
 import { intitializePreferences } from "../controllers/preferences";
 import FoodFilters from "../components/FoodFilters";
+import { useTranslation } from "react-i18next";
 
 export const OfferFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -35,6 +36,7 @@ export const OfferFormScreen = ({ navigation }) => {
 
     const { user, accessToken } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         intitializePreferences(accessToken, setAccessNeeds, setLogistics, setPostalCode, setDiet)
@@ -63,12 +65,12 @@ export const OfferFormScreen = ({ navigation }) => {
             },
             headerLeft: () => (
                 <TouchableOpacity testID="Offer.cancelBtn" onPress={() => navigation.navigate('HomeScreen')}>
-                    <Text testID="Offer.cancelBtnLabel" style={styles.formCancelBtn}>Cancel</Text>
+                    <Text testID="Offer.cancelBtnLabel" style={styles.formCancelBtn}> {t("app.strings.cancel")} </Text>
                 </TouchableOpacity>
             ),
             headerRight: () => (
                 <TouchableOpacity testID="Offer.createBtn" onPress={handlePress} style={globalStyles.navDefaultBtn}>
-                    <Text testID="Offer.createBtnLabel" style={globalStyles.defaultBtnLabel}>Post</Text>
+                    <Text testID="Offer.createBtnLabel" style={globalStyles.defaultBtnLabel}>  {t("app.post.label")} </Text>
                 </TouchableOpacity>
             )
         })
@@ -131,16 +133,16 @@ export const OfferFormScreen = ({ navigation }) => {
 
     return (
         <ScrollView testID="Offer.formContainer" style={styles.formContainer}>
-            {(!loaded || loading) && <Text>Loading...</Text>}
+            {(!loaded || loading) && <Text> {t("app.strings.loading")} </Text>}
             {loaded &&
                 <>
                     <View>
                         <Text
                             testID="Offer.titleLabel"
                             style={[styles.formTitleText, { color: titleErr ? Colors.alert2 : Colors.dark }]}
-                        >Title <Text style={{ color: Colors.alert2 }}>*</Text>
+                        >{t("offer.form.fields.0.label")} <Text style={{ color: Colors.alert2 }}>*</Text>
                         </Text>
-                        <Text testID="Offer.titleDesc" style={styles.formDescText}>Create a descriptive title for your offering.</Text>
+                        <Text testID="Offer.titleDesc" style={styles.formDescText}>{t("offer.form.fields.0.desc")}</Text>
                     </View>
                     <View testID="Offer.formInputContainer" style={styles.formInputContainer}>
                         <TextInput
@@ -160,8 +162,8 @@ export const OfferFormScreen = ({ navigation }) => {
                     </View>
                     {titleErr && <Text testID="Offer.titleErrMsg" style={styles.formErrorMsg}>{titleErr}</Text>}
                     <View>
-                        <Text testID="Offer.photoLabel" style={styles.formTitleText}>Photo</Text>
-                        <Text testID="Offer.photoDesc" style={styles.formDescText}>Add photo(s) to help community members understand what you are offering.</Text>
+                        <Text testID="Offer.photoLabel" style={styles.formTitleText}>{t("offer.form.fields.1.label")}</Text>
+                        <Text testID="Offer.photoDesc" style={styles.formDescText}>{t("offer.form.fields.1.desc")}</Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
                     <View>
@@ -175,8 +177,8 @@ export const OfferFormScreen = ({ navigation }) => {
                         <FoodFilters state={diet} setState={setDiet} foodType={DIETPREFERENCES} getType={getDiet} />
                     </View>
                     <View style={{ opacity: 0.5 }}>
-                        <Text testID="Offer.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Offer.quantityDesc" style={styles.formDescText}>Please input the quantity of the food you are offering.</Text>
+                        <Text testID="Offer.quantityLabel" style={styles.formTitleText}>{t("offer.form.fields.5.label")} <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Offer.quantityDesc" style={styles.formDescText}>{t("offer.form.fields.5.desc")}</Text>
                         <Quantity />
                     </View>
                     {/* <View>
@@ -185,13 +187,13 @@ export const OfferFormScreen = ({ navigation }) => {
                 <DatePicker />
             </View> */}
                     <View>
-                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery preferences</Text>
-                        <Text testID="Request.dateDesc" style={styles.formDescText}>Select all that apply.</Text>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>{t("offer.form.fields.6.label")}</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>{t("offer.form.fields.6.label")}</Text>
                         <Logistics logistics={logistics} setLogistics={setLogistics} />
                     </View>
                     <View>
-                        <Text testID="Request.dateLabel" style={[styles.formTitleText, { color: postalErr ? Colors.alert2 : Colors.dark }]}>Pick up or delivery location</Text>
-                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate the postal code of your desired pick up or delivery location.</Text>
+                        <Text testID="Request.dateLabel" style={[styles.formTitleText, { color: postalErr ? Colors.alert2 : Colors.dark }]}>{t("offer.form.fields.7.label")}</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>{t("offer.form.fields.7.desc")}</Text>
                         <View testID="Request.formInputContainer" style={styles.formInputContainer}>
                             <TextInput
                                 value={postalCode}
@@ -211,13 +213,13 @@ export const OfferFormScreen = ({ navigation }) => {
                     </View>
                     {postalErr && <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{postalErr}</Text>}
                     <View>
-                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Access needs for pick up or delivery</Text>
-                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate if you have any access needs for sharing the food you are offering.</Text>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>{t("offer.form.fields.8.label")}</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>{t("offer.form.fields.8.desc")}</Text>
                         <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} />
                     </View>
                     <View>
-                        <Text testID="Offer.descTitle" style={styles.formTitleText}>Description</Text>
-                        <Text testID="Offer.descDesc" style={styles.formDescText}>Describe your offer in detail.</Text>
+                        <Text testID="Offer.descTitle" style={styles.formTitleText}>{t("offer.form.fields.2.label")}</Text>
+                        <Text testID="Offer.descDesc" style={styles.formDescText}>{t("offer.form.fields.2.label")}</Text>
                     </View>
                     <View style={styles.formDescInputView}>
                         <TextInput
@@ -236,7 +238,7 @@ export const OfferFormScreen = ({ navigation }) => {
                     </View>
                 </>
             }
-        </ScrollView>
+        </ScrollView >
     )
 }
 
