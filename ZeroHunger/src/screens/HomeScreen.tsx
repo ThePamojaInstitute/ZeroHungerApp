@@ -66,7 +66,7 @@ export const HomeScreen = ({ navigation }) => {
     return (
         <View testID="Home.container" style={styles.container}>
             {!loaded && <Text> {t("home.loading.label")} </Text>}
-            {loaded &&
+            {loaded && user &&
                 <>
                     <View testID="Home.subContainer" style={styles.subContainer}>
                         <View testID="Home.requestsContainer" style={[
