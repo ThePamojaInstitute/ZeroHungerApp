@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState, Suspense } from "react";
+
 import {
   Text,
   View,
@@ -27,6 +28,8 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons } from '@expo/vector-icons';
 import NotificationsTest from "./NotificationsTest";
+import { useTranslation } from "react-i18next";
+import { any } from "jest-mock-extended";
 
 export const LoginScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false)
@@ -129,12 +132,11 @@ export const LoginScreen = ({ navigation }) => {
       }
     })  //replace this with actual URL later
   }
+  
+  const {t, i18n} = useTranslation();
 
-
-  const TestBlobUpload = () => {
-    axiosInstance.post("posts/testBlobImage")
-  }
   return (
+    <Suspense>
     <View testID="Login.container" style={styles.authContainer}>
       {!loaded && <Text>Loading...</Text>}
       {loaded &&
@@ -146,7 +148,7 @@ export const LoginScreen = ({ navigation }) => {
             </View>}
           <View testID="Login.usernameInputContainer" style={styles.inputContainer}>
             <Text testID="Login.usernameLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}>Username</Text>
+            { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}>{t("account.signin.username.label")} </Text>
             <TextInput
               nativeID="Login.usernameInput"
               testID="Login.usernameInput"
@@ -172,7 +174,7 @@ export const LoginScreen = ({ navigation }) => {
             </View>}
           <View testID="Login.passwordInputContainer" style={styles.inputContainer}>
             <Text testID="Login.passwordLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'password') ? Colors.alert2 : Colors.dark}` }]}>Password</Text>
+            { color: `${(errField === 'password') ? Colors.alert2 : Colors.dark}` }]}> {t("account.signin.pass.label")} </Text>
             <View testID="Login.innerPasswordInputContainer" style={[styles.passwordInputContainer,
             { borderColor: `${(errField === 'password') ? Colors.alert2 : Colors.midLight}` }]}>
               <TextInput
@@ -206,15 +208,15 @@ export const LoginScreen = ({ navigation }) => {
               <Text testID="Login.passwordErrMsg" style={styles.errorMsg}>{errMsg}</Text>
             </View>}
           <Pressable style={{ width: '90%' }} testID="passwordReset.Button" onPress={handlePasswordRecovery}>
-            <Text testID="Login.forgotPassword" style={styles.forgotPassword}>Forgot password?</Text>
+            <Text testID="Login.forgotPassword" style={styles.forgotPassword}> {t("account.signin.passForgot.label")} </Text>
           </Pressable>
           <TouchableOpacity testID="Login.Button" style={globalStyles.defaultBtn} onPress={handleLogin}>
-            <Text testID="Login.ButtonLabel" style={globalStyles.defaultBtnLabel}>Login</Text>
+            <Text testID="Login.ButtonLabel" style={globalStyles.defaultBtnLabel}> {t("account.signin.submit.label")} </Text>
           </TouchableOpacity>
           <View testID="divider" style={styles.divider}>
             <View testID="dividerLine1" style={styles.dividerLine} />
             <View>
-              <Text testID="dividerText" style={styles.dividerText}>OR</Text>
+              <Text testID="dividerText" style={styles.dividerText}> { t("account.signin.or") } </Text>
             </View>
             <View testID="dividerLine2" style={styles.dividerLine} />
           </View>
@@ -223,9 +225,10 @@ export const LoginScreen = ({ navigation }) => {
             setErrMsg('')
             setUsername('')
             setPassword('')
+            console.log(navigation)
             navigation.navigate("CreateAccountScreen")
           }}>
-            <Text testID="SignUp.ButtonLabel" style={globalStyles.outlineBtnLabel}>Sign Up</Text>
+            <Text testID="SignUp.ButtonLabel" style={globalStyles.outlineBtnLabel}> Sign up </Text>
           </TouchableOpacity>
           {/* <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add a Request</Text>
@@ -235,7 +238,6 @@ export const LoginScreen = ({ navigation }) => {
           </TouchableOpacity> */}
           <NotificationsTest setExpoToken={setExpoPushToken} />
 
-          <TouchableOpacity onPress={TestBlobUpload}> </TouchableOpacity>
         </>
       }
       {/* <Button
@@ -245,6 +247,8 @@ export const LoginScreen = ({ navigation }) => {
         Show Snackbar
       </Button> */}
     </View>
+    </Suspense>
   );
 }
+
 export default LoginScreen

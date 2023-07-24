@@ -18,6 +18,7 @@ import {
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import Logistics from "../components/Logistics";
 import AccessNeeds from "../components/AccessNeeds";
+import { useTranslation } from "react-i18next";
 
 export const RequestFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -30,10 +31,9 @@ export const RequestFormScreen = ({ navigation }) => {
     useEffect(() => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
-
     const { user } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
-
+    
     const [title, setTitle] = useState("")
     const [images, setImages] = useState([])
     const [desc, setDesc] = useState("")
@@ -42,23 +42,25 @@ export const RequestFormScreen = ({ navigation }) => {
     const [logistics, setLogistics] = useState<number[]>([])
     const [postalCode, setPostalCode] = useState('')
     const [accessNeeds, setAccessNeeds] = useState<number>()
+    
+    const {t, i18n} = useTranslation();
 
     useEffect(() => {
         if (!loaded) return
         navigation.setOptions({
-            title: "Request Food",
+            title:t("request.form.heading"),
             headerTitleAlign: 'center',
             headerStyle: {
                 backgroundColor: Colors.Background
             },
             headerLeft: () => (
                 <TouchableOpacity testID="Request.cancelBtn" onPress={() => navigation.navigate('HomeScreen')}>
-                    <Text testID="Request.cancelBtnLabel" style={styles.formCancelBtn}>Cancel</Text>
+                    <Text testID="Request.cancelBtnLabel" style={styles.formCancelBtn}> {t("app.strings.cancel")} </Text>
                 </TouchableOpacity>
             ),
             headerRight: () => (
                 <TouchableOpacity onPress={handlePress} testID="Request.createBtn" style={globalStyles.navDefaultBtn}>
-                    <Text testID="Request.createBtnLabel" style={globalStyles.defaultBtnLabel}>Post</Text>
+                    <Text testID="Request.createBtnLabel" style={globalStyles.defaultBtnLabel}> {t("app.post.label")} </Text>
                 </TouchableOpacity>
             )
         })
@@ -121,16 +123,16 @@ export const RequestFormScreen = ({ navigation }) => {
 
     return (
         <ScrollView testID="Request.formContainer" style={styles.formContainer}>
-            {(!loaded || loading) && <Text>Loading...</Text>}
+            {(!loaded || loading) && <Text> {t("app.strings.loading")} </Text>}
             {loaded &&
                 <>
                     <View>
                         <Text
                             testID="Request.titleLabel"
                             style={[styles.formTitleText, { color: errMsg ? Colors.alert2 : Colors.dark }]}
-                        >Title <Text style={{ color: Colors.alert2 }}>*</Text>
+                        > {t("request.form.fields.0.label")} <Text style={{ color: Colors.alert2 }}> * </Text>
                         </Text>
-                        <Text testID="Request.titleDesc" style={styles.formDescText}>Create a descriptive title for your request.</Text>
+                        <Text testID="Request.titleDesc" style={styles.formDescText}>{t("request.form.fields.0.desc")}</Text>
                     </View>
                     <View testID="Request.formInputContainer" style={styles.formInputContainer}>
                         <TextInput
@@ -150,35 +152,35 @@ export const RequestFormScreen = ({ navigation }) => {
                     </View>
                     {errMsg && <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{errMsg}</Text>}
                     <View>
-                        <Text testID="Request.photoLabel" style={styles.formTitleText}>Photo</Text>
-                        <Text testID="Request.photoDesc" style={styles.formDescText}>Add photo(s) to help community members understand what you are looking for.</Text>
+                        <Text testID="Request.photoLabel" style={styles.formTitleText}> {t("request.form.fields.1.label")} </Text>
+                        <Text testID="Request.photoDesc" style={styles.formDescText}>{t("request.form.fields.1.desc")} </Text>
                     </View>
                     <ImagePicker images={images} setImages={setImages} />
                     <View style={{ opacity: 0.5 }}>
-                        <Text testID="Request.categoryLabel" style={styles.formTitleText}>Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Request.categoryDesc" style={styles.formDescText}>Please select all the food categories that apply.</Text>
+                        <Text testID="Request.categoryLabel" style={styles.formTitleText}>{t("request.form.fields.3.label")}  <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Request.categoryDesc" style={styles.formDescText}>{t("request.form.fields.3.desc")} </Text>
                         <FoodCategories />
                     </View>
                     <View style={{ opacity: 0.5 }}>
-                        <Text testID="Request.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Request.quantityDesc" style={styles.formDescText}>Please input the desired quantity of the food item you need.</Text>
+                        <Text testID="Request.quantityLabel" style={styles.formTitleText}> {t("request.form.fields.5.label")}  <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Request.quantityDesc" style={styles.formDescText}>{t("request.form.fields.5.desc")} </Text>
                         <Quantity />
                     </View>
                     <View style={{ opacity: 0.5 }}>
-                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Need By Date</Text>
-                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please select a date you would need this item by.
-                            <Text style={{ fontFamily: 'PublicSans_600SemiBold', color: '#646464' }}> Your post will expire at the end of this date.</Text>
+                        <Text testID="Request.dateLabel" style={styles.formTitleText}>{t("request.form.fields.6.label")}</Text>
+                        <Text testID="Request.dateDesc" style={styles.formDescText}>
+                            <Text style={{ fontFamily: 'PublicSans_600SemiBold', color: '#646464' }}> {t("request.form.fields.6.desc")}</Text>
                         </Text>
                         <DatePicker />
                     </View>
                     <View>
-                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery preferences</Text>
-                        <Text testID="Request.dateDesc" style={styles.formDescText}>Select all that apply.</Text>
+                        <Text testID="Request.deliveryPreferencesLabel" style={styles.formTitleText}> {t("request.form.fields.7.label")}</Text>
+                        <Text testID="Request.deliveryPreferencesDesc" style={styles.formDescText}>{t("request.form.fields.7.desc")}</Text>
                         <Logistics logistics={logistics} setLogistics={setLogistics} />
                     </View>
                     <View>
-                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Pick up or delivery location</Text>
-                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate the postal code of your desired pick up or delivery location.</Text>
+                        <Text testID="Request.locationLabel" style={styles.formTitleText}> {t("request.form.fields.8.label")} </Text>
+                        <Text testID="Request.locationDesc" style={styles.formDescText}>{t("request.form.fields.8.desc")}</Text>
                         <View testID="Request.formInputContainer" style={styles.formInputContainer}>
                             <TextInput
                                 value={postalCode}
@@ -197,13 +199,13 @@ export const RequestFormScreen = ({ navigation }) => {
                         </View>
                     </View>
                     <View>
-                        <Text testID="Request.dateLabel" style={styles.formTitleText}>Access needs for pick up or delivery</Text>
-                        <Text testID="Request.dateDesc" style={styles.formDescText}>Please indicate if you have any access needs for receiving your requested food.</Text>
+                        <Text testID="Request.accessLabel" style={styles.formTitleText}>{t("request.form.fields.9.label")}</Text>
+                        <Text testID="Request.accessDesc" style={styles.formDescText}>{t("request.form.fields.9.desc")}</Text>
                         <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} />
                     </View>
                     <View>
-                        <Text testID="Request.descTitle" style={styles.formTitleText}>Description</Text>
-                        <Text testID="Request.descDesc" style={styles.formDescText}>Describe your food request in detail.</Text>
+                        <Text testID="Request.descTitle" style={styles.formTitleText}> {t("request.form.fields.2.label")} </Text>
+                        <Text testID="Request.descDesc" style={styles.formDescText}> {t("request.form.fields.2.desc")} </Text>
                     </View>
                     <View style={styles.formDescInputView}>
                         <TextInput
