@@ -36,7 +36,22 @@ class LoginSerializer (serializers.ModelSerializer):
             return Response(user.__str__(), status=201)
         else:
             return Response("ERROR", status=401)
-        
+
+class AccountSettingsSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=64)
+    email = serializers.EmailField( max_length=256, validators=[UniqueValidator(queryset=BasicUser.objects.all(),  message="There is already an account associated with this email")])
+    password = serializers.CharField(max_length=64, write_only=True)
+    class Meta:
+        model=BasicUser
+        fields = ['username', 'email', 'password']
+    def editUser(self):
+        user=BasicUser(username=self.validated_data['username'],
+                       email=self.validated_data['email'],
+                       password=self.validated_data['password'])
+        user.set_password(self.validated_data['password'])
+        user.save()
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicUser
