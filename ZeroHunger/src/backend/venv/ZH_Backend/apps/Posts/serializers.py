@@ -15,7 +15,7 @@ class createRequestSerializer (serializers.ModelSerializer):
     logistics = fields.MultipleChoiceField(choices=LOGISTICS_CHOICES, required=False)
     postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
     coordinates = serializers.CharField(max_length=50, required=False, allow_blank=True)
-    accessNeeds = serializers.IntegerField()
+    accessNeeds = serializers.CharField(max_length=1)
     categories = fields.MultipleChoiceField(choices=FOOD_CATEGORIES, required=False)
     diet = fields.MultipleChoiceField(choices=DIET_PREFERENCES, required=False)
 
@@ -48,7 +48,7 @@ class createOfferSerializer (serializers.ModelSerializer):
     fulfilled = serializers.BooleanField(default=False)
     logistics = fields.MultipleChoiceField(choices=LOGISTICS_CHOICES, required=False)
     postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
-    accessNeeds = serializers.IntegerField()
+    accessNeeds = serializers.CharField(max_length=1)
     categories = fields.MultipleChoiceField(choices=FOOD_CATEGORIES, required=False)
     diet = fields.MultipleChoiceField(choices=DIET_PREFERENCES, required=False)
 

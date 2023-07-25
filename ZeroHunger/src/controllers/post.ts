@@ -1,43 +1,76 @@
 import { axiosInstance } from "../../config";
 import { Char } from "../../types";
 
-export const LOGISTICSPREFERENCES = {
-    PICKUP: 0,
-    DELIVERY: 1,
-    PUBLIC: 2
+interface ILOGISTICSPREFERENCES {
+    PICKUP: Char,
+    DELIVERY: Char,
+    PUBLIC: Char
+}
+interface IACCESSNEEDSPREFERENCES {
+    NONE: Char,
+    WHEELCHAIR: Char,
+    DELIVERY: Char
+}
+interface IFOODCATEGORIES {
+    Fruits: Char,
+    Vegetables: Char,
+    Grains: Char,
+    Dairy: Char,
+    DairyAlternatives: Char,
+    MeatPoultry: Char,
+    Fish: Char,
+    Legumes: Char,
+    BakedGoods: Char,
+    Snacks: Char,
+    Condiments: Char,
+    Other: Char,
+}
+interface IDIETPREFERENCES {
+    Halal: Char,
+    Vegetarian: Char,
+    Vegan: Char,
+    LactoseFree: Char,
+    NutFree: Char,
+    GlutenFree: Char,
+    SugarFree: Char,
+    ShellfishFree: Char,
+    Other: Char,
 }
 
-export const ACCESSNEEDSPREFERENCES = {
-    NONE: 0,
-    WHEELCHAIR: 1,
-    DELIVERY: 2
+export const LOGISTICSPREFERENCES: ILOGISTICSPREFERENCES = {
+    PICKUP: 'a',
+    DELIVERY: 'b',
+    PUBLIC: 'c'
 }
-
-export const FOODCATEGORIES = {
-    Fruits: 0,
-    Vegetables: 1,
-    Grains: 2,
-    Dairy: 3,
-    DairyAlternatives: 4,
-    MeatPoultry: 5,
-    Fish: 6,
-    Legumes: 7,
-    BakedGoods: 8,
-    Snacks: 9,
-    Condiments: 10,
-    Other: 11,
+export const ACCESSNEEDSPREFERENCES: IACCESSNEEDSPREFERENCES = {
+    NONE: 'a',
+    WHEELCHAIR: 'b',
+    DELIVERY: 'c'
 }
-
-export const DIETPREFERENCES = {
-    Halal: 0,
-    Vegetarian: 1,
-    Vegan: 2,
-    LactoseFree: 3,
-    NutFree: 4,
-    GlutenFree: 5,
-    SugarFree: 6,
-    ShellfishFree: 7,
-    Other: 8,
+export const FOODCATEGORIES: IFOODCATEGORIES = {
+    Fruits: 'a',
+    Vegetables: 'b',
+    Grains: 'c',
+    Dairy: 'd',
+    DairyAlternatives: 'e',
+    MeatPoultry: 'f',
+    Fish: 'g',
+    Legumes: 'h',
+    BakedGoods: 'i',
+    Snacks: 'j',
+    Condiments: 'k',
+    Other: 'l',
+}
+export const DIETPREFERENCES: IDIETPREFERENCES = {
+    Halal: 'a',
+    Vegetarian: 'b',
+    Vegan: 'c',
+    LactoseFree: 'd',
+    NutFree: 'e',
+    GlutenFree: 'f',
+    SugarFree: 'g',
+    ShellfishFree: 'h',
+    Other: 'i',
 }
 
 export const createPost = async (post: {
@@ -46,11 +79,11 @@ export const createPost = async (post: {
         images: string,
         postedBy: Number,
         description: string,
-        logistics: number[],
+        logistics: Char[],
         postalCode: string,
-        accessNeeds: number,
-        categories: number[],
-        diet: number[],
+        accessNeeds: Char,
+        categories: Char[],
+        diet: Char[],
     }
     postType: Char
 }) => {
@@ -142,8 +175,8 @@ export const handleImageUpload = async (images: string[]) => {
     return result
 }
 
-export const getLogisticsType = (num: number) => {
-    switch (num) {
+export const getLogisticsType = (char: Char) => {
+    switch (char) {
         case LOGISTICSPREFERENCES.PICKUP:
             return 'Pick up'
         case LOGISTICSPREFERENCES.DELIVERY:
@@ -155,18 +188,18 @@ export const getLogisticsType = (num: number) => {
     }
 }
 
-export const handlePreferences = (str: string, getType: (num: number) => string) => {
+export const handlePreferences = (str: string, getType: (char: string) => string) => {
     if (!str) return 'None'
 
     const arr = str.split(',')
     if (arr.length === 1) {
-        return getType(parseInt(arr[0]))
+        return getType(arr[0])
     }
 
     let preferences = ''
 
     arr.forEach((num, i) => {
-        const type = getType(parseInt(num))
+        const type = getType(num)
         if (preferences.length > 0) {
             preferences += `, ${type}`
         } else {
@@ -187,8 +220,8 @@ export const formatPostalCode = (postalCode: string) => {
     return postalCode
 }
 
-export const handleAccessNeeds = (num: number) => {
-    switch (num) {
+export const handleAccessNeeds = (char: Char) => {
+    switch (char) {
         case ACCESSNEEDSPREFERENCES.NONE:
             return 'No access needs'
         case ACCESSNEEDSPREFERENCES.WHEELCHAIR:
@@ -200,8 +233,8 @@ export const handleAccessNeeds = (num: number) => {
     }
 }
 
-export const getCategory = (num: number) => {
-    switch (num) {
+export const getCategory = (char: Char) => {
+    switch (char) {
         case FOODCATEGORIES.DairyAlternatives:
             return 'Dairy alternatives'
         case FOODCATEGORIES.MeatPoultry:
@@ -233,8 +266,8 @@ export const getCategory = (num: number) => {
     }
 }
 
-export const getDiet = (num: number) => {
-    switch (num) {
+export const getDiet = (char: Char) => {
+    switch (char) {
         case DIETPREFERENCES.Halal:
             return 'Halal'
         case DIETPREFERENCES.Vegetarian:

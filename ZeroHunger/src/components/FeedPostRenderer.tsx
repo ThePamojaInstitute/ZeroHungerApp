@@ -21,7 +21,7 @@ import { default as _MyPostModal } from "./MyPostModal";
 
 const MyPostModal = forwardRef(_MyPostModal)
 
-export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, categories, diet, setUpdater }) => {
+export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, categories, diet, logistics, accessNeeds, setUpdater }) => {
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
         PublicSans_400Regular,
@@ -55,7 +55,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchFeedPosts(accessToken, type, sortBy, categories, diet)
+    } = useFetchFeedPosts(accessToken, type, sortBy, categories, diet, logistics, accessNeeds)
 
 
     useEffect(() => {

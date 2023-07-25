@@ -1,12 +1,15 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { axiosInstance } from "../../config";
+import { Char } from "../../types";
 
 export default function useFetchPosts(
     accessToken: string,
     type: "r" | "o",
     sortBy: "new" | "old" | "distance",
-    categories: number[],
-    diet: number[],
+    categories: Char[],
+    diet: Char[],
+    logistics: Char[],
+    accessNeeds: Char,
 ) {
     const getPosts = async ({ pageParam = 0 }) => {
         console.log("updating...");
@@ -20,6 +23,8 @@ export default function useFetchPosts(
                 'sortBy': sortBy,
                 'categories': categories,
                 'diet': diet,
+                'logistics': logistics,
+                'accessNeeds': accessNeeds,
             }
         })
         return {

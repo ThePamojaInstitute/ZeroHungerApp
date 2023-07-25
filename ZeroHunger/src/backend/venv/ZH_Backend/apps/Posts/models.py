@@ -14,12 +14,13 @@ class RequestPost(models.Model):
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=3, default='')
     postalCode = models.CharField(max_length=7, blank=True)
     coordinates = models.CharField(max_length=50, blank=True)
-    accessNeeds = models.IntegerField(choices=ACCESS_NEEDS_CHOICES, default=0)
+    accessNeeds = models.CharField(choices=ACCESS_NEEDS_CHOICES, default='a', max_length=1)
     categories = MultiSelectField(choices=FOOD_CATEGORIES, max_length=12, default='')
     diet = MultiSelectField(choices=DIET_PREFERENCES, max_length=9, default='')
 
     def __str__(self):
         return self.title
+    
 class OfferPost(models.Model):
     title = models.CharField(max_length=128, default="Untitled")
     images = models.CharField(max_length=256, blank=True) #link to images in DB
@@ -30,7 +31,7 @@ class OfferPost(models.Model):
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=3, default='')
     postalCode = models.CharField(max_length=7, blank=True)
     coordinates = models.CharField(max_length=50, blank=True)
-    accessNeeds = models.IntegerField(choices=ACCESS_NEEDS_CHOICES, default=0)
+    accessNeeds = models.CharField(choices=ACCESS_NEEDS_CHOICES, default='a', max_length=1)
     categories = MultiSelectField(choices=FOOD_CATEGORIES, max_length=12, default='')
     diet = MultiSelectField(choices=DIET_PREFERENCES, max_length=9, default='')
     

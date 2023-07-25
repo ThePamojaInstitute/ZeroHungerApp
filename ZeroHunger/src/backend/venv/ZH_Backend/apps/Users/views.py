@@ -123,10 +123,8 @@ class userPreferences(APIView):
 
         data = {}
         try:
-            logistics = user.get_logistics()
-            data['logistics'] = [eval(i) for i in logistics] #convert strings to ints
-            diet = user.get_diet()
-            data['diet'] = [eval(i) for i in diet]
+            data['logistics'] = user.get_logistics()
+            data['diet'] = user.get_diet()
             data['postalCode'] = user.get_postal_code()
 
             return Response(data, 200)

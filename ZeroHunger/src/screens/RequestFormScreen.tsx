@@ -4,7 +4,7 @@ import { ScrollView, TextInput, TouchableOpacity, Text, View, GestureResponderEv
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import Quantity from "../components/Quantity";
-import { DIETPREFERENCES, FOODCATEGORIES, createPost, getCategory, getDiet } from "../controllers/post";
+import { ACCESSNEEDSPREFERENCES, DIETPREFERENCES, FOODCATEGORIES, LOGISTICSPREFERENCES, createPost, getCategory, getDiet } from "../controllers/post";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import { handleImageUpload } from "../controllers/post";
@@ -19,6 +19,7 @@ import Logistics from "../components/Logistics";
 import AccessNeeds from "../components/AccessNeeds";
 import { intitializePreferences } from "../controllers/preferences";
 import FoodFilters from "../components/FoodFilters";
+import { Char } from "../../types";
 
 export const RequestFormScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -46,11 +47,11 @@ export const RequestFormScreen = ({ navigation }) => {
     const [categoryErr, setCategoryErr] = useState("")
     const [postalErr, setPostalErr] = useState("")
     const [loading, setLoading] = useState(false)
-    const [logistics, setLogistics] = useState<number[]>([])
+    const [logistics, setLogistics] = useState<Char[]>([])
     const [postalCode, setPostalCode] = useState('')
-    const [accessNeeds, setAccessNeeds] = useState<number>()
-    const [categories, setCategories] = useState<number[]>([])
-    const [diet, setDiet] = useState<number[]>([])
+    const [accessNeeds, setAccessNeeds] = useState<Char>()
+    const [categories, setCategories] = useState<Char[]>([])
+    const [diet, setDiet] = useState<Char[]>([])
 
     useEffect(() => {
         if (!loaded) return
@@ -72,6 +73,13 @@ export const RequestFormScreen = ({ navigation }) => {
             )
         })
     }, [title, images, desc, loading, loaded, logistics, postalCode, accessNeeds, categories, diet])
+
+    useEffect(() => {
+        if (accessNeeds === ACCESSNEEDSPREFERENCES.DELIVERY
+            && !logistics.includes(LOGISTICSPREFERENCES.DELIVERY)) {
+            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
+        }
+    }, [accessNeeds])
 
     useEffect(() => {
         setCategoryErr('')

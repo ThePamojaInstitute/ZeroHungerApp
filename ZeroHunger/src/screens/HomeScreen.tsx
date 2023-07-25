@@ -19,6 +19,8 @@ import {
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
 import { default as _PostsFilters } from "../components/PostsFilters";
+import { getPreferencesLogistics } from "../controllers/preferences";
+import { Char } from "../../types";
 
 
 const PostsFilters = forwardRef(_PostsFilters)
@@ -47,8 +49,11 @@ export const HomeScreen = ({ navigation }) => {
 
     const [showRequests, setShowRequests] = useState(true)
     const [sortBy, setSortBy] = useState<'new' | 'old' | 'distance'>('new')
-    const [categories, setCategories] = useState<number[]>([])
-    const [diet, setDiet] = useState<number[]>([])
+    const [categories, setCategories] = useState<Char[]>([])
+    const [diet, setDiet] = useState<Char[]>([])
+    const [prefLogistics, setPrefLogistics] = useState<Char[]>([])
+    const [logistics, setLogistics] = useState<Char[]>([])
+    const [accessNeeds, setAccessNeeds] = useState<Char>()
     const [updater, setUpdater] = useState(() => () => { })
 
     // on navigation change
@@ -76,8 +81,13 @@ export const HomeScreen = ({ navigation }) => {
         }
     }, [unreadMessageCount])
 
-    return (
+    useEffect(() => {
+        setLogistics([])
+        setAccessNeeds(null)
+        getPreferencesLogistics(prefLogistics, setAccessNeeds, setLogistics)
+    }, [prefLogistics])
 
+    return (
         <View testID="Home.container" style={styles.container}>
             {!loaded && <Text>Loading...</Text>}
             {loaded &&
@@ -92,8 +102,9 @@ export const HomeScreen = ({ navigation }) => {
                             setCategories={setCategories}
                             diet={diet}
                             setDiet={setDiet}
+                            logistics={prefLogistics}
+                            setLogistics={setPrefLogistics}
                             updater={updater}
-
                         />
                     </View>
                     <View testID="Home.subContainer" style={styles.subContainer}>
@@ -136,6 +147,8 @@ export const HomeScreen = ({ navigation }) => {
                             sortBy={sortBy}
                             categories={categories}
                             diet={diet}
+                            logistics={logistics}
+                            accessNeeds={accessNeeds}
                             setUpdater={setUpdater}
                         />}
                     {!showRequests &&
@@ -146,6 +159,8 @@ export const HomeScreen = ({ navigation }) => {
                             sortBy={sortBy}
                             categories={categories}
                             diet={diet}
+                            logistics={logistics}
+                            accessNeeds={accessNeeds}
                             setUpdater={setUpdater}
                         />}
                 </>

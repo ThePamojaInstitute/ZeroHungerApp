@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from django.core import serializers
 from django.conf import settings
+from django.db.models import Q
 
 
 from django.http import JsonResponse
@@ -73,7 +74,7 @@ def get_post(post_id, post_type):
     except:
         return Response("Post not found", 404)
     
-def get_posts(posts_type, page, sortBy, categories, diet):
+def get_posts(posts_type, page, sortBy, categories, diet, logistics, accessNeeds):
     try:
         if(posts_type == "r"):
             posts = RequestPost.objects.all().filter(fulfilled=False)
@@ -86,11 +87,21 @@ def get_posts(posts_type, page, sortBy, categories, diet):
             posts = posts.order_by('-postedOn')
             
         if(len(categories) > 0):
-            posts = posts.filter(categories__in=categories)
+            categories.sort()
+            str_categories = ",".join(x for x in categories)
+            posts = posts.filter(categories__contains=str_categories)
 
         if(len(diet) > 0):
-            posts = posts.filter(diet__in=diet)
-        
+            diet.sort()
+            str_diet = ",".join(x for x in diet)
+            posts = posts.filter(diet__contains=str_diet)
+
+        if(len(logistics) > 0):
+            posts = posts.filter(logistics__contains=logistics)
+
+        if(accessNeeds != 'a'):
+            posts = posts.filter(accessNeeds=accessNeeds)
+
         return posts[page * 5:][:5]
     except Exception as e:
         return Response(e.__str__(), 500) 
@@ -183,7 +194,7 @@ class createPost(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         else:
-            return Response(serializer.errors, status=401)
+            return Response(serializer.errors, status=400)
         
 class deletePost(APIView):
      def delete(self,request, format=JSONParser):
@@ -217,8 +228,10 @@ class requestPostsForFeed(APIView):
         sortBy = request.GET.get('sortBy',"")
         categories = request.GET.getlist('categories[]',"")
         diet = request.GET.getlist('diet[]',"")
+        logistics = request.GET.getlist('logistics[]',"")
+        accessNeeds = request.GET.get('accessNeeds',"")
 
-        posts = get_posts(postsType, page, sortBy, categories, diet)
+        posts = get_posts(postsType, page, sortBy, categories, diet, logistics, accessNeeds)
 
         data = serialize_posts(posts)
 

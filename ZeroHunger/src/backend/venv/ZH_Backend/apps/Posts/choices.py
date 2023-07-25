@@ -1,30 +1,30 @@
-LOGISTICS_CHOICES = ((0, 'Pick up'),
-              (1, 'Delivery'),
-              (2, 'Meet at a public location'))
+LOGISTICS_CHOICES = (('a', 'Pick up'),
+              ('b', 'Delivery'),
+              ('c', 'Meet at a public location'))
 
-ACCESS_NEEDS_CHOICES = ((0, 'No access needs'),
-              (1, 'Pick up location must be wheelchair accessible'),
-              (2, 'Delivery only'))
+ACCESS_NEEDS_CHOICES = (('a', 'No access needs'),
+              ('b', 'Pick up location must be wheelchair accessible'),
+              ('c', 'Delivery only'))
 
-FOOD_CATEGORIES = ((0, 'Fruits'),
-              (1, 'Vegetables'),
-              (2, 'Grains'),
-              (3, 'Dairy'),
-              (4, 'Dairy alternatives'),
-              (5, 'Meat / Poultry'),
-              (6, 'Fish'),
-              (7, 'Legumes'),
-              (8, 'Baked goods'),
-              (9, 'Snacks'),
-              (10, 'Condiments'),
-              (11, 'Other'),)
+FOOD_CATEGORIES = (('a', 'Fruits'),
+              ('b', 'Vegetables'),
+              ('c', 'Grains'),
+              ('d', 'Dairy'),
+              ('e', 'Dairy alternatives'),
+              ('f', 'Meat / Poultry'),
+              ('g', 'Fish'),
+              ('h', 'Legumes'),
+              ('i', 'Baked goods'),
+              ('j', 'Snacks'),
+              ('k', 'Condiments'),
+              ('l', 'Other'),)
 
-DIET_PREFERENCES = ((0, 'Halal'),
-              (1, 'Vegetarian'),
-              (2, 'Vegan'),
-              (3, 'Lactose free'),
-              (4, 'Nut free'),
-              (5, 'Gluten free'),
-              (6, 'Sugar free'),
-              (7, 'Shellfish free'),
-              (8, 'Other'),)
+DIET_PREFERENCES = (('a', 'Halal'),
+              ('b', 'Vegetarian'),
+              ('c', 'Vegan'),
+              ('d', 'Lactose free'),
+              ('e', 'Nut free'),
+              ('f', 'Gluten free'),
+              ('g', 'Sugar free'),
+              ('h', 'Shellfish free'),
+              ('i', 'Other'),)
