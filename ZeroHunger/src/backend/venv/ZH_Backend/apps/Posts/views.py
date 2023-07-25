@@ -29,7 +29,6 @@ connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;
 #https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=npm
 #Install Azurite on your local machine using this ^ guide before trying to use this
 
-
 def decode_token(auth_header):
     try:
         return jwt.decode(auth_header, settings.SECRET_KEY)
@@ -74,69 +73,25 @@ def get_post(post_id, post_type):
     except:
         return Response("Post not found", 404)
     
-def get_posts(posts_type, page):
+def get_posts(posts_type, page, sortBy, categories, diet):
     try:
         if(posts_type == "r"):
-            return RequestPost.objects.all().filter(fulfilled=False).order_by('-postedOn')[page * 5:][:5]
-        elif(posts_type == "o"):
-            return OfferPost.objects.all().filter(fulfilled=False).order_by('-postedOn')[page * 5:][:5]
-    except Exception as e:
-        return Response(e.__str__(), 500) 
-    
-def serialize_posts(posts):
-    data = serializers.serialize('json', posts)
-    return json.loads(data)
+            posts = RequestPost.objects.all().filter(fulfilled=False)
+        else:
+            posts = OfferPost.objects.all().filter(fulfilled=False)
 
-def decode_token(auth_header):
-    try:
-        return jwt.decode(auth_header, settings.SECRET_KEY)
-    except:
-        return Response("Token invalid or not given", 401)
-    
-def add_username(posts):
-    for post in posts:
-                try:
-                    user_id = post['fields']['postedBy'] 
-                    try:   
-                        user = BasicUser.objects.get(pk=user_id)
-                        post.update({'username': user.username})
-                    except:
-                        posts.remove(post)
-                        pass   
-                except Exception as e:
-                    return Response(e.__str__(), 500)
-                
-def get_user_posts(posts_type, order_by_newest, page, user_id):
-    try:
-        if(posts_type == "r"):
-            if(order_by_newest == 'false'):
-                posts = RequestPost.objects.filter(postedBy__pk=user_id).all().order_by('postedOn')[page * 5:][:5]
-            else:
-                posts = RequestPost.objects.filter(postedBy__pk=user_id).all().order_by('-postedOn')[page * 5:][:5]
-        elif(posts_type == "o"):
-            if(order_by_newest == 'false'):
-                posts = OfferPost.objects.filter(postedBy__pk=user_id).all().order_by('postedOn')[page * 5:][:5]
-            else:
-                posts = OfferPost.objects.filter(postedBy__pk=user_id).all().order_by('-postedOn')[page * 5:][:5]
-        return posts
-    except Exception as e:
-        return Response(e.__str__(), 500) 
-    
-def get_post(post_id, post_type):
-    try:
-            if(post_type == "r"):
-                return RequestPost.objects.get(pk=post_id)
-            elif(post_type == "o"):
-                return OfferPost.objects.get(pk=post_id)
-    except:
-        return Response("Post not found", 404)
-    
-def get_posts(posts_type, page):
-    try:
-        if(posts_type == "r"):
-            return RequestPost.objects.all().filter(fulfilled=False).order_by('-postedOn')[page * 5:][:5]
-        elif(posts_type == "o"):
-            return OfferPost.objects.all().filter(fulfilled=False).order_by('-postedOn')[page * 5:][:5]
+        if(sortBy == "old"):
+            posts = posts.order_by('postedOn')
+        else:
+            posts = posts.order_by('-postedOn')
+            
+        if(len(categories) > 0):
+            posts = posts.filter(categories__in=categories)
+
+        if(len(diet) > 0):
+            posts = posts.filter(diet__in=diet)
+        
+        return posts[page * 5:][:5]
     except Exception as e:
         return Response(e.__str__(), 500) 
     
@@ -153,8 +108,6 @@ def get_coordinates(postal_code):
         seperator = postal_code[3]
         postal_code = postal_code.replace(seperator, '')
     
-    print(postal_code)
-
     url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{postal_code}.json?access_token={settings.MAPBOX_ACCESS_CODE}'
     res = requests.get(url, headers={'User-Agent': "python-requests/2.31.0"}).json()
 
@@ -261,8 +214,11 @@ class requestPostsForFeed(APIView):
 
         page = int(request.GET.get('page',0))
         postsType = request.GET.get('postsType',"r")
+        sortBy = request.GET.get('sortBy',"")
+        categories = request.GET.getlist('categories[]',"")
+        diet = request.GET.getlist('diet[]',"")
 
-        posts = get_posts(postsType, page)
+        posts = get_posts(postsType, page, sortBy, categories, diet)
 
         data = serialize_posts(posts)
 
