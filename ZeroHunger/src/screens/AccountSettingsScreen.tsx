@@ -30,6 +30,7 @@ export const AccountSettingsScreen = ({ navigation }) => {
     return (
         <View testID="AccSett.container" style={{ padding: 50 }}>
             <Text>Temporary Account Settings Screen</Text>
+            
             <TouchableOpacity
                 testID="AccSett.deleteUserBtn"
                 style={styles.deleteUserBtn}

@@ -17,7 +17,8 @@ import time
 from .models import BasicUser
 from apps.Chat.models import Conversation
 from django.db.models import Q
-from .serializers import RegistrationSerializer, LoginSerializer
+from .serializers import RegistrationSerializer, LoginSerializer, AccountSettingsSerializer
+from .forms import EditProfileForm
 from apps.Posts.views import decode_token
 
 import jwt
@@ -52,6 +53,13 @@ class createUser(APIView):
             return Response(serializer.data, status=201)
         else:
             return Response(serializer.errors, status=401)
+        
+class EditUser(APIView):
+    def put(self, request, format=None):
+        form = EditProfileForm(instance=request.user)
+        if form.is_valid():
+            form.save()
+        
       
     
 class deleteUser(APIView):

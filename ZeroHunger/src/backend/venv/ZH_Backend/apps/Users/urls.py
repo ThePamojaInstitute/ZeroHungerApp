@@ -41,7 +41,8 @@ from .views import (
     addNotification,
     clearNotification,
     clearAllNotifications, 
-    userPreferences
+    userPreferences,
+    EditUser
 )
 
 urlpatterns = [
@@ -50,6 +51,7 @@ urlpatterns = [
     path('modifyUser', modifyUser.as_view()),
     path('logIn', logIn.as_view()),
     path('logOut', logOut.as_view()),
+    path('editUser', EditUser.as_view()), 
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('getNotifications', getNotifications.as_view()),

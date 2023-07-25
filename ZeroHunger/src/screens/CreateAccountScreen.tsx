@@ -12,7 +12,7 @@ import {
 import styles from "../../styles/screens/createAccountStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useFocusEffect } from "@react-navigation/native";
-import { createUser } from "../controllers/auth";
+import { createUser, editUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import {
@@ -83,6 +83,17 @@ export const CreateAccountScreen = ({ navigation }) => {
     } else {
       alert!({ type: 'open', message: error, alertType: 'error' })
     }
+  }
+
+  const testEditUser = () =>
+  { 
+    var user = {
+    "username": username,
+    "email": email,
+    "password": password,
+    "confPassword": confPass
+  }
+    editUser(user);
   }
 
   const handleSignUp = (e: (GestureResponderEvent |
@@ -255,6 +266,9 @@ export const CreateAccountScreen = ({ navigation }) => {
           </View>
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={handleSignUp}>
             <Text style={globalStyles.defaultBtnLabel}>{t("account.signup.submit.label")}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={testEditUser}>
+            <Text style={globalStyles.defaultBtnLabel}> Edit User Test </Text>
           </TouchableOpacity>
         </>
       }

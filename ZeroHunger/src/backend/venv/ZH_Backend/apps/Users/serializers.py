@@ -43,11 +43,10 @@ class AccountSettingsSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=64, write_only=True)
     class Meta:
         model=BasicUser
-        fields = ['username', 'email', 'password']
+        fields = ['username','email','password']
     def editUser(self):
         user=BasicUser(username=self.validated_data['username'],
-                       email=self.validated_data['email'],
-                       password=self.validated_data['password'])
+        password=self.validated_data['password'])
         user.set_password(self.validated_data['password'])
         user.save()
 

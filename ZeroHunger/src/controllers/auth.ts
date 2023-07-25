@@ -43,6 +43,18 @@ export async function createUser(user: Object, acceptedTerms: boolean) {
     }
 }
 
+export async function editUser(user: Object)
+{
+    try
+    {
+        const res = await axiosInstance.put("users/editUser", user)
+        return {msg: "successess", res: res.data}
+    } catch (error)
+    {
+        return { msg: "failure", res: error.response.data }
+    }
+}
+
 export async function deleteUser(userId: string, token: string) {
     try {
         const res = await axiosInstance.delete("users/deleteUser", {
