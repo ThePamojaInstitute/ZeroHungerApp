@@ -17,20 +17,11 @@ import { useIsFocused } from '@react-navigation/native';
 import { Post } from "./Post";
 import { PostModel } from "../models/Post";
 import { default as _MyPostModal } from "./MyPostModal";
-import {
-    BlobServiceClient,
-    generateAccountSASQueryParameters,
-    AccountSASPermissions,
-    AccountSASServices,
-    AccountSASResourceTypes,
-    StorageSharedKeyCredential,
-    SASProtocol
-} from '@azure/storage-blob';
 
 
 const MyPostModal = forwardRef(_MyPostModal)
 
-export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
+export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, categories, diet, setUpdater }) => {
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
         PublicSans_400Regular,
@@ -64,7 +55,16 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchFeedPosts(accessToken, type, true)
+    } = useFetchFeedPosts(accessToken, type, sortBy, categories, diet)
+
+
+    useEffect(() => {
+        const updater = () => {
+            refetch()
+        }
+        setUpdater(() => () => updater())
+    }, [])
+
 
     // on navigation
     useEffect(() => {
@@ -119,40 +119,6 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
             }
         })
     }
-
-    // const constants = {
-    //     accountName:
-    //     accountKey: 
-    // };
-    // const sharedKeyCredential = new StorageSharedKeyCredential(
-    //     constants.accountName,
-    //     constants.accountKey
-    // );
-
-    // async function createAccountSas() {
-
-    //     const sasOptions = {
-
-    //         services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
-    //         resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
-    //         permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
-    //         protocol: SASProtocol.Https,
-    //         startsOn: new Date(),
-    //         expiresOn: new Date(new Date().valueOf() + (10 * 60 * 1000)),   // 10 minutes
-    //     };
-
-    //     // const sasToken = generateAccountSASQueryParameters(
-    //     //     sasOptions,
-    //     //     sharedKeyCredential 
-    //     // ).toString();
-
-    //     console.log(`sasToken = '${sasToken}'\n`);
-
-    //     // prepend sasToken with `?`
-    //     return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
-    // }
-
-
 
     const renderItem = ({ item }) => {
         if (!item || !item.pk) return

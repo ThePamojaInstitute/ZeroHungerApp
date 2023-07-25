@@ -1,16 +1,25 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { axiosInstance } from "../../config";
 
-export default function useFetchPosts(accessToken: string, type: "r" | "o", orderByNewest: boolean) {
+export default function useFetchPosts(
+    accessToken: string,
+    type: "r" | "o",
+    sortBy: "new" | "old" | "distance",
+    categories: number[],
+    diet: number[],
+) {
     const getPosts = async ({ pageParam = 0 }) => {
+        console.log("updating...");
         const res = await axiosInstance.get(`posts/requestPostsForFeed`, {
             headers: {
                 Authorization: accessToken
             },
             params: {
                 'postsType': type,
-                'orderByNewest': orderByNewest,
                 'page': pageParam,
+                'sortBy': sortBy,
+                'categories': categories,
+                'diet': diet,
             }
         })
         return {

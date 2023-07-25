@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { forwardRef, useContext, useEffect, useRef, useState } from "react";
 import {
     Text,
     View,
     Pressable,
+    Button,
 } from "react-native";
 import styles from "../../styles/screens/homeStyleSheet"
 import { globalStyles } from "../../styles/globalStyleSheet"
@@ -11,13 +12,16 @@ import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import FeedPostRenderer from "../components/FeedPostRenderer";
-import FoodCategories from "../components/FoodFilters";
 import {
     useFonts,
     PublicSans_600SemiBold,
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
+import { default as _PostsFilters } from "../components/PostsFilters";
+
+
+const PostsFilters = forwardRef(_PostsFilters)
 
 export const HomeScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
@@ -31,11 +35,21 @@ export const HomeScreen = ({ navigation }) => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
 
+    const modalRef = useRef(null)
+
+    const openModal = () => {
+        modalRef.current.publicHandler()
+    }
+
     const { user } = useContext(AuthContext)
     const { unreadMessageCount, chatIsOpen, setChatIsOpen } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
 
     const [showRequests, setShowRequests] = useState(true)
+    const [sortBy, setSortBy] = useState<'new' | 'old' | 'distance'>('new')
+    const [categories, setCategories] = useState<number[]>([])
+    const [diet, setDiet] = useState<number[]>([])
+    const [updater, setUpdater] = useState(() => () => { })
 
     // on navigation change
     useFocusEffect(() => {
@@ -68,6 +82,20 @@ export const HomeScreen = ({ navigation }) => {
             {!loaded && <Text>Loading...</Text>}
             {loaded &&
                 <>
+                    <View testID="Home.categoriesContainer" style={styles.categoriesContainer}>
+                        <Button title="filter" onPress={() => openModal()}></Button>
+                        <PostsFilters
+                            ref={modalRef}
+                            sortBy={sortBy}
+                            setSortBy={setSortBy}
+                            categories={categories}
+                            setCategories={setCategories}
+                            diet={diet}
+                            setDiet={setDiet}
+                            updater={updater}
+
+                        />
+                    </View>
                     <View testID="Home.subContainer" style={styles.subContainer}>
                         <View testID="Home.requestsContainer" style={[
                             {
@@ -100,20 +128,25 @@ export const HomeScreen = ({ navigation }) => {
                             </Pressable>
                         </View>
                     </View>
-                    <View testID="Home.categoriesContainer" style={styles.categoriesContainer}>
-                        {/* <FoodCategories /> */}
-                    </View>
                     {showRequests &&
                         <FeedPostRenderer
                             type={"r"}
                             navigation={navigation}
                             setShowRequests={setShowRequests}
+                            sortBy={sortBy}
+                            categories={categories}
+                            diet={diet}
+                            setUpdater={setUpdater}
                         />}
                     {!showRequests &&
                         <FeedPostRenderer
                             type={"o"}
                             navigation={navigation}
                             setShowRequests={setShowRequests}
+                            sortBy={sortBy}
+                            categories={categories}
+                            diet={diet}
+                            setUpdater={setUpdater}
                         />}
                 </>
             }
