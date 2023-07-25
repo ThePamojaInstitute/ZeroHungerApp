@@ -7,6 +7,7 @@ import { Entypo, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/v
 import styles from "../../styles/screens/postsHistory";
 import { DIETPREFERENCES, FOODCATEGORIES, getCategory, getDiet } from "../controllers/post";
 import { ScrollView } from "react-native-gesture-handler";
+import { LOGISTICS, getLogisticsType } from "../controllers/preferences";
 
 const Sort = ({ sortBy, setSortBy }) => (
     <View style={{ alignItems: "flex-start", gap: 12, marginTop: 10, marginLeft: 5 }}>
@@ -104,8 +105,18 @@ const FoodCategory = ({ state, setState, getType, list }) => {
     )
 }
 
-const PostsFilters = ({ sortBy, setSortBy, categories, setCategories, diet, setDiet, updater }, ref: React.Ref<object>) => {
-    const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet'>('')
+const PostsFilters = ({
+    sortBy,
+    setSortBy,
+    categories,
+    setCategories,
+    diet,
+    setDiet,
+    logistics,
+    setLogistics,
+    updater
+}, ref: React.Ref<object>) => {
+    const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet' | 'logistics'>('')
     const [modalVisible, setModalVisible] = useState(false)
 
     const openMe = () => setModalVisible(true)
@@ -209,6 +220,21 @@ const PostsFilters = ({ sortBy, setSortBy, categories, setCategories, diet, setD
                     </View>
                     {showFilter === 'diet' &&
                         <FoodCategory state={diet} setState={setDiet} getType={getDiet} list={DIETPREFERENCES} />}
+                    <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
+                        <TouchableOpacity
+                            style={[styles.modalItem, styles.modalItemBorder, { paddingBottom: 5 }]}
+                            onPress={() => {
+                                if (showFilter === 'logistics') setShowFilter('')
+                                else setShowFilter('logistics')
+                            }}
+                            testID="Bottom.postNavModalReqBtn"
+                        >
+                            <Text style={[globalStyles.H4, { marginTop: 5 }]}>Delivery / Pick up</Text>
+                            <Entypo name={`chevron-${showFilter === 'logistics' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                        </TouchableOpacity>
+                    </View>
+                    {showFilter === 'logistics' &&
+                        <FoodCategory state={logistics} setState={setLogistics} getType={getLogisticsType} list={LOGISTICS} />}
                 </ScrollView>
             </View>
         </Modal>
