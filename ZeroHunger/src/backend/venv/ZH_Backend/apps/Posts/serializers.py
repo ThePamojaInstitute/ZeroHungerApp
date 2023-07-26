@@ -1,3 +1,4 @@
+import collections
 from rest_framework import serializers, fields
 from .models import RequestPost, OfferPost
 from .choices import LOGISTICS_CHOICES, ACCESS_NEEDS_CHOICES, FOOD_CATEGORIES, DIET_PREFERENCES
@@ -79,10 +80,17 @@ class createRequestSerializer (serializers.ModelSerializer):
         
     def get_distance(self, obj):
         user_id = self.context.get("user_id")
+
+        if(type(obj) == collections.OrderedDict): # on creation
+            return None
+        
         distance = get_distance(user_id, obj.postedBy, obj)
         return distance
 
     def get_username(self, obj):
+        if(type(obj) == collections.OrderedDict): # on creation
+            return None
+
         user = obj.postedBy
         return user.username
     
@@ -90,6 +98,9 @@ class createRequestSerializer (serializers.ModelSerializer):
         return 'r'
     
     def get_postId(self, obj):
+        if(type(obj) == collections.OrderedDict): # on creation
+            return None
+
         return obj.pk
 
     def save(self):
@@ -135,9 +146,17 @@ class createOfferSerializer (serializers.ModelSerializer):
         
     def get_distance(self, obj):
         user_id = self.context.get("user_id")
-        return get_distance(user_id, obj.postedBy, obj)
+
+        if(type(obj) == collections.OrderedDict): # on creation
+            return None
+        
+        distance = get_distance(user_id, obj.postedBy, obj)
+        return distance
 
     def get_username(self, obj):
+        if(type(obj) == collections.OrderedDict): # on creation
+            return None
+
         user = obj.postedBy
         return user.username
     
@@ -145,6 +164,9 @@ class createOfferSerializer (serializers.ModelSerializer):
         return 'o'
     
     def get_postId(self, obj):
+        if(type(obj) == collections.OrderedDict): # on creation
+            return None
+
         return obj.pk
 
     def save(self):
