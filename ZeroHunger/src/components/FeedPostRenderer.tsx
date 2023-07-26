@@ -73,8 +73,6 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         } else return
     }, [isFocused])
 
-    if (!user) return navigation.navigate('LoginScreen')
-
     if (!loaded) return <Text>Loading...</Text>
 
     if (!data) return <Text>An error occurred while fetching data</Text>

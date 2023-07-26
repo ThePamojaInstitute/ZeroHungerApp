@@ -8,6 +8,7 @@ import styles from "../../styles/screens/postsHistory";
 import { DIETPREFERENCES, FOODCATEGORIES, getCategory, getDiet, handlePreferences } from "../controllers/post";
 import { ScrollView } from "react-native-gesture-handler";
 import { LOGISTICS, getLogisticsType } from "../controllers/preferences";
+import Slider from '@react-native-community/slider';
 
 const Sort = ({ sortBy, setSortBy }) => (
     <View style={{ alignItems: "flex-start", gap: 12, marginTop: 10, marginLeft: 13 }}>
@@ -105,6 +106,30 @@ const FoodCategory = ({ state, setState, getType, list }) => {
     )
 }
 
+const Location = ({ state, setState }) => {
+    return (
+        <View style={{ alignItems: "flex-start", gap: 12, marginTop: 10, marginLeft: 13 }}>
+            <View>
+                <Text style={globalStyles.H5}>Select maximum distance</Text>
+                <View style={{ flexDirection: 'row' }}>
+                    <Slider
+                        value={state}
+                        onValueChange={setState}
+                        style={{ width: Dimensions.get('window').width * 0.8, height: 40, maxWidth: 500, zIndex: 1 }}
+                        minimumValue={1}
+                        maximumValue={100}
+                        step={1}
+                        minimumTrackTintColor={Colors.primary}
+                        maximumTrackTintColor="#B8B8B8"
+                        thumbTintColor="#ffffff"
+                    />
+                    <Text style={[globalStyles.Body, { marginLeft: 5, marginTop: 8 }]}>{Math.round(state * 10) / 10} km</Text>
+                </View>
+            </View>
+        </View>
+    )
+}
+
 const PostsFilters = ({
     sortBy,
     setSortBy,
@@ -114,6 +139,8 @@ const PostsFilters = ({
     setDiet,
     logistics,
     setLogistics,
+    distance,
+    setDistance,
     updater,
     showFilter,
     setShowFilter
@@ -239,6 +266,27 @@ const PostsFilters = ({
                     </View>
                     {showFilter === 'diet' &&
                         <FoodCategory state={diet} setState={setDiet} getType={getDiet} list={DIETPREFERENCES} />}
+                    <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
+                        <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
+                            <TouchableOpacity
+                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                onPress={() => {
+                                    if (showFilter === 'location') setShowFilter('')
+                                    else setShowFilter('location')
+                                }}
+                                testID="Bottom.postNavModalReqBtn"
+                            >
+                                <Text style={[globalStyles.H4, { marginTop: 5 }]}>Location</Text>
+                                <Entypo name={`chevron-${showFilter === 'location' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                            </TouchableOpacity>
+                            {/* {logistics.length > 0 &&
+                                <Text
+                                    style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: -5, marginTop: 7 }]}
+                                >{handlePreferences(logistics.sort().toString(), getLogisticsType)}</Text>} */}
+                        </View>
+                    </View>
+                    {showFilter === 'location' &&
+                        <Location state={distance} setState={setDistance} />}
                     <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity

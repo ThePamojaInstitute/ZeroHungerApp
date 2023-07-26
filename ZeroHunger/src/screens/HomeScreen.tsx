@@ -58,7 +58,8 @@ export const HomeScreen = ({ navigation }) => {
     const [logistics, setLogistics] = useState<Char[]>([])
     const [accessNeeds, setAccessNeeds] = useState<Char>()
     const [updater, setUpdater] = useState(() => () => { })
-    const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet' | 'logistics'>('')
+    const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet' | 'logistics' | 'location'>('')
+    const [distance, setDistance] = useState(50)
 
     // on navigation change
     useFocusEffect(() => {
@@ -109,6 +110,10 @@ export const HomeScreen = ({ navigation }) => {
                 setShowFilter('logistics')
                 openModal()
                 return
+            case 'Loca':
+                setShowFilter('location')
+                openModal()
+                return
             default:
                 setShowFilter('')
                 openModal()
@@ -134,13 +139,14 @@ export const HomeScreen = ({ navigation }) => {
         'Sort',
         `Food category${categories.length > 0 ? ` (${categories.length})` : ''}`,
         `Dietary preference${diet.length > 0 ? ` (${diet.length})` : ''}`,
-        `Delivery / Pick up${prefLogistics.length > 0 ? ` (${prefLogistics.length})` : ''}`
+        `Delivery / Pick up${prefLogistics.length > 0 ? ` (${prefLogistics.length})` : ''}`,
+        'Location'
     ]
 
     return (
         <View testID="Home.container" style={styles.container}>
             {!loaded && <Text>Loading...</Text>}
-            {loaded &&
+            {loaded && user &&
                 <>
                     <View testID="Home.subContainer" style={styles.subContainer}>
                         <View testID="Home.requestsContainer" style={[
@@ -207,6 +213,8 @@ export const HomeScreen = ({ navigation }) => {
                         setDiet={setDiet}
                         logistics={prefLogistics}
                         setLogistics={setPrefLogistics}
+                        distance={distance}
+                        setDistance={setDistance}
                         updater={updater}
                         showFilter={showFilter}
                         setShowFilter={setShowFilter}
