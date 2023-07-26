@@ -121,22 +121,22 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
     }
 
     const renderItem = ({ item }) => {
-        if (!item || !item.pk) return
+        if (!item || !item.postId) return
 
         const post: PostModel = {
-            title: item['fields'].title,
-            imageLink: item['fields'].images,
-            postedOn: item['fields'].postedOn,
-            postedBy: item['fields'].postedBy,
-            description: item['fields'].description,
-            logistics: item['fields'].logistics,
-            fulfilled: item['fields'].fulfilled,
-            postalCode: item['fields'].postalCode,
-            accessNeeds: item['fields'].accessNeeds,
-            distance: item['fields']?.distance,
-            categories: item['fields']?.categories,
-            diet: item['fields']?.diet,
-            postId: item.pk,
+            title: item.title,
+            imageLink: item.images,
+            postedOn: item.postedOn,
+            postedBy: item.postedBy,
+            description: item.description,
+            logistics: item.logistics,
+            fulfilled: item.fulfilled,
+            postalCode: item.postalCode,
+            accessNeeds: item.accessNeeds,
+            distance: item?.distance,
+            categories: item?.categories,
+            diet: item?.diet,
+            postId: item.postId,
             username: item.username,
             type: type
         }
@@ -149,7 +149,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
                 selectedPost={selectedPost}
                 setShowRequests={setShowRequests}
                 from="home"
-                key={item.pk}
+                key={item.postId}
             />
         )
     }

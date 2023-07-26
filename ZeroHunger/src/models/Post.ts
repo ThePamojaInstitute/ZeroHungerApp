@@ -10,10 +10,10 @@ export interface PostModel {
     postId: number;
     username: string;
     type: "r" | "o";
-    logistics: string;
+    logistics: Char[];
     postalCode: string;
     accessNeeds: Char;
-    distance: number;
+    distance: number | null;
     categories: string;
-    diet: string;
+    diet: Char[];
 }
