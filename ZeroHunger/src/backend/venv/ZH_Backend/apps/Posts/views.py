@@ -1,23 +1,16 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
-from django.core import serializers
 from django.conf import settings
-from django.db.models import Q
+from rest_framework import viewsets,filters
 
-
-from django.http import JsonResponse
 import uuid
-
-import json
 import jwt
 import requests
-import math
 
 from .models import OfferPost, RequestPost
 from .serializers import createOfferSerializer, createRequestSerializer
 from apps.Users.models import BasicUser
-from datetime import datetime, timedelta
 import os
 import base64
 from azure.identity import EnvironmentCredential
@@ -36,19 +29,6 @@ def decode_token(auth_header):
     except:
         return Response("Token invalid or not given", 401)
     
-def add_username(posts):
-    for post in posts:
-                try:
-                    user_id = post['fields']['postedBy'] 
-                    try:   
-                        user = BasicUser.objects.get(pk=user_id)
-                        post.update({'username': user.username})
-                    except:
-                        posts.remove(post)
-                        pass   
-                except Exception as e:
-                    return Response(e.__str__(), 500)
-                
 def get_user_posts(posts_type, order_by_newest, page, user_id):
     try:
         if(posts_type == "r"):
@@ -74,17 +54,12 @@ def get_post(post_id, post_type):
     except:
         return Response("Post not found", 404)
     
-def get_posts(posts_type, page, sortBy, categories, diet, logistics, accessNeeds):
+def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds):
     try:
         if(posts_type == "r"):
             posts = RequestPost.objects.all().filter(fulfilled=False)
         else:
             posts = OfferPost.objects.all().filter(fulfilled=False)
-
-        if(sortBy == "old"):
-            posts = posts.order_by('postedOn')
-        else:
-            posts = posts.order_by('-postedOn')
             
         if(len(categories) > 0):
             categories.sort()
@@ -101,15 +76,33 @@ def get_posts(posts_type, page, sortBy, categories, diet, logistics, accessNeeds
 
         if(accessNeeds != 'a'):
             posts = posts.filter(accessNeeds=accessNeeds)
-
-        return posts[page * 5:][:5]
+        
+        return posts
     except Exception as e:
         return Response(e.__str__(), 500) 
     
-def serialize_posts(posts):
-    data = serializers.serialize('json', posts)
-    return json.loads(data)
+def sort_posts(posts, sortBy):
+    try:
+        if(sortBy == "old"):
+            posts = posts.order_by('postedOn')
+        else:
+            posts = posts.order_by('-postedOn')
 
+        return posts
+    except Exception as e:
+        return Response(e.__str__(), 500) 
+    
+def serialize_posts(posts, postsType, user_id):
+    try:
+        if(postsType == "r"):
+            serializer = createRequestSerializer(posts, many=True, context={'user_id': user_id}).data
+        else:
+            serializer = createOfferSerializer(posts, many=True, context={'user_id': user_id}).data
+                                               
+        return serializer
+    except Exception as e:
+        return Response(e.__str__(), 500) 
+        
 def get_postal_code(user_id):
     user = BasicUser.objects.get(pk=user_id)
     return user.postalCode
@@ -127,50 +120,6 @@ def get_coordinates(postal_code):
     coordinated = f'{longitude},{latitude}'
 
     return coordinated
-
-def parse_coordinates(coord):
-    coords = coord.split(',')
-
-    lng = float(coords[0])
-    lat = float(coords[1])
-
-    return lng, lat
-
-def get_distance(coord1, coord2):
-    """
-    Calculate the great circle distance in kilometers between two points 
-    on the earth (specified in decimal degrees)
-    """
-    lng1 = coord1[0]
-    lat1 = coord1[1]
-    lng2 = coord2[0]
-    lat2 = coord2[1]
-
-    # convert decimal degrees to radians 
-    lng1, lat1, lng2, lat2 = map(math.radians, [lng1, lat1, lng2, lat2])
-
-    # haversine formula 
-    dlon = lng2 - lng1 
-    dlat = lat2 - lat1 
-    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
-    c = 2 * math.asin(math.sqrt(a)) 
-    r = 6371 # Radius of earth in kilometers. Use 3956 for miles. Determines return value units.
-    return c * r
-
-def add_distance(user, data):
-    try:
-        if(len(user.coordinates) > 0):
-                coord = user.coordinates
-                user_coordinates = parse_coordinates(coord) 
-
-                for post in data:
-                    coordinates = post['fields']['coordinates']
-                    if(len(coordinates) > 0):
-                        coordinates = parse_coordinates(coordinates)
-                        distance = get_distance(user_coordinates, coordinates)
-                        post['fields']['distance'] = round(distance, 1)
-    except Exception as e:
-        return Response(e, status=500)
 
 class createPost(APIView):
     def post(self, request, format=JSONParser):
@@ -216,10 +165,8 @@ class deletePost(APIView):
 #https://stackoverflow.com/questions/57031455/infinite-scrolling-using-django
 class requestPostsForFeed(APIView):
     def get(self, request):
-        user = ''
         try:
             decoded_token = decode_token(request.headers['Authorization'])
-            user = BasicUser.objects.get(pk=decoded_token['user_id'])
         except Exception:
             return Response("User not found", 404)
 
@@ -231,13 +178,17 @@ class requestPostsForFeed(APIView):
         logistics = request.GET.getlist('logistics[]',"")
         accessNeeds = request.GET.get('accessNeeds',"")
 
-        posts = get_posts(postsType, page, sortBy, categories, diet, logistics, accessNeeds)
+        posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds)
 
-        data = serialize_posts(posts)
+        if(sortBy != "distance"):
+            posts = sort_posts(posts, sortBy)
+            data = serialize_posts(posts[page * 5:][:5], postsType, decoded_token['user_id'])
+        else:
+            serializer = serialize_posts(posts, postsType, decoded_token['user_id'])
 
-        add_username(data)
-        add_distance(user, data)
-        
+            data = sorted(serializer, key=lambda k: (k['distance'] is None, k['distance']), reverse=False)
+            data = data[page * 5:][:5]
+
         return Response(data, status=201)
      
 class postsHistory(APIView):
@@ -250,9 +201,7 @@ class postsHistory(APIView):
 
         posts = get_user_posts(postsType, orderByNewest, page, decoded_token['user_id'])
 
-        data = serialize_posts(posts)
-
-        add_username(data)
+        data = serialize_posts(posts, postsType, decoded_token['user_id'])
 
         return Response(data, status=200)
 
