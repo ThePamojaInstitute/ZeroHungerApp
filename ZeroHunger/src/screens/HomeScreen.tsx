@@ -3,7 +3,9 @@ import {
     Text,
     View,
     Pressable,
-    Button,
+    TouchableOpacity,
+    ScrollView,
+    Image,
 } from "react-native";
 import styles from "../../styles/screens/homeStyleSheet"
 import { globalStyles } from "../../styles/globalStyleSheet"
@@ -21,6 +23,7 @@ import {
 import { default as _PostsFilters } from "../components/PostsFilters";
 import { getPreferencesLogistics } from "../controllers/preferences";
 import { Char } from "../../types";
+import { Entypo } from "@expo/vector-icons";
 
 
 const PostsFilters = forwardRef(_PostsFilters)
@@ -55,6 +58,7 @@ export const HomeScreen = ({ navigation }) => {
     const [logistics, setLogistics] = useState<Char[]>([])
     const [accessNeeds, setAccessNeeds] = useState<Char>()
     const [updater, setUpdater] = useState(() => () => { })
+    const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet' | 'logistics'>('')
 
     // on navigation change
     useFocusEffect(() => {
@@ -87,26 +91,57 @@ export const HomeScreen = ({ navigation }) => {
         getPreferencesLogistics(prefLogistics, setAccessNeeds, setLogistics)
     }, [prefLogistics])
 
+    const handleOpen = (item: string) => {
+        switch (item) {
+            case 'Sort':
+                setShowFilter('sort')
+                openModal()
+                return
+            case 'Food':
+                setShowFilter('category')
+                openModal()
+                return
+            case 'Diet':
+                setShowFilter('diet')
+                openModal()
+                return
+            case 'Deli':
+                setShowFilter('logistics')
+                openModal()
+                return
+            default:
+                setShowFilter('')
+                openModal()
+                return
+        }
+    }
+
+    const renderFilter = (item: string) => {
+        return (
+            <View key={item} style={styles.filter}>
+                <TouchableOpacity
+                    style={styles.filterBtn}
+                    onPress={() => handleOpen(item.slice(0, 4))}>
+                    <Text style={styles.filterBtnLabel}
+                    >{item}</Text>
+                    <Entypo name={`chevron-${'down'}`} size={14} color="black" style={{ marginLeft: -5, marginVertical: -5 }} />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    const filters = [
+        'Sort',
+        `Food category${categories.length > 0 ? ` (${categories.length})` : ''}`,
+        `Dietary preference${diet.length > 0 ? ` (${diet.length})` : ''}`,
+        `Delivery / Pick up${prefLogistics.length > 0 ? ` (${prefLogistics.length})` : ''}`
+    ]
+
     return (
         <View testID="Home.container" style={styles.container}>
             {!loaded && <Text>Loading...</Text>}
             {loaded &&
                 <>
-                    <View testID="Home.categoriesContainer" style={styles.categoriesContainer}>
-                        <Button title="filter" onPress={() => openModal()}></Button>
-                        <PostsFilters
-                            ref={modalRef}
-                            sortBy={sortBy}
-                            setSortBy={setSortBy}
-                            categories={categories}
-                            setCategories={setCategories}
-                            diet={diet}
-                            setDiet={setDiet}
-                            logistics={prefLogistics}
-                            setLogistics={setPrefLogistics}
-                            updater={updater}
-                        />
-                    </View>
                     <View testID="Home.subContainer" style={styles.subContainer}>
                         <View testID="Home.requestsContainer" style={[
                             {
@@ -139,6 +174,43 @@ export const HomeScreen = ({ navigation }) => {
                             </Pressable>
                         </View>
                     </View>
+                    <View>
+                        <ScrollView
+                            horizontal={true}
+                            showsHorizontalScrollIndicator={false}
+                            testID="FoodCategories.container"
+                            style={{ flexDirection: 'row', marginBottom: 10, marginTop: 5, marginLeft: 20 }}
+                        >
+                            <View style={styles.filter}>
+                                <TouchableOpacity style={styles.filterBtn} onPress={() => openModal()}>
+                                    <Image
+                                        source={require('../../assets/Filter.png')}
+                                        style={{
+                                            resizeMode: 'cover',
+                                            width: 16,
+                                            height: 14,
+                                        }} />
+                                </TouchableOpacity>
+                            </View>
+                            {filters.map(item => {
+                                return renderFilter(item)
+                            })}
+                        </ScrollView>
+                    </View>
+                    <PostsFilters
+                        ref={modalRef}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        categories={categories}
+                        setCategories={setCategories}
+                        diet={diet}
+                        setDiet={setDiet}
+                        logistics={prefLogistics}
+                        setLogistics={setPrefLogistics}
+                        updater={updater}
+                        showFilter={showFilter}
+                        setShowFilter={setShowFilter}
+                    />
                     {showRequests &&
                         <FeedPostRenderer
                             type={"r"}

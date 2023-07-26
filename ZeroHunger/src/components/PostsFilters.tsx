@@ -5,12 +5,12 @@ import bottomTabStyles from "../../styles/components/bottomTabStyleSheet";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { Entypo, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import styles from "../../styles/screens/postsHistory";
-import { DIETPREFERENCES, FOODCATEGORIES, getCategory, getDiet } from "../controllers/post";
+import { DIETPREFERENCES, FOODCATEGORIES, getCategory, getDiet, handlePreferences } from "../controllers/post";
 import { ScrollView } from "react-native-gesture-handler";
 import { LOGISTICS, getLogisticsType } from "../controllers/preferences";
 
 const Sort = ({ sortBy, setSortBy }) => (
-    <View style={{ alignItems: "flex-start", gap: 12, marginTop: 10, marginLeft: 5 }}>
+    <View style={{ alignItems: "flex-start", gap: 12, marginTop: 10, marginLeft: 13 }}>
         <TouchableOpacity
             style={styles.modalItem}
             onPress={() => {
@@ -94,7 +94,7 @@ const FoodCategory = ({ state, setState, getType, list }) => {
     }
 
     return (
-        <View style={{ alignItems: "flex-start", gap: 12, marginTop: 10, marginLeft: 10 }}>
+        <View style={{ alignItems: "flex-start", gap: 12, marginTop: 10, marginLeft: 13 }}>
             <Pressable onPress={() => setState([])}>
                 <Text style={globalStyles.Link}>Clear all</Text>
             </Pressable>
@@ -114,9 +114,10 @@ const PostsFilters = ({
     setDiet,
     logistics,
     setLogistics,
-    updater
+    updater,
+    showFilter,
+    setShowFilter
 }, ref: React.Ref<object>) => {
-    const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet' | 'logistics'>('')
     const [modalVisible, setModalVisible] = useState(false)
 
     const openMe = () => setModalVisible(true)
@@ -132,14 +133,17 @@ const PostsFilters = ({
             onBackButtonPress={() => {
                 updater()
                 setModalVisible(!modalVisible)
+                setShowFilter('')
             }}
             onBackdropPress={() => {
                 updater()
                 setModalVisible(!modalVisible)
+                setShowFilter('')
             }}
             onSwipeComplete={() => {
                 updater()
                 setModalVisible(!modalVisible)
+                setShowFilter('')
             }}
             swipeDirection={['down']}
             style={{ margin: 0 }}
@@ -170,6 +174,7 @@ const PostsFilters = ({
                         onPress={() => {
                             updater()
                             setModalVisible(!modalVisible)
+                            setShowFilter('')
                         }}
                     >
                         <Ionicons name="close" size={30} />
@@ -177,61 +182,81 @@ const PostsFilters = ({
                 </View>
                 <ScrollView>
                     <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
-                        <TouchableOpacity
-                            style={[styles.modalItem, styles.modalItemBorder, { paddingBottom: 5 }]}
-                            onPress={() => {
-                                if (showFilter === 'sort') setShowFilter('')
-                                else setShowFilter('sort')
-                            }}
-                            testID="Bottom.postNavModalReqBtn"
-                        >
-                            <Text style={globalStyles.H4}>Sort</Text>
-                            <Entypo name={`chevron-${showFilter === 'sort' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
-                        </TouchableOpacity>
+                        <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
+                            <TouchableOpacity
+                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                onPress={() => {
+                                    if (showFilter === 'sort') setShowFilter('')
+                                    else setShowFilter('sort')
+                                }}
+                                testID="Bottom.postNavModalReqBtn"
+                            >
+                                <Text style={globalStyles.H4}>Sort</Text>
+                                <Entypo name={`chevron-${showFilter === 'sort' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                     {showFilter === 'sort' && <Sort sortBy={sortBy} setSortBy={setSortBy} />}
                     <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
-                        <TouchableOpacity
-                            style={[styles.modalItem, styles.modalItemBorder, { paddingBottom: 5 }]}
-                            onPress={() => {
-                                if (showFilter === 'category') setShowFilter('')
-                                else setShowFilter('category')
-                            }}
-                            testID="Bottom.postNavModalReqBtn"
-                        >
-                            <Text style={[globalStyles.H4, { marginTop: 5 }]}>Food category</Text>
-                            <Entypo name={`chevron-${showFilter === 'category' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
-                        </TouchableOpacity>
+                        <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
+                            <TouchableOpacity
+                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                onPress={() => {
+                                    if (showFilter === 'category') setShowFilter('')
+                                    else setShowFilter('category')
+                                }}
+                                testID="Bottom.postNavModalReqBtn"
+                            >
+                                <Text style={[globalStyles.H4, { marginTop: 5 }]}>Food category</Text>
+                                <Entypo name={`chevron-${showFilter === 'category' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                            </TouchableOpacity>
+                            {categories.length > 0 &&
+                                <Text
+                                    style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: -5, marginTop: 7 }]}
+                                >{handlePreferences(categories.sort().toString(), getCategory)}</Text>}
+                        </View>
                     </View>
                     {showFilter === 'category' &&
                         <FoodCategory state={categories} setState={setCategories} getType={getCategory} list={FOODCATEGORIES} />}
                     <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
-                        <TouchableOpacity
-                            style={[styles.modalItem, styles.modalItemBorder, { paddingBottom: 5 }]}
-                            onPress={() => {
-                                if (showFilter === 'diet') setShowFilter('')
-                                else setShowFilter('diet')
-                            }}
-                            testID="Bottom.postNavModalReqBtn"
-                        >
-                            <Text style={[globalStyles.H4, { marginTop: 5 }]}>Dietary preferences</Text>
-                            <Entypo name={`chevron-${showFilter === 'diet' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
-                        </TouchableOpacity>
+                        <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
+                            <TouchableOpacity
+                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                onPress={() => {
+                                    if (showFilter === 'diet') setShowFilter('')
+                                    else setShowFilter('diet')
+                                }}
+                                testID="Bottom.postNavModalReqBtn"
+                            >
+                                <Text style={[globalStyles.H4, { marginTop: 5 }]}>Dietary preferences</Text>
+                                <Entypo name={`chevron-${showFilter === 'diet' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                            </TouchableOpacity>
+                            {diet.length > 0 &&
+                                <Text
+                                    style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: -5, marginTop: 7 }]}
+                                >{handlePreferences(diet.sort().toString(), getDiet)}</Text>}
+                        </View>
                     </View>
                     {showFilter === 'diet' &&
                         <FoodCategory state={diet} setState={setDiet} getType={getDiet} list={DIETPREFERENCES} />}
                     <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
-                        <TouchableOpacity
-                            style={[styles.modalItem, styles.modalItemBorder, { paddingBottom: 5 }]}
-                            onPress={() => {
-                                if (showFilter === 'logistics') setShowFilter('')
-                                else setShowFilter('logistics')
-                            }}
-                            testID="Bottom.postNavModalReqBtn"
-                        >
-                            <Text style={[globalStyles.H4, { marginTop: 5 }]}>Delivery / Pick up</Text>
-                            <Entypo name={`chevron-${showFilter === 'logistics' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
-                        </TouchableOpacity>
+                        <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
+                            <TouchableOpacity
+                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                onPress={() => {
+                                    if (showFilter === 'logistics') setShowFilter('')
+                                    else setShowFilter('logistics')
+                                }}
+                                testID="Bottom.postNavModalReqBtn"
+                            >
+                                <Text style={[globalStyles.H4, { marginTop: 5 }]}>Delivery / Pick up</Text>
+                                <Entypo name={`chevron-${showFilter === 'logistics' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                            </TouchableOpacity>
+                            {logistics.length > 0 &&
+                                <Text
+                                    style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: -5, marginTop: 7 }]}
+                                >{handlePreferences(logistics.sort().toString(), getLogisticsType)}</Text>}
+                        </View>
                     </View>
                     {showFilter === 'logistics' &&
                         <FoodCategory state={logistics} setState={setLogistics} getType={getLogisticsType} list={LOGISTICS} />}

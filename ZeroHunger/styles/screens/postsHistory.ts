@@ -5,7 +5,7 @@ export default StyleSheet.create({
     modalItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '99%',
+        width: '100%',
         alignSelf: 'center'
     },
     modalItemBorder: {

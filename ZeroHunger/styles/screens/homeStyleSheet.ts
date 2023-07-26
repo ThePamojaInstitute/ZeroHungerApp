@@ -34,4 +34,27 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         justifyContent: 'center',
     },
+    filter: {
+        backgroundColor: '#FFFFFF',
+        marginTop: 5,
+        marginRight: 8,
+    },
+    filterBtn: {
+        display: "flex",
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: "center",
+        gap: 10,
+        paddingVertical: 7,
+        paddingHorizontal: 10,
+        borderRadius: 6,
+        backgroundColor: Colors.primaryLight,
+    },
+    filterBtnLabel: {
+        fontFamily: 'PublicSans_500Medium',
+        fontSize: 12,
+        display: 'flex',
+        alignItems: 'center',
+        color: Colors.dark,
+    },
 })

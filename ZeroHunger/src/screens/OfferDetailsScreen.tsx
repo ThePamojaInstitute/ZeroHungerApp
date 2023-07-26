@@ -64,11 +64,11 @@ export const OfferDetailsScreen = ({ navigation }) => {
         })
     }
 
-    const logistics = handlePreferences(route.params.logistics.toString(), getLogisticsType)
+    const logistics = handlePreferences(route.params.logistics.sort().toString(), getLogisticsType)
     const postalCode = formatPostalCode(route.params.postalCode)
     const accessNeeds = handleAccessNeeds(route.params.accessNeeds)
-    const categories = handlePreferences(route.params.categories.toString(), getCategory)
-    const diet = handlePreferences(route.params.diet.toString(), getDiet)
+    const categories = handlePreferences(route.params.categories.sort().toString(), getCategory)
+    const diet = handlePreferences(route.params.diet.sort().toString(), getDiet)
 
     // const renderItem = ({ item }) => {
     //     return (
