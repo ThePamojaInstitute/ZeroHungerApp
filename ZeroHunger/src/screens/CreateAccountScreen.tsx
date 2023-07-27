@@ -85,16 +85,16 @@ export const CreateAccountScreen = ({ navigation }) => {
     }
   }
 
-  const testEditUser = () =>
-  { 
-    var user = {
-    "username": username,
-    "email": email,
-    "password": password,
-    "confPassword": confPass
-  }
-    editUser(user);
-  }
+  // const testEditUser = () =>
+  // { 
+  //   var user = {
+  //   "username": username,
+  //   "email": email,
+  //   "password": password,
+  //   "confPassword": confPass
+  // }
+  //   editUser(user);
+  // }
 
   const handleSignUp = (e: (GestureResponderEvent |
     NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
@@ -267,9 +267,9 @@ export const CreateAccountScreen = ({ navigation }) => {
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={handleSignUp}>
             <Text style={globalStyles.defaultBtnLabel}>{t("account.signup.submit.label")}</Text>
           </TouchableOpacity>
-          <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={testEditUser}>
+          {/* <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={testEditUser}>
             <Text style={globalStyles.defaultBtnLabel}> Edit User Test </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </>
       }
     </View>

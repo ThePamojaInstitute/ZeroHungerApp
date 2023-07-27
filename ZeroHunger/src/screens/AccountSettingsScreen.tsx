@@ -4,6 +4,7 @@ import styles from "../../styles/screens/accountSettingsStyleSheet"
 import { AuthContext } from "../context/AuthContext";
 import { logOutUser, deleteUser } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
+import { editUser } from "../controllers/auth";
 
 export const AccountSettingsScreen = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext);
@@ -27,10 +28,32 @@ export const AccountSettingsScreen = ({ navigation }) => {
         })
     }
 
+    const handleModifyUser = () => 
+    {
+        var user = {
+              "username": "testuser",
+              "email": "test@test.com",
+              "password": "test1",
+              "confPassword":"test1"
+            }
+              editUser(user);
+    }
+
     return (
         <View testID="AccSett.container" style={{ padding: 50 }}>
             <Text>Temporary Account Settings Screen</Text>
             
+            <TouchableOpacity
+                testID="AccSett.editUserTestBtn"
+                style={styles.deleteUserBtn}
+                onPress={handleModifyUser}
+            >
+                <Text
+                    testID="AccSett.deleteUserBtnText"
+                    style={styles.deleteUserBtnText}
+                >Test Modify User</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
                 testID="AccSett.deleteUserBtn"
                 style={styles.deleteUserBtn}

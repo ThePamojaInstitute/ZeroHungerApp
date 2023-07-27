@@ -17,7 +17,7 @@ import time
 from .models import BasicUser
 from apps.Chat.models import Conversation
 from django.db.models import Q
-from .serializers import RegistrationSerializer, LoginSerializer, AccountSettingsSerializer
+from .serializers import RegistrationSerializer, LoginSerializer
 from .forms import EditProfileForm
 from apps.Posts.views import decode_token
 
@@ -55,10 +55,22 @@ class createUser(APIView):
             return Response(serializer.errors, status=401)
         
 class EditUser(APIView):
-    def put(self, request, format=None):
-        form = EditProfileForm(instance=request.user)
-        if form.is_valid():
-            form.save()
+    def post(self, request, format=None):
+        try:
+            decoded_token = jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+            print(decoded_token)
+            return Response("Authorized", status=200)
+        except:
+            return Response("failed to authorize editing user", status=401)
+        # user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        # form = EditProfileForm(user)
+        # if form.is_valid():
+        #     form.save()
+        #     return Response("Edited account successfully", status=201)
+        # else:
+        #     return Response("something broke editing an account", status = 400)
+       
+
         
       
     
@@ -66,6 +78,7 @@ class deleteUser(APIView):
     def delete(self,request, format=None):
         try:
             decoded_token = jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+            print(decoded_token)
         except:
             return Response(status=401)
 
@@ -85,10 +98,6 @@ class deleteUser(APIView):
             return Response({"User deleted"}, 200)
         except:
             return Response(status=204)
-    
-class modifyUser(APIView):
-    def post(self,request, format=None):
-        return Response({"You made it to POST in modifyUser"})
     
 class logIn(APIView):
     def post(self,request, format=None):

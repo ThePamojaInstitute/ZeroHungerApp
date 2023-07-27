@@ -45,14 +45,19 @@ export async function createUser(user: Object, acceptedTerms: boolean) {
 
 export async function editUser(user: Object)
 {
-    try
-    {
-        const res = await axiosInstance.put("users/editUser", user)
-        return {msg: "successess", res: res.data}
-    } catch (error)
-    {
-        return { msg: "failure", res: error.response.data }
-    }
+    try {
+        AsyncStorage.getItem('refresh_token').then(async res => {
+            await axiosInstance.post('users/editUser',  { user }, 
+            { headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': res
+            } })
+        }).then(() => {
+            AsyncStorage.clear()
+        })
+        } catch (e) {
+        console.log('logout not working', e)
+        }
 }
 
 export async function deleteUser(userId: string, token: string) {
@@ -74,12 +79,8 @@ export async function deleteUser(userId: string, token: string) {
 }
 
 export async function modifyUser(user: Object) {
-    try {
-        const res = await axiosInstance.post("users/modifyUser", user)
-        console.log(res.data);
-    } catch (error) {
-        console.log(error);
-    }
+   
+
 }
 
 export async function logInUser(user: Object) {

@@ -33,7 +33,7 @@ from rest_framework_simplejwt import views as jwt_views
 from .views import (
     createUser, 
     deleteUser, 
-    modifyUser, 
+    EditUser,
     logIn, 
     logOut, 
     MyTokenObtainPairView, 
@@ -42,16 +42,14 @@ from .views import (
     clearNotification,
     clearAllNotifications, 
     userPreferences,
-    EditUser
 )
 
 urlpatterns = [
     path('createUser', createUser.as_view()),
     path('deleteUser', deleteUser.as_view()),
-    path('modifyUser', modifyUser.as_view()),
+    path('editUser', EditUser.as_view()), 
     path('logIn', logIn.as_view()),
     path('logOut', logOut.as_view()),
-    path('editUser', EditUser.as_view()), 
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('getNotifications', getNotifications.as_view()),
