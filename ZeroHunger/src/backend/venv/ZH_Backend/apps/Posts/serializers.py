@@ -1,54 +1,10 @@
 import collections
 from rest_framework import serializers, fields
 from .models import RequestPost, OfferPost
-from .choices import LOGISTICS_CHOICES, ACCESS_NEEDS_CHOICES, FOOD_CATEGORIES, DIET_PREFERENCES
+from .choices import LOGISTICS_CHOICES, FOOD_CATEGORIES, DIET_PREFERENCES
 from apps.Users.models import BasicUser
 from django.db import models
 from datetime import datetime 
-import math
-
-
-def parse_coordinates(coord):
-    coords = coord.split(',')
-
-    lng = float(coords[0])
-    lat = float(coords[1])
-
-    return lng, lat
-
-def calculate_distance(coord1, coord2):
-    """
-    Calculate the great circle distance in kilometers between two points 
-    on the earth (specified in decimal degrees)
-    """
-    lng1 = coord1[0]
-    lat1 = coord1[1]
-    lng2 = coord2[0]
-    lat2 = coord2[1]
-
-    # convert decimal degrees to radians 
-    lng1, lat1, lng2, lat2 = map(math.radians, [lng1, lat1, lng2, lat2])
-
-    # haversine formula 
-    dlon = lng2 - lng1 
-    dlat = lat2 - lat1 
-    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
-    c = 2 * math.asin(math.sqrt(a)) 
-    r = 6371 # Radius of earth in kilometers. Use 3956 for miles. Determines return value units.
-    return c * r
-
-def get_distance(user_id, postedBy, obj):
-    if(user_id != postedBy.pk):
-            user = BasicUser.objects.get(pk=user_id)
-            coord = user.coordinates
-            user_coordinates = parse_coordinates(coord) 
-
-            if(obj.coordinates):
-                coordinates = parse_coordinates(obj.coordinates)
-                distance = calculate_distance(user_coordinates, coordinates)
-                return round(distance, 1)
-    else:
-        return None
 
 
 class createRequestSerializer (serializers.ModelSerializer):
@@ -60,13 +16,15 @@ class createRequestSerializer (serializers.ModelSerializer):
     fulfilled = serializers.BooleanField(default=False)
     logistics = fields.MultipleChoiceField(choices=LOGISTICS_CHOICES, required=False)
     postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
-    coordinates = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    longitude = serializers.FloatField(required=False, default=None)
+    latitude = serializers.FloatField(required=False, default=None)
     accessNeeds = serializers.CharField(max_length=1)
     categories = fields.MultipleChoiceField(choices=FOOD_CATEGORIES, required=False)
     diet = fields.MultipleChoiceField(choices=DIET_PREFERENCES, required=False)
+    distance = serializers.FloatField(required=False)
 
     # These fields are temporary fileds and won't be save in the database
-    distance = serializers.SerializerMethodField(method_name='get_distance')
+    # distance = serializers.SerializerMethodField(method_name='get_distance')
     username = serializers.SerializerMethodField(method_name='get_username')
     type = serializers.SerializerMethodField(method_name='get_type')
     postId = serializers.SerializerMethodField(method_name='get_postId')
@@ -75,18 +33,9 @@ class createRequestSerializer (serializers.ModelSerializer):
         model=RequestPost
         fields = ['title', 'images', 'postedOn', 'postedBy', 
                 'description', 'fulfilled', 'logistics', 'postalCode',
-                'accessNeeds', 'coordinates', 'categories', 'diet',
+                'accessNeeds', 'longitude', 'latitude', 'categories', 'diet',
                 'distance', 'username', 'type', 'postId']
         
-    def get_distance(self, obj):
-        user_id = self.context.get("user_id")
-
-        if(type(obj) == collections.OrderedDict): # on creation
-            return None
-        
-        distance = get_distance(user_id, obj.postedBy, obj)
-        return distance
-
     def get_username(self, obj):
         if(type(obj) == collections.OrderedDict): # on creation
             return None
@@ -113,7 +62,8 @@ class createRequestSerializer (serializers.ModelSerializer):
                        logistics=self.validated_data['logistics'],
                        postalCode=self.validated_data['postalCode'],
                        accessNeeds=self.validated_data['accessNeeds'],
-                       coordinates=self.validated_data['coordinates'],
+                       longitude=self.validated_data['longitude'],
+                       latitude=self.validated_data['latitude'],
                        categories=self.validated_data['categories'],
                        diet=self.validated_data['diet'],)
         post.save()
@@ -126,13 +76,15 @@ class createOfferSerializer (serializers.ModelSerializer):
     description = serializers.CharField(max_length=1024, required=False, allow_blank=True)
     fulfilled = serializers.BooleanField(default=False)
     logistics = fields.MultipleChoiceField(choices=LOGISTICS_CHOICES, required=False)
+    longitude = serializers.FloatField()
+    latitude = serializers.FloatField()
     postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
     accessNeeds = serializers.CharField(max_length=1)
     categories = fields.MultipleChoiceField(choices=FOOD_CATEGORIES, required=False)
     diet = fields.MultipleChoiceField(choices=DIET_PREFERENCES, required=False)
+    distance = serializers.FloatField(required=False)
 
     # These fields are temporary fileds and won't be save in the database
-    distance = serializers.SerializerMethodField(method_name='get_distance')
     username = serializers.SerializerMethodField(method_name='get_username')
     type = serializers.SerializerMethodField(method_name='get_type')
     postId = serializers.SerializerMethodField(method_name='get_postId')
@@ -141,18 +93,9 @@ class createOfferSerializer (serializers.ModelSerializer):
         model=OfferPost
         fields = ['title', 'images', 'postedOn', 'postedBy', 
                 'description', 'fulfilled', 'logistics', 'postalCode',
-                'accessNeeds', 'coordinates', 'categories', 'diet',
+                'accessNeeds', 'longitude', 'latitude', 'categories', 'diet',
                 'distance', 'username', 'type', 'postId']
         
-    def get_distance(self, obj):
-        user_id = self.context.get("user_id")
-
-        if(type(obj) == collections.OrderedDict): # on creation
-            return None
-        
-        distance = get_distance(user_id, obj.postedBy, obj)
-        return distance
-
     def get_username(self, obj):
         if(type(obj) == collections.OrderedDict): # on creation
             return None
@@ -161,7 +104,7 @@ class createOfferSerializer (serializers.ModelSerializer):
         return user.username
     
     def get_type(self, obj):
-        return 'o'
+        return 'r'
     
     def get_postId(self, obj):
         if(type(obj) == collections.OrderedDict): # on creation
@@ -179,7 +122,8 @@ class createOfferSerializer (serializers.ModelSerializer):
                        logistics=self.validated_data['logistics'],
                        postalCode=self.validated_data['postalCode'],
                        accessNeeds=self.validated_data['accessNeeds'],
-                       coordinates=self.validated_data['coordinates'],
+                       longitude=self.validated_data['longitude'],
+                       latitude=self.validated_data['latitude'],
                        categories=self.validated_data['categories'],
                        diet=self.validated_data['diet'],)
         post.save()

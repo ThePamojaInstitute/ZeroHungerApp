@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from apps.Users.models import BasicUser
 from datetime import datetime 
 from multiselectfield import MultiSelectField
@@ -13,7 +14,8 @@ class RequestPost(models.Model):
     fulfilled = models.BooleanField(default=False)
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=3, default='')
     postalCode = models.CharField(max_length=7, blank=True)
-    coordinates = models.CharField(max_length=50, blank=True)
+    longitude = models.FloatField(validators=[MinValueValidator(-180), MaxValueValidator(180)], null=True, blank=True, default=None)
+    latitude = models.FloatField(validators=[MinValueValidator(-90), MaxValueValidator(90)], null=True, blank=True, default=None)
     accessNeeds = models.CharField(choices=ACCESS_NEEDS_CHOICES, default='a', max_length=1)
     categories = MultiSelectField(choices=FOOD_CATEGORIES, max_length=12, default='')
     diet = MultiSelectField(choices=DIET_PREFERENCES, max_length=9, default='')
@@ -30,11 +32,12 @@ class OfferPost(models.Model):
     fulfilled = models.BooleanField(default=False)
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=3, default='')
     postalCode = models.CharField(max_length=7, blank=True)
-    coordinates = models.CharField(max_length=50, blank=True)
+    longitude = models.FloatField(validators=[MinValueValidator(-180), MaxValueValidator(180)], null=True, blank=True, default=None)
+    latitude = models.FloatField(validators=[MinValueValidator(-90), MaxValueValidator(90)], null=True, blank=True, default=None)
     accessNeeds = models.CharField(choices=ACCESS_NEEDS_CHOICES, default='a', max_length=1)
     categories = MultiSelectField(choices=FOOD_CATEGORIES, max_length=12, default='')
     diet = MultiSelectField(choices=DIET_PREFERENCES, max_length=9, default='')
     
     def __str__(self):
         return self.title
-
+    
