@@ -2,17 +2,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from django.conf import settings
-from rest_framework import viewsets,filters
+from django.db.models import FloatField, ExpressionWrapper, F, When, Case, Value
+from django.db.models.lookups import Exact
+from django.db.models.functions import Cos, Sin, Sqrt, Radians, ASin, Round
+from .models import OfferPost, RequestPost
+from .serializers import createOfferSerializer, createRequestSerializer
+from apps.Users.models import BasicUser
 
 import uuid
 import jwt
 import requests
-
-from .models import OfferPost, RequestPost
-from .serializers import createOfferSerializer, createRequestSerializer
-from apps.Users.models import BasicUser
 import os
 import base64
+
 from azure.identity import EnvironmentCredential
 from azure.keyvault.secrets import SecretClient
 from azure.storage.blob import BlobClient, generate_account_sas, ResourceTypes, AccountSasPermissions, ContainerClient
@@ -41,8 +43,12 @@ def get_user_posts(posts_type, order_by_newest, page, user_id):
                 posts = OfferPost.objects.filter(postedBy__pk=user_id).all().order_by('postedOn')[page * 5:][:5]
             else:
                 posts = OfferPost.objects.filter(postedBy__pk=user_id).all().order_by('-postedOn')[page * 5:][:5]
+        
+        posts = posts.annotate(distance=Value(0.0, output_field=FloatField()))
+
         return posts
     except Exception as e:
+        print(e)
         return Response(e.__str__(), 500) 
     
 def get_post(post_id, post_type):
@@ -54,7 +60,7 @@ def get_post(post_id, post_type):
     except:
         return Response("Post not found", 404)
     
-def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds):
+def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, user):
     try:
         if(posts_type == "r"):
             posts = RequestPost.objects.all().filter(fulfilled=False)
@@ -76,31 +82,47 @@ def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds):
 
         if(accessNeeds != 'a'):
             posts = posts.filter(accessNeeds=accessNeeds)
+
+        lat1 = user.latitude
+        lng1 = user.longitude
+
+        # this adds a "distance" pseudo field to the queryset by calculating the distance for each object
+        # all of this happens in a single sql query which would be drastically faster that iterating through the posts objects 
+        posts = posts.all().annotate(distance=Case(
+            When(Exact(F('postedBy'), user.pk), then=None), # if this user is the owner of the post return None
+            default=ExpressionWrapper( # this equation uses Haversine formula to calculate the distance between two points
+            Round(((2 * ASin(Sqrt((Sin((Radians(F('latitude')) - Radians(lat1))/2)**2 + Cos(Radians(lat1)) * Cos(Radians(F('latitude'))) * Sin((Radians(F('longitude')) - Radians(lng1)) /2)**2)))) * 6371), 5),
+            output_field=FloatField())
+        ))
         
         return posts
     except Exception as e:
+        print(e)
         return Response(e.__str__(), 500) 
     
-def sort_posts(posts, sortBy):
+def sort_posts(posts, sortBy, page):
     try:
-        if(sortBy == "old"):
-            posts = posts.order_by('postedOn')
+        if(sortBy == "distance"):
+            posts = posts.all().order_by(F('distance').desc(nulls_last=True))
+        elif(sortBy == "old"):
+            posts = posts.all().order_by('postedOn')
         else:
-            posts = posts.order_by('-postedOn')
+            posts = posts.all().order_by('-postedOn')
 
-        return posts
+        return posts[page * 5:][:5]
     except Exception as e:
         return Response(e.__str__(), 500) 
     
-def serialize_posts(posts, postsType, user_id):
+def serialize_posts(posts, postsType):
     try:
         if(postsType == "r"):
-            serializer = createRequestSerializer(posts, many=True, context={'user_id': user_id}).data
+            serializer = createRequestSerializer(posts, many=True)
         else:
-            serializer = createOfferSerializer(posts, many=True, context={'user_id': user_id}).data
+            serializer = createOfferSerializer(posts, many=True)
                                                
         return serializer
     except Exception as e:
+        print(e)
         return Response(e.__str__(), 500) 
         
 def get_postal_code(user_id):
@@ -108,18 +130,20 @@ def get_postal_code(user_id):
     return user.postalCode
 
 def get_coordinates(postal_code):
-    if len(postal_code) > 6:
-        seperator = postal_code[3]
-        postal_code = postal_code.replace(seperator, '')
-    
-    url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{postal_code}.json?access_token={settings.MAPBOX_ACCESS_CODE}'
-    res = requests.get(url, headers={'User-Agent': "python-requests/2.31.0"}).json()
+    try:
+        if len(postal_code) > 6:
+            seperator = postal_code[3]
+            postal_code = postal_code.replace(seperator, '')
+        
+        url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{postal_code}.json?access_token={settings.MAPBOX_ACCESS_CODE}'
+        res = requests.get(url, headers={'User-Agent': "python-requests/2.31.0"}).json()
 
-    longitude = res['features'][0]['center'][0] 
-    latitude = res['features'][0]['center'][1] 
-    coordinated = f'{longitude},{latitude}'
+        longitude = res['features'][0]['center'][0] 
+        latitude = res['features'][0]['center'][1] 
 
-    return coordinated
+        return longitude, latitude
+    except Exception as e:
+        return Response(e.__str__(), 500) 
 
 class createPost(APIView):
     def post(self, request, format=JSONParser):
@@ -130,9 +154,12 @@ class createPost(APIView):
             postal_code = get_postal_code(user_id)
             
         if(postal_code):
-            request.data['postData']['coordinates'] = get_coordinates(postal_code)
+            lon, lat = get_coordinates(postal_code)
+            request.data['postData']['longitude'] = float(lon)
+            request.data['postData']['latitude'] = float(lat)
         else:
-            request.data['postData']['coordinates'] = ''
+            request.data['postData']['longitude'] = None
+            request.data['postData']['latitude'] = None
 
         if (request.data['postType'] == "r"): 
             serializer = createRequestSerializer(data=request.data['postData'])
@@ -143,6 +170,7 @@ class createPost(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         else:
+            print(serializer.errors)
             return Response(serializer.errors, status=400)
         
 class deletePost(APIView):
@@ -167,43 +195,47 @@ class requestPostsForFeed(APIView):
     def get(self, request):
         try:
             decoded_token = decode_token(request.headers['Authorization'])
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
         except Exception:
             return Response("User not found", 404)
 
-        page = int(request.GET.get('page',0))
-        postsType = request.GET.get('postsType',"r")
-        sortBy = request.GET.get('sortBy',"")
-        categories = request.GET.getlist('categories[]',"")
-        diet = request.GET.getlist('diet[]',"")
-        logistics = request.GET.getlist('logistics[]',"")
-        accessNeeds = request.GET.get('accessNeeds',"")
+        try:
+            page = int(request.GET.get('page',0))
+            postsType = request.GET.get('postsType',"r")
+            sortBy = request.GET.get('sortBy',"")
+            categories = request.GET.getlist('categories[]',"")
+            diet = request.GET.getlist('diet[]',"")
+            logistics = request.GET.getlist('logistics[]',"")
+            accessNeeds = request.GET.get('accessNeeds',"")
+        except Exception as e:
+            return Response(e.__str__(), 400) 
 
-        posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds)
+        posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds, user)
+        posts = sort_posts(posts, sortBy, page)
 
-        if(sortBy != "distance"):
-            posts = sort_posts(posts, sortBy)
-            data = serialize_posts(posts[page * 5:][:5], postsType, decoded_token['user_id'])
-        else:
-            serializer = serialize_posts(posts, postsType, decoded_token['user_id'])
+        serializer = serialize_posts(posts, postsType)
 
-            data = sorted(serializer, key=lambda k: (k['distance'] is None, k['distance']), reverse=False)
-            data = data[page * 5:][:5]
-
-        return Response(data, status=201)
+        return Response(serializer.data, status=201)
      
 class postsHistory(APIView):
     def get(self, request):
-        decoded_token = decode_token(request.headers['Authorization'])
-            
-        postsType = request.GET.get('postsType',"r")
-        orderByNewest = request.GET.get('orderByNewest',True)
-        page = int(request.GET.get('page',0))
+        try:
+            decoded_token = decode_token(request.headers['Authorization'])
+        except Exception:
+            return Response("User not found", 404)
+        
+        try:
+            postsType = request.GET.get('postsType',"r")
+            orderByNewest = request.GET.get('orderByNewest',True)
+            page = int(request.GET.get('page',0))
+        except Exception as e:
+            return Response(e.__str__(), 400) 
 
         posts = get_user_posts(postsType, orderByNewest, page, decoded_token['user_id'])
 
-        data = serialize_posts(posts, postsType, decoded_token['user_id'])
+        serializer = serialize_posts(posts, postsType)
 
-        return Response(data, status=200)
+        return Response(serializer.data, status=200)
 
 class markAsFulfilled(APIView):
     def put(self, request):
@@ -224,7 +256,6 @@ class markAsFulfilled(APIView):
             return Response("Unauthorized", 401)
         
 class ImageUploader(APIView):
-  
      def post(self,request):
          try:
             local_path = "./data"
@@ -252,5 +283,3 @@ class ImageUploader(APIView):
             return Response(blob_service_client.url, status=201) 
          except Exception as ex:
              return Response(str(ex), status=401)
-
-#  
