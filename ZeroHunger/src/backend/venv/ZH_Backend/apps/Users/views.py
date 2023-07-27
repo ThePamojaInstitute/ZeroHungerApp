@@ -57,7 +57,7 @@ class createUser(APIView):
 class EditUser(APIView):
     def post(self, request, format=None):
         try:
-            decoded_token = jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+            decoded_token = jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
             print(decoded_token)
             return Response("Authorized", status=200)
         except:

@@ -28,21 +28,20 @@ export const AccountSettingsScreen = ({ navigation }) => {
         })
     }
 
-    const handleModifyUser = () => 
-    {
+    const handleModifyUser = () => {
         var user = {
-              "username": "testuser",
-              "email": "test@test.com",
-              "password": "test1",
-              "confPassword":"test1"
-            }
-              editUser(user);
+            "username": "testuser",
+            "email": "test@test.com",
+            "password": "test1",
+            "confPassword": "test1"
+        }
+        editUser(accessToken);
     }
 
     return (
         <View testID="AccSett.container" style={{ padding: 50 }}>
             <Text>Temporary Account Settings Screen</Text>
-            
+
             <TouchableOpacity
                 testID="AccSett.editUserTestBtn"
                 style={styles.deleteUserBtn}
