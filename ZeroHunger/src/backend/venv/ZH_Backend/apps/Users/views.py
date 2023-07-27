@@ -1,22 +1,14 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
-from django.contrib.auth.models import User
-from django.contrib.auth import logout
-from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.core.mail import send_mail
 from django.conf import settings
-
-from .models import BasicUser
-from apps.Chat.models import Conversation
 from django.db.models import Q
+from .models import BasicUser
 from .serializers import RegistrationSerializer, LoginSerializer
+from apps.Chat.models import Conversation
 from apps.Posts.views import decode_token
-
 import jwt
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -144,7 +136,8 @@ class userPreferences(APIView):
             if(data['postalCode']):
                 user.update_coordinates()
             else:
-                user.coordinates = ''
+                user.longitude = None
+                user.latitude = None
 
             user.save()   
         except Exception as e:
