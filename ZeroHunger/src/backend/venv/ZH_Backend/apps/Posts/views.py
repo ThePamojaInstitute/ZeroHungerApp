@@ -25,11 +25,6 @@ connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;
 #https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=npm
 #Install Azurite on your local machine using this ^ guide before trying to use this
 
-def decode_token(auth_header):
-    try:
-        return jwt.decode(auth_header, settings.SECRET_KEY)
-    except:
-        return Response("Token invalid or not given", 401)
     
 def get_user_posts(posts_type, order_by_newest, page, user_id):
     try:
@@ -175,7 +170,10 @@ class createPost(APIView):
         
 class deletePost(APIView):
      def delete(self,request, format=JSONParser):
-        decoded_token = decode_token(request.headers['Authorization'])
+        try:
+            decoded_token =  jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
         
         post = get_post(request.data['postId'], request.data['postType'])
         
@@ -194,7 +192,11 @@ class deletePost(APIView):
 class requestPostsForFeed(APIView):
     def get(self, request):
         try:
-            decoded_token = decode_token(request.headers['Authorization'])
+            decoded_token =  jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
+        
+        try:
             user = BasicUser.objects.get(pk=decoded_token['user_id'])
         except Exception:
             return Response("User not found", 404)
@@ -210,20 +212,26 @@ class requestPostsForFeed(APIView):
         except Exception as e:
             return Response(e.__str__(), 400) 
 
-        posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds, user)
-        posts = sort_posts(posts, sortBy, page)
+        try:
+            posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds, user)
+            posts = sort_posts(posts, sortBy, page)
+        except Exception as e:
+            return Response(e.__str__(), 500) 
 
-        serializer = serialize_posts(posts, postsType)
+        try:
+            serializer = serialize_posts(posts, postsType)
+        except Exception as e:
+            return Response("Error while serializing posts", 500) 
 
         return Response(serializer.data, status=201)
      
 class postsHistory(APIView):
     def get(self, request):
         try:
-            decoded_token = decode_token(request.headers['Authorization'])
-        except Exception:
-            return Response("User not found", 404)
-        
+            decoded_token =  jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
+
         try:
             postsType = request.GET.get('postsType',"r")
             orderByNewest = request.GET.get('orderByNewest',True)
@@ -231,15 +239,20 @@ class postsHistory(APIView):
         except Exception as e:
             return Response(e.__str__(), 400) 
 
-        posts = get_user_posts(postsType, orderByNewest, page, decoded_token['user_id'])
-
-        serializer = serialize_posts(posts, postsType)
-
+        try:
+            posts = get_user_posts(postsType, orderByNewest, page, decoded_token['user_id'])
+            serializer = serialize_posts(posts, postsType)
+        except Exception as e:
+            return Response(e.__str__(), 500) 
+        
         return Response(serializer.data, status=200)
 
 class markAsFulfilled(APIView):
     def put(self, request):
-        decoded_token = decode_token(request.data['headers']['Authorization'])
+        try:
+            decoded_token =  jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
         
         obj = get_post(request.data['data']['postId'], request.data['data']['postType'])
         

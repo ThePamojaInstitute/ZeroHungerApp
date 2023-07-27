@@ -8,7 +8,6 @@ from django.db.models import Q
 from .models import BasicUser
 from .serializers import RegistrationSerializer, LoginSerializer
 from apps.Chat.models import Conversation
-from apps.Posts.views import decode_token
 import jwt
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -105,13 +104,21 @@ class logOut(APIView):
                token.blacklist()
                return Response(status=205)
         except Exception as e:
-           print(e)
+           if(e.__str__() == "Token is blacklisted"):
+               return Response(status=205)
            return Response(status=400)
         
 class userPreferences(APIView):
     def get(self, request):
-        decoded_token = decode_token(request.headers['Authorization'])
-        user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        try:
+            decoded_token =  jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
+        
+        try:
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except Exception:
+            return Response("User not found", 404)
 
         data = {}
         try:
@@ -125,9 +132,17 @@ class userPreferences(APIView):
             return Response({e.__str__()}, 500)
 
     def post(self, request, format=None):
-        decoded_token = decode_token(request.data['headers']['Authorization'])
+        try:
+            decoded_token =  jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
+        
+        try:
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except Exception:
+            return Response("User not found", 404)
+        
         data = request.data['data']
-        user = BasicUser.objects.get(pk=decoded_token['user_id'])
         
         try:  
             user.set_logistics(data['logistics'])
@@ -142,6 +157,6 @@ class userPreferences(APIView):
             user.save()   
         except Exception as e:
             print(e)
-            return Response({e.__str__()}, 500)
+            return Response(e.__str__(), 500)
         
-        return Response({"success!!"}, 200)
+        return Response(status=204)
