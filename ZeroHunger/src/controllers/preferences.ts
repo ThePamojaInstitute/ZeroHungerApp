@@ -95,7 +95,7 @@ export const savePreferences = async (postalCode: string, dietRequirements: Char
             },
             data: data
         })
-        if (res.status === 200) {
+        if (res.status === 204) {
             return { msg: "success", res: res.data }
         } else {
             return { msg: "failure", res: null }

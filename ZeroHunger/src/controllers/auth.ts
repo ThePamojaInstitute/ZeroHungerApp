@@ -1,5 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { axiosInstance } from "../../config";
+import { axiosInstance, storage } from "../../config";
 
 
 export async function createUser(user: Object, acceptedTerms: boolean) {
@@ -91,12 +90,14 @@ export async function logInUser(user: Object) {
 
 export async function logOutUser() {
     try {
-        AsyncStorage.getItem('refresh_token').then(async res => {
-            await axiosInstance.post('users/logOut', {
-                refresh_token: res
-            }, { headers: { 'Content-Type': 'application/json' } })
+        const token = storage.getString('refresh_token')
+
+        await axiosInstance.post('users/logOut', {
+            refresh_token: token
+        }, {
+            headers: { 'Content-Type': 'application/json' }
         }).then(() => {
-            AsyncStorage.clear()
+            storage.clearAll()
         })
     } catch (e) {
         console.log('logout not working', e)

@@ -1,19 +1,18 @@
 import { createContext, useEffect, useReducer, Dispatch, useState } from "react"
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwt_decode from "jwt-decode";
-import { axiosInstance } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import { logOutUser } from "../controllers/auth";
 
-export const setToken = async (type: string, value: string) => {
+export const setToken = (type: string, value: string) => {
     if (type === "access") {
         try {
-            await AsyncStorage.setItem('access_token', value)
+            storage.set('access_token', value)
         } catch (error) {
             console.log(error);
         }
     } else {
         try {
-            await AsyncStorage.setItem('refresh_token', value)
+            storage.set('refresh_token', value)
         } catch (error) {
             console.log(error);
         }
@@ -110,7 +109,7 @@ export const AuthContextProvider = ({ children }) => {
 
     const initializeTokenState = async () => {
         try {
-            const refreshToken = await AsyncStorage.getItem('refresh_token')
+            const refreshToken = storage.getString('refresh_token')
 
             if (refreshToken) {
                 const response = await axiosInstance.post('users/token/refresh/', { refresh: refreshToken })

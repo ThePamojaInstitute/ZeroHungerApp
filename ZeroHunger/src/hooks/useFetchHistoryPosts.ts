@@ -1,11 +1,11 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { axiosInstance } from "../../config";
+import { axiosInstance, storage } from "../../config";
 
-export default function useFetchHistoryPosts(accessToken: string, type: "r" | "o", orderByNewest: boolean) {
+export default function useFetchHistoryPosts(type: "r" | "o", orderByNewest: boolean) {
     const getPosts = async ({ pageParam = 0 }) => {
         const res = await axiosInstance.get(`posts/postsHistory`, {
             headers: {
-                Authorization: accessToken
+                Authorization: storage.getString('access_token')
             },
             params: {
                 'postsType': type,
@@ -25,5 +25,6 @@ export default function useFetchHistoryPosts(accessToken: string, type: "r" | "o
 
             return lastPage.nextPage;
         },
+        refetchOnMount: false
     });
 }

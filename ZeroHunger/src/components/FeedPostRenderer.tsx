@@ -35,7 +35,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
 
 
     const { dispatch: alert } = useAlert()
-    const { user, accessToken } = useContext(AuthContext);
+    const { accessToken } = useContext(AuthContext);
 
     const [refreshing, setRefreshing] = useState(false)
 
@@ -55,8 +55,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchFeedPosts(accessToken, type, sortBy, categories, diet, logistics, accessNeeds)
-
+    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, accessNeeds)
 
     useEffect(() => {
         const updater = () => {

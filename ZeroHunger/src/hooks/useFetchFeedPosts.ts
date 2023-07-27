@@ -1,9 +1,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { axiosInstance } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import { Char } from "../../types";
 
 export default function useFetchPosts(
-    accessToken: string,
     type: "r" | "o",
     sortBy: "new" | "old" | "distance",
     categories: Char[],
@@ -12,10 +11,9 @@ export default function useFetchPosts(
     accessNeeds: Char,
 ) {
     const getPosts = async ({ pageParam = 0 }) => {
-        console.log("updating...");
         const res = await axiosInstance.get(`posts/requestPostsForFeed`, {
             headers: {
-                Authorization: accessToken
+                Authorization: storage.getString('access_token')
             },
             params: {
                 'postsType': type,
@@ -39,5 +37,6 @@ export default function useFetchPosts(
 
             return lastPage.nextPage;
         },
+        refetchOnMount: false
     });
 }
