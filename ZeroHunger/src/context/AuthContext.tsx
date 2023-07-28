@@ -4,6 +4,7 @@ import { axiosInstance, storage } from "../../config";
 import { logOutUser } from "../controllers/auth";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as RootNavigation from '../../RootNavigation';
 
 const setItem = (key, value) => {
     if (Platform.OS === 'web') storage.set(key, value)
@@ -113,6 +114,18 @@ const AuthReducer = (state: Object, action: { type: string; payload: Object }) =
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE)
     const [firstLoad, setFirstLoad] = useState(true)
+
+    const listener = storage.addOnValueChangedListener((changedKey) => {
+        try {
+            storage.getString(changedKey)
+        }
+        catch {
+            if (changedKey === 'mmkv.default\\access_token' || changedKey === 'mmkv.default\\refresh_token') {
+                dispatch({ type: 'LOGOUT', payload: null })
+                RootNavigation.navigate('LoginScreen', {})
+            }
+        }
+    })
 
     const initializeTokenState = async () => {
         try {
