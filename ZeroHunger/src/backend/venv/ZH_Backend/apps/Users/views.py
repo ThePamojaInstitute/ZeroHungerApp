@@ -90,7 +90,6 @@ class logOut(APIView):
     def post(self,request, format=None):
         try:
                refresh_token = request.data["refresh_token"]
-               
                try:  
                     decoded_user = jwt.decode(refresh_token, settings.SECRET_KEY)
                     user = BasicUser.objects.get(pk=decoded_user['user_id'])
@@ -104,9 +103,14 @@ class logOut(APIView):
                token.blacklist()
                return Response(status=205)
         except Exception as e:
-           if(e.__str__() == "Token is blacklisted"):
-               return Response(status=205)
-           return Response(status=400)
+            if(e.__str__() == "Token is blacklisted"):
+                return Response(status=205)
+            else:
+                try: # if no refresh token
+                    token = RefreshToken(refresh_token)
+                except:
+                    return Response(status=205)
+                return Response(status=400)
         
 class userPreferences(APIView):
     def get(self, request):
