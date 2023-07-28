@@ -4,16 +4,16 @@ import { MMKV } from 'react-native-mmkv'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 
-
 // Mock object of MMKV only for development
 // Use actual MMKV for builds
-const obj = {
-    getString: (str) => { },
+const mockMMKV = {
+    getString: (str) => 'str',
     set: (str1, str2) => { },
-    clearAll: () => { }
+    clearAll: () => { },
+    addOnValueChangedListener: () => { }
 }
 
-export const storage = Platform.OS === 'web' ? new MMKV() : obj
+export const storage = Platform.OS === 'web' ? new MMKV() : mockMMKV
 
 export const BaseURL = '127.0.0.1:8000'
 // export const BaseURL = 'zh-backend-azure-webapp.azurewebsites.net'
