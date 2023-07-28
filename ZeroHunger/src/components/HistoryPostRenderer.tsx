@@ -33,7 +33,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchHistoryPosts(accessToken, type, orderByNewest)
+    } = useFetchHistoryPosts(type, orderByNewest)
 
     useEffect(() => {
         refetch()

@@ -1,8 +1,19 @@
 import axios from "axios"
 import { logOutUser } from "./src/controllers/auth";
 import { MMKV } from 'react-native-mmkv'
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Platform } from "react-native";
 
-export const storage = new MMKV()
+
+// Mock object of MMKV only for development
+// Use actual MMKV for builds
+const obj = {
+    getString: (str) => { },
+    set: (str1, str2) => { },
+    clearAll: () => { }
+}
+
+export const storage = Platform.OS === 'web' ? new MMKV() : obj
 
 export const BaseURL = '127.0.0.1:8000'
 // export const BaseURL = 'zh-backend-azure-webapp.azurewebsites.net'
@@ -13,6 +24,56 @@ export const axiosInstance = axios.create({
     baseURL: `http://${BaseURL}/`,
     headers: { 'Content-Type': 'application/json' }
 })
+
+const useMMKV = (error) => {
+    console.log("using MMKV");
+
+    axiosInstance
+        .post("users/token/refresh/", {
+            refresh: storage.getString('refresh_token'),
+        })
+        .then((response) => {
+            // Save tokens
+            storage.set('refresh_token', response.data.refresh)
+            storage.set('access_token', response.data.access)
+            error.config.headers["Authorization"] = response.data.access;
+
+            // Retry the initial call, but with the updated token in the headers. 
+            // Resolves the promise if successful
+            return axiosInstance(error.config);
+        })
+        .catch((error2) => {
+            // Retry failed, clean up and reject the promise
+            logOutUser()
+            return Promise.reject(error2);
+        })
+        .finally(createAxiosResponseInterceptor); // Re-attach the interceptor by running the method
+}
+const useAsyncStorage = (error) => {
+    console.log("using AsyncStorage");
+
+    AsyncStorage.getItem('refresh_token').then(token => {
+        axiosInstance
+            .post("users/token/refresh/", {
+                refresh: token,
+            })
+            .then((response) => {
+                // Save tokens
+                AsyncStorage.setItem('refresh_token', response.data.refresh)
+                AsyncStorage.setItem('access_token', response.data.access)
+                error.config.headers["Authorization"] = response.data.access;
+
+                // Retry the initial call, but with the updated token in the headers. 
+                // Resolves the promise if successful
+                return axiosInstance(error.config);
+            })
+            .catch((error2) => {
+                // Retry failed, clean up and reject the promise
+                logOutUser()
+                return Promise.reject(error2);
+            })
+    }).finally(createAxiosResponseInterceptor); // Re-attach the interceptor by running the method
+}
 
 const createAxiosResponseInterceptor = () => {
     const interceptor = axiosInstance.interceptors.response.use(
@@ -32,26 +93,11 @@ const createAxiosResponseInterceptor = () => {
              */
             axiosInstance.interceptors.response.eject(interceptor);
 
-            return axiosInstance
-                .post("users/token/refresh/", {
-                    refresh: storage.getString('refresh_token'),
-                })
-                .then((response) => {
-                    // Save tokens
-                    storage.set('refresh_token', response.data.refresh)
-                    storage.set('access_token', response.data.access)
-                    error.config.headers["Authorization"] = response.data.access;
+            // MMKV doesn't work with the Expo emulator
+            // Use MMKV for builds
+            if (Platform.OS === 'web') return useMMKV(error)
 
-                    // Retry the initial call, but with the updated token in the headers. 
-                    // Resolves the promise if successful
-                    return axiosInstance(error.config);
-                })
-                .catch((error2) => {
-                    // Retry failed, clean up and reject the promise
-                    logOutUser()
-                    return Promise.reject(error2);
-                })
-                .finally(createAxiosResponseInterceptor); // Re-attach the interceptor by running the method
+            return useAsyncStorage(error)
         }
     );
 }
