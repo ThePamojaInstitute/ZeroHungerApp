@@ -31,11 +31,11 @@ export const AccountSettingsScreen = ({ navigation }) => {
     const handleModifyUser = () => {
         var user = {
             "username": "testuser",
-            "email": "test@test.com",
+            "email": "test@testtest.com",
             "password": "test1",
             "confPassword": "test1"
         }
-        editUser(accessToken);
+        editUser(accessToken, user);
     }
 
     return (

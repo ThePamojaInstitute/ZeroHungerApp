@@ -24,8 +24,6 @@ from django.contrib.auth.views import ( #default django password reset views, pr
 
 from django.contrib.auth import views as auth_views
 
-
-
 from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
 
@@ -33,7 +31,6 @@ from rest_framework_simplejwt import views as jwt_views
 from .views import (
     createUser, 
     deleteUser, 
-    EditUser,
     logIn, 
     logOut, 
     MyTokenObtainPairView, 
@@ -42,12 +39,13 @@ from .views import (
     clearNotification,
     clearAllNotifications, 
     userPreferences,
+    edit_account_view
 )
 
 urlpatterns = [
     path('createUser', createUser.as_view()),
     path('deleteUser', deleteUser.as_view()),
-    path('editUser', EditUser.as_view()), 
+    path('editUser', edit_account_view.as_view()), 
     path('logIn', logIn.as_view()),
     path('logOut', logOut.as_view()),
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),

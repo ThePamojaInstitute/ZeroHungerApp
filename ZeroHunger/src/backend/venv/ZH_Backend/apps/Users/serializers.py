@@ -37,20 +37,42 @@ class LoginSerializer (serializers.ModelSerializer):
         else:
             return Response("ERROR", status=401)
 
-class AccountSettingsSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=64)
-    email = serializers.EmailField( max_length=256, validators=[UniqueValidator(queryset=BasicUser.objects.all(),  message="There is already an account associated with this email")])
-    password = serializers.CharField(max_length=64, write_only=True)
+# class AccountSettingsSerializer(serializers.ModelSerializer):
+#     username = serializers.CharField(max_length=64)
+#     email = serializers.EmailField( max_length=256)
+#     password = serializers.CharField(max_length=64, write_only=True)
+#     class Meta:
+#         model=BasicUser
+#         fields = ['username','email','password']
+#     def editUser(self):
+#         user=BasicUser(username="fuckingtest")
+#         user.save()
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=False, max_length=64)
+    email = serializers.EmailField(required=False)
     class Meta:
-        model=BasicUser
-        fields = ['username','email','password']
-    def editUser(self):
-        user=BasicUser(username=self.validated_data['username'],
-        password=self.validated_data['password'])
-        user.set_password(self.validated_data['password'])
-        user.save()
+        model = BasicUser
+        fields = ['username', 'email']
 
+    # def validate_email(self, value):
+    #     user = self.context['request'].user
+    #     if BasicUser.objects.exclude(pk=user.pk).filter(email=value).exists():
+    #         raise serializers.ValidationError({"email": "This email is already in use."})
+    #     return value
 
+    # def validate_username(self, value):
+    #     user = self.context['request'].user
+    #     if BasicUser.objects.exclude(pk=user.pk).filter(username=value).exists():
+    #         raise serializers.ValidationError({"username": "This username is already in use."})
+    #     return value
+
+    def update(self, instance):
+        instance.email = "TESTEMAIL@TEST.COM"#validated_data['email']
+        instance.username = "TestUserName" #validated_data['username']
+        instance.save()
+        return instance
+    
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicUser

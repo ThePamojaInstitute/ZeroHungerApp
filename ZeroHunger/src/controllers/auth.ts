@@ -43,13 +43,17 @@ export async function createUser(user: Object, acceptedTerms: boolean) {
     }
 }
 
-export async function editUser(accessToken: string) {
+export async function editUser(accessToken: string, user:object) {
     try {
         await axiosInstance.post('users/editUser',
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': accessToken
+                    'Authorization': accessToken,
+                    credentials: 'include'
+                },
+                data: {
+                    user
                 }
             })
     }

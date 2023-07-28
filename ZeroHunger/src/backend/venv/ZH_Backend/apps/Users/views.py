@@ -10,6 +10,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.core.mail import send_mail
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 import json
 import time
@@ -17,7 +18,7 @@ import time
 from .models import BasicUser
 from apps.Chat.models import Conversation
 from django.db.models import Q
-from .serializers import RegistrationSerializer, LoginSerializer
+from .serializers import RegistrationSerializer, LoginSerializer, UpdateUserSerializer
 from .forms import EditProfileForm
 from apps.Posts.views import decode_token
 
@@ -54,22 +55,46 @@ class createUser(APIView):
         else:
             return Response(serializer.errors, status=401)
         
-class EditUser(APIView):
-    def post(self, request, format=None):
+
+class edit_account_view(APIView):
+    def post(self, request, format=None):    
         try:
             decoded_token = jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
-            print(decoded_token)
-            return Response("Authorized", status=200)
         except:
             return Response("failed to authorize editing user", status=401)
-        # user = BasicUser.objects.get(pk=decoded_token['user_id'])
-        # form = EditProfileForm(user)
-        # if form.is_valid():
-        #     form.save()
-        #     return Response("Edited account successfully", status=201)
-        # else:
-        #     return Response("something broke editing an account", status = 400)
-       
+        try:
+            user_id = decoded_token['user_id']
+           
+
+            user = BasicUser.objects.get(pk=user_id)
+            print(user)
+            serializer = UpdateUserSerializer(data=request.data)
+            if (serializer.is_valid()):
+                serializer.update(instance=user)
+                return Response("Modifie Used", status=201)
+            else:
+                print(serializer.errors)
+                return Response("Did not modify user", status = 403)
+
+            # print(request.data)
+            # form = EditProfileForm(request.data, instance=user)
+            # print(form)
+
+            # if form.is_valid():
+            #     form.save()
+            #     return Response(status=200)
+            # else:
+            #     form = EditProfileForm(request.data, instance=user, initial= {"email":"test@testtest.com","username":"testuser"})
+            #     if form.is_valid():
+            #         form.save()
+            #     else:
+            #         return Response(status=400)
+
+        except Exception as e:
+             print(e)
+             
+             return Response(status=400)
+
 
         
       
