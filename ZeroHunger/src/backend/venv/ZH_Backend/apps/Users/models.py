@@ -8,7 +8,6 @@ from .choices import LOGISTICS_CHOICES, DIET_REQUIREMENTS
 from .managers import CustomUserManager
 # from .settings import AUTH_USER_MODEL
 from django.contrib.auth.models import PermissionsMixin
-
 import requests
 
 class BasicUser(AbstractBaseUser, PermissionsMixin):

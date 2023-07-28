@@ -4,6 +4,7 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from .models import BasicUser
+import pprint
 
 class RegistrationSerializer (serializers.ModelSerializer):
 
@@ -55,21 +56,21 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         model = BasicUser
         fields = ['username', 'email']
 
-    # def validate_email(self, value):
-    #     user = self.context['request'].user
-    #     if BasicUser.objects.exclude(pk=user.pk).filter(email=value).exists():
-    #         raise serializers.ValidationError({"email": "This email is already in use."})
-    #     return value
+    def validate_email(self, value):
+        user = self.context['request'].user
+        if BasicUser.objects.exclude(pk=user.pk).filter(email=value).exists():
+            raise serializers.ValidationError({"email": "This email is already in use."})
+        return value
 
-    # def validate_username(self, value):
-    #     user = self.context['request'].user
-    #     if BasicUser.objects.exclude(pk=user.pk).filter(username=value).exists():
-    #         raise serializers.ValidationError({"username": "This username is already in use."})
-    #     return value
+    def validate_username(self, value):
+        user = self.context['request'].user
+        if BasicUser.objects.exclude(pk=user.pk).filter(username=value).exists():
+            raise serializers.ValidationError({"username": "This username is already in use."})
+        return value
 
     def update(self, instance):
-        instance.email = "TESTEMAIL@TEST.COM"#validated_data['email']
-        instance.username = "TestUserName" #validated_data['username']
+        instance.email =  self.initial_data['data']['user']['email']
+        instance.username = self.initial_data['data']['user']['username']
         instance.save()
         return instance
     

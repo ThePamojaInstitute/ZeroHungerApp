@@ -67,14 +67,20 @@ class edit_account_view(APIView):
            
 
             user = BasicUser.objects.get(pk=user_id)
-            print(user)
+           # print(user)
             serializer = UpdateUserSerializer(data=request.data)
+
             if (serializer.is_valid()):
-                serializer.update(instance=user)
-                return Response("Modifie Used", status=201)
+                print ("data validated")
+                serializer.update(user)
+                return Response("Modified Used", status=201)
             else:
                 print(serializer.errors)
                 return Response("Did not modify user", status = 403)
+        except Exception as e:
+             print("exception" + str(e))
+             return Response(status=400)
+
 
             # print(request.data)
             # form = EditProfileForm(request.data, instance=user)
@@ -90,11 +96,7 @@ class edit_account_view(APIView):
             #     else:
             #         return Response(status=400)
 
-        except Exception as e:
-             print(e)
-             
-             return Response(status=400)
-
+    
 
         
       

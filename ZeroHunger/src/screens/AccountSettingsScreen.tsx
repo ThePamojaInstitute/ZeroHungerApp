@@ -1,5 +1,5 @@
-import { useContext } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { useContext, useState } from "react";
+import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import styles from "../../styles/screens/accountSettingsStyleSheet"
 import { AuthContext } from "../context/AuthContext";
 import { logOutUser, deleteUser } from "../controllers/auth";
@@ -9,6 +9,10 @@ import { editUser } from "../controllers/auth";
 export const AccountSettingsScreen = ({ navigation }) => {
     const { user, accessToken, dispatch } = useContext(AuthContext);
     const { dispatch: alert } = useAlert()
+
+    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
+    
 
     const handleDeleteUser = () => {
         deleteUser(user['user_id'], accessToken).then(res => {
@@ -30,10 +34,8 @@ export const AccountSettingsScreen = ({ navigation }) => {
 
     const handleModifyUser = () => {
         var user = {
-            "username": "testuser",
-            "email": "test@testtest.com",
-            "password": "test1",
-            "confPassword": "test1"
+            "username": username,
+            "email": email,
         }
         editUser(accessToken, user);
     }
@@ -41,6 +43,23 @@ export const AccountSettingsScreen = ({ navigation }) => {
     return (
         <View testID="AccSett.container" style={{ padding: 50 }}>
             <Text>Temporary Account Settings Screen</Text>
+            <Text> Change your account's email</Text>
+            <TextInput
+              nativeID="accountSetting.emailInput"
+              testID="accountSetting.emailInput"
+              secureTextEntry={false}
+              onChangeText={newText => {
+                setEmail(newText)}}
+            />
+             <Text> Change your account's username </Text>
+             <TextInput
+              nativeID="accountSetting.usernameInput"
+              testID="accountSetting.usernameInput"
+              secureTextEntry={false}
+              onChangeText={newText => {
+                setUsername(newText)}}
+                placeholder={user ? user['username'] : "User"}
+            />
 
             <TouchableOpacity
                 testID="AccSett.editUserTestBtn"
