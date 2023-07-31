@@ -45,7 +45,7 @@ export async function createUser(user: Object, acceptedTerms: boolean) {
 
 export async function editUser(accessToken: string, user:object) {
     try {
-        await axiosInstance.post('users/editUser',
+        const res = await axiosInstance.put('users/editUser',
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -56,9 +56,10 @@ export async function editUser(accessToken: string, user:object) {
                     user
                 }
             })
+
     }
-    catch (e) {
-        console.log(e);
+    catch (error) {
+        console.log(error);
     }
 }
 

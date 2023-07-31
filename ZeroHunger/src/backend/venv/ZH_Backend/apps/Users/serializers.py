@@ -50,27 +50,36 @@ class LoginSerializer (serializers.ModelSerializer):
 #         user.save()
 
 class UpdateUserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=False, max_length=64)
-    email = serializers.EmailField(required=False)
+    username = serializers.CharField(validators=[UniqueValidator(queryset=BasicUser.objects.all(), message="Username is taken")], required=False, max_length=64, read_only=False)
+    email = serializers.EmailField(required=False, read_only=False)
     class Meta:
         model = BasicUser
         fields = ['username', 'email']
 
-    def validate_email(self, value):
-        user = self.context['request'].user
-        if BasicUser.objects.exclude(pk=user.pk).filter(email=value).exists():
-            raise serializers.ValidationError({"email": "This email is already in use."})
-        return value
+    # def validate_email(self, value):
+    #     user = self.context['request'].user
+    #     if BasicUser.objects.exclude(pk=user.pk).filter(email=value).exists():
+    #         raise serializers.ValidationError({"email": "This email is already in use."})
+    #     return value
 
-    def validate_username(self, value):
-        user = self.context['request'].user
-        if BasicUser.objects.exclude(pk=user.pk).filter(username=value).exists():
-            raise serializers.ValidationError({"username": "This username is already in use."})
-        return value
+    # def validate_username(self, value):
+    #     user = self.context['request'].user
+    #     if BasicUser.objects.exclude(pk=user.pk).filter(username=value).exists():
+    #         raise serializers.ValidationError({"username": "This username is already in use."})
+    #     return value
 
     def update(self, instance):
-        instance.email =  self.initial_data['data']['user']['email']
-        instance.username = self.initial_data['data']['user']['username']
+        #manually validate data
+        usernameFromRequest = self.initial_data['data']['user']['username']
+        emailFromRequest = self.initial_data['data']['user']['email']
+
+        # if BasicUser.objects.exclude(instance.pk).filter(username=usernameFromRequest).exists():
+        #     print ("Username is already in use")
+        # if BasicUser.objects.exclude(instance.pk).filter(email=emailFromRequest).exists():
+        #     print ("Email is already in use")
+        
+        instance.email = emailFromRequest
+        instance.username = usernameFromRequest
         instance.save()
         return instance
     

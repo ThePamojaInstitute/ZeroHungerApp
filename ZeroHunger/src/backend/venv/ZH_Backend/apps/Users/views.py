@@ -57,7 +57,7 @@ class createUser(APIView):
         
 
 class edit_account_view(APIView):
-    def post(self, request, format=None):    
+    def put(self, request, format=None):    
         try:
             decoded_token = jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
         except:
@@ -70,16 +70,16 @@ class edit_account_view(APIView):
            # print(user)
             serializer = UpdateUserSerializer(data=request.data)
 
-            if (serializer.is_valid()):
+            if (serializer.is_valid(raise_exception=True)):
                 print ("data validated")
-                serializer.update(user)
+                serializer.update(instance=user)
                 return Response("Modified Used", status=201)
             else:
                 print(serializer.errors)
                 return Response("Did not modify user", status = 403)
         except Exception as e:
              print("exception" + str(e))
-             return Response(status=400)
+             return Response(str(e), status=400)
 
 
             # print(request.data)
