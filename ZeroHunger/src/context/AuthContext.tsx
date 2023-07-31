@@ -106,6 +106,18 @@ const AuthReducer = (state: Object, action: { type: string; payload: Object }) =
                 loading: false,
                 error: action.payload
             }
+        case "UPDATE_ACCESS":
+            return {
+                ...state,
+                user: action.payload['user'],
+                accessToken: action.payload['access'],
+            }
+        case "UPDATE_REFRESH":
+            return {
+                ...state,
+                user: action.payload['user'],
+                refreshToken: action.payload['access'],
+            }
         default:
             return state
     }
@@ -115,17 +127,34 @@ export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE)
     const [firstLoad, setFirstLoad] = useState(true)
 
-    const listener = storage.addOnValueChangedListener((changedKey) => {
-        try {
-            storage.getString(changedKey)
-        }
-        catch {
-            if (changedKey === 'mmkv.default\\access_token' || changedKey === 'mmkv.default\\refresh_token') {
-                dispatch({ type: 'LOGOUT', payload: null })
-                RootNavigation.navigate('LoginScreen', {})
+    if (Platform.OS === 'web') {
+        const listener = storage.addOnValueChangedListener((changedKey) => {
+            try {
+                const token = storage.getString(changedKey)
+                if (changedKey === 'access_token') {
+                    dispatch({
+                        type: 'UPDATE_ACCESS', payload: {
+                            user: jwt_decode(token),
+                            access: token
+                        }
+                    })
+                } else if (changedKey === 'refresh_token') {
+                    dispatch({
+                        type: 'UPDATE_REFRESH', payload: {
+                            user: jwt_decode(token),
+                            access: token
+                        }
+                    })
+                }
             }
-        }
-    })
+            catch {
+                if (changedKey === 'mmkv.default\\access_token' || changedKey === 'mmkv.default\\refresh_token') {
+                    dispatch({ type: 'LOGOUT', payload: null })
+                    RootNavigation.navigate('LoginScreen', {})
+                }
+            }
+        })
+    }
 
     const initializeTokenState = async () => {
         try {

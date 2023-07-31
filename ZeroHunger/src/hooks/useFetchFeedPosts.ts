@@ -13,7 +13,7 @@ export default function useFetchPosts(
     accessNeeds: Char,
 ) {
     const getPosts = async ({ pageParam = 0 }) => {
-        let accessToken
+        let accessToken: string
         if (Platform.OS === 'web') {
             accessToken = storage.getString('access_token')
         } else {
