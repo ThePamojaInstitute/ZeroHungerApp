@@ -9,14 +9,15 @@ import {
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
   Pressable,
-  Keyboard
+  Keyboard,
+  Platform
 } from "react-native";
 import styles from "../../styles/screens/loginStyleSheet"
 import { useFocusEffect } from '@react-navigation/native';
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
-import { axiosInstance, passwordResetURL } from "../../config";
+import { axiosInstance, passwordResetURL, storage } from "../../config";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import jwt_decode from "jwt-decode";
 import {
@@ -27,6 +28,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons } from '@expo/vector-icons';
 import NotificationsTest from "./NotificationsTest";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const LoginScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false)
@@ -79,6 +81,16 @@ export const LoginScreen = ({ navigation }) => {
     }
   }
 
+  const setTokens = (data: object) => {
+    if (Platform.OS === 'web') {
+      storage.set('refresh_token', data['refresh'])
+      storage.set('access_token', data['access'])
+    } else {
+      AsyncStorage.setItem('refresh_token', data['refresh'])
+      AsyncStorage.setItem('access_token', data['access'])
+    }
+  }
+
   const handleLogin = (e: (GestureResponderEvent |
     NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
     e.preventDefault()
@@ -100,6 +112,8 @@ export const LoginScreen = ({ navigation }) => {
                   "token": resp.data
                 }
               })
+
+              setTokens(resp.data)
             }).then(() => {
               setUsername("")
               setPassword("")
