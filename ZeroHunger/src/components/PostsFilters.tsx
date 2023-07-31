@@ -12,7 +12,7 @@ import Slider from '@react-native-community/slider';
 const Sort = ({ sortBy, setSortBy }) => (
     <View style={styles.modalItemContainer}>
         <TouchableOpacity
-            style={styles.modalItem}
+            style={styles.sortItem}
             onPress={() => {
                 setSortBy('new')
             }}
@@ -29,7 +29,7 @@ const Sort = ({ sortBy, setSortBy }) => (
             >Newest first</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={styles.modalItem}
+            style={styles.sortItem}
             onPress={() => {
                 setSortBy('old')
             }}
@@ -46,7 +46,7 @@ const Sort = ({ sortBy, setSortBy }) => (
             >Oldest first</Text>
         </TouchableOpacity>
         <TouchableOpacity
-            style={styles.modalItem}
+            style={styles.sortItem}
             onPress={() => {
                 setSortBy('distance')
             }}
