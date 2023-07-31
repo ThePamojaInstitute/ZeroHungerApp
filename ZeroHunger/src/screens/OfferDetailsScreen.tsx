@@ -132,7 +132,7 @@ export const OfferDetailsScreen = ({ navigation }) => {
                         <View testID="OffDet.location" style={styles.location}>
                             <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                             {/* Placeholder distance away */}
-                            <Text testID="OffDet.distanceText" style={globalStyles.Small2}>{route.params.distance ? `${route.params.distance} km away` : 'N/A'}</Text>
+                            <Text testID="OffDet.distanceText" style={globalStyles.Small2}>{route.params.distance ? `${route.params.distance.toFixed(1)} km away` : 'N/A'}</Text>
                         </View>
                     </View>
 

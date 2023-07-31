@@ -1,8 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
-import styles from "../../styles/components/postRendererStyleSheet";
-import historyStyles from "../../styles/screens/postsHistory";
+import styles from "../../styles/components/postStyleSheet";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
@@ -77,12 +76,12 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                         {(user['username'] !== post.username) && post.distance &&
                             <View testID="Posts.locationCont" style={styles.locationCont}>
                                 <Ionicons testID="Posts.locationIcon" name='location-outline' size={13} style={{ marginRight: 4 }} />
-                                <Text testID="Posts.locationText" style={globalStyles.Small1}>{post.distance ? post.distance : 'x'} km away</Text>
+                                <Text testID="Posts.locationText" style={globalStyles.Small1}>{post.distance ? post.distance.toFixed(1) : 'x'} km away</Text>
                             </View>
                         }
                     </View>
                     {from === "history" &&
-                        <Text style={[globalStyles.Tag, historyStyles.fulfillment,
+                        <Text style={[globalStyles.Tag, styles.fulfillment,
                         { marginTop: 15, color: post.fulfilled ? Colors.primaryDark : Colors.alert2 }]}
                         >{post.fulfilled ? 'Fulfilled' : 'Not fulfilled'}</Text>
                     }

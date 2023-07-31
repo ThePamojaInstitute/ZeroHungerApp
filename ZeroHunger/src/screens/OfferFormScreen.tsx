@@ -105,11 +105,11 @@ export const OfferFormScreen = ({ navigation }) => {
                         images: imageURL,
                         postedBy: user['user_id'],
                         description: desc,
-                        logistics: logistics,
+                        logistics: logistics.sort(),
                         postalCode: postalCode,
                         accessNeeds: accessNeeds,
-                        categories: categories,
-                        diet: diet,
+                        categories: categories.sort(),
+                        diet: diet.sort(),
                     },
                     postType: 'o'
                 }).then(res => {

@@ -1,17 +1,16 @@
 import { useImperativeHandle, useState } from "react"
 import { View, Dimensions, Text, TouchableOpacity, Pressable } from "react-native"
 import Modal from 'react-native-modal';
-import bottomTabStyles from "../../styles/components/bottomTabStyleSheet";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import styles from "../../styles/components/postsFiltersStyleSheet"
 import { Entypo, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import styles from "../../styles/screens/postsHistory";
 import { DIETPREFERENCES, FOODCATEGORIES, getCategory, getDiet, handlePreferences } from "../controllers/post";
 import { ScrollView } from "react-native-gesture-handler";
 import { LOGISTICS, getLogisticsType } from "../controllers/preferences";
 import Slider from '@react-native-community/slider';
 
 const Sort = ({ sortBy, setSortBy }) => (
-    <View style={{ alignItems: "flex-start", gap: 12, marginTop: 10, marginLeft: 13 }}>
+    <View style={styles.modalItemContainer}>
         <TouchableOpacity
             style={styles.modalItem}
             onPress={() => {
@@ -95,7 +94,7 @@ const FoodCategory = ({ state, setState, getType, list }) => {
     }
 
     return (
-        <View style={{ alignItems: "flex-start", gap: 12, marginTop: 10, marginLeft: 13 }}>
+        <View style={styles.modalItemContainer}>
             <Pressable onPress={() => setState([])}>
                 <Text style={globalStyles.Link}>Clear all</Text>
             </Pressable>
@@ -108,14 +107,14 @@ const FoodCategory = ({ state, setState, getType, list }) => {
 
 const Location = ({ state, setState }) => {
     return (
-        <View style={{ alignItems: "flex-start", gap: 12, marginTop: 10, marginLeft: 13 }}>
+        <View style={styles.modalItemContainer}>
             <View>
                 <Text style={globalStyles.H5}>Select maximum distance</Text>
                 <View style={{ flexDirection: 'row' }}>
                     <Slider
                         value={state}
                         onValueChange={setState}
-                        style={{ width: Dimensions.get('window').width * 0.8, height: 40, maxWidth: 500, zIndex: 1 }}
+                        style={{ width: Dimensions.get('window').width * 0.8, height: 40, maxWidth: 500 }}
                         minimumValue={1}
                         maximumValue={100}
                         step={1}
@@ -175,21 +174,12 @@ const PostsFilters = ({
             swipeDirection={['down']}
             style={{ margin: 0 }}
         >
-            <View style={{
-                backgroundColor: Colors.offWhite,
-                position: 'absolute',
-                bottom: 0,
-                right: 0,
-                left: 0,
-                paddingVertical: 20,
-                maxHeight: Dimensions.get('window').height * 0.9,
-                borderTopLeftRadius: 16,
-                borderTopRightRadius: 16
-            }}>
+            <View style={[styles.modalContainer,
+            { maxHeight: Dimensions.get('window').height * 0.9 }]}>
                 <View style={{ marginBottom: 25 }}>
                     <View
                         testID="Bottom.postNavModalCont"
-                        style={bottomTabStyles.modalContent}>
+                        style={styles.modalContent}>
                         <Text
                             testID="Bottom.postNavModalLabel"
                             style={[globalStyles.H3, { alignSelf: 'center' }]}
@@ -197,7 +187,7 @@ const PostsFilters = ({
                     </View>
                     <TouchableOpacity
                         testID="Bottom.postNavModalClose"
-                        style={bottomTabStyles.modalClose}
+                        style={styles.modalClose}
                         onPress={() => {
                             updater()
                             setModalVisible(!modalVisible)
@@ -208,7 +198,7 @@ const PostsFilters = ({
                     </TouchableOpacity>
                 </View>
                 <ScrollView>
-                    <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
+                    <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
                                 style={[styles.modalItem, { marginBottom: -3 }]}
@@ -219,12 +209,17 @@ const PostsFilters = ({
                                 testID="Bottom.postNavModalReqBtn"
                             >
                                 <Text style={globalStyles.H4}>Sort</Text>
-                                <Entypo name={`chevron-${showFilter === 'sort' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                                <Entypo
+                                    name={`chevron-${showFilter === 'sort' ? 'up' : 'down'}`}
+                                    size={24}
+                                    color="black"
+                                    style={styles.chevronIcon}
+                                />
                             </TouchableOpacity>
                         </View>
                     </View>
                     {showFilter === 'sort' && <Sort sortBy={sortBy} setSortBy={setSortBy} />}
-                    <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
+                    <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
                                 style={[styles.modalItem, { marginBottom: -3 }]}
@@ -235,17 +230,21 @@ const PostsFilters = ({
                                 testID="Bottom.postNavModalReqBtn"
                             >
                                 <Text style={[globalStyles.H4, { marginTop: 5 }]}>Food category</Text>
-                                <Entypo name={`chevron-${showFilter === 'category' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                                <Entypo
+                                    name={`chevron-${showFilter === 'category' ? 'up' : 'down'}`}
+                                    size={24}
+                                    color="black" style={styles.chevronIcon}
+                                />
                             </TouchableOpacity>
                             {categories.length > 0 &&
                                 <Text
-                                    style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: -5, marginTop: 7 }]}
+                                    style={[globalStyles.Small1, styles.filtersSelected]}
                                 >{handlePreferences(categories.sort().toString(), getCategory)}</Text>}
                         </View>
                     </View>
                     {showFilter === 'category' &&
                         <FoodCategory state={categories} setState={setCategories} getType={getCategory} list={FOODCATEGORIES} />}
-                    <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
+                    <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
                                 style={[styles.modalItem, { marginBottom: -3 }]}
@@ -256,17 +255,22 @@ const PostsFilters = ({
                                 testID="Bottom.postNavModalReqBtn"
                             >
                                 <Text style={[globalStyles.H4, { marginTop: 5 }]}>Dietary preferences</Text>
-                                <Entypo name={`chevron-${showFilter === 'diet' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                                <Entypo
+                                    name={`chevron-${showFilter === 'diet' ? 'up' : 'down'}`}
+                                    size={24}
+                                    color="black"
+                                    style={styles.chevronIcon}
+                                />
                             </TouchableOpacity>
                             {diet.length > 0 &&
                                 <Text
-                                    style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: -5, marginTop: 7 }]}
+                                    style={[globalStyles.Small1, styles.filtersSelected]}
                                 >{handlePreferences(diet.sort().toString(), getDiet)}</Text>}
                         </View>
                     </View>
                     {showFilter === 'diet' &&
                         <FoodCategory state={diet} setState={setDiet} getType={getDiet} list={DIETPREFERENCES} />}
-                    <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
+                    <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
                                 style={[styles.modalItem, { marginBottom: -3 }]}
@@ -277,17 +281,18 @@ const PostsFilters = ({
                                 testID="Bottom.postNavModalReqBtn"
                             >
                                 <Text style={[globalStyles.H4, { marginTop: 5 }]}>Location</Text>
-                                <Entypo name={`chevron-${showFilter === 'location' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                                <Entypo
+                                    name={`chevron-${showFilter === 'location' ? 'up' : 'down'}`}
+                                    size={24}
+                                    color="black"
+                                    style={styles.chevronIcon}
+                                />
                             </TouchableOpacity>
-                            {/* {logistics.length > 0 &&
-                                <Text
-                                    style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: -5, marginTop: 7 }]}
-                                >{handlePreferences(logistics.sort().toString(), getLogisticsType)}</Text>} */}
                         </View>
                     </View>
                     {showFilter === 'location' &&
                         <Location state={distance} setState={setDistance} />}
-                    <View style={{ alignItems: "flex-start", gap: 12, marginVertical: 5, marginLeft: 5 }}>
+                    <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
                                 style={[styles.modalItem, { marginBottom: -3 }]}
@@ -298,11 +303,16 @@ const PostsFilters = ({
                                 testID="Bottom.postNavModalReqBtn"
                             >
                                 <Text style={[globalStyles.H4, { marginTop: 5 }]}>Delivery / Pick up</Text>
-                                <Entypo name={`chevron-${showFilter === 'logistics' ? 'up' : 'down'}`} size={24} color="black" style={{ position: 'absolute', right: 0, paddingRight: 5 }} />
+                                <Entypo
+                                    name={`chevron-${showFilter === 'logistics' ? 'up' : 'down'}`}
+                                    size={24}
+                                    color="black"
+                                    style={styles.chevronIcon}
+                                />
                             </TouchableOpacity>
                             {logistics.length > 0 &&
                                 <Text
-                                    style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: -5, marginTop: 7 }]}
+                                    style={[globalStyles.Small1, styles.filtersSelected]}
                                 >{handlePreferences(logistics.sort().toString(), getLogisticsType)}</Text>}
                         </View>
                     </View>
