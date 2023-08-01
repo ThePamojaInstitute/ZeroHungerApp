@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 
 
-const DatePicker = () => {
+const DatePicker = ({ setNeedBy }) => {
     const minDate = new Date();
     const maxDate = new Date(minDate);
-    maxDate.setMonth(maxDate.getMonth() + 3); // Discuss this
+    maxDate.setMonth(maxDate.getMonth() + 1); // Discuss this
 
     const [date, setDate] = useState(minDate);
     const [selected, setSelected] = useState(false)
@@ -15,6 +16,9 @@ const DatePicker = () => {
     const handleChange = (date: Date) => {
         setDate(date)
         setSelected(true)
+        const oneDayLater = moment(date).add(1, 'day')
+        const formattedDate = moment(oneDayLater.toDate().toDateString()).format('YYYY-MM-DD HH:mm')
+        setNeedBy(formattedDate)
     }
 
     return (

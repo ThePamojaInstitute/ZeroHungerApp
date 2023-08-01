@@ -4,12 +4,13 @@ import styles from "../../styles/components/datePickerStyleSheet"
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import moment from "moment";
 
 
-const DatePicker = () => {
+const DatePicker = ({ setNeedBy }) => {
     const minDate = new Date();
     const maxDate = new Date(minDate);
-    maxDate.setMonth(maxDate.getMonth() + 3); // Discuss this
+    maxDate.setMonth(maxDate.getMonth() + 1); // Discuss this
 
     const [date, setDate] = useState(minDate);
     const [show, setShow] = useState(false);
@@ -20,6 +21,9 @@ const DatePicker = () => {
         setShow(false);
         setDate(new Date(currentDate));
         setSelected(true)
+        const oneDayLater = moment(currentDate).add(1, 'day')
+        const formattedDate = moment(oneDayLater.toDate().toDateString()).format('YYYY-MM-DD HH:mm')
+        setNeedBy(formattedDate)
     };
 
     const toStringDate = (date: Date) => {
