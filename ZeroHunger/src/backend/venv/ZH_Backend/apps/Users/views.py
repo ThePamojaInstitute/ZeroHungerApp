@@ -39,7 +39,7 @@ class createUser(APIView):
             #)
             return Response(serializer.data, status=201)
         else:
-            return Response(serializer.errors, status=401)
+            return Response(serializer.errors, status=400)
       
     
 class deleteUser(APIView):

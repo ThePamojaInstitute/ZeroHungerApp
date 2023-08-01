@@ -8,3 +8,10 @@ export type PostFromData = {
     title: string,
     postalCode: string,
 }
+
+export type UserFormData = {
+    username: string,
+    email: string,
+    password: string,
+    confPass: string,
+}

@@ -23,6 +23,8 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Controller, useForm } from "react-hook-form";
+import { UserFormData } from "../../types";
 
 export const CreateAccountScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false)
@@ -42,6 +44,13 @@ export const CreateAccountScreen = ({ navigation }) => {
 
   const { user, loading, dispatch } = useContext(AuthContext)
   const { dispatch: alert } = useAlert()
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setError,
+    formState: { errors },
+  } = useForm<UserFormData>();
 
   useFocusEffect(() => {
     if (user) {
@@ -49,64 +58,53 @@ export const CreateAccountScreen = ({ navigation }) => {
     }
   })
 
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confPass, setConfPass] = useState("")
   const [hidePass, setHidePass] = useState(true)
   const [hideConfPass, setHideConfPass] = useState(true)
   const [isAccepted, setIsAccepted] = useState(false)
   const [errMsg, setErrMsg] = useState("")
-  const [errField, setErrField] = useState("")
 
-  const handleErrorMessage = (error: string) => {
-    if (error.toLowerCase().includes('username')) {
-      setErrField('username')
-      setErrMsg(error)
-    } else if (error.toLowerCase().includes('email')) {
-      setErrField('email')
-      setErrMsg(error)
-    } else if ((error.toLowerCase().includes('password') &&
-      !error.toLowerCase().includes('confirmation')) &&
-      error != "The passwords you entered do not match") {
-      setErrField('password')
-      setErrMsg(error)
-    } else if ((error.toLowerCase().includes('password') &&
-      error.toLowerCase().includes('confirmation')) ||
-      error === "The passwords you entered do not match") {
-      setErrField('confPass')
-      setErrMsg(error)
-    } else if (error.toLowerCase().includes('terms')) {
-      setErrField('terms')
-      setErrMsg(error)
-    } else {
-      alert!({ type: 'open', message: error, alertType: 'error' })
-    }
-  }
-
-  const handleSignUp = (e: (GestureResponderEvent |
+  const handleSignUp = (data: object, e: (GestureResponderEvent |
     NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
     e.preventDefault()
     Keyboard.dismiss()
+
+    if (!isAccepted) {
+      setErrMsg("Please accept terms and conditions")
+      return
+    }
+
     dispatch({ type: "SIGNUP_START", payload: null })
     createUser({
-      "username": username,
-      "email": email,
-      "password": password,
-      "confPassword": confPass
+      "username": data['username'],
+      "email": data['email'],
+      "password": data['password'],
+      "confPassword": data['confPass']
     }, isAccepted).then(res => {
       if (res.msg === "success") {
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
         alert!({ type: 'open', message: 'Account created successfully!', alertType: 'success' })
         navigation.navigate('LoginScreen')
-      } else if (res.msg === "failure") {
-        dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
-        const error = res.res[Object.keys(res.res)[0]] ? res.res[Object.keys(res.res)[0]][0] : "An error occurred"
-        handleErrorMessage(error)
       } else {
+        if (!res.res['username'] && !res.res['email']) {
+          alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+        }
+
+        if (res.res['username']) {
+          console.log("includes username");
+          setError('username', {
+            type: "server",
+            message: res.res['username']
+          })
+        }
+        if (res.res['email']) {
+          console.log("includes email");
+          setError('email', {
+            type: "server",
+            message: res.res['email']
+          })
+        }
+
         dispatch({ type: "SIGNUP_FAILURE", payload: res.res })
-        const error = res.msg ? res.msg : "An error occurred"
-        handleErrorMessage(error)
       }
     })
   }
@@ -119,70 +117,122 @@ export const CreateAccountScreen = ({ navigation }) => {
           <Text>{loading && "Loading..."}</Text>
           <View testID="SignUp.usernameInputContainer" style={styles.inputContainer}>
             <Text testID="SignUp.usernameLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}
+            { color: errors.username ? Colors.alert2 : Colors.dark }]}
             >Username</Text>
-            <TextInput
-              nativeID="SignUp.usernameInput"
-              testID="SignUp.usernameInput"
-              style={[styles.input,
-              { borderColor: `${(errField === 'username') ? Colors.alert2 : Colors.midLight}` }]}
-              onChangeText={newText => {
-                setUsername(newText)
-                setErrField('')
+            <Controller
+              defaultValue=""
+              control={control}
+              rules={{
+                required: "Please enter a username",
+                minLength: {
+                  value: 5,
+                  message: "Username length should be at least 5 characters"
+                },
+                maxLength: {
+                  value: 50,
+                  message: "Username length should be at most 50 characters"
+                },
+                pattern: {
+                  value: /^(?!.*__).*$/,
+                  message: "Username shouldn't include \"__\""
+                }
               }}
-              onChange={() => { if (errField === 'username') setErrField('') }}
-              blurOnSubmit={false}
-              onSubmitEditing={() => email_input.current?.focus()}
-              maxLength={64}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  value={value}
+                  nativeID="SignUp.usernameInput"
+                  testID="SignUp.usernameInput"
+                  style={[styles.input,
+                  { borderColor: errors.username ? Colors.alert2 : Colors.midLight }]}
+                  onChangeText={onChange}
+                  onChange={onChange}
+                  blurOnSubmit={false}
+                  onSubmitEditing={() => email_input.current?.focus()}
+                  maxLength={50}
+                  onBlur={onBlur}
+                />
+              )}
+              name="username"
             />
           </View>
-          {(errField === 'username') &&
+          {errors.username &&
             <View testID="SignUp.usernameErrMsgContainer" style={styles.errorMsgContainer}>
-              <Text testID="SignUp.usernameErrMsg" style={styles.errorMsg}>{errMsg}</Text>
+              <Text testID="SignUp.usernameErrMsg" style={styles.errorMsg}>{errors.username.message}</Text>
             </View>}
           <View testID="SignUp.emailInputContainer" style={styles.inputContainer}>
             <Text testID="SignUp.emailLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'email') ? Colors.alert2 : Colors.dark}` }]}
+            { color: errors.email ? Colors.alert2 : Colors.dark }]}
             >Email Address</Text>
-            <TextInput
-              nativeID="SignUp.emailInput"
-              testID="SignUp.emailInput"
-              style={[styles.input, { borderColor: `${(errField === 'email') ? Colors.alert2 : Colors.midLight}` }]}
-              secureTextEntry={false}
-              onChangeText={newText => {
-                setEmail(newText)
-                setErrField('')
+            <Controller
+              defaultValue=""
+              control={control}
+              rules={{
+                required: "Please enter an email",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Please enter a valid email"
+                }
               }}
-              onChange={() => { if (errField === 'email') setErrField('') }}
-              ref={email_input}
-              blurOnSubmit={false}
-              onSubmitEditing={() => password_input.current?.focus()}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  value={value}
+                  nativeID="SignUp.emailInput"
+                  testID="SignUp.emailInput"
+                  style={[styles.input, { borderColor: errors.email ? Colors.alert2 : Colors.midLight }]}
+                  secureTextEntry={false}
+                  onChangeText={onChange}
+                  onChange={onChange}
+                  ref={email_input}
+                  blurOnSubmit={false}
+                  onSubmitEditing={() => password_input.current?.focus()}
+                  onBlur={onBlur}
+                  maxLength={256}
+                />
+              )}
+              name="email"
             />
           </View>
-          {(errField === 'email') &&
+          {errors.email &&
             <View testID="SignUp.emailErrMsgContainer" style={styles.errorMsgContainer}>
-              <Text testID="SignUp.emailErrMsg" style={styles.errorMsg}>{errMsg}</Text>
+              <Text testID="SignUp.emailErrMsg" style={styles.errorMsg}>{errors.email.message}</Text>
             </View>}
           <View testID="SignUp.passwordInputContainer" style={styles.inputContainer}>
             <Text testID="SignUp.passwordLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'password') ? Colors.alert2 : Colors.dark}` }]}
+            { color: errors.password ? Colors.alert2 : Colors.dark }]}
             >Password</Text>
             <View testID="SignUp.innerPasswordInputContainer" style={[styles.passwordInputContainer,
-            { borderColor: `${(errField === 'password') ? Colors.alert2 : Colors.midLight}` }]}>
-              <TextInput
-                nativeID="SignUp.passwordInput"
-                testID="SignUp.passwordInput"
-                style={styles.passwordInput}
-                secureTextEntry={hidePass}
-                onChangeText={newText => {
-                  setPassword(newText)
-                  setErrField('')
+            { borderColor: errors.password ? Colors.alert2 : Colors.midLight }]}>
+              <Controller
+                defaultValue=""
+                control={control}
+                rules={{
+                  required: "Please enter a password",
+                  minLength: {
+                    value: 4,
+                    message: "Password length should be 4 characters or more"
+                  },
+                  maxLength: {
+                    value: 64,
+                    message: "Password length should be 64 characters or less"
+                  }
                 }}
-                onChange={() => { if (errField === 'password') setErrField('') }}
-                ref={password_input}
-                blurOnSubmit={false}
-                onSubmitEditing={() => confPassword_input.current?.focus()}
-                maxLength={64}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    value={value}
+                    nativeID="SignUp.passwordInput"
+                    testID="SignUp.passwordInput"
+                    style={styles.passwordInput}
+                    secureTextEntry={hidePass}
+                    onChangeText={onChange}
+                    onChange={onChange}
+                    ref={password_input}
+                    blurOnSubmit={false}
+                    onSubmitEditing={() => confPassword_input.current?.focus()}
+                    maxLength={64}
+                    onBlur={onBlur}
+                  />
+                )}
+                name="password"
               />
               <Ionicons
                 testID="eyeIcon"
@@ -192,30 +242,44 @@ export const CreateAccountScreen = ({ navigation }) => {
                 style={{ padding: 9 }} />
             </View>
           </View>
-          {(errField === 'password') &&
+          {errors.password &&
             <View testID="SignUp.passwordErrMsgContainer" style={styles.errorMsgContainer}>
-              <Text testID="SignUp.passwordErrMsg" style={styles.errorMsg}>{errMsg}</Text>
+              <Text testID="SignUp.passwordErrMsg" style={styles.errorMsg}>{errors.password.message}</Text>
             </View>}
           <View testID="SignUp.confPasswordInputContainer" style={styles.inputContainer}>
             <Text testID="SignUp.confPasswordLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'confPass') ? Colors.alert2 : Colors.dark}` }]}
+            { color: errors.confPass ? Colors.alert2 : Colors.dark }]}
             >Confirm Password</Text>
             <View testID="SignUp.innerconfPasswordInputContainer" style={[styles.passwordInputContainer,
-            { borderColor: `${(errField === 'confPass') ? Colors.alert2 : Colors.midLight}` }]}>
-              <TextInput
-                nativeID="SignUp.confPasswordInput"
-                testID="SignUp.confPasswordInput"
-                style={styles.passwordInput}
-                secureTextEntry={hideConfPass}
-                onChangeText={newText => {
-                  setConfPass(newText)
-                  setErrField('')
+            { borderColor: errors.confPass ? Colors.alert2 : Colors.midLight }]}>
+              <Controller
+                defaultValue=""
+                control={control}
+                rules={{
+                  required: "Please confirm your password",
+                  validate: (val: string) => {
+                    if (watch('password') != val) {
+                      return "Your passwords do no match";
+                    }
+                  }
                 }}
-                onChange={() => { if (errField === 'confPass') setErrField('') }}
-                ref={confPassword_input}
-                blurOnSubmit={false}
-                onSubmitEditing={handleSignUp}
-                maxLength={64}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    value={value}
+                    nativeID="SignUp.confPasswordInput"
+                    testID="SignUp.confPasswordInput"
+                    style={styles.passwordInput}
+                    secureTextEntry={hideConfPass}
+                    onChangeText={onChange}
+                    onChange={onChange}
+                    ref={confPassword_input}
+                    blurOnSubmit={false}
+                    onSubmitEditing={handleSubmit(handleSignUp)}
+                    maxLength={64}
+                    onBlur={onBlur}
+                  />
+                )}
+                name="confPass"
               />
               <Ionicons
                 testID="confEyeIcon"
@@ -225,34 +289,34 @@ export const CreateAccountScreen = ({ navigation }) => {
                 style={{ padding: 9 }} />
             </View>
           </View>
-          {(errField === 'confPass') &&
+          {errors.confPass &&
             <View testID="SignUp.confPasswordErrMsgContainer" style={styles.errorMsgContainer}>
-              <Text testID="SignUp.confPasswordErrMsg" style={styles.errorMsg}>{errMsg}</Text>
+              <Text testID="SignUp.confPasswordErrMsg" style={styles.errorMsg}>{errors.confPass.message}</Text>
             </View>}
           <View testID="SignUp.termsAndCondContainer" style={styles.termsAndCondContainer}>
             <Text testID="SignUp.termsInputLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'terms') ? Colors.alert2 : Colors.dark}` }]}>Terms and Conditions</Text>
+            { color: errMsg ? Colors.alert2 : Colors.dark }]}>Terms and Conditions</Text>
             <Text testID="SignUp.termsAndCondText" style={styles.termsAndCondText}>Read our <Text testID="SignUp.termsAndCondLink" style={{ textDecorationLine: 'underline' }}
               onPress={() => console.log("terms and conditions")}
             >terms and conditions.</Text></Text>
-            {(errField === 'terms') &&
+            {errMsg &&
               <Text
                 testID="SignUp.termsAndCondErrMsg"
                 style={{
                   fontFamily: 'PublicSans_400Regular',
                   fontSize: 13,
                   color: Colors.alert2
-                }}>Please accept terms and conditions</Text>}
+                }}>{errMsg}</Text>}
             <View testID="SignUp.checkboxContainer" style={{ flexDirection: 'row' }}>
               <MaterialCommunityIcons testID="SignUp.checkbox" name={isAccepted ? "checkbox-marked" : "checkbox-blank-outline"} size={22}
                 onPress={() => {
-                  if (errField === 'terms') setErrField('')
+                  setErrMsg('')
                   setIsAccepted(!isAccepted)
                 }} />
               <Text testID="SignUp.termsAndCondAcceptText" style={styles.termsAndCondAcceptText}>I accept</Text>
             </View>
           </View>
-          <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={handleSignUp}>
+          <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={handleSubmit(handleSignUp)}>
             <Text style={globalStyles.defaultBtnLabel}>Sign Up</Text>
           </TouchableOpacity>
         </>
