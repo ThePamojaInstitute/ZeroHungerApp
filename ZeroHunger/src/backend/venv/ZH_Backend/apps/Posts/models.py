@@ -2,8 +2,13 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from apps.Users.models import BasicUser
 from datetime import datetime 
+from dateutil.relativedelta import relativedelta
 from multiselectfield import MultiSelectField
 from .choices import LOGISTICS_CHOICES, ACCESS_NEEDS_CHOICES, FOOD_CATEGORIES, DIET_PREFERENCES
+
+
+def one_month_from_today():
+    return datetime.now() + relativedelta(months=1)
 
 class RequestPost(models.Model):
     title = models.CharField(max_length=128, default="Untitled")
@@ -19,6 +24,7 @@ class RequestPost(models.Model):
     accessNeeds = models.CharField(choices=ACCESS_NEEDS_CHOICES, default='a', max_length=1)
     categories = MultiSelectField(choices=FOOD_CATEGORIES, max_length=12, default='')
     diet = MultiSelectField(choices=DIET_PREFERENCES, max_length=9, default='')
+    expiryDate = models.DateTimeField(default=one_month_from_today)
 
     def __str__(self):
         return self.title
@@ -37,6 +43,7 @@ class OfferPost(models.Model):
     accessNeeds = models.CharField(choices=ACCESS_NEEDS_CHOICES, default='a', max_length=1)
     categories = MultiSelectField(choices=FOOD_CATEGORIES, max_length=12, default='')
     diet = MultiSelectField(choices=DIET_PREFERENCES, max_length=9, default='')
+    expiryDate = models.DateTimeField(default=one_month_from_today)
     
     def __str__(self):
         return self.title

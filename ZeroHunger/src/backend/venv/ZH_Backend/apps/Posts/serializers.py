@@ -22,6 +22,7 @@ class createRequestSerializer (serializers.ModelSerializer):
     categories = fields.MultipleChoiceField(choices=FOOD_CATEGORIES, required=False)
     diet = fields.MultipleChoiceField(choices=DIET_PREFERENCES, required=False)
     distance = serializers.FloatField(required=False)
+    expiryDate = models.DateTimeField()
 
     # These fields are temporary fileds and won't be save in the database
     # distance = serializers.SerializerMethodField(method_name='get_distance')
@@ -34,7 +35,7 @@ class createRequestSerializer (serializers.ModelSerializer):
         fields = ['title', 'images', 'postedOn', 'postedBy', 
                 'description', 'fulfilled', 'logistics', 'postalCode',
                 'accessNeeds', 'longitude', 'latitude', 'categories', 'diet',
-                'distance', 'username', 'type', 'postId']
+                'distance', 'username', 'type', 'postId', 'expiryDate']
         
     def get_username(self, obj):
         if(type(obj) == collections.OrderedDict): # on creation
@@ -65,7 +66,8 @@ class createRequestSerializer (serializers.ModelSerializer):
                        longitude=self.validated_data['longitude'],
                        latitude=self.validated_data['latitude'],
                        categories=self.validated_data['categories'],
-                       diet=self.validated_data['diet'],)
+                       diet=self.validated_data['diet'],
+                       expiryDate=self.validated_data['expiryDate'])
         post.save()
 
 class createOfferSerializer (serializers.ModelSerializer):
@@ -83,6 +85,7 @@ class createOfferSerializer (serializers.ModelSerializer):
     categories = fields.MultipleChoiceField(choices=FOOD_CATEGORIES, required=False)
     diet = fields.MultipleChoiceField(choices=DIET_PREFERENCES, required=False)
     distance = serializers.FloatField(required=False)
+    expiryDate = models.DateTimeField()
 
     # These fields are temporary fileds and won't be save in the database
     username = serializers.SerializerMethodField(method_name='get_username')
@@ -94,7 +97,7 @@ class createOfferSerializer (serializers.ModelSerializer):
         fields = ['title', 'images', 'postedOn', 'postedBy', 
                 'description', 'fulfilled', 'logistics', 'postalCode',
                 'accessNeeds', 'longitude', 'latitude', 'categories', 'diet',
-                'distance', 'username', 'type', 'postId']
+                'distance', 'username', 'type', 'postId', 'expiryDate']
         
     def get_username(self, obj):
         if(type(obj) == collections.OrderedDict): # on creation
@@ -125,5 +128,6 @@ class createOfferSerializer (serializers.ModelSerializer):
                        longitude=self.validated_data['longitude'],
                        latitude=self.validated_data['latitude'],
                        categories=self.validated_data['categories'],
-                       diet=self.validated_data['diet'],)
+                       diet=self.validated_data['diet'],
+                       expiryDate=self.validated_data['expiryDate'])
         post.save()
