@@ -1,3 +1,4 @@
+import moment from "moment";
 import { axiosInstance } from "../../config";
 import { Char } from "../../types";
 
@@ -289,5 +290,27 @@ export const getDiet = (char: Char) => {
             return 'Other'
         default:
             return 'Other'
+    }
+}
+
+export const handleExpiryDate = (expiryDate: string, postType: "r" | "o") => {
+    const diffInDays = Math.abs(moment().diff(expiryDate, "days"))
+
+    if (postType === 'r') {
+        if (diffInDays <= 0) {
+            return 'Need today'
+        } else if (diffInDays === 1) {
+            return `Need by tomorrow`
+        } else {
+            return `Need in ${diffInDays} days`
+        }
+    } else {
+        if (diffInDays <= 0) {
+            return 'Expires today'
+        } else if (diffInDays === 1) {
+            return `Expires tomorrow`
+        } else {
+            return `Expires in ${diffInDays} days`
+        }
     }
 }
