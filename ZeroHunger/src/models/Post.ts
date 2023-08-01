@@ -16,4 +16,5 @@ export interface PostModel {
     distance: number | null;
     categories: Char[];
     diet: Char[];
+    expiryDate: string;
 }

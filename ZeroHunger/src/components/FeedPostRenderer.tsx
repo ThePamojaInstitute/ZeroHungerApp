@@ -133,6 +133,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
             distance: item?.distance,
             categories: item?.categories,
             diet: item?.diet,
+            expiryDate: item?.expiryDate,
             postId: item.postId,
             username: item.username,
             type: type

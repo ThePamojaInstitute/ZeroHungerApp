@@ -14,7 +14,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
-import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleAccessNeeds, handlePreferences } from "../controllers/post";
+import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleAccessNeeds, handleExpiryDate, handlePreferences } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -137,9 +137,8 @@ export const RequestDetailsScreen = ({ navigation }) => {
                             <Text testID="ReqDet.distanceText" style={globalStyles.Small2}>{route.params.distance ? `${route.params.distance.toFixed(1)} km away` : 'N/A'}</Text>
                         </View>
 
-                        {/* Temporary need by date */}
                         <View testID="ReqDet.needBy" style={styles.needBy}>
-                            <Text testID="ReqDet.needByTag" style={styles.Tag}>Need in {3} days</Text>
+                            <Text testID="ReqDet.needByTag" style={styles.Tag}>{handleExpiryDate(route.params.expiryDate, route.params.type)}</Text>
                         </View>
                     </View>
 

@@ -7,6 +7,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { PostModel } from "../models/Post";
 import { NavigationProp, ParamListBase } from '@react-navigation/native';
+import { handleExpiryDate } from "../controllers/post";
 
 interface Props {
     post: PostModel,
@@ -53,6 +54,8 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                             testID="Posts.title"
                             style={[globalStyles.H4, { marginLeft: 10 },
                             { marginBottom: from === "home" ? 5 : 0 }]}
+                            ellipsizeMode="tail"
+                            numberOfLines={1}
                         >{post.title}</Text>
                         {user['username'] === post.username &&
                             <TouchableOpacity
@@ -89,7 +92,7 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                         testID="Posts.tag"
                         style={[styles.postTag, [(user['username'] === post.username && from !== "history") ? { marginTop: 20 } : {}]]}>
                         {/* Placeholder need by date */}
-                        <Text testID="Posts.tagLabel" style={styles.postTagLabel}>Need in {3} days</Text>
+                        <Text testID="Posts.tagLabel" style={styles.postTagLabel}>{handleExpiryDate(post.expiryDate, post.type)}</Text>
                     </View>
                 </View>
             </TouchableOpacity>

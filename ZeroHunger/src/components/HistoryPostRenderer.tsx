@@ -98,6 +98,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
             distance: item?.distance,
             categories: item?.categories,
             diet: item?.diet,
+            expiryDate: item?.expiryDate,
             postId: item.postId,
             username: item.username,
             type: type
