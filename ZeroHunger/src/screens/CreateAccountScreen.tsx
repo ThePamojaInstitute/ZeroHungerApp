@@ -24,7 +24,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Controller, useForm } from "react-hook-form";
-import { UserFormData } from "../../types";
+import { CreateUserFormData } from "../../types";
 
 export const CreateAccountScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false)
@@ -50,7 +50,7 @@ export const CreateAccountScreen = ({ navigation }) => {
     watch,
     setError,
     formState: { errors },
-  } = useForm<UserFormData>();
+  } = useForm<CreateUserFormData>();
 
   useFocusEffect(() => {
     if (user) {

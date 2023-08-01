@@ -29,6 +29,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import NotificationsTest from "./NotificationsTest";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Controller, useForm } from "react-hook-form";
+import { LoginUserFormData } from "../../types";
 
 export const LoginScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false)
@@ -46,6 +48,11 @@ export const LoginScreen = ({ navigation }) => {
 
   const { user, loading, dispatch } = useContext(AuthContext)
   const { dispatch: alert } = useAlert()
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginUserFormData>();
 
   useFocusEffect(() => {
     if (user) {
@@ -59,22 +66,12 @@ export const LoginScreen = ({ navigation }) => {
     }
   }, [])
 
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
   const [hidePass, setHidePass] = useState(true)
   const [errMsg, setErrMsg] = useState("")
-  const [errField, setErrField] = useState("")
   const [expoPushToken, setExpoPushToken] = useState("");
 
   const handleErrorMessage = (error: string) => {
     if (error.toLowerCase() === "invalid credentials") {
-      setErrField('general')
-      setErrMsg(error)
-    } else if (error.toLowerCase().includes('username')) {
-      setErrField('username')
-      setErrMsg(error)
-    } else if (error.toLowerCase().includes('password')) {
-      setErrField('password')
       setErrMsg(error)
     } else {
       alert!({ type: 'open', message: error, alertType: 'error' })
@@ -91,20 +88,20 @@ export const LoginScreen = ({ navigation }) => {
     }
   }
 
-  const handleLogin = (e: (GestureResponderEvent |
+  const handleLogin = (data: object, e: (GestureResponderEvent |
     NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
     e.preventDefault()
     Keyboard.dismiss()
     dispatch({ type: "LOGIN_START", payload: null })
     logInUser({
-      "username": username,
-      "password": password,
+      "username": data['username'],
+      "password": data['password'],
       "expo_push_token": expoPushToken
     })
       .then(async res => {
         if (res.msg === "success") {
           await axiosInstance.post("users/token/",
-            { "username": username, "password": password })
+            { "username": data['username'], "password": data['password'] })
             .then(resp => {
               dispatch({
                 type: "LOGIN_SUCCESS", payload: {
@@ -115,8 +112,6 @@ export const LoginScreen = ({ navigation }) => {
 
               setTokens(resp.data)
             }).then(() => {
-              setUsername("")
-              setPassword("")
               // alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
               navigation.navigate('HomeScreen')
             })
@@ -124,8 +119,6 @@ export const LoginScreen = ({ navigation }) => {
           dispatch({ type: "LOGIN_FAILURE", payload: res.res })
           handleErrorMessage('Invalid credentials')
           // alert!({ type: 'open', message: 'Invalid credentials', alertType: 'error' })
-          setUsername("")
-          setPassword("")
         } else {
           dispatch({ type: "LOGIN_FAILURE", payload: res.res })
           const error = res.msg ? res.msg : "An error occurred"
@@ -154,59 +147,67 @@ export const LoginScreen = ({ navigation }) => {
       {loaded &&
         <>
           <Text>{loading && "Loading..."}</Text>
-          {(errField === 'general') &&
+          {errMsg &&
             <View>
               <Text style={[styles.errorMsg, { fontSize: 16 }]}>{errMsg}</Text>
             </View>}
           <View testID="Login.usernameInputContainer" style={styles.inputContainer}>
             <Text testID="Login.usernameLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}>Username</Text>
-            <TextInput
-              nativeID="Login.usernameInput"
-              testID="Login.usernameInput"
-              value={username}
-              style={[styles.input,
-              { borderColor: `${(errField === 'username') ? Colors.alert2 : Colors.midLight}` }]}
-              onChangeText={newText => {
-                setUsername(newText)
-                setErrField('')
+            { color: errors.username ? Colors.alert2 : Colors.dark }]}>Username</Text>
+            <Controller
+              defaultValue=""
+              control={control}
+              rules={{
+                required: "Please enter a username",
               }}
-              onChange={() => {
-                if (errField === 'username' || errField === 'general') {
-                  setErrField('')
-                }
-              }}
-              blurOnSubmit={false}
-              onSubmitEditing={() => password_input.current?.focus()}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  nativeID="Login.usernameInput"
+                  testID="Login.usernameInput"
+                  value={value}
+                  style={[styles.input,
+                  { borderColor: errors.username ? Colors.alert2 : Colors.midLight }]}
+                  onChangeText={onChange}
+                  onChange={onChange}
+                  blurOnSubmit={false}
+                  onSubmitEditing={() => password_input.current?.focus()}
+                  onBlur={onBlur}
+                />
+              )}
+              name="username"
             />
           </View>
-          {(errField === 'username') &&
+          {errors.username &&
             <View testID="Login.usernameErrMsgContainer" style={styles.errorMsgContainer}>
-              <Text testID="Login.usernameErrMsg" style={styles.errorMsg}>{errMsg}</Text>
+              <Text testID="Login.usernameErrMsg" style={styles.errorMsg}>{errors.username.message}</Text>
             </View>}
           <View testID="Login.passwordInputContainer" style={styles.inputContainer}>
             <Text testID="Login.passwordLabel" style={[styles.inputLabel,
-            { color: `${(errField === 'password') ? Colors.alert2 : Colors.dark}` }]}>Password</Text>
+            { color: errors.password ? Colors.alert2 : Colors.dark }]}>Password</Text>
             <View testID="Login.innerPasswordInputContainer" style={[styles.passwordInputContainer,
-            { borderColor: `${(errField === 'password') ? Colors.alert2 : Colors.midLight}` }]}>
-              <TextInput
-                nativeID="Login.passwordInput"
-                testID="Login.passwordInput"
-                value={password}
-                style={styles.passwordInput}
-                secureTextEntry={hidePass}
-                onChangeText={newText => {
-                  setPassword(newText)
-                  setErrField('')
+            { borderColor: errors.password ? Colors.alert2 : Colors.midLight }]}>
+              <Controller
+                defaultValue=""
+                control={control}
+                rules={{
+                  required: "Please enter a password",
                 }}
-                onChange={() => {
-                  if (errField === 'password' || errField === 'general') {
-                    setErrField('')
-                  }
-                }}
-                ref={password_input}
-                blurOnSubmit={false}
-                onSubmitEditing={handleLogin}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    nativeID="Login.passwordInput"
+                    testID="Login.passwordInput"
+                    value={value}
+                    style={styles.passwordInput}
+                    secureTextEntry={hidePass}
+                    onChangeText={onChange}
+                    onChange={onChange}
+                    ref={password_input}
+                    blurOnSubmit={false}
+                    onSubmitEditing={handleSubmit(handleLogin)}
+                    onBlur={onBlur}
+                  />
+                )}
+                name="password"
               />
               <Ionicons testID="eyeIcon"
                 name={hidePass ? "eye-off-outline" : "eye-outline"}
@@ -215,14 +216,14 @@ export const LoginScreen = ({ navigation }) => {
                 style={{ padding: 9 }} />
             </View>
           </View>
-          {(errField === 'password') &&
+          {errors.password &&
             <View testID="Login.passwordErrMsgContainer" style={styles.errorMsgContainer}>
-              <Text testID="Login.passwordErrMsg" style={styles.errorMsg}>{errMsg}</Text>
+              <Text testID="Login.passwordErrMsg" style={styles.errorMsg}>{errors.password.message}</Text>
             </View>}
           <Pressable style={{ width: '90%' }} testID="passwordReset.Button" onPress={handlePasswordRecovery}>
             <Text testID="Login.forgotPassword" style={styles.forgotPassword}>Forgot password?</Text>
           </Pressable>
-          <TouchableOpacity testID="Login.Button" style={globalStyles.defaultBtn} onPress={handleLogin}>
+          <TouchableOpacity testID="Login.Button" style={globalStyles.defaultBtn} onPress={handleSubmit(handleLogin)}>
             <Text testID="Login.ButtonLabel" style={globalStyles.defaultBtnLabel}>Login</Text>
           </TouchableOpacity>
           <View testID="divider" style={styles.divider}>
@@ -233,10 +234,7 @@ export const LoginScreen = ({ navigation }) => {
             <View testID="dividerLine2" style={styles.dividerLine} />
           </View>
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.outlineBtn} onPress={() => {
-            setErrField('')
             setErrMsg('')
-            setUsername('')
-            setPassword('')
             navigation.navigate("CreateAccountScreen")
           }}>
             <Text testID="SignUp.ButtonLabel" style={globalStyles.outlineBtnLabel}>Sign Up</Text>

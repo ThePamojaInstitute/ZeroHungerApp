@@ -9,9 +9,14 @@ export type PostFromData = {
     postalCode: string,
 }
 
-export type UserFormData = {
+export type CreateUserFormData = {
     username: string,
     email: string,
     password: string,
     confPass: string,
+}
+
+export type LoginUserFormData = {
+    username: string,
+    password: string,
 }
