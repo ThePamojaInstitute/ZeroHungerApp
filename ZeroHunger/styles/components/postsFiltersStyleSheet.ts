@@ -49,7 +49,8 @@ export default StyleSheet.create({
     filtersSelected: {
         color: Colors.primaryDark,
         marginBottom: -5,
-        marginTop: 7
+        marginTop: 7,
+        marginLeft: 6
     },
     sortItem: {
         flexDirection: 'row',

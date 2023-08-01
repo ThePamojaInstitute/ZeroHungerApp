@@ -3,7 +3,7 @@ import { Colors } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     item: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: Colors.Background,
         marginTop: 5,
         marginBottom: 15,
         marginRight: 8,

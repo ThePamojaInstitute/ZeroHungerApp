@@ -84,6 +84,7 @@ export const createPost = async (post: {
         accessNeeds: Char,
         categories: Char[],
         diet: Char[],
+        expiryDate: string,
     }
     postType: Char
 }) => {
