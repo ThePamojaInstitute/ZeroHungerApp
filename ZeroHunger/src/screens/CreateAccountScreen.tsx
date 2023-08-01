@@ -59,6 +59,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   const [isAccepted, setIsAccepted] = useState(false)
   const [errMsg, setErrMsg] = useState("")
   const [errField, setErrField] = useState("")
+  const {t, i18n} = useTranslation();
 
   const handleErrorMessage = (error: string) => {
     if (error.toLowerCase().includes('username')) {
@@ -122,7 +123,6 @@ export const CreateAccountScreen = ({ navigation }) => {
       }
     })
   }
-  const {t, i18n} = useTranslation();
   return (
     <View testID="SignUp.container" style={styles.authContainer}>
       {!loaded && <Text>{t("account.signup.loading.label")}</Text>}

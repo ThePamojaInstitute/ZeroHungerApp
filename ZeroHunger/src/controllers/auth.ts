@@ -56,10 +56,11 @@ export async function editUser(accessToken: string, user:object) {
                     user
                 }
             })
+            return { msg: "success", res: res.data }
 
     }
     catch (error) {
-        console.log(error);
+       return { msg: "failure", res: error.response.data }
     }
 }
 
