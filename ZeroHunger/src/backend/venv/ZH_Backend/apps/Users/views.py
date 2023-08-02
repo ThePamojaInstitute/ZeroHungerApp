@@ -64,7 +64,7 @@ class deleteUser(APIView):
             
             return Response({"User deleted"}, 200)
         except:
-            return Response(status=204)
+            return Response(status=404)
     
 class modifyUser(APIView):
     def post(self,request, format=None):
@@ -84,7 +84,7 @@ class logIn(APIView):
                 pass
             return serializer.logIn()
         else:
-            return Response({"Error logging in", 401})
+            return Response({"Error logging in", 400})
                 
 class logOut(APIView):
     def post(self,request, format=None):
