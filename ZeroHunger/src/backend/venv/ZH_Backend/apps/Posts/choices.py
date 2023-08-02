@@ -2,9 +2,13 @@ LOGISTICS_CHOICES = (('a', 'Pick up'),
               ('b', 'Delivery'),
               ('c', 'Meet at a public location'))
 
-ACCESS_NEEDS_CHOICES = (('a', 'No access needs'),
+REQUEST_ACCESS_NEEDS_CHOICES = (('a', 'No access needs'),
               ('b', 'Pick up location must be wheelchair accessible'),
               ('c', 'Delivery only'))
+
+OFFER_ACCESS_NEEDS_CHOICES = (('a', 'No access needs'),
+              ('b', 'Delivery location must be wheelchair accessible'),
+              ('c', 'Pick up only'))
 
 FOOD_CATEGORIES = (('a', 'Fruits'),
               ('b', 'Vegetables'),
