@@ -412,7 +412,7 @@ export const RequestFormScreen = ({ navigation }) => {
                             testID="Request.dateDesc"
                             style={styles.formDescText}
                         >Please indicate if you have any access needs for receiving your requested food.</Text>
-                        <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} />
+                        <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} postType={"r"} />
                     </View>
                     <View>
                         <Text

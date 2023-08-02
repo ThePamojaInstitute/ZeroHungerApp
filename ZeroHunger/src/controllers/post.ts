@@ -222,14 +222,22 @@ export const formatPostalCode = (postalCode: string) => {
     return postalCode
 }
 
-export const handleAccessNeeds = (char: Char) => {
+export const handleAccessNeeds = (char: Char, postType: "r" | "o") => {
     switch (char) {
         case ACCESSNEEDSPREFERENCES.NONE:
             return 'No access needs'
         case ACCESSNEEDSPREFERENCES.WHEELCHAIR:
-            return 'Pick up location must be wheelchair accessible'
+            if (postType === 'r') {
+                return 'Pick up location must be wheelchair accessible'
+            } else if (postType === 'o') {
+                return 'Delivery location must be wheelchair accessible'
+            }
         case ACCESSNEEDSPREFERENCES.DELIVERY:
-            return 'Delivery only'
+            if (postType === 'r') {
+                return 'Delivery only'
+            } else if (postType === 'o') {
+                return 'Pick up only'
+            }
         default:
             return ''
     }

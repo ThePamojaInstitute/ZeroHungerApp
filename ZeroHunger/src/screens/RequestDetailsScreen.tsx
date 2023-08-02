@@ -66,7 +66,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
 
     const logistics = handlePreferences(route.params.logistics.sort().toString(), getLogisticsType)
     const postalCode = formatPostalCode(route.params.postalCode)
-    const accessNeeds = handleAccessNeeds(route.params.accessNeeds)
+    const accessNeeds = handleAccessNeeds(route.params.accessNeeds, "r")
     const categories = handlePreferences(route.params.categories.sort().toString(), getCategory)
     const diet = handlePreferences(route.params.diet.sort().toString(), getDiet)
 

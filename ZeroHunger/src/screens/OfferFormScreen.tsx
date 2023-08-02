@@ -328,7 +328,7 @@ export const OfferFormScreen = ({ navigation }) => {
                                 style={{ fontFamily: 'PublicSans_600SemiBold', color: '#646464' }}
                             > Your post will expire at the end of this date.</Text>
                         </Text>
-                        <DatePicker setNeedBy={setExpiryDate} />
+                        <DatePicker setNeedBy={setExpiryDate} errField={errField} />
                     </View>
                     <View>
                         <Text
@@ -400,7 +400,7 @@ export const OfferFormScreen = ({ navigation }) => {
                             testID="Request.dateDesc"
                             style={styles.formDescText}
                         >Please indicate if you have any access needs for sharing the food you are offering.</Text>
-                        <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} />
+                        <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} postType={"o"} />
                     </View>
                     <View>
                         <Text testID="Offer.descTitle" style={styles.formTitleText}>Description</Text>
