@@ -11,7 +11,6 @@ import styles from "../../styles/screens/homeStyleSheet"
 import { globalStyles } from "../../styles/globalStyleSheet"
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../context/AuthContext";
-import { useAlert } from "../context/Alert";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import FeedPostRenderer from "../components/FeedPostRenderer";
 import {
@@ -48,8 +47,7 @@ export const HomeScreen = ({ navigation }) => {
     }
 
     const { user } = useContext(AuthContext)
-    const { unreadMessageCount, chatIsOpen, setChatIsOpen } = useContext(NotificationContext);
-    const { dispatch: alert } = useAlert()
+    const { setChatIsOpen } = useContext(NotificationContext);
 
     const [showRequests, setShowRequests] = useState(true)
     const [sortBy, setSortBy] = useState<'new' | 'old' | 'distance'>('new')
@@ -86,14 +84,14 @@ export const HomeScreen = ({ navigation }) => {
         setChatIsOpen(false)
     }, [])
 
-    useEffect(() => {
-        if (unreadMessageCount > 0 && !chatIsOpen) {
-            alert!({
-                type: 'open', message: `You have ${unreadMessageCount} new ${unreadMessageCount > 1
-                    ? 'messages' : 'message'}`, alertType: 'info'
-            })
-        }
-    }, [unreadMessageCount])
+    // useEffect(() => {
+    //     if (unreadMessageCount > 0 && !chatIsOpen) {
+    //         alert!({
+    //             type: 'open', message: `You have ${unreadMessageCount} new ${unreadMessageCount > 1
+    //                 ? 'messages' : 'message'}`, alertType: 'info'
+    //         })
+    //     }
+    // }, [unreadMessageCount])
 
     useEffect(() => {
         setLogistics([])

@@ -45,5 +45,29 @@ export default StyleSheet.create({
         top: 0,
         right: 0,
         marginRight: 10
+    },
+    icon: {
+        resizeMode: 'cover',
+        width: 28,
+        height: 28,
+        marginBottom: -10
+    },
+    circle: {
+        height: 15,
+        minWidth: 15,
+        backgroundColor: Colors.alert2,
+        borderRadius: 7.5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        top: 7,
+        right: -7,
+    },
+    unreadCount: {
+        color: Colors.white,
+        fontFamily: 'PublicSans_600Semibold',
+        fontSize: 11,
+        marginHorizontal: 4,
+        marginVertical: 1,
     }
 })
