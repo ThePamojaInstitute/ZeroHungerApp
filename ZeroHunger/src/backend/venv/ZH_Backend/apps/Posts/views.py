@@ -8,6 +8,7 @@ from django.db.models.functions import Cos, Sin, Sqrt, Radians, ASin, Round
 from .models import OfferPost, RequestPost
 from .serializers import createOfferSerializer, createRequestSerializer
 from apps.Users.models import BasicUser
+from datetime import datetime
 
 import uuid
 import jwt
@@ -295,4 +296,17 @@ class ImageUploader(APIView):
             print(blob_service_client.url)
             return Response(blob_service_client.url, status=201) 
          except Exception as ex:
-             return Response(str(ex), status=401)
+             return Response(str(ex), status=500)
+
+
+# Temporary view till the redis server and Celery are setup
+class deleteExpiredPosts(APIView):
+    def post(self, request):
+        try:
+            RequestPost.objects.filter(expiryDate__lt=datetime.now()).delete()
+            OfferPost.objects.filter(expiryDate__lt=datetime.now()).delete()
+            
+            return Response(status=204)
+        except Exception as e:
+            print(e)
+            return Response(e, status=500)

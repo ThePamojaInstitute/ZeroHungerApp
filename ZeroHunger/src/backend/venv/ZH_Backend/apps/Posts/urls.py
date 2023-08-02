@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from .views import createPost, requestPostsForFeed, deletePost, postsHistory, markAsFulfilled, ImageUploader
+from .views import createPost, requestPostsForFeed, deletePost, postsHistory, markAsFulfilled, ImageUploader, deleteExpiredPosts
 
 urlpatterns = [
     path('createPost', createPost.as_view(), name='create_post'),
@@ -25,6 +25,7 @@ urlpatterns = [
     path('requestPostsForFeed', requestPostsForFeed.as_view(), name='request_posts_for_feed'),
     path('postsHistory', postsHistory.as_view(), name='posts_history'),
     path('markAsFulfilled', markAsFulfilled.as_view(), name='mark_as_fulfilled'),
-    path('testBlobImage', ImageUploader.as_view(), name="ImageUploader")
+    path('testBlobImage', ImageUploader.as_view(), name="Image_uploader"),
+    path('deleteExpiredPosts', deleteExpiredPosts.as_view(), name="delete_expired_posts")
     #give case for no data
 ]
