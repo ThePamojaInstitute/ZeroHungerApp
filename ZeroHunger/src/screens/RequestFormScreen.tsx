@@ -334,7 +334,7 @@ export const RequestFormScreen = ({ navigation }) => {
                                 style={{ fontFamily: 'PublicSans_600SemiBold', color: '#646464' }}
                             > Your post will expire at the end of this date.</Text>
                         </Text>
-                        <DatePicker setNeedBy={setNeedBy} />
+                        <DatePicker setNeedBy={setNeedBy} errField={errField} />
                     </View>
                     <View>
                         <Text

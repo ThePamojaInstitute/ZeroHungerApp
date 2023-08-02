@@ -2,12 +2,11 @@ import { useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import styles from "../../styles/components/datePickerStyleSheet"
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import { Colors } from "../../styles/globalStyleSheet";
 import moment from "moment";
 
 
-const DatePicker = ({ setNeedBy }) => {
+const DatePicker = ({ setNeedBy, errField }) => {
     const minDate = new Date();
     const maxDate = new Date(minDate);
     maxDate.setMonth(maxDate.getMonth() + 1); // Discuss this
@@ -44,16 +43,21 @@ const DatePicker = ({ setNeedBy }) => {
 
     return (
         <View testID="DatePicker.container">
-            {/* <Button style={styles.logOutBtn} onPress={() => setShow(true)} title="Show date picker!" /> */}
-            {/* <Ionicons name="calendar-outline" size={50} onPress={() => setShow(true)} title="Show date picker!" testID="ShowDatePicker.Button" />
-            <Text>{selected && `selected: ${date.toLocaleDateString()}`}</Text> */}
             <Pressable
                 testID="DatePicker.showBtn"
-                style={styles.datePickerContainer}
+                style={[styles.datePickerContainer,
+                { borderColor: errField === 'needBy' ? Colors.alert2 : '#D1D1D1' }]}
                 onPress={() => setShow(true)}
             >
-                <Image testID="DatePicker.calendarImg" style={styles.datePickerImg} source={require('../../assets/calendar.png')} />
-                <Text testID="DatePicker.selectedDate" style={styles.datePickerDate}>{selected ? toStringDate(date) : 'MM/DD/YYYY'}</Text>
+                <Image
+                    testID="DatePicker.calendarImg"
+                    style={styles.datePickerImg}
+                    source={require('../../assets/calendar.png')}
+                />
+                <Text
+                    testID="DatePicker.selectedDate"
+                    style={styles.datePickerDate}
+                >{selected ? toStringDate(date) : 'MM/DD/YYYY'}</Text>
             </Pressable>
             {show && (
                 <DateTimePicker
