@@ -32,7 +32,7 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider style={{ height: '99%' }}>
       <AuthContextProvider>
         <QueryClientProvider client={queryClient}>
           <NotificationContextProvider>

@@ -41,6 +41,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
 
     const selectedPost = useRef(0)
     const modalRef = useRef(null)
+    const listRef = useRef(null)
 
     const openModal = () => {
         modalRef.current.publicHandler()
@@ -59,6 +60,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
 
     useEffect(() => {
         const updater = () => {
+            listRef.current.scrollToOffset({ animated: false, offset: 0 })
             refetch()
         }
         setUpdater(() => () => updater())
@@ -155,6 +157,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
     return (
         <>
             <FlashList
+                ref={listRef}
                 testID="Posts.list"
                 renderItem={renderItem}
                 data={flattenData}

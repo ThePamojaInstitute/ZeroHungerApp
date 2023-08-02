@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     ScrollView,
     Image,
+    Platform,
 } from "react-native";
 import styles from "../../styles/screens/homeStyleSheet"
 import { globalStyles } from "../../styles/globalStyleSheet"
@@ -22,7 +23,7 @@ import {
 import { default as _PostsFilters } from "../components/PostsFilters";
 import { getPreferencesLogistics } from "../controllers/preferences";
 import { Char } from "../../types";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { axiosInstance } from "../../config";
 
 
@@ -83,6 +84,38 @@ export const HomeScreen = ({ navigation }) => {
 
         setChatIsOpen(false)
     }, [])
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <View style={{ flexDirection: 'row' }}>
+                    {Platform.OS === "web" &&
+                        <MaterialIcons
+                            style={{ padding: 16 }}
+                            name="refresh"
+                            size={26}
+                            color="black"
+                            onPress={updater}
+                        />
+                    }
+                    <Ionicons
+                        style={{ padding: 16 }}
+                        name="notifications-sharp"
+                        size={22}
+                        // onPress={() => { }}
+                        testID="Home.notificationBtn"
+                    />
+                    <Ionicons
+                        style={{ padding: 16 }}
+                        name="md-search"
+                        size={22}
+                        // onPress={() => { }}
+                        testID="Home.searchBtn"
+                    />
+                </View>
+            )
+        })
+    }, [updater])
 
     // useEffect(() => {
     //     if (unreadMessageCount > 0 && !chatIsOpen) {

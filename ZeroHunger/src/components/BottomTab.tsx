@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, Dimensions, Image } from "react-native";
+import { View, TouchableOpacity, Text, Dimensions, Image, Platform } from "react-native";
 import styles from "../../styles/components/bottomTabStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -20,7 +20,7 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
 import PostsHistory from "../screens/PostsHistory";
@@ -54,19 +54,27 @@ const HomeStackNavigator = ({ navigation }) => {
                     ),
                     headerRight: () => (
                         <View style={{ flexDirection: 'row' }}>
-                            <Ionicons
-                                style={{ padding: 16 }}
-                                name="md-search"
-                                size={22}
-                                onPress={() => { }}
-                                testID="Home.searchBtn"
-                            />
+                            {Platform.OS === "web" &&
+                                <MaterialIcons
+                                    style={{ padding: 16 }}
+                                    name="refresh"
+                                    size={26}
+                                    color="black"
+                                />
+                            }
                             <Ionicons
                                 style={{ padding: 16 }}
                                 name="notifications-sharp"
                                 size={22}
                                 onPress={() => { }}
                                 testID="Home.notificationBtn"
+                            />
+                            <Ionicons
+                                style={{ padding: 16 }}
+                                name="md-search"
+                                size={22}
+                                onPress={() => { }}
+                                testID="Home.searchBtn"
                             />
                         </View>
                     )
