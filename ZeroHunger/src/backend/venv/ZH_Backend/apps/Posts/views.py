@@ -31,14 +31,22 @@ def get_user_posts(posts_type, order_by_newest, page, user_id):
     try:
         if(posts_type == "r"):
             if(order_by_newest == 'false'):
-                posts = RequestPost.objects.filter(postedBy__pk=user_id).all().order_by('postedOn')[page * 5:][:5]
+                posts = RequestPost.objects.filter(
+                    postedBy__pk=user_id, expiryDate__gte=datetime.now()
+                    ).all().order_by('postedOn')[page * 5:][:5]
             else:
-                posts = RequestPost.objects.filter(postedBy__pk=user_id).all().order_by('-postedOn')[page * 5:][:5]
+                posts = RequestPost.objects.filter(
+                    postedBy__pk=user_id, expiryDate__gte=datetime.now()
+                    ).all().order_by('-postedOn')[page * 5:][:5]
         elif(posts_type == "o"):
             if(order_by_newest == 'false'):
-                posts = OfferPost.objects.filter(postedBy__pk=user_id).all().order_by('postedOn')[page * 5:][:5]
+                posts = OfferPost.objects.filter(
+                    postedBy__pk=user_id, expiryDate__gte=datetime.now()
+                    ).all().order_by('postedOn')[page * 5:][:5]
             else:
-                posts = OfferPost.objects.filter(postedBy__pk=user_id).all().order_by('-postedOn')[page * 5:][:5]
+                posts = OfferPost.objects.filter(
+                    postedBy__pk=user_id, expiryDate__gte=datetime.now()
+                    ).all().order_by('-postedOn')[page * 5:][:5]
         
         posts = posts.annotate(distance=Value(0.0, output_field=FloatField()))
 
@@ -59,9 +67,9 @@ def get_post(post_id, post_type):
 def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, user):
     try:
         if(posts_type == "r"):
-            posts = RequestPost.objects.all().filter(fulfilled=False)
+            posts = RequestPost.objects.all().filter(fulfilled=False, expiryDate__gte=datetime.now())
         else:
-            posts = OfferPost.objects.all().filter(fulfilled=False)
+            posts = OfferPost.objects.all().filter(fulfilled=False, expiryDate__gte=datetime.now())
             
         if(len(categories) > 0):
             categories.sort()
