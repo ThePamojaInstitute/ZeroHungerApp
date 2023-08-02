@@ -24,6 +24,7 @@ import { default as _PostsFilters } from "../components/PostsFilters";
 import { getPreferencesLogistics } from "../controllers/preferences";
 import { Char } from "../../types";
 import { Entypo } from "@expo/vector-icons";
+import { axiosInstance } from "../../config";
 
 
 const PostsFilters = forwardRef(_PostsFilters)
@@ -74,6 +75,14 @@ export const HomeScreen = ({ navigation }) => {
         if (!user) {
             navigation.navigate('LoginScreen')
         }
+
+        // This is temporary till the redis server and Celery are setup
+        try {
+            axiosInstance.post('/posts/deleteExpiredPosts')
+        } catch (error) {
+            console.log(error);
+        }
+
         setChatIsOpen(false)
     }, [])
 
