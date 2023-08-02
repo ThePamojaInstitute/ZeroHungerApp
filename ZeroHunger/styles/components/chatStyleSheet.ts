@@ -14,15 +14,16 @@ export default StyleSheet.create({
         maxHeight: 100
     },
     chatInputContainer: {
-        width: '85%',
+        width: '70%',
         marginLeft: 15,
         backgroundColor: 'white',
         marginTop: 10,
         marginBottom: 20,
-        borderRadius: 10,
         borderWidth: 1,
         borderStyle: 'solid',
         borderColor: Colors.midLight,
+        borderTopLeftRadius: 10,
+        borderBottomLeftRadius: 10,
     },
     chatInput: {
         paddingLeft: 10,
@@ -31,7 +32,7 @@ export default StyleSheet.create({
         fontFamily: 'PublicSans_400Regular',
         fontSize: 15,
         maxHeight: 70,
-        width: '93%'
+        width: '100%'
     },
     chatCameraIcon: {
         marginBottom: 11,
@@ -127,4 +128,17 @@ export default StyleSheet.create({
         alignSelf: 'center',
         marginTop: 10
     },
+    sendBtn: {
+        backgroundColor: Colors.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '50%',
+        marginBottom: 10,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: Colors.midLight,
+        borderLeftWidth: 0,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+    }
 })
