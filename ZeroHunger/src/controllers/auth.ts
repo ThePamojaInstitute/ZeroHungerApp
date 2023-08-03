@@ -88,9 +88,11 @@ export async function logOutUser() {
             headers: { 'Content-Type': 'application/json' }
         }).then(() => {
             if (Platform.OS === 'web') {
-                storage.clearAll()
+                storage.delete('refresh_token')
+                storage.delete('access_token')
             } else {
-                AsyncStorage.clear()
+                AsyncStorage.removeItem('refresh_token')
+                AsyncStorage.removeItem('access_token')
             }
         })
     } catch (e) {
