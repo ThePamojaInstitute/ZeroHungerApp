@@ -9,7 +9,7 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import { FlashList } from "@shopify/flash-list";
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { Char } from '../../types';
-import { BaseURL } from '../../config';
+import { WSBaseURL } from '../../config';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -76,7 +76,7 @@ export const Chat = ({ navigation, route }) => {
         } else console.log("end!!");
     }
 
-    const { readyState, sendJsonMessage } = useWebSocket(user ? `ws://${BaseURL}/chats/${conversationName}/` : null, {
+    const { readyState, sendJsonMessage } = useWebSocket(user ? `${WSBaseURL}chats/${conversationName}/` : null, {
         queryParams: {
             token: user ? accessToken : ""
         },

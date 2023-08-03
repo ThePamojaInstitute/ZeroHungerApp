@@ -17,13 +17,15 @@ const mockMMKV = {
 
 export const storage = Platform.OS === 'web' ? new MMKV() : mockMMKV
 
-export const BaseURL = 'http://127.0.0.1:8000/'
-// export const BaseURL = 'https://zh-backend-azure-webapp.azurewebsites.net/'
+export const HttpBaseURL = 'http://127.0.0.1:8000/'
+export const WSBaseURL = 'ws://127.0.0.1:8000/'
+// export const HttpBaseURL = 'https://zh-backend-azure-webapp.azurewebsites.net/'
+// export const WSBaseURL = 'ws://zh-backend-azure-webapp.azurewebsites.net/'
 
-export const passwordResetURL = `${BaseURL}users/reset_password`
+export const passwordResetURL = `${HttpBaseURL}users/reset_password`
 
 export const axiosInstance = axios.create({
-    baseURL: `${BaseURL}`,
+    baseURL: `${HttpBaseURL}`,
     headers: { 'Content-Type': 'application/json' }
 })
 
@@ -104,3 +106,13 @@ const createAxiosResponseInterceptor = () => {
     );
 }
 createAxiosResponseInterceptor(); // Execute the method once during start
+
+export const setTokens = (data: object) => {
+    if (Platform.OS === 'web') {
+        storage.set('refresh_token', data['refresh'])
+        storage.set('access_token', data['access'])
+    } else {
+        AsyncStorage.setItem('refresh_token', data['refresh'])
+        AsyncStorage.setItem('access_token', data['access'])
+    }
+}
