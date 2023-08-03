@@ -49,6 +49,28 @@ class createUser(APIView):
             return Response(serializer.errors, status=400)
 
 class edit_account_view(APIView):
+    def get(self, request):
+        try:
+            decoded_token =  jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
+        
+        try:
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except Exception as e:
+            print(e)
+            return Response("User not found", 404)
+        
+        try:
+            obj = {
+                "username": user.username,
+                "email" : user.email
+            }
+            return Response(obj, 200)
+        except Exception as e:
+            print(e)
+            return Response(e, 500)
+
     def put(self, request, format=None):    
         try:
             decoded_token = jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
@@ -56,37 +78,18 @@ class edit_account_view(APIView):
             return Response("failed to authorize editing user", status=401)
         try:
             user_id = decoded_token['user_id']
-           
-
             user = BasicUser.objects.get(pk=user_id)
-           # print(user)
-            serializer = UpdateUserSerializer(data=request.data)
 
-            if (serializer.is_valid(raise_exception=True)):
-                print ("data validated")
+            serializer = UpdateUserSerializer(data=request.data)
+            if (serializer.is_valid()):
                 serializer.update(instance=user)
-                return Response("Modified Used", status=201)
+                return Response("Modified User", status=204)
             else:
                 print(serializer.errors)
-                return Response("Did not modify user", status = 403)
+                return Response(serializer.errors, status = 400)
         except Exception as e:
              print("exception" + str(e))
-             return Response(str(e), status=400)
-
-
-            # print(request.data)
-            # form = EditProfileForm(request.data, instance=user)
-            # print(form)
-
-            # if form.is_valid():
-            #     form.save()
-            #     return Response(status=200)
-            # else:
-            #     form = EditProfileForm(request.data, instance=user, initial= {"email":"test@testtest.com","username":"testuser"})
-            #     if form.is_valid():
-            #         form.save()
-            #     else:
-            #         return Response(status=400)
+             return Response(str(e), status=500)
 
 class deleteUser(APIView):
     def delete(self,request, format=None):
