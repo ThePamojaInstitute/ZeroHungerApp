@@ -30,10 +30,19 @@ export const AccountSettingsScreen = ({ navigation }) => {
     const handleErrorMessage = (error: string) => {
         if (error.toLowerCase().includes('username')) {
           setErrField('username')
-          setErrMsg("Invalid username, it may be in use by another user")
+          setErrMsg("Invalid username")
+          if (error.toLowerCase().includes('unique'))  {
+            setErrField('username')
+            setErrMsg("This username is already in use")
+          }
         } else if (error.toLowerCase().includes('email')) {
           setErrField('email')
-          setErrMsg("Invalid email, it may be in use by another user")
+          setErrMsg("Invalid email")
+          if (error.toLowerCase().includes('unique'))  {
+            setErrField('email')
+            setErrMsg("This email is already in use")
+          }
+
         } else {
           alert!({ type: 'open', message: error, alertType: 'error' })
         }
