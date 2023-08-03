@@ -44,7 +44,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 component={OnboardingScreen}
                 options={({ route }) => ({
                     title: t("app.title"),
-                    headerTitleStyle: globalStyles.H4,
+                    // headerTitleStyle: globalStyles.H4,
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
                     headerRight: () => (
