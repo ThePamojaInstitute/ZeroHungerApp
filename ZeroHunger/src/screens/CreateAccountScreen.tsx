@@ -12,7 +12,7 @@ import {
 import styles from "../../styles/screens/createAccountStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useFocusEffect } from "@react-navigation/native";
-import { createUser, editUser } from "../controllers/auth";
+import { createUser, logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import {
@@ -26,6 +26,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
 import { Controller, useForm } from "react-hook-form";
 import { CreateUserFormData } from "../../types";
+import { axiosInstance, setTokens } from "../../config";
+import jwt_decode from "jwt-decode";
+import NotificationsTest from "./NotificationsTest";
 
 export const CreateAccountScreen = ({ navigation }) => {
   const [loaded, setLoaded] = useState(false)
@@ -63,7 +66,38 @@ export const CreateAccountScreen = ({ navigation }) => {
   const [hideConfPass, setHideConfPass] = useState(true)
   const [isAccepted, setIsAccepted] = useState(false)
   const [errMsg, setErrMsg] = useState("")
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation()
+  const [expoPushToken, setExpoPushToken] = useState("");
+
+  const handleLogin = (credentials: object) => {
+    dispatch({ type: "LOGIN_START", payload: null })
+    logInUser({
+      "username": credentials['username'],
+      "password": credentials['password'],
+      "expo_push_token": expoPushToken
+    })
+      .then(async res => {
+        if (res.msg === "success") {
+          await axiosInstance.post("users/token/",
+            { "username": credentials['username'], "password": credentials['password'] })
+            .then(resp => {
+              dispatch({
+                type: "LOGIN_SUCCESS", payload: {
+                  "user": jwt_decode(resp.data['access']),
+                  "token": resp.data
+                }
+              })
+
+              setTokens(resp.data)
+            }).then(() => {
+              navigation.navigate('HomeScreen')
+            })
+        } else {
+          dispatch({ type: "LOGIN_FAILURE", payload: res.res })
+          navigation.navigate('LoginScreen')
+        }
+      })
+  }
 
   const handleSignUp = (data: object, e: (GestureResponderEvent |
     NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
@@ -85,7 +119,13 @@ export const CreateAccountScreen = ({ navigation }) => {
       if (res.msg === "success") {
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
         alert!({ type: 'open', message: 'Account created successfully!', alertType: 'success' })
-        navigation.navigate('LoginScreen')
+        // navigation.navigate('LoginScreen')
+        const credentials = {
+          "username": data['username'].toLowerCase(),
+          "password": data['password'],
+          "expo_push_token": expoPushToken
+        }
+        handleLogin(credentials)
       } else {
         if (!res.res['username'] && !res.res['email']) {
           alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
@@ -110,6 +150,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   }
   return (
     <View testID="SignUp.container" style={styles.authContainer}>
+      <NotificationsTest setExpoToken={setExpoPushToken} />
       {!loaded && <Text>{t("account.signup.loading.label")}</Text>}
       {loaded &&
         <>

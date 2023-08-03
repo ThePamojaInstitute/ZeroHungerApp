@@ -18,7 +18,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
-import { axiosInstance, passwordResetURL, storage } from "../../config";
+import { axiosInstance, passwordResetURL, setTokens, storage } from "../../config";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import jwt_decode from "jwt-decode";
 import {
@@ -77,16 +77,6 @@ export const LoginScreen = ({ navigation }) => {
       setErrMsg(error)
     } else {
       alert!({ type: 'open', message: error, alertType: 'error' })
-    }
-  }
-
-  const setTokens = (data: object) => {
-    if (Platform.OS === 'web') {
-      storage.set('refresh_token', data['refresh'])
-      storage.set('access_token', data['access'])
-    } else {
-      AsyncStorage.setItem('refresh_token', data['refresh'])
-      AsyncStorage.setItem('access_token', data['access'])
     }
   }
 
