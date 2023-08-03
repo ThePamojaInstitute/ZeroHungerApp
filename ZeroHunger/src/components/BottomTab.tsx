@@ -13,6 +13,7 @@ import OfferFormScreen from '../screens/OfferFormScreen';
 import OfferDetailsScreen from '../screens/OfferDetailsScreen';
 import AccountSettingsScreen from '../screens/AccountSettingsScreen';
 import NotificationsSettingsScreen from '../screens/NotificationsSettingsScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
 import Conversations from '../screens/Conversations';
 import Chat from './Chat';
 import NotificationsScreen from '../screens/NotificationsScreen';
@@ -39,6 +40,23 @@ const HomeStackNavigator = ({ navigation }) => {
     const { t, i18n } = useTranslation();
     return (
         <Stack.Navigator>
+            <Stack.Screen
+                name="OnboardingScreen"
+                component={OnboardingScreen}
+                options={({ route }) => ({
+                    title: t("app.title"),
+                    // headerTitleStyle: globalStyles.H4,
+                    headerTitleAlign: 'center',
+                    headerShadowVisible: false,
+                    headerRight: () => (
+                        <View style={{ marginRight: 24 }}>
+                            <TouchableOpacity onPress={() => { navigation.navigate("LoginScreen") }}>
+                                <Text style={globalStyles.Body}>Skip</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )
+                })}
+            />
             <Stack.Screen
                 name="HomeScreen"
                 component={HomeScreen}
@@ -376,8 +394,9 @@ const BottomTab = () => {
                         const routeName = getFocusedRouteNameFromRoute(route) ?? ""
                         if (routeName === 'LoginScreen' ||
                             routeName === 'CreateAccountScreen' ||
-                            routeName === 'Chat') {
-
+                            routeName === 'Chat' ||
+                            routeName === 'OnboardingScreen')
+                        {
                             return { display: "none" }
                         }
                         return styles.bottomBarTab
