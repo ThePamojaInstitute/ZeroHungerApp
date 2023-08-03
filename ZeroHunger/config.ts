@@ -18,7 +18,7 @@ export const storage = Platform.OS === 'web' ? new MMKV() : mockMMKV
 export const BaseURL = '127.0.0.1:8000'
 // export const BaseURL = 'zh-backend-azure-webapp.azurewebsites.net'
 
-export const passwordResetURL = 'https://zh-backend-azure-webapp.azurewebsites.net/users/reset_password/'
+export const passwordResetURL = 'http://127.0.0.1:8000/users/reset_password/'
 
 export const axiosInstance = axios.create({
     baseURL: `http://${BaseURL}/`,
