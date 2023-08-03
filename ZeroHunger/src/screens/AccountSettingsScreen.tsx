@@ -1,197 +1,248 @@
-import { useContext, useState, useEffect  } from "react";
-import {   Text,
-    View,
-    TextInput,
-    TouchableOpacity,
-    GestureResponderEvent,
-    NativeSyntheticEvent,
-    TextInputSubmitEditingEventData,
-    Keyboard } from "react-native";
+import { useContext, useState, useEffect } from "react";
+import {
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Linking,
+  Platform,
+} from "react-native";
 import styles from "../../styles/screens/accountSettingsStyleSheet"
 import { AuthContext } from "../context/AuthContext";
-import { logOutUser, deleteUser } from "../controllers/auth";
+import { logOutUser, deleteUser, getAccount } from "../controllers/auth";
 import { useAlert } from "../context/Alert";
 import { editUser } from "../controllers/auth";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useTranslation } from "react-i18next";
+import { Controller, useForm } from "react-hook-form";
+import { AccountSettingsFormData } from "../../types";
+import { passwordResetURL } from "../../config";
+import Alert from 'react-native-awesome-alerts';
 
 
 export const AccountSettingsScreen = ({ navigation }) => {
-    const { user, accessToken, dispatch } = useContext(AuthContext);
-    const { dispatch: alert } = useAlert()
+  const { accessToken, dispatch } = useContext(AuthContext);
+  const { dispatch: alert } = useAlert()
+  const {
+    control,
+    handleSubmit,
+    setError,
+    setValue,
+    formState: { errors },
+  } = useForm<AccountSettingsFormData>();
 
-    const [username, setUsername] = useState("")
-    const [email, setEmail] = useState("")
-    const [errField, setErrField] = useState("")
-    const [errMsg, setErrMsg] = useState("")
-    const {t, i18n} = useTranslation();
-    
-    //copied from account creation screen
-    const handleErrorMessage = (error: string) => {
-        if (error.toLowerCase().includes('username')) {
-          setErrField('username')
-          setErrMsg("Invalid username")
-          if (error.toLowerCase().includes('unique'))  {
-            setErrField('username')
-            setErrMsg("This username is already in use")
-          }
-        } else if (error.toLowerCase().includes('email')) {
-          setErrField('email')
-          setErrMsg("Invalid email")
-          if (error.toLowerCase().includes('unique'))  {
-            setErrField('email')
-            setErrMsg("This email is already in use")
-          }
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [showAlert, setShowAlert] = useState(false)
+  const { t, i18n } = useTranslation()
 
-        } else {
-          alert!({ type: 'open', message: error, alertType: 'error' })
-        }
-      }
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={handleSubmit(handleModifyUser)} testID="Request.createBtn" style={globalStyles.navDefaultBtn}>
+          <Text testID="Request.createBtnLabel" style={globalStyles.defaultBtnLabel}>Save</Text>
+        </TouchableOpacity>
+      )
+    })
+  }, [])
 
-    const handleDeleteUser = () => {
-        deleteUser(user['user_id'], accessToken).then(res => {
-            if (res === "success") {
-                logOutUser().then(() => {
-                    dispatch({ type: "LOGOUT", payload: null })
-                    alert!({ type: 'open', message: 'Account deleted successfully!', alertType: 'success' })
-                    navigation.navigate('LoginScreen')
-                }).catch(() => {
-                    alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                    console.log("log out error");
-                })
-            } else {
-                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                console.log(res);
-            }
+  const handleDeleteUser = () => {
+    deleteUser(accessToken).then(res => {
+      if (res === "success") {
+        logOutUser().then(() => {
+          dispatch({ type: "LOGOUT", payload: null })
+          alert!({ type: 'open', message: 'Account deleted successfully!', alertType: 'success' })
+          navigation.navigate('LoginScreen')
+        }).catch(err => {
+          alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+          console.log(err);
         })
+      } else {
+        alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+        console.log(res);
+      }
+    })
+  }
+
+  const handleModifyUser = (data: object) => {
+    const editedUser = {
+      "username": data['username'].toLowerCase(),
+      "email": data['email'].toLowerCase(),
     }
 
-    const handleModifyUser = ()  => {
-        console.log("Trying to modify user")
-        var user = {
-            "username": username,
-            "email": email,
+    editUser(accessToken, editedUser).then(res => {
+      if (res.msg === "success") {
+        alert!({ type: 'open', message: 'Account modified successfully!', alertType: 'success' })
+        navigation.navigate('LoginScreen')
+      } else {
+        if (!res.res.includes("username") && !res.res.includes("email")) {
+          alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
         }
-        editUser(accessToken, user).then(res => {
-          if (res.msg === "success") {
-            dispatch({ type: "CHANGEPROFILE_SUCCESS", payload: res.res })
-            alert!({ type: 'open', message: 'Modified Profile Successfully!', alertType: 'success' })
-          } else if (res.msg === "failure") {
-            dispatch({ type: "CHANGEPROFILE_FAILURE", payload: res.res })
-            const error = res.res;
-            handleErrorMessage(error)
-          } else {
-            dispatch({ type: "CHANGEPROFILE_FAILURE", payload: res.res })
-            const error = res.msg ? res.msg : "An error occurred"
-            handleErrorMessage(error)
-          }
-        })
+
+        if (res.res.includes("username")) {
+          setError('username', {
+            type: "server",
+            message: "Username is taken"
+          })
+        }
+        if (res.res.includes("email")) {
+          setError('email', {
+            type: "server",
+            message: "There is already an account associated with this email"
+          })
+        }
       }
+    })
+  }
 
+  const handlePasswordReset = () => {
+    Linking.canOpenURL(passwordResetURL).then(supported => {
+      if (supported) {
+        Linking.openURL(passwordResetURL);
+      } else {
+        console.log(`Cannot open URL: ${passwordResetURL}`);
+      }
+    })  //replace this with actual URL later
+  }
 
-    useEffect(() => {
+  useEffect(() => {
+    getAccount(accessToken).then(data => {
+      setUsername(data['username'])
+      setEmail(data['email'])
+    })
+  }, [])
 
-        var uname = user ? user['username'] : "username"
-     //   console.log(uname)
-        setUsername(uname)
+  useEffect(() => {
+    if (username) {
+      setValue("username", username)
+    }
 
-    }, [])
-   
+    if (email) {
+      setValue("email", email)
+    }
+  }, [username, email])
 
-    return (
-        // <View testID="AccSett.container" style={{ padding: 50 }}>
-        //     <Text>Temporary Account Settings Screen</Text>
-        //     <Text> Change your account's email</Text>
-        //     <TextInput
-        //       nativeID="accountSetting.emailInput"
-        //       testID="accountSetting.emailInput"
-        //       secureTextEntry={false}
-        //       onChangeText={newText => {
-        //         setEmail(newText)}}
-        //     />
-        //      <Text> Change your account's username </Text>
-        //      <TextInput
-        //       nativeID="accountSetting.usernameInput"
-        //       testID="accountSetting.usernameInput"
-        //       secureTextEntry={false}
-        //       onChangeText={newText => {
-        //         setUsername(newText)}}
-        //       defaultValue= {user ? user['username'] : "User"}
-        //     />
-
-
-        // </View>
-    
-
-    <View>
-        {(errField === 'username') &&
-            <View testID="SignUp.usernameErrMsgContainer" style={styles.errorMsgContainer}>
-              <Text testID="SignUp.usernameErrMsg" style={styles.errorMsg}>{errMsg}</Text>
-            </View>}
-        <View testID="SignUp.usernameInputContainer" style={styles.inputContainer}>
+  return (
+    <View style={styles.container}>
+      <View testID="SignUp.usernameInputContainer" style={[styles.inputContainer, { width: '95%' }]}>
         <Text testID="SignUp.usernameLabel" style={[styles.inputLabel,
-        { color: `${(errField === 'username') ? Colors.alert2 : Colors.dark}` }]}
-        > {t("account.signup.user.label")} </Text>
-        <TextInput
-          nativeID="SignUp.usernameInput"
-          testID="SignUp.usernameInput"
-          style={[styles.input,
-          { borderColor: `${(errField === 'username') ? Colors.alert2 : Colors.midLight}` }]}
-          onChangeText={newText => {
-            setUsername(newText)
-            setErrField('')
+        { color: errors.username ? Colors.alert2 : Colors.dark }]}
+        >Username</Text>
+        <Controller
+          defaultValue=""
+          control={control}
+          rules={{
+            minLength: {
+              value: 5,
+              message: "Username length should be at least 5 characters"
+            },
+            maxLength: {
+              value: 50,
+              message: "Username length should be at most 50 characters"
+            },
+            pattern: {
+              value: /^(?!.*__).*$/,
+              message: "Username shouldn't include \"__\""
+            }
           }}
-          onChange={() => { if (errField === 'username') setErrField('') }}
-          blurOnSubmit={false}
-          maxLength={64}
-          defaultValue= {user ? user['username'] : "User"}
-          
-        />
-        </View>
-        {(errField === 'email') &&
-            <View testID="SignUp.emailErrMsgContainer" style={styles.errorMsgContainer}>
-              <Text testID="SignUp.emailErrMsg" style={styles.errorMsg}>{errMsg}</Text>
-            </View>}
-      <View testID="SignUp.emailInputContainer" style={styles.inputContainer}>
-        <Text testID="SignUp.emailLabel" style={[styles.inputLabel,
-        { color: `${(errField === 'email') ? Colors.alert2 : Colors.dark}` }]}
-        > {t("account.signup.email.label")} </Text>
-        <TextInput
-          nativeID="SignUp.emailInput"
-          testID="SignUp.emailInput"
-          style={[styles.input, { borderColor: `${(errField === 'email') ? Colors.alert2 : Colors.midLight}` }]}
-          secureTextEntry={false}
-          onChangeText={newText => {
-            setEmail(newText)
-            setErrField('')
-          }}
-          onChange={() => { if (errField === 'email') setErrField('') }}
-          blurOnSubmit={false}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              value={value}
+              placeholder="myusername"
+              nativeID="SignUp.usernameInput"
+              testID="SignUp.usernameInput"
+              style={[styles.input,
+              { borderColor: errors.username ? Colors.alert2 : Colors.midLight }]}
+              onChangeText={onChange}
+              onChange={onChange}
+              blurOnSubmit={false}
+              maxLength={50}
+              onBlur={onBlur}
+            />
+          )}
+          name="username"
         />
       </View>
+      {errors.username &&
+        <View testID="SignUp.usernameErrMsgContainer" style={styles.errorMsgContainer}>
+          <Text testID="SignUp.usernameErrMsg" style={styles.errorMsg}>{errors.username.message}</Text>
+        </View>}
+      <View testID="SignUp.emailInputContainer" style={[styles.inputContainer, { width: '95%' }]}>
+        <Text testID="SignUp.emailLabel" style={[styles.inputLabel,
+        { color: errors.email ? Colors.alert2 : Colors.dark }]}
+        >Email Address</Text>
+        <Controller
+          defaultValue=""
+          control={control}
+          rules={{
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: "Please enter a valid email"
+            }
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              value={value}
+              placeholder="email@example.com"
+              nativeID="SignUp.emailInput"
+              testID="SignUp.emailInput"
+              placeholderTextColor="#656565"
+              style={[styles.input, { borderColor: errors.email ? Colors.alert2 : Colors.midLight }]}
+              secureTextEntry={false}
+              onChangeText={onChange}
+              onChange={onChange}
+              blurOnSubmit={false}
+              onBlur={onBlur}
+              maxLength={256}
+            />
+          )}
+          name="email"
+        />
+      </View>
+      {errors.email &&
+        <View testID="SignUp.emailErrMsgContainer" style={styles.errorMsgContainer}>
+          <Text testID="SignUp.emailErrMsg" style={styles.errorMsg}>{errors.email.message}</Text>
+        </View>}
       <TouchableOpacity
-                testID="AccSett.editUserTestBtn"
-                style={styles.deleteUserBtn}
-                onPress={handleModifyUser}
-            >
-                <Text
-                    testID="AccSett.deleteUserBtnText"
-                    style={styles.deleteUserBtnText}
-                >Test Modify User</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                testID="AccSett.deleteUserBtn"
-                style={styles.deleteUserBtn}
-                onPress={handleDeleteUser}
-            >
-                <Text
-                    testID="AccSett.deleteUserBtnText"
-                    style={styles.deleteUserBtnText}
-                >Delete User</Text>
-            </TouchableOpacity>
-      </View>    
-    )
+        testID="AccSett.deleteUserBtn"
+        style={[globalStyles.defaultBtn, { width: '40%', marginLeft: 10 }]}
+        onPress={handlePasswordReset}
+      >
+        <Text
+          testID="AccSett.deleteUserBtnText"
+          style={globalStyles.defaultBtnLabel}
+        >Reset Password</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        testID="AccSett.deleteUserBtn"
+        style={[globalStyles.secondaryBtn, { width: '40%', marginLeft: 10, backgroundColor: Colors.alert2 }]}
+        onPress={() => { setShowAlert(true) }}
+      >
+        <Text
+          testID="AccSett.deleteUserBtnText"
+          style={globalStyles.defaultBtnLabel}
+        >Delete User</Text>
+      </TouchableOpacity>
+      <Alert
+        show={showAlert}
+        showProgress={false}
+        title="Account Deletion"
+        message="Are you sure you want to delete this account?"
+        closeOnTouchOutside={Platform.OS === 'web' ? false : true}
+        closeOnHardwareBackPress={Platform.OS === 'web' ? false : true}
+        showCancelButton={true}
+        showConfirmButton={true}
+        cancelText="No, cancel"
+        confirmText="Yes, delete it"
+        confirmButtonColor={Colors.alert2}
+        onCancelPressed={() => {
+          setShowAlert(false)
+        }}
+        onConfirmPressed={handleDeleteUser}
+        onDismiss={() => { setShowAlert(false) }}
+      />
+    </View>
+  )
 }
 
 export default AccountSettingsScreen

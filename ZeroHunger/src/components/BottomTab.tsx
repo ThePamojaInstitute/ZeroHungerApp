@@ -96,6 +96,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         backgroundColor: Colors.Background,
                     },
                     headerLeft: () => (<></>),
+                    contentStyle: { backgroundColor: Colors.Background }
                 }}
             />
             <Stack.Screen
@@ -107,7 +108,8 @@ const HomeStackNavigator = ({ navigation }) => {
                     headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background
-                    }
+                    },
+                    contentStyle: { backgroundColor: Colors.Background }
                 }}
             />
             <Stack.Screen
@@ -180,7 +182,24 @@ const HomeStackNavigator = ({ navigation }) => {
                 name="AccountSettingsScreen"
                 component={AccountSettingsScreen}
                 options={{
+                    title: "Account Settings",
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.Background
+                    },
                     headerShadowVisible: false,
+                    contentStyle: { backgroundColor: Colors.Background },
+                    headerLeft: () => (
+                        <TouchableOpacity
+                            testID="Request.cancelBtn"
+                            onPress={() => navigation.navigate('HomeScreen')}
+                        >
+                            <Text
+                                testID="Request.cancelBtnLabel"
+                                style={styles.cancelBtn}
+                            >Cancel</Text>
+                        </TouchableOpacity>
+                    ),
                 }}
             />
             <Stack.Screen

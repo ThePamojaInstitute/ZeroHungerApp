@@ -63,7 +63,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   const [hideConfPass, setHideConfPass] = useState(true)
   const [isAccepted, setIsAccepted] = useState(false)
   const [errMsg, setErrMsg] = useState("")
-  const {t, i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const handleSignUp = (data: object, e: (GestureResponderEvent |
     NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
@@ -77,8 +77,8 @@ export const CreateAccountScreen = ({ navigation }) => {
 
     dispatch({ type: "SIGNUP_START", payload: null })
     createUser({
-      "username": data['username'],
-      "email": data['email'],
+      "username": data['username'].toLowerCase(),
+      "email": data['email'].toLowerCase(),
       "password": data['password'],
       "confPassword": data['confPass']
     }, isAccepted).then(res => {
@@ -92,14 +92,12 @@ export const CreateAccountScreen = ({ navigation }) => {
         }
 
         if (res.res['username']) {
-          console.log("includes username");
           setError('username', {
             type: "server",
             message: res.res['username']
           })
         }
         if (res.res['email']) {
-          console.log("includes email");
           setError('email', {
             type: "server",
             message: res.res['email']

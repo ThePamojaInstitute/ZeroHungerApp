@@ -69,5 +69,10 @@ export default StyleSheet.create({
         fontSize: 11,
         marginHorizontal: 4,
         marginVertical: 1,
+    },
+    cancelBtn: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 16,
+        color: '#656565'
     }
 })

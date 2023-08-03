@@ -20,3 +20,8 @@ export type LoginUserFormData = {
     username: string,
     password: string,
 }
+
+export type AccountSettingsFormData = {
+    username: string,
+    email: string,
+}

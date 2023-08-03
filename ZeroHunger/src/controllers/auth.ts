@@ -12,7 +12,7 @@ export async function createUser(user: Object, acceptedTerms: boolean) {
     }
 }
 
-export async function editUser(accessToken: string, user:object) {
+export async function editUser(accessToken: string, editedUser: object) {
     try {
         const res = await axiosInstance.put('users/editUser',
             {
@@ -21,25 +21,21 @@ export async function editUser(accessToken: string, user:object) {
                     'Authorization': accessToken,
                     credentials: 'include'
                 },
-                data: {
-                    user
-                }
+                data: { user: editedUser }
             })
-            return { msg: "success", res: res.data }
-
+        return { msg: "success", res: res.data }
     }
     catch (error) {
-       return { msg: "failure", res: error.response.data }
+        return { msg: "failure", res: error.response.data }
     }
 }
 
-export async function deleteUser(userId: string, token: string) {
+export async function deleteUser(token: string) {
     try {
         const res = await axiosInstance.delete("users/deleteUser", {
             headers: {
                 Authorization: `${token}`
             },
-            data: { user_id: userId }
         })
         if (res.status === 200) {
             return "success"
@@ -99,5 +95,19 @@ export async function logOutUser() {
         })
     } catch (e) {
         console.log('logout not working', e)
+    }
+}
+
+export const getAccount = async (accessToken: string) => {
+    try {
+        const res = await axiosInstance.get('users/editUser', {
+            headers: {
+                Authorization: `${accessToken}`
+            }
+        })
+
+        return res.data
+    } catch (err) {
+        console.log(err);
     }
 }
