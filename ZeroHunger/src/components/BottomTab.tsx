@@ -53,14 +53,7 @@ const HomeStackNavigator = ({ navigation }) => {
                                 <Text style={globalStyles.Body}>Skip</Text>
                             </TouchableOpacity>
                         </View>
-                    ),
-                    // tabBarStyle: ((route) => {
-                    //     const routeName = getFocusedRouteNameFromRoute(route) ?? ""
-                    //     if (routeName === 'OnboardingScreen') {
-                    //         return { display: "none" }
-                    //     }
-                    //     return styles.bottomBarTab
-                    // })(route),
+                    )
                 })}
             />
             <Stack.Screen

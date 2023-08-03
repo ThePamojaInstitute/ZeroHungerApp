@@ -70,6 +70,7 @@
     "react-native-swipe-gestures": "^1.0.5",
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "~0.18.7",
+    "react-native-web-swiper": "^2.2.4",
     "react-router-dom": "^5.2.0",
     "react-use-websocket": "^4.3.1"
   },

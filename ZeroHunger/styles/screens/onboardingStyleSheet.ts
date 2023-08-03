@@ -11,11 +11,13 @@ export default StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         padding: 24,
+        // backgroundColor: Colors.offWhite
         // flex: 3,
     },
     image: {
+        // flex: 1,
         height: dim.height / 2,
         width: dim.width / 2,
-        marginBottom: 48
+        // marginBottom: 48
     },
 })
