@@ -7,7 +7,6 @@ from .models import BasicUser
 import pprint
 
 class RegistrationSerializer (serializers.ModelSerializer):
-
     username = serializers.CharField( validators=[UniqueValidator(queryset=BasicUser.objects.all(), message="Username is taken")],max_length=64)
     email = serializers.EmailField( max_length=256, validators=[UniqueValidator(queryset=BasicUser.objects.all(),  message="There is already an account associated with this email")])
     password = serializers.CharField(max_length=64, write_only=True) 
@@ -51,7 +50,7 @@ class LoginSerializer (serializers.ModelSerializer):
 
 class UpdateUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(validators=[UniqueValidator(queryset=BasicUser.objects.all(), message="Username is taken")], required=False, max_length=64, read_only=False)
-    email = serializers.EmailField(required=False, read_only=False)
+    email = serializers.EmailField(validators=[UniqueValidator(queryset=BasicUser.objects.all(),  message="There is already an account associated with this email")], required=False, read_only=False)
     class Meta:
         model = BasicUser
         fields = ['username', 'email']

@@ -13,7 +13,7 @@ import requests
 class BasicUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True)
     USERNAME_FIELD = "username"
-    email = models.CharField(max_length=128, unique = True )
+    email = models.EmailField(max_length=128, unique=True)
     EMAIL_FIELD = "email"
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
