@@ -13,13 +13,6 @@ import os
 from pathlib import Path
 from django.apps import apps as django_apps
 from datetime import timedelta 
-#from azure.identity import EnvironmentCredential
-#from azure.keyvault.secrets import SecretClient
-
-#VAULT_URL = os.environ["VAULT_URL"]
-#envcredential = EnvironmentCredential()
-#client = SecretClient(vault_url=VAULT_URL, credential=envcredential)
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,14 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 #django_key = client.get_secret("zh-backend-test-djangoKey").value
-SECRET_KEY = '2g0siigcmxo9%xhb&!gd2aedqyll(!wmsc9qlxi(uz345o)bdq'
+# SECRET_KEY = '2g0siigcmxo9%xhb&!gd2aedqyll(!wmsc9qlxi(uz345o)bdq'
 
 MAPBOX_ACCESS_CODE = 'pk.eyJ1IjoiemVyb2h1bmdlcmFwcCIsImEiOiJjbGtiOG83N3QwZTJoM2ZsNWsxOXljdmp1In0.Zpgj3_N26AMBWusOEiELuA' 
+SECRET_KEY = 'django-insecure-v7d71noy%ag1%5e7p(lz@567yn=r%_v0tqo4n#hbu9bcn$d0q!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost',
+                 '10.0.0.238', 'http://127.0.0.1:8000/']
 
 
 # Application definition
@@ -68,9 +63,6 @@ LOGIN_EXEMPT_URLS = {
   r'^reset/done/',
 }
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:19006']
-
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -80,7 +72,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = 'ZH_Backend.urls'
@@ -108,26 +99,13 @@ WSGI_APPLICATION = 'ZH_Backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-#db_username = client.get_secret("zh-backend-test-database-username").value
-#db_password = client.get_secret("zh-backend-test-database-password").value
-
-#DATABASES = {
- #   'default': {
-  #      'ENGINE': 'django.db.backends.mysql',
-   #     'NAME': 'zhbackendtestingdb',
-    #    'USER': db_username,
-      #  'PASSWORD': db_password, #Change for production
-       # 'HOST': 'zh-backend-testing-db-server.mysql.database.azure.com',
-       # 'PORT': '3306'
-    #}
-#}
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'database.db'),
+        'NAME':os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -191,15 +169,11 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = "Users.BasicUser"
 
-		#"BACKEND": "channels.layers.InMemoryChannelLayer"
-# redis_connection_string = client.get_secret("zh-backend-testing-redisconnectionstring").value
-# azure_redis_password = client.get_secret("AZURE-REDIS-PASSWORD").value
-
 CHANNEL_LAYERS = {
-    "default": {
+	"default": {
         # For production level, don’t use InMemoryChannelLayer use Redis channel instead
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
+		"BACKEND": "channels.layers.InMemoryChannelLayer"
+	}
 }
 
 # CHANNEL_LAYERS = {
@@ -243,7 +217,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [ os.path.join(BASE_DIR,'static/Users') ]
-
 #You will need to add all subfolders in here
 
 
@@ -255,7 +228,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media Files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

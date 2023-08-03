@@ -103,7 +103,7 @@ export const HomeScreen = ({ navigation }) => {
                         style={{ padding: 16 }}
                         name="notifications-sharp"
                         size={22}
-                        // onPress={() => { }}
+                        onPress={() => { navigation.navigate("NotificationsScreen") }}
                         testID="Home.notificationBtn"
                     />
                     <Ionicons

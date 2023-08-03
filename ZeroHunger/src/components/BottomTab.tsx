@@ -417,7 +417,11 @@ const BottomTab = () => {
                                             style={styles.modalClose}
                                             onPress={() => setModalVisible(!modalVisible)}
                                         >
-                                            <Ionicons name="close" size={30} />
+                                            <Ionicons
+                                                name="close"
+                                                size={30}
+                                                style={{ marginTop: -15 }}
+                                            />
                                         </TouchableOpacity>
                                     </View>
                                     <View style={{ alignItems: "center" }}>
