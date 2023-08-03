@@ -1,4 +1,4 @@
-import { View, Text, Image, Dimensions, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     useFonts,
@@ -16,7 +16,22 @@ type Props = {
     activeIndex?: number
 }
 
+//TEMP: Show onboarding on first app launch only using AsyncStorage
 export const OnboardingScreen = ({ navigation }, props: Props) => {
+    useEffect(() => {
+        async function setData() {
+            const appData = await AsyncStorage.getItem("appLaunched")
+            if(!appData) {
+                AsyncStorage.setItem("appLaunched", "false")
+            }
+            else {
+                navigation.navigate("LoginScreen")
+            }
+        }
+        // if(Platform.OS !== "web") setData()
+        setData()
+    }, [])
+
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
         PublicSans_400Regular,
