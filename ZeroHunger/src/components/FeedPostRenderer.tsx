@@ -60,7 +60,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
 
     useEffect(() => {
         const updater = () => {
-            listRef.current.scrollToOffset({ animated: false, offset: 0 })
+            listRef?.current?.scrollToOffset({ animated: false, offset: 0 })
             refetch()
         }
         setUpdater(() => () => updater())
