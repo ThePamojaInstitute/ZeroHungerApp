@@ -12,7 +12,7 @@ import {
 import styles from "../../styles/screens/createAccountStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useFocusEffect } from "@react-navigation/native";
-import { createUser } from "../controllers/auth";
+import { createUser, editUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import {
@@ -63,6 +63,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   const [hideConfPass, setHideConfPass] = useState(true)
   const [isAccepted, setIsAccepted] = useState(false)
   const [errMsg, setErrMsg] = useState("")
+  const {t, i18n} = useTranslation();
 
   const handleSignUp = (data: object, e: (GestureResponderEvent |
     NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
@@ -109,7 +110,6 @@ export const CreateAccountScreen = ({ navigation }) => {
       }
     })
   }
-  const { t, i18n } = useTranslation();
   return (
     <View testID="SignUp.container" style={styles.authContainer}>
       {!loaded && <Text>{t("account.signup.loading.label")}</Text>}
@@ -322,6 +322,9 @@ export const CreateAccountScreen = ({ navigation }) => {
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={handleSubmit(handleSignUp)}>
             <Text style={globalStyles.defaultBtnLabel}>Sign Up</Text>
           </TouchableOpacity>
+          {/* <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={testEditUser}>
+            <Text style={globalStyles.defaultBtnLabel}> Edit User Test </Text>
+          </TouchableOpacity> */}
         </>
       }
     </View >

@@ -68,7 +68,7 @@ LOGIN_EXEMPT_URLS = {
   r'^reset/done/',
 }
 
-#CSRF_TRUSTED_ORIGINS = ['*']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:19006']
 
 
 MIDDLEWARE = [
