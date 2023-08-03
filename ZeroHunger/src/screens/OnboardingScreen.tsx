@@ -8,6 +8,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { useState, useEffect } from "react";
+import { storage } from "../../config";
 import styles from '../../styles/screens/onboardingStyleSheet'
 import Swiper from 'react-native-web-swiper';
 
@@ -20,15 +21,25 @@ type Props = {
 export const OnboardingScreen = ({ navigation }, props: Props) => {
     useEffect(() => {
         async function setData() {
-            const appData = await AsyncStorage.getItem("appLaunched")
-            if(!appData) {
-                AsyncStorage.setItem("appLaunched", "false")
+            if(Platform.OS === "web") {
+                const appData = storage.getString("appLaunched")
+                if(!appData) {
+                    storage.set("appLaunched", "false")
+                }
+                else {
+                    navigation.navigate("LoginScreen")
+                }
             }
             else {
-                navigation.navigate("LoginScreen")
+                const appData = await AsyncStorage.getItem("appLaunched")
+                if(!appData) {
+                    AsyncStorage.setItem("appLaunched", "false")
+                }
+                else {
+                    navigation.navigate("LoginScreen")
+                }
             }
         }
-        // if(Platform.OS !== "web") setData()
         setData()
     }, [])
 

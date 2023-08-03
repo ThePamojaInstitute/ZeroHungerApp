@@ -12,6 +12,7 @@ const mockMMKV = {
     clearAll: () => { },
     addOnValueChangedListener: () => { },
     delete: () => { },
+    getAllKeys: () => { }
 }
 
 export const storage = Platform.OS === 'web' ? new MMKV() : mockMMKV
