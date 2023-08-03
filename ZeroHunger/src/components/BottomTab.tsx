@@ -17,6 +17,7 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import Conversations from '../screens/Conversations';
 import Chat from './Chat';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import PermissionsScreen1 from '../screens/PermissionsScreen1';
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -41,6 +42,18 @@ const HomeStackNavigator = ({ navigation }) => {
     return (
         <Stack.Navigator>
             <Stack.Screen
+                name="PermissionsScreen1"
+                component={PermissionsScreen1}
+                options={{
+                    title: t("app.title"),
+                    headerTitleAlign: 'center',
+                    // headerShadowVisible: false,
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite
+                    },
+                }}
+            />
+            <Stack.Screen
                 name="OnboardingScreen"
                 component={OnboardingScreen}
                 options={({ route }) => ({
@@ -48,6 +61,9 @@ const HomeStackNavigator = ({ navigation }) => {
                     // headerTitleStyle: globalStyles.H4,
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite
+                    },
                     headerRight: () => (
                         <View style={{ marginRight: 24 }}>
                             <TouchableOpacity onPress={() => { navigation.navigate("LoginScreen") }}>
@@ -130,6 +146,18 @@ const HomeStackNavigator = ({ navigation }) => {
                     contentStyle: { backgroundColor: Colors.Background }
                 }}
             />
+            {/* <Stack.Screen
+                name="PermissionsScreen1"
+                component={PermissionsScreen1}
+                options={{
+                    title: t("app.title"),
+                    headerTitleAlign: 'center',
+                    // headerShadowVisible: false,
+                    headerStyle: {
+                        backgroundColor: Colors.Background
+                    },
+                }}
+            /> */}
             <Stack.Screen
                 name="RequestFormScreen"
                 component={RequestFormScreen}
