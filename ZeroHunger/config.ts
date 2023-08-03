@@ -10,7 +10,8 @@ const mockMMKV = {
     getString: (str) => 'str',
     set: (str1, str2) => { },
     clearAll: () => { },
-    addOnValueChangedListener: () => { }
+    addOnValueChangedListener: () => { },
+    delete: () => { },
 }
 
 export const storage = Platform.OS === 'web' ? new MMKV() : mockMMKV
