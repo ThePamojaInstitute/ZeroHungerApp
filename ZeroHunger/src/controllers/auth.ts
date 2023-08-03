@@ -43,6 +43,27 @@ export async function createUser(user: Object, acceptedTerms: boolean) {
     }
 }
 
+export async function editUser(accessToken: string, user:object) {
+    try {
+        const res = await axiosInstance.put('users/editUser',
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': accessToken,
+                    credentials: 'include'
+                },
+                data: {
+                    user
+                }
+            })
+            return { msg: "success", res: res.data }
+
+    }
+    catch (error) {
+       return { msg: "failure", res: error.response.data }
+    }
+}
+
 export async function deleteUser(userId: string, token: string) {
     try {
         const res = await axiosInstance.delete("users/deleteUser", {
@@ -62,12 +83,8 @@ export async function deleteUser(userId: string, token: string) {
 }
 
 export async function modifyUser(user: Object) {
-    try {
-        const res = await axiosInstance.post("users/modifyUser", user)
-        console.log(res.data);
-    } catch (error) {
-        console.log(error);
-    }
+
+
 }
 
 export async function logInUser(user: Object) {

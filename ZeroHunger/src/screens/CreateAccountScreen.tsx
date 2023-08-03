@@ -12,7 +12,7 @@ import {
 import styles from "../../styles/screens/createAccountStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useFocusEffect } from "@react-navigation/native";
-import { createUser } from "../controllers/auth";
+import { createUser, editUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import {
@@ -59,6 +59,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   const [isAccepted, setIsAccepted] = useState(false)
   const [errMsg, setErrMsg] = useState("")
   const [errField, setErrField] = useState("")
+  const {t, i18n} = useTranslation();
 
   const handleErrorMessage = (error: string) => {
     if (error.toLowerCase().includes('username')) {
@@ -84,6 +85,17 @@ export const CreateAccountScreen = ({ navigation }) => {
       alert!({ type: 'open', message: error, alertType: 'error' })
     }
   }
+
+  // const testEditUser = () =>
+  // { 
+  //   var user = {
+  //   "username": username,
+  //   "email": email,
+  //   "password": password,
+  //   "confPassword": confPass
+  // }
+  //   editUser(user);
+  // }
 
   const handleSignUp = (e: (GestureResponderEvent |
     NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
@@ -111,7 +123,6 @@ export const CreateAccountScreen = ({ navigation }) => {
       }
     })
   }
-  const {t, i18n} = useTranslation();
   return (
     <View testID="SignUp.container" style={styles.authContainer}>
       {!loaded && <Text>{t("account.signup.loading.label")}</Text>}
@@ -256,6 +267,9 @@ export const CreateAccountScreen = ({ navigation }) => {
           <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={handleSignUp}>
             <Text style={globalStyles.defaultBtnLabel}>{t("account.signup.submit.label")}</Text>
           </TouchableOpacity>
+          {/* <TouchableOpacity testID="SignUp.Button" style={globalStyles.defaultBtn} onPress={testEditUser}>
+            <Text style={globalStyles.defaultBtnLabel}> Edit User Test </Text>
+          </TouchableOpacity> */}
         </>
       }
     </View>
