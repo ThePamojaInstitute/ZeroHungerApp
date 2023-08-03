@@ -8,6 +8,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import loginStyles from "../../styles/screens/loginStyleSheet"
 import { useAlert } from "../context/Alert";
 import { DIETREQUIREMENTS, LOGISTICS, getDietType, getLogisticsType, getPreferences, savePreferences } from "../controllers/preferences";
+import { Char } from "../../types";
 
 export const Preferences = ({ navigation }) => {
     const { user, accessToken } = useContext(AuthContext);
@@ -15,8 +16,8 @@ export const Preferences = ({ navigation }) => {
 
     const [errMsg, setErrMsg] = useState("")
     const [postalCode, setPostalCode] = useState('')
-    const [dietRequirements, setDietRequirements] = useState<number[]>([])
-    const [logistics, setLogistics] = useState<number[]>([])
+    const [dietRequirements, setDietRequirements] = useState<Char[]>([])
+    const [logistics, setLogistics] = useState<Char[]>([])
 
     useEffect(() => {
         getPreferences(accessToken).then(data => {
@@ -53,7 +54,7 @@ export const Preferences = ({ navigation }) => {
         })
     }
 
-    const renderItem = (item: number, state: number[], setState: React.Dispatch<React.SetStateAction<number[]>>, getter: (num: number) => string) => {
+    const renderItem = (item: Char, state: Char[], setState: React.Dispatch<React.SetStateAction<Char[]>>, getter: (char: Char) => string) => {
         return (
             <View key={item} style={{ flexDirection: 'row', marginVertical: 5 }}>
                 <Text style={globalStyles.Body}>{getter(item)}</Text>
@@ -62,9 +63,9 @@ export const Preferences = ({ navigation }) => {
                     size={22}
                     onPress={() => {
                         if (state.includes(item)) {
-                            setState(state.filter((num: number) => num != item))
+                            setState(state.filter((char: Char) => char != item))
                         } else {
-                            setState((oldArray: number[]) => [...oldArray, item])
+                            setState((oldArray: Char[]) => [...oldArray, item])
                         }
                     }}
                     style={{ position: 'absolute', right: 0 }}

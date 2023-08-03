@@ -17,20 +17,11 @@ import { useIsFocused } from '@react-navigation/native';
 import { Post } from "./Post";
 import { PostModel } from "../models/Post";
 import { default as _MyPostModal } from "./MyPostModal";
-import {
-    BlobServiceClient,
-    generateAccountSASQueryParameters,
-    AccountSASPermissions,
-    AccountSASServices,
-    AccountSASResourceTypes,
-    StorageSharedKeyCredential,
-    SASProtocol
-} from '@azure/storage-blob';
 
 
 const MyPostModal = forwardRef(_MyPostModal)
 
-export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
+export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, categories, diet, logistics, accessNeeds, setUpdater }) => {
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
         PublicSans_400Regular,
@@ -44,12 +35,13 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
 
 
     const { dispatch: alert } = useAlert()
-    const { user, accessToken } = useContext(AuthContext);
+    const { accessToken } = useContext(AuthContext);
 
     const [refreshing, setRefreshing] = useState(false)
 
     const selectedPost = useRef(0)
     const modalRef = useRef(null)
+    const listRef = useRef(null)
 
     const openModal = () => {
         modalRef.current.publicHandler()
@@ -64,7 +56,16 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchFeedPosts(accessToken, type, true)
+    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, accessNeeds)
+
+    useEffect(() => {
+        const updater = () => {
+            listRef.current.scrollToOffset({ animated: false, offset: 0 })
+            refetch()
+        }
+        setUpdater(() => () => updater())
+    }, [])
+
 
     // on navigation
     useEffect(() => {
@@ -72,8 +73,6 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
             refetch()
         } else return
     }, [isFocused])
-
-    if (!user) return navigation.navigate('LoginScreen')
 
     if (!loaded) return <Text>Loading...</Text>
 
@@ -120,57 +119,24 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
         })
     }
 
-    // const constants = {
-    //     accountName:
-    //     accountKey: 
-    // };
-    // const sharedKeyCredential = new StorageSharedKeyCredential(
-    //     constants.accountName,
-    //     constants.accountKey
-    // );
-
-    // async function createAccountSas() {
-
-    //     const sasOptions = {
-
-    //         services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
-    //         resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
-    //         permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
-    //         protocol: SASProtocol.Https,
-    //         startsOn: new Date(),
-    //         expiresOn: new Date(new Date().valueOf() + (10 * 60 * 1000)),   // 10 minutes
-    //     };
-
-    //     // const sasToken = generateAccountSASQueryParameters(
-    //     //     sasOptions,
-    //     //     sharedKeyCredential 
-    //     // ).toString();
-
-    //     console.log(`sasToken = '${sasToken}'\n`);
-
-    //     // prepend sasToken with `?`
-    //     return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
-    // }
-
-
-
     const renderItem = ({ item }) => {
-        if (!item || !item.pk) return
+        if (!item || !item.postId) return
 
         const post: PostModel = {
-            title: item['fields'].title,
-            imageLink: item['fields'].images,
-            postedOn: item['fields'].postedOn,
-            postedBy: item['fields'].postedBy,
-            description: item['fields'].description,
-            logistics: item['fields'].logistics,
-            fulfilled: item['fields'].fulfilled,
-            postalCode: item['fields'].postalCode,
-            accessNeeds: item['fields'].accessNeeds,
-            distance: item['fields']?.distance,
-            categories: item['fields']?.categories,
-            diet: item['fields']?.diet,
-            postId: item.pk,
+            title: item.title,
+            imageLink: item.images,
+            postedOn: item.postedOn,
+            postedBy: item.postedBy,
+            description: item.description,
+            logistics: item.logistics,
+            fulfilled: item.fulfilled,
+            postalCode: item.postalCode,
+            accessNeeds: item.accessNeeds,
+            distance: item?.distance,
+            categories: item?.categories,
+            diet: item?.diet,
+            expiryDate: item?.expiryDate,
+            postId: item.postId,
             username: item.username,
             type: type
         }
@@ -183,7 +149,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
                 selectedPost={selectedPost}
                 setShowRequests={setShowRequests}
                 from="home"
-                key={item.pk}
+                key={item.postId}
             />
         )
     }
@@ -191,6 +157,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests }) => {
     return (
         <>
             <FlashList
+                ref={listRef}
                 testID="Posts.list"
                 renderItem={renderItem}
                 data={flattenData}

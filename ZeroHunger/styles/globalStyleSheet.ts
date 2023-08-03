@@ -151,4 +151,10 @@ export const globalStyles = StyleSheet.create({
         fontSize: 12,
         color: Colors.dark
     },
+    Link: {
+        fontFamily: 'PublicSans_400Regular',
+        fontSize: 18,
+        textDecorationLine: 'underline',
+        color: Colors.dark,
+    },
 })

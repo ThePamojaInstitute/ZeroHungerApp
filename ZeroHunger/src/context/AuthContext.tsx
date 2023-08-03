@@ -1,19 +1,26 @@
 import { createContext, useEffect, useReducer, Dispatch, useState } from "react"
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwt_decode from "jwt-decode";
-import { axiosInstance } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import { logOutUser } from "../controllers/auth";
+import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as RootNavigation from '../../RootNavigation';
 
-export const setToken = async (type: string, value: string) => {
+const setItem = (key, value) => {
+    if (Platform.OS === 'web') storage.set(key, value)
+    else AsyncStorage.setItem(key, value)
+}
+
+export const setToken = (type: string, value: string) => {
     if (type === "access") {
         try {
-            await AsyncStorage.setItem('access_token', value)
+            setItem('access_token', value)
         } catch (error) {
             console.log(error);
         }
     } else {
         try {
-            await AsyncStorage.setItem('refresh_token', value)
+            setItem('refresh_token', value)
         } catch (error) {
             console.log(error);
         }
@@ -99,6 +106,18 @@ const AuthReducer = (state: Object, action: { type: string; payload: Object }) =
                 loading: false,
                 error: action.payload
             }
+        case "UPDATE_ACCESS":
+            return {
+                ...state,
+                user: action.payload['user'],
+                accessToken: action.payload['access'],
+            }
+        case "UPDATE_REFRESH":
+            return {
+                ...state,
+                user: action.payload['user'],
+                refreshToken: action.payload['access'],
+            }
         default:
             return state
     }
@@ -108,9 +127,44 @@ export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE)
     const [firstLoad, setFirstLoad] = useState(true)
 
+    if (Platform.OS === 'web') {
+        const listener = storage.addOnValueChangedListener((changedKey) => {
+            try {
+                const token = storage.getString(changedKey)
+                if (changedKey === 'access_token') {
+                    dispatch({
+                        type: 'UPDATE_ACCESS', payload: {
+                            user: jwt_decode(token),
+                            access: token
+                        }
+                    })
+                } else if (changedKey === 'refresh_token') {
+                    dispatch({
+                        type: 'UPDATE_REFRESH', payload: {
+                            user: jwt_decode(token),
+                            access: token
+                        }
+                    })
+                }
+            }
+            catch {
+                if (changedKey === 'mmkv.default\\access_token' || changedKey === 'mmkv.default\\refresh_token') {
+                    dispatch({ type: 'LOGOUT', payload: null })
+                    RootNavigation.navigate('LoginScreen', {})
+                }
+            }
+        })
+    }
+
     const initializeTokenState = async () => {
         try {
-            const refreshToken = await AsyncStorage.getItem('refresh_token')
+            let refreshToken
+            if (Platform.OS === 'web') {
+                refreshToken = storage.getString('refresh_token')
+            }
+            else {
+                refreshToken = await AsyncStorage.getItem('refresh_token')
+            }
 
             if (refreshToken) {
                 const response = await axiosInstance.post('users/token/refresh/', { refresh: refreshToken })

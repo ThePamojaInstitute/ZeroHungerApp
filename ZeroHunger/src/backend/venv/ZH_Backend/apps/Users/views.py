@@ -1,14 +1,8 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
-from django.contrib.auth.models import User
-from django.contrib.auth import logout
-from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.core.mail import send_mail
 from django.conf import settings
 
 import json
@@ -17,9 +11,9 @@ import time
 from .models import BasicUser
 from apps.Chat.models import Conversation
 from django.db.models import Q
+from .models import BasicUser
 from .serializers import RegistrationSerializer, LoginSerializer
-from apps.Posts.views import decode_token
-
+from apps.Chat.models import Conversation
 import jwt
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -51,7 +45,7 @@ class createUser(APIView):
             #)
             return Response(serializer.data, status=201)
         else:
-            return Response(serializer.errors, status=401)
+            return Response(serializer.errors, status=400)
       
     
 class deleteUser(APIView):
@@ -76,7 +70,7 @@ class deleteUser(APIView):
             
             return Response({"User deleted"}, 200)
         except:
-            return Response(status=204)
+            return Response(status=404)
     
 class modifyUser(APIView):
     def post(self,request, format=None):
@@ -96,13 +90,12 @@ class logIn(APIView):
                 pass
             return serializer.logIn()
         else:
-            return Response({"Error logging in", 401})
+            return Response({"Error logging in", 400})
                 
 class logOut(APIView):
     def post(self,request, format=None):
         try:
                refresh_token = request.data["refresh_token"]
-               
                try:  
                     decoded_user = jwt.decode(refresh_token, settings.SECRET_KEY)
                     user = BasicUser.objects.get(pk=decoded_user['user_id'])
@@ -116,20 +109,31 @@ class logOut(APIView):
                token.blacklist()
                return Response(status=205)
         except Exception as e:
-           print(e)
-           return Response(status=400)
+            if(e.__str__() == "Token is blacklisted"):
+                return Response(status=205)
+            else:
+                try: # if no refresh token
+                    token = RefreshToken(refresh_token)
+                except:
+                    return Response(status=205)
+                return Response(status=400)
         
 class userPreferences(APIView):
     def get(self, request):
-        decoded_token = decode_token(request.headers['Authorization'])
-        user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        try:
+            decoded_token =  jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
+        
+        try:
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except Exception:
+            return Response("User not found", 404)
 
         data = {}
         try:
-            logistics = user.get_logistics()
-            data['logistics'] = [eval(i) for i in logistics] #convert strings to ints
-            diet = user.get_diet()
-            data['diet'] = [eval(i) for i in diet]
+            data['logistics'] = user.get_logistics()
+            data['diet'] = user.get_diet()
             data['postalCode'] = user.get_postal_code()
 
             return Response(data, 200)
@@ -138,9 +142,17 @@ class userPreferences(APIView):
             return Response({e.__str__()}, 500)
 
     def post(self, request, format=None):
-        decoded_token = decode_token(request.data['headers']['Authorization'])
+        try:
+            decoded_token =  jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
+        
+        try:
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except Exception:
+            return Response("User not found", 404)
+        
         data = request.data['data']
-        user = BasicUser.objects.get(pk=decoded_token['user_id'])
         
         try:  
             user.set_logistics(data['logistics'])
@@ -149,12 +161,13 @@ class userPreferences(APIView):
             if(data['postalCode']):
                 user.update_coordinates()
             else:
-                user.coordinates = ''
+                user.longitude = None
+                user.latitude = None
 
             user.save()   
         except Exception as e:
             print(e)
-            return Response({e.__str__()}, 500)
+            return Response(e.__str__(), 500)
         
         return Response({"success!!"}, 200)
 
@@ -218,3 +231,4 @@ class clearAllNotifications(APIView):
         except Exception as e:
             print(e)
             return Response(status=400)
+        return Response(status=204)

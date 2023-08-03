@@ -1,24 +1,43 @@
 import { axiosInstance } from "../../config"
-import { LOGISTICSPREFERENCES } from "./post"
+import { Char } from "../../types"
+import { ACCESSNEEDSPREFERENCES, LOGISTICSPREFERENCES } from "./post"
 
-export const LOGISTICS = {
-    PICKUP: 0,
-    DELIVERY: 1,
-    PUBLIC: 2,
-    WHEELCHAIR: 3
-}
-export const DIETREQUIREMENTS = {
-    HALAL: 0,
-    VEGETARIAN: 1,
-    VEGAN: 2,
-    LACTOSEFREE: 3,
-    NUTFREE: 4,
-    GLUTENFREE: 5,
-    SUGARFREE: 6,
-    SHELLFISHFREE: 7
+interface ILOGISTICS {
+    PICKUP: Char,
+    DELIVERY: Char,
+    PUBLIC: Char,
+    WHEELCHAIR: Char
 }
 
-export const getLogisticsType = (type: number) => {
+interface IDIETREQUIREMENTS {
+    HALAL: Char,
+    VEGETARIAN: Char,
+    VEGAN: Char,
+    LACTOSEFREE: Char,
+    NUTFREE: Char,
+    GLUTENFREE: Char,
+    SUGARFREE: Char,
+    SHELLFISHFREE: Char
+}
+
+export const LOGISTICS: ILOGISTICS = {
+    PICKUP: 'a',
+    DELIVERY: 'b',
+    PUBLIC: 'c',
+    WHEELCHAIR: 'd'
+}
+export const DIETREQUIREMENTS: IDIETREQUIREMENTS = {
+    HALAL: 'a',
+    VEGETARIAN: 'b',
+    VEGAN: 'c',
+    LACTOSEFREE: 'd',
+    NUTFREE: 'e',
+    GLUTENFREE: 'f',
+    SUGARFREE: 'g',
+    SHELLFISHFREE: 'h'
+}
+
+export const getLogisticsType = (type: Char) => {
     switch (type) {
         case LOGISTICS.PICKUP:
             return 'Pick up'
@@ -33,7 +52,7 @@ export const getLogisticsType = (type: number) => {
     }
 }
 
-export const getDietType = (type: number) => {
+export const getDietType = (type: Char) => {
     switch (type) {
         case DIETREQUIREMENTS.HALAL:
             return 'Halal'
@@ -56,7 +75,7 @@ export const getDietType = (type: number) => {
     }
 }
 
-export const savePreferences = async (postalCode: string, dietRequirements: number[], logistics: number[], accessToken: string) => {
+export const savePreferences = async (postalCode: string, dietRequirements: Char[], logistics: Char[], accessToken: string) => {
     const canadianPostalCodeRegex = /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i
 
     if (postalCode.length > 0 && !postalCode.match(canadianPostalCodeRegex)) {
@@ -76,7 +95,7 @@ export const savePreferences = async (postalCode: string, dietRequirements: numb
             },
             data: data
         })
-        if (res.status === 200) {
+        if (res.status === 204) {
             return { msg: "success", res: res.data }
         } else {
             return { msg: "failure", res: null }
@@ -100,38 +119,46 @@ export const getPreferences = async (accessToken: string) => {
     }
 }
 
+export const getPreferencesLogistics = (
+    data: Char[],
+    setAccessNeeds: React.Dispatch<React.SetStateAction<Char>>,
+    setLogistics: React.Dispatch<React.SetStateAction<Char[]>>,
+) => { // converts from post's logistics to preferences' logistics and access needs
+    if (data.length === 0) {
+        setAccessNeeds(ACCESSNEEDSPREFERENCES.NONE)
+    } else {
+        if (data.includes(LOGISTICS.PICKUP)) {
+            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.PICKUP])
+        }
+
+        if (data.includes(LOGISTICS.DELIVERY)) {
+            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
+            setAccessNeeds(ACCESSNEEDSPREFERENCES.DELIVERY)
+        }
+
+        if (data.includes(LOGISTICS.PUBLIC)) {
+            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.PUBLIC])
+        }
+
+        if (data.includes(LOGISTICS.WHEELCHAIR)) {
+            setAccessNeeds(ACCESSNEEDSPREFERENCES.WHEELCHAIR)
+        }
+
+        if (!data.includes(LOGISTICS.DELIVERY) && !data.includes(LOGISTICS.WHEELCHAIR)) {
+            setAccessNeeds(ACCESSNEEDSPREFERENCES.NONE)
+        }
+    }
+}
+
 export const intitializePreferences = (
     accessToken: string,
-    setAccessNeeds: React.Dispatch<React.SetStateAction<number>>,
-    setLogistics: React.Dispatch<React.SetStateAction<number[]>>,
+    setAccessNeeds: React.Dispatch<React.SetStateAction<Char>>,
+    setLogistics: React.Dispatch<React.SetStateAction<Char[]>>,
     setPostalCode: React.Dispatch<React.SetStateAction<string>>,
-    setDiet: React.Dispatch<React.SetStateAction<number[]>>,
+    setDiet: React.Dispatch<React.SetStateAction<Char[]>>,
 ) => {
     getPreferences(accessToken).then(data => {
-        if (data['logistics'].length === 0) {
-            setAccessNeeds(0)
-        } else {
-            if (data['logistics'].includes(0)) {
-                setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.PICKUP])
-            }
-
-            if (data['logistics'].includes(1)) {
-                setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
-                setAccessNeeds(2)
-            }
-
-            if (data['logistics'].includes(2)) {
-                setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.PUBLIC])
-            }
-
-            if (data['logistics'].includes(3)) {
-                setAccessNeeds(1)
-            }
-
-            if (!data['logistics'].includes(1) && !data['logistics'].includes(3)) {
-                setAccessNeeds(0)
-            }
-        }
+        getPreferencesLogistics(data['logistics'], setAccessNeeds, setLogistics)
 
         if (data['postalCode']) {
             setPostalCode(data['postalCode'])
@@ -140,7 +167,7 @@ export const intitializePreferences = (
         if (data['diet']) {
             Object.keys(DIETREQUIREMENTS).map(value => {
                 if (data['diet'].includes(DIETREQUIREMENTS[value])) {
-                    setDiet((oldArray: number[]) => [...oldArray, DIETREQUIREMENTS[value]])
+                    setDiet((oldArray: Char[]) => [...oldArray, DIETREQUIREMENTS[value]])
                 }
             })
         }

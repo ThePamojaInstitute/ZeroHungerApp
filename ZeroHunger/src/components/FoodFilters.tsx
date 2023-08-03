@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View, Image } from "react-native";
-import styles from "../../styles/components/FoodCategoriesStyleSheet"
+import styles from "../../styles/components/FoodFiltersStyleSheet"
 import { Colors } from "../../styles/globalStyleSheet";
 import { ScrollView } from "react-native-gesture-handler";
 

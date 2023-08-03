@@ -1,14 +1,11 @@
 from django.db import models
 from django.conf import settings
-
+from django.contrib.auth.models import PermissionsMixin
+from django.core.validators import MinValueValidator, MaxValueValidator 
 from django.contrib.auth.base_user import AbstractBaseUser
 from multiselectfield import MultiSelectField
 from .choices import LOGISTICS_CHOICES, DIET_REQUIREMENTS
-
 from .managers import CustomUserManager
-# from .settings import AUTH_USER_MODEL
-from django.contrib.auth.models import PermissionsMixin
-
 import requests
 
 class BasicUser(AbstractBaseUser, PermissionsMixin):
@@ -21,7 +18,8 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     expo_push_token = models.CharField(max_length=50, default="", blank=True)
     postalCode = models.CharField(max_length=7, blank=True)
-    coordinates = models.CharField(max_length=50, blank=True)
+    longitude = models.FloatField(validators=[MinValueValidator(-180), MaxValueValidator(180)], null=True, blank=True, default=None)
+    latitude = models.FloatField(validators=[MinValueValidator(-90), MaxValueValidator(90)], null=True, blank=True, default=None)
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=len(LOGISTICS_CHOICES), default='', blank=True)
     diet = MultiSelectField(choices=DIET_REQUIREMENTS, max_length=len(DIET_REQUIREMENTS), default='', blank=True)
     notifications = models.JSONField(default=list)
@@ -70,6 +68,6 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
 
         longitude = json['features'][0]['center'][0] 
         latitude = json['features'][0]['center'][1] 
-        coordinated = f'{longitude},{latitude}'
 
-        self.coordinates = coordinated
+        self.longitude = float(longitude)
+        self.latitude = float(latitude)

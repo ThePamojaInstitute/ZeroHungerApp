@@ -3,6 +3,7 @@ import { View, Text } from "react-native"
 import { globalStyles } from "../../styles/globalStyleSheet"
 import { LOGISTICSPREFERENCES } from "../controllers/post"
 import styles from "../../styles/components/accessNeedsStyleSheet"
+import { Char } from "../../types"
 
 
 const Logistics = ({ logistics, setLogistics }) => {
@@ -14,9 +15,9 @@ const Logistics = ({ logistics, setLogistics }) => {
                     size={22}
                     onPress={() => {
                         if (logistics.includes(LOGISTICSPREFERENCES.PICKUP)) {
-                            setLogistics(logistics.filter((num: number) => num != LOGISTICSPREFERENCES.PICKUP))
+                            setLogistics(logistics.filter((char: Char) => char != LOGISTICSPREFERENCES.PICKUP))
                         } else {
-                            setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.PICKUP])
+                            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.PICKUP])
                         }
                     }}
                     style={styles.icon}
@@ -29,9 +30,9 @@ const Logistics = ({ logistics, setLogistics }) => {
                     size={22}
                     onPress={() => {
                         if (logistics.includes(LOGISTICSPREFERENCES.DELIVERY)) {
-                            setLogistics(logistics.filter((num: number) => num != LOGISTICSPREFERENCES.DELIVERY))
+                            setLogistics(logistics.filter((char: Char) => char != LOGISTICSPREFERENCES.DELIVERY))
                         } else {
-                            setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
+                            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
                         }
                     }}
                     style={styles.icon}
@@ -44,9 +45,9 @@ const Logistics = ({ logistics, setLogistics }) => {
                     size={22}
                     onPress={() => {
                         if (logistics.includes(LOGISTICSPREFERENCES.PUBLIC)) {
-                            setLogistics(logistics.filter((num: number) => num != LOGISTICSPREFERENCES.PUBLIC))
+                            setLogistics(logistics.filter((char: Char) => char != LOGISTICSPREFERENCES.PUBLIC))
                         } else {
-                            setLogistics((oldArray: number[]) => [...oldArray, LOGISTICSPREFERENCES.PUBLIC])
+                            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.PUBLIC])
                         }
                     }}
                     style={styles.icon}

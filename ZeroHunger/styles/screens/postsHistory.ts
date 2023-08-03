@@ -5,7 +5,7 @@ export default StyleSheet.create({
     modalItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '99%',
+        width: '100%',
         alignSelf: 'center'
     },
     modalItemBorder: {
@@ -28,5 +28,44 @@ export default StyleSheet.create({
         color: Colors.primaryDark,
         fontFamily: 'PublicSans_600SemiBold',
         fontSize: 13
-    }
+    },
+    modal: {
+        margin: 0,
+        backgroundColor: Colors.offWhite,
+        borderRadius: 10,
+        elevation: 0,
+    },
+    modalContent: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+    },
+    modalClose: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        marginRight: 10
+    },
+    container: {
+        flex: 1,
+        backgroundColor: Colors.offWhite,
+    },
+    subContainer: {
+        flexDirection: 'row',
+        marginTop: 8,
+        marginRight: 16,
+        marginBottom: 4,
+        marginLeft: 16
+    },
+    pressable: {
+        flexDirection: 'row',
+        marginLeft: 4,
+        marginRight: 25,
+        borderBottomWidth: 4,
+    },
+    pressableText: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        justifyContent: 'center',
+    },
 })

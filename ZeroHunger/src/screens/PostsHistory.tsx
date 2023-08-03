@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Text, View, Pressable, TouchableOpacity, Dimensions } from "react-native"
 import HistoryPostRenderer from "../components/HistoryPostRenderer";
-import homeStyles from "../../styles/screens/homeStyleSheet"
-import bottomTabStyles from "../../styles/components/bottomTabStyleSheet";
 import styles from "../../styles/screens/postsHistory";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -41,13 +39,13 @@ export const PostsHistory = ({ navigation }) => {
                 onBackdropPress={() => setModalVisible(!modalVisible)}
                 onSwipeComplete={() => setModalVisible(!modalVisible)}
                 swipeDirection={['down']}
-                style={[bottomTabStyles.modal,
+                style={[styles.modal,
                 { marginTop: Dimensions.get('window').height * 0.78 }]}
             >
                 <View style={{ marginBottom: 25 }}>
                     <View
                         testID="Bottom.postNavModalCont"
-                        style={bottomTabStyles.modalContent}>
+                        style={styles.modalContent}>
                         <Text
                             testID="Bottom.postNavModalLabel"
                             style={[globalStyles.H3, { alignSelf: 'center' }]}
@@ -55,7 +53,7 @@ export const PostsHistory = ({ navigation }) => {
                     </View>
                     <TouchableOpacity
                         testID="Bottom.postNavModalClose"
-                        style={bottomTabStyles.modalClose}
+                        style={styles.modalClose}
                         onPress={() => setModalVisible(!modalVisible)}
                     >
                         <Ionicons name="close" size={30} />
@@ -102,20 +100,20 @@ export const PostsHistory = ({ navigation }) => {
     )
 
     return (
-        <View style={homeStyles.container}>
+        <View style={styles.container}>
             {!loaded && <Text>Loading...</Text>}
             {loaded &&
                 <>
-                    <View testID="Home.subContainer" style={homeStyles.subContainer}>
+                    <View testID="Home.subContainer" style={styles.subContainer}>
                         <View testID="Home.requestsContainer" style={[
                             {
                                 borderBottomColor: showRequests ?
                                     'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
                             },
-                            homeStyles.pressable
+                            styles.pressable
                         ]}>
                             <Pressable
-                                style={homeStyles.pressableText}
+                                style={styles.pressableText}
                                 onPress={() => setShowRequests(true)}
                                 testID="Home.requestsBtn"
                             >
@@ -127,10 +125,10 @@ export const PostsHistory = ({ navigation }) => {
                                 borderBottomColor: !showRequests ?
                                     'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
                             },
-                            homeStyles.pressable
+                            styles.pressable
                         ]}>
                             <Pressable
-                                style={homeStyles.pressableText}
+                                style={styles.pressableText}
                                 onPress={() => setShowRequests(false)}
                                 testID="Home.offersBtn"
                             >

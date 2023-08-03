@@ -1,10 +1,9 @@
 import { useImperativeHandle, useState } from "react"
 import { View, Dimensions, Text, TouchableOpacity } from "react-native"
 import Modal from 'react-native-modal';
-import bottomTabStyles from "../../styles/components/bottomTabStyleSheet";
 import { globalStyles } from "../../styles/globalStyleSheet";
+import styles from "../../styles/components/myPostModalStyleSheet"
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import historyStyles from "../../styles/screens/postsHistory";
 
 export const MyPostModal = ({ selectedPost, handleDelete, handleMarkAsFulfilled }, ref: React.Ref<object>) => {
     const [modalVisible, setModalVisible] = useState(false)
@@ -24,13 +23,13 @@ export const MyPostModal = ({ selectedPost, handleDelete, handleMarkAsFulfilled 
                 onBackdropPress={() => setModalVisible(!modalVisible)}
                 onSwipeComplete={() => setModalVisible(!modalVisible)}
                 swipeDirection={['down']}
-                style={[bottomTabStyles.modal,
+                style={[styles.modal,
                 { marginTop: Dimensions.get('window').height * 0.78 }]}
             >
                 <View style={{ marginBottom: 25 }}>
                     <View
                         testID="Bottom.postNavModalCont"
-                        style={bottomTabStyles.modalContent}>
+                        style={styles.modalContent}>
                         <Text
                             testID="Bottom.postNavModalLabel"
                             style={[globalStyles.H3, { alignSelf: 'center' }]}
@@ -38,7 +37,7 @@ export const MyPostModal = ({ selectedPost, handleDelete, handleMarkAsFulfilled 
                     </View>
                     <TouchableOpacity
                         testID="Bottom.postNavModalClose"
-                        style={bottomTabStyles.modalClose}
+                        style={styles.modalClose}
                         onPress={() => setModalVisible(!modalVisible)}
                     >
                         <Ionicons name="close" size={30} />
@@ -46,7 +45,7 @@ export const MyPostModal = ({ selectedPost, handleDelete, handleMarkAsFulfilled 
                 </View>
                 <View style={{ alignItems: "flex-start", gap: 12 }}>
                     <TouchableOpacity
-                        style={[historyStyles.modalItem, historyStyles.modalItemBorder]}
+                        style={[styles.modalItem, styles.modalItemBorder]}
                         onPress={() => {
                             handleMarkAsFulfilled(selectedPost.current)
                             setModalVisible(false)
@@ -61,7 +60,7 @@ export const MyPostModal = ({ selectedPost, handleDelete, handleMarkAsFulfilled 
                         <Text style={globalStyles.Body}>Mark as fulfilled</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={historyStyles.modalItem}
+                        style={styles.modalItem}
                         onPress={() => {
                             handleDelete(selectedPost.current)
                             setModalVisible(false)

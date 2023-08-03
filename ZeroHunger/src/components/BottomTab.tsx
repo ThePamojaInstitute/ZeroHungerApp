@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, Dimensions } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { View, TouchableOpacity, Text, Dimensions, Image, Platform } from "react-native";
 import styles from "../../styles/components/bottomTabStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -22,7 +22,7 @@ import {
     PublicSans_500Medium,
     PublicSans_400Regular
 } from '@expo-google-fonts/public-sans';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
 import PostsHistory from "../screens/PostsHistory";
@@ -30,6 +30,7 @@ import Preferences from "../screens/Preferences";
 import WrappedLoginScreen from "../screens/Loginscreen";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
+import { NotificationContext } from "../context/ChatNotificationContext";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -59,18 +60,26 @@ const HomeStackNavigator = ({ navigation }) => {
                     ),
                     headerRight: () => (
                         <View style={{ flexDirection: 'row' }}>
+                            {Platform.OS === "web" &&
+                                <MaterialIcons
+                                    style={{ padding: 16 }}
+                                    name="refresh"
+                                    size={26}
+                                    color="black"
+                                />
+                            }
+                            <Ionicons
+                                style={{ padding: 16 }}
+                                name="notifications-sharp"
+                                size={22}
+                                onPress={() => { navigation.navigate("NotificationsScreen") }}
+                            />
                             <Ionicons
                                 style={{ padding: 16 }}
                                 name="md-search"
                                 size={22}
                                 onPress={() => { }}
                                 testID="Home.searchBtn"
-                            />
-                            <Ionicons
-                                style={{ padding: 16 }}
-                                name="notifications-sharp"
-                                size={22}
-                                onPress={() => { navigation.navigate("NotificationsScreen") }}
                             />
                         </View>
                     )
@@ -301,6 +310,8 @@ const BottomTab = () => {
         setLoaded(fontsLoaded)
     }, [fontsLoaded])
 
+    const { unreadMessageCount, chatIsOpen } = useContext(NotificationContext);
+
     const [modalVisible, setModalVisible] = useState(false)
 
     return (
@@ -313,6 +324,16 @@ const BottomTab = () => {
                     tabBarIcon: ({ focused }) => (
                         <View testID="Bottom.homeNav" style={styles.homeButton}>
                             {focused
+                                ? <Image
+                                    source={require('../../assets/Home.png')}
+                                    style={styles.icon}
+                                />
+                                : <Image
+                                    source={require('../../assets/Home-outline.png')}
+                                    style={styles.icon}
+                                />
+                            }
+                            {/* {focused
                                 ? <Ionicons
                                     testID="Bottom.homeNavIcon"
                                     name="home"
@@ -327,7 +348,7 @@ const BottomTab = () => {
                                     color={Colors.primary}
                                     style={{ marginBottom: -10 }}
                                 />
-                            }
+                            } */}
                         </View>
                     ),
                     tabBarLabelPosition: "below-icon",
@@ -357,12 +378,16 @@ const BottomTab = () => {
                                     style={styles.postButton}
                                     onPress={() => setModalVisible(!modalVisible)}
                                 >
-                                    <Ionicons
+                                    {/* <Ionicons
                                         testID="Bottom.postNavIcon"
                                         name="add-circle-outline"
                                         size={28}
                                         color={Colors.primary}
                                         style={{ marginLeft: 3 }}
+                                    /> */}
+                                    <Image
+                                        source={require('../../assets/Group.png')}
+                                        style={[styles.icon, { marginBottom: 5 }]}
                                     />
                                     <Text
                                         testID="Bottom.postNavLabel"
@@ -438,6 +463,16 @@ const BottomTab = () => {
                             style={styles.messagesButton}
                         >
                             {focused
+                                ? <Image
+                                    source={require('../../assets/Messages.png')}
+                                    style={styles.icon}
+                                />
+                                : <Image
+                                    source={require('../../assets/Messages-outline.png')}
+                                    style={styles.icon}
+                                />
+                            }
+                            {/* {focused
                                 ? <Ionicons
                                     testID="Bottom.messagesNavIcon"
                                     name="chatbox-ellipses"
@@ -452,6 +487,11 @@ const BottomTab = () => {
                                     color={Colors.primary}
                                     style={{ marginBottom: -10 }}
                                 />
+                            } */}
+                            {!!unreadMessageCount &&
+                                <View style={[styles.circle, { right: unreadMessageCount > 99 ? -15 : unreadMessageCount > 9 ? -8 : -5 }]}>
+                                    <Text style={styles.unreadCount}>{unreadMessageCount > 99 ? '99+' : unreadMessageCount}</Text>
+                                </View>
                             }
                         </View>
                     ),

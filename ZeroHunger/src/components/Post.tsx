@@ -1,13 +1,13 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
-import styles from "../../styles/components/postRendererStyleSheet";
-import historyStyles from "../../styles/screens/postsHistory";
+import styles from "../../styles/components/postStyleSheet";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { PostModel } from "../models/Post";
 import { NavigationProp, ParamListBase } from '@react-navigation/native';
+import { handleExpiryDate } from "../controllers/post";
 
 interface Props {
     post: PostModel,
@@ -54,6 +54,8 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                             testID="Posts.title"
                             style={[globalStyles.H4, { marginLeft: 10 },
                             { marginBottom: from === "home" ? 5 : 0 }]}
+                            ellipsizeMode="tail"
+                            numberOfLines={1}
                         >{post.title}</Text>
                         {user['username'] === post.username &&
                             <TouchableOpacity
@@ -77,12 +79,12 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                         {(user['username'] !== post.username) && post.distance &&
                             <View testID="Posts.locationCont" style={styles.locationCont}>
                                 <Ionicons testID="Posts.locationIcon" name='location-outline' size={13} style={{ marginRight: 4 }} />
-                                <Text testID="Posts.locationText" style={globalStyles.Small1}>{post.distance ? post.distance : 'x'} km away</Text>
+                                <Text testID="Posts.locationText" style={globalStyles.Small1}>{post.distance ? post.distance.toFixed(1) : 'x'} km away</Text>
                             </View>
                         }
                     </View>
                     {from === "history" &&
-                        <Text style={[globalStyles.Tag, historyStyles.fulfillment,
+                        <Text style={[globalStyles.Tag, styles.fulfillment,
                         { marginTop: 15, color: post.fulfilled ? Colors.primaryDark : Colors.alert2 }]}
                         >{post.fulfilled ? 'Fulfilled' : 'Not fulfilled'}</Text>
                     }
@@ -90,7 +92,7 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                         testID="Posts.tag"
                         style={[styles.postTag, [(user['username'] === post.username && from !== "history") ? { marginTop: 20 } : {}]]}>
                         {/* Placeholder need by date */}
-                        <Text testID="Posts.tagLabel" style={styles.postTagLabel}>Need in {3} days</Text>
+                        <Text testID="Posts.tagLabel" style={styles.postTagLabel}>{handleExpiryDate(post.expiryDate, post.type)}</Text>
                     </View>
                 </View>
             </TouchableOpacity>

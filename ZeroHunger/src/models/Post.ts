@@ -1,3 +1,5 @@
+import { Char } from "../../types";
+
 export interface PostModel {
     title: string;
     imageLink: string;
@@ -8,10 +10,11 @@ export interface PostModel {
     postId: number;
     username: string;
     type: "r" | "o";
-    logistics: string;
+    logistics: Char[];
     postalCode: string;
-    accessNeeds: number;
-    distance: number;
-    categories: string;
-    diet: string;
+    accessNeeds: Char;
+    distance: number | null;
+    categories: Char[];
+    diet: Char[];
+    expiryDate: string;
 }

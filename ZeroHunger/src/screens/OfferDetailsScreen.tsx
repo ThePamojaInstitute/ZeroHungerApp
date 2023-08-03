@@ -14,7 +14,7 @@ import {
 } from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
-import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleAccessNeeds, handlePreferences } from "../controllers/post";
+import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleAccessNeeds, handleExpiryDate, handlePreferences } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -64,11 +64,11 @@ export const OfferDetailsScreen = ({ navigation }) => {
         })
     }
 
-    const logistics = handlePreferences(route.params.logistics, getLogisticsType)
+    const logistics = handlePreferences(route.params.logistics.sort().toString(), getLogisticsType)
     const postalCode = formatPostalCode(route.params.postalCode)
-    const accessNeeds = handleAccessNeeds(route.params.accessNeeds)
-    const categories = handlePreferences(route.params.categories, getCategory)
-    const diet = handlePreferences(route.params.diet, getDiet)
+    const accessNeeds = handleAccessNeeds(route.params.accessNeeds, "o")
+    const categories = handlePreferences(route.params.categories.sort().toString(), getCategory)
+    const diet = handlePreferences(route.params.diet.sort().toString(), getDiet)
 
     // const renderItem = ({ item }) => {
     //     return (
@@ -132,7 +132,11 @@ export const OfferDetailsScreen = ({ navigation }) => {
                         <View testID="OffDet.location" style={styles.location}>
                             <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                             {/* Placeholder distance away */}
-                            <Text testID="OffDet.distanceText" style={globalStyles.Small2}>{route.params.distance ? `${route.params.distance} km away` : 'N/A'}</Text>
+                            <Text testID="OffDet.distanceText" style={globalStyles.Small2}>{route.params.distance ? `${route.params.distance.toFixed(1)} km away` : 'N/A'}</Text>
+                        </View>
+
+                        <View testID="ReqDet.needBy" style={styles.needBy}>
+                            <Text testID="ReqDet.needByTag" style={styles.Tag}>{handleExpiryDate(route.params.expiryDate, route.params.type)}</Text>
                         </View>
                     </View>
 

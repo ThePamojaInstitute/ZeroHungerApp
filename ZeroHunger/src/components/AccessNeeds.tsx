@@ -5,7 +5,7 @@ import { ACCESSNEEDSPREFERENCES } from "../controllers/post"
 import styles from "../../styles/components/accessNeedsStyleSheet"
 
 
-const AccessNeeds = ({ accessNeeds, setAccessNeeds }) => {
+const AccessNeeds = ({ accessNeeds, setAccessNeeds, postType }) => {
     return (
         <View style={styles.container}>
             <View style={styles.choiceContainer}>
@@ -26,7 +26,8 @@ const AccessNeeds = ({ accessNeeds, setAccessNeeds }) => {
                     onPress={() => setAccessNeeds(ACCESSNEEDSPREFERENCES.WHEELCHAIR)}
                     style={styles.icon}
                 />
-                <Text style={[globalStyles.Body, { flex: 1 }]}>Pick up location must be wheelchair accessible</Text>
+                <Text style={[globalStyles.Body, { flex: 1 }]}>{postType === "r" ? 'Pick up ' : 'Delivery '}
+                    location must be wheelchair accessible</Text>
             </View>
             <View style={styles.choiceContainer}>
                 <MaterialIcons
@@ -36,7 +37,7 @@ const AccessNeeds = ({ accessNeeds, setAccessNeeds }) => {
                     onPress={() => setAccessNeeds(ACCESSNEEDSPREFERENCES.DELIVERY)}
                     style={styles.icon}
                 />
-                <Text style={globalStyles.Body}>Delivery only</Text>
+                <Text style={globalStyles.Body}>{postType === "r" ? 'Delivery' : 'Pick up'} only</Text>
             </View>
         </View >
     )

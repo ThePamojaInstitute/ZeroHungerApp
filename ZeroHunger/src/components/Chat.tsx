@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, } from 'react'
-import { Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator, Button, Pressable } from 'react-native';
 import styles from "../../styles/components/chatStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { AuthContext } from '../context/AuthContext';
@@ -294,15 +294,10 @@ export const Chat = ({ navigation, route }) => {
                         }}
                         numberOfLines={3}
                     />
-                    <Ionicons
-                        testID='Chat.chatSendIcon'
-                        name="send"
-                        size={22}
-                        color="black"
-                        style={styles.chatSendIcon}
-                        onPress={handleSend}
-                    />
                 </View>
+                <Pressable style={styles.sendBtn} onPress={handleSend}>
+                    <Text style={[globalStyles.Button, { color: Colors.offWhite, marginHorizontal: 10 }]}>Send</Text>
+                </Pressable>
             </View>
             {/* {Platform.OS != 'web' &&
                 <FlashList
