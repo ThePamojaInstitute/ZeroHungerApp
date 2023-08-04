@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, } from 'react'
-import { Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator, Button, Pressable } from 'react-native';
+import { Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator, Pressable } from 'react-native';
 import styles from "../../styles/components/chatStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { AuthContext } from '../context/AuthContext';
@@ -166,10 +166,6 @@ export const Chat = ({ navigation, route }) => {
         username: string,
         type: Char
     ) => {
-        //Placeholder image
-        imagesLink = imagesLink ? imagesLink :
-            "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
-
         type === "r" ?
             navigation.navigate('RequestDetailsScreen', {
                 title,
@@ -212,11 +208,11 @@ export const Chat = ({ navigation, route }) => {
                         style={user['username'] === item.to_user['username'] ?
                             styles.postMsgIn : styles.postMsgOut}>
                         <View testID='Chat.postMsgCont' style={styles.postMsgCont}>
-                            <Image
+                            {<Image
                                 testID='Chat.postMsgImg'
                                 style={styles.postMsgImg}
-                                source={{ uri: content.images }}
-                            />
+                                source={content.images ? { uri: content.images } : require('../../assets/Post.png')}
+                            />}
                             <View testID='Chat.postMsgSubCont' style={styles.postMsgSubCont}>
                                 <Text testID='Chat.postMsgTitle' style={[styles.postMsgTitle, {
                                     color: user['username'] === item.to_user['username'] ?
@@ -322,10 +318,7 @@ export const Chat = ({ navigation, route }) => {
                 onChangeText={setMessage}
                 onSubmitEditing={handleSend}
                 maxLength={250}
-            />
-            <Button testID='MessageSend.Button' mode="contained" onPress={handleSend}>
-                Send
-            </Button> */}
+            /> */}
         </View>
     )
 }

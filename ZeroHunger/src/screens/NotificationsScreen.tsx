@@ -1,41 +1,23 @@
-import { View, ScrollView, Text, TouchableOpacity, Image, RefreshControl, StyleSheet, Dimensions } from "react-native"
+import { View, ScrollView, Text, TouchableOpacity, Image, RefreshControl } from "react-native"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { axiosInstance } from "../../config";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
-import {
-    useFonts,
-    PublicSans_600SemiBold,
-    PublicSans_500Medium,
-    PublicSans_400Regular
-} from '@expo-google-fonts/public-sans';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
-import { 
-    addNotification, 
-    clearNotification, 
-    clearAllNotifications 
+import {
+    addNotification,
+    clearNotification,
+    clearAllNotifications
 } from "../controllers/notifications";
 import { useAlert } from "../context/Alert";
 import styles from "../../styles/screens/notificationsStyleSheet";
 
 export const NotificationsScreen = ({ navigation }) => {
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
-
     const [modalVisible, setModalVisible] = useState(false)
 
     useEffect(() => {
-        if (!loaded) return
         navigation.setOptions({
             title: "Notifications",
             headerTitleAlign: 'center',
@@ -68,25 +50,25 @@ export const NotificationsScreen = ({ navigation }) => {
                                 </TouchableOpacity>
                             </View>
                             <View style={{ padding: 12 }}>
-                                <View style={{padding: 12, borderBottomWidth: 1, borderBottomColor: Colors.midLight}}>
-                                    <TouchableOpacity style={{ flexDirection: "row" }} onPress={ handleClearAllNotifications }>
-                                        <Ionicons name="checkmark-circle-outline" size={24} style={{paddingRight: 16}}/>
-                                        <Text style={[globalStyles.Body, {marginTop: 3}]}>Mark all as read</Text>
+                                <View style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: Colors.midLight }}>
+                                    <TouchableOpacity style={{ flexDirection: "row" }} onPress={handleClearAllNotifications}>
+                                        <Ionicons name="checkmark-circle-outline" size={24} style={{ paddingRight: 16 }} />
+                                        <Text style={[globalStyles.Body, { marginTop: 3 }]}>Mark all as read</Text>
                                     </TouchableOpacity>
                                 </View>
                                 <View style={{ padding: 12 }}>
-                                    <TouchableOpacity style={{ flexDirection: "row" }} 
-                                        onPress={() => { 
+                                    <TouchableOpacity style={{ flexDirection: "row" }}
+                                        onPress={() => {
                                             setModalVisible(!modalVisible)
-                                            navigation.navigate("NotificationsSettingsScreen") 
+                                            navigation.navigate("NotificationsSettingsScreen")
                                         }}
                                     >
                                         {/* <Ionicons name="md-cog-outline" size={24} style={{ paddingRight: 16 }}/> */}
-                                        <Image 
-                                            style={{height: 20, width: 20, marginLeft: 3, marginRight: 16}}
+                                        <Image
+                                            style={{ height: 20, width: 20, marginLeft: 3, marginRight: 16 }}
                                             source={require('../../assets/notifications_settings_icon.png')}
                                         />
-                                        <Text style={[globalStyles.Body, {marginTop: 3}]}>Notifications settings</Text>
+                                        <Text style={[globalStyles.Body, { marginTop: 3 }]}>Notifications settings</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -123,10 +105,10 @@ export const NotificationsScreen = ({ navigation }) => {
     }, [])
 
     useEffect(() => {
-        if(newNotifications.length === 0) {
+        if (newNotifications.length === 0) {
             setNoNewNotifications(true)
         }
-        if(oldNotifications.length === 0) {
+        if (oldNotifications.length === 0) {
             setNoOldNotifications(true)
         }
     })
@@ -139,14 +121,14 @@ export const NotificationsScreen = ({ navigation }) => {
         }).then((res) => {
             length = res.data.length
 
-            if(length === 2) {
+            if (length === 2) {
                 return
             }
             setNoNewNotifications(false)
             setNoOldNotifications(false)
 
             try {
-                for(let i = 0; i < length; i++) {
+                for (let i = 0; i < length; i++) {
                     const data = JSON.parse(res.data)[i]
                     // console.log(data)
 
@@ -155,13 +137,13 @@ export const NotificationsScreen = ({ navigation }) => {
 
                     //Calculate time in hours since notification received
                     let time = (Math.floor(new Date().getTime() / 1000) - data.time)
-                    if(time < 0) time = 0
+                    if (time < 0) time = 0
 
-                    if(time > purge_threshold) {
+                    if (time > purge_threshold) {
                         handleClearNotification(data.time)
                         continue
                     }
-                    
+
                     let notification = {
                         type: data.type,
                         user: data.user,
@@ -170,7 +152,7 @@ export const NotificationsScreen = ({ navigation }) => {
                         time: Math.floor(time / 3600)
                     }
 
-                    if(time <= old_threshold) {
+                    if (time <= old_threshold) {
                         setNewNotifications(newNotifications => [...newNotifications, notification])
                     }
                     else {
@@ -193,7 +175,7 @@ export const NotificationsScreen = ({ navigation }) => {
         }
         try {
             addNotification(user, notification).then(res => {
-                if(res.msg === "success") {
+                if (res.msg === "success") {
                     try {
                         getNotifications()
                     }
@@ -216,18 +198,18 @@ export const NotificationsScreen = ({ navigation }) => {
     const handleClearNotification = async (timestamp: number) => {
         try {
             clearNotification(user, timestamp).then(res => {
-                if(res.msg === "success") {
+                if (res.msg === "success") {
                     try {
                         setNewNotifications(newNotifications.filter(notification => notification['timestamp'] != timestamp))
                     }
                     catch (e) {
                         console.log(e)
-                        alert!({ type: 'open', message: res, alertType: 'error '})
+                        alert!({ type: 'open', message: res, alertType: 'error ' })
                     }
                 }
                 else {
                     console.log(res)
-                    alert!({ type: 'open', message: res, alertType: 'error '})
+                    alert!({ type: 'open', message: res, alertType: 'error ' })
                 }
             })
         }
@@ -238,7 +220,7 @@ export const NotificationsScreen = ({ navigation }) => {
 
     const handleClearAllNotifications = async () => {
         clearAllNotifications(user).then(res => {
-            if(res === "success") {
+            if (res === "success") {
                 try {
                     setModalVisible(!modalVisible)
                     setNewNotifications([])
@@ -257,24 +239,24 @@ export const NotificationsScreen = ({ navigation }) => {
     const Notification = ({ type, user, food, timestamp, time }) => {
         return (
             <TouchableOpacity style={styles.notification} onPress={() => handleClearNotification(timestamp)}>
-                <Image 
-                    style={{height: 68, width: 68, paddingRight: 12}}
+                <Image
+                    style={{ height: 68, width: 68, paddingRight: 12 }}
                     source={{
                         //Temporary image
                         uri: "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
                     }}
                 />
-                
+
                 {/* Offer notification */}
                 {type == "o" && <>
-                    <View style={{paddingLeft: 12, width: "95%", paddingRight: 12}}>
-                        <Text style={[globalStyles.Body, {paddingBottom: 8}]}>
-                            <Text style={{fontWeight: "bold"}}>{user}</Text>
+                    <View style={{ paddingLeft: 12, width: "95%", paddingRight: 12 }}>
+                        <Text style={[globalStyles.Body, { paddingBottom: 8 }]}>
+                            <Text style={{ fontWeight: "bold" }}>{user}</Text>
                             {" "} is offering the {" "}
-                            <Text style={{fontWeight: "bold"}}>{food}</Text>
+                            <Text style={{ fontWeight: "bold" }}>{food}</Text>
                             {" "} that you need!
                         </Text>
-                        <View style={{flexDirection: "row"}}>
+                        <View style={{ flexDirection: "row" }}>
                             <View style={styles.postTag}>
                                 <Text style={styles.postTagLabel}>Offer</Text>
                             </View>
@@ -282,17 +264,17 @@ export const NotificationsScreen = ({ navigation }) => {
                         </View>
                     </View>
                 </>}
-                
+
                 {/* Request notification */}
                 {type == "r" && <>
-                    <View style={{paddingLeft: 12, width: "95%", paddingRight: 12}}>
-                        <Text style={[globalStyles.Body, {paddingBottom: 8}]}>
-                            <Text style={{fontWeight: "bold"}}>{user}</Text>
+                    <View style={{ paddingLeft: 12, width: "95%", paddingRight: 12 }}>
+                        <Text style={[globalStyles.Body, { paddingBottom: 8 }]}>
+                            <Text style={{ fontWeight: "bold" }}>{user}</Text>
                             {" "} needs the {" "}
-                            <Text style={{fontWeight: "bold"}}>{food}</Text>
+                            <Text style={{ fontWeight: "bold" }}>{food}</Text>
                             {" "} that you are offering!
                         </Text>
-                        <View style={{flexDirection: "row"}}>
+                        <View style={{ flexDirection: "row" }}>
                             <View style={styles.postTag}>
                                 <Text style={styles.postTagLabel}>Request</Text>
                             </View>
@@ -303,14 +285,14 @@ export const NotificationsScreen = ({ navigation }) => {
 
                 {/* Temporary test notification */}
                 {type == "t" && <>
-                    <View style={{paddingLeft: 12, width: "95%", paddingRight: 12}}>
-                        <Text style={[globalStyles.Body, {paddingBottom: 8}]}>
+                    <View style={{ paddingLeft: 12, width: "95%", paddingRight: 12 }}>
+                        <Text style={[globalStyles.Body, { paddingBottom: 8 }]}>
                             User: {" "}
-                            <Text style={{fontWeight: "bold"}}>{user}</Text>
+                            <Text style={{ fontWeight: "bold" }}>{user}</Text>
                             {"\n"}Item: {" "}
-                            <Text style={{fontWeight: "bold"}}>{food}</Text>
+                            <Text style={{ fontWeight: "bold" }}>{food}</Text>
                         </Text>
-                        <View style={{flexDirection: "row"}}>
+                        <View style={{ flexDirection: "row" }}>
                             <View style={styles.postTag}>
                                 <Text style={styles.postTagLabel}>Test</Text>
                             </View>
@@ -336,56 +318,51 @@ export const NotificationsScreen = ({ navigation }) => {
     }
 
     return (
-        <>
-            {!loaded && <Text>Loading...</Text>}
-            {loaded && <>
-                <ScrollView style={{padding: 12, backgroundColor: Colors.Background}}>
-                    {!noNewNotifications && <>
-                        <View style={{paddingBottom: 12}}>
-                            <Text style={globalStyles.H3}>New</Text>
-                            <FlashList
-                                renderItem={renderItem}
-                                data={newNotifications}
-                                showsVerticalScrollIndicator={false}
-                                showsHorizontalScrollIndicator={false}
-                                estimatedItemSize={100}
-                                refreshControl={
-                                    <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[Colors.primary, Colors.primaryLight]} />
-                                }
-                            />
-                        </View>
-                    </>}
-                    {!noOldNotifications && <>
-                        <View style={{}}>
-                            <Text style={globalStyles.H3}>Older</Text>
-                            <FlashList 
-                                renderItem={renderItem}
-                                data={oldNotifications}
-                                showsVerticalScrollIndicator={false}
-                                showsHorizontalScrollIndicator={false}
-                                estimatedItemSize={100}
-                                refreshControl={
-                                    <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[Colors.primary, Colors.primaryLight]} />
-                                }
-                            />
-                        </View>
-                    </>}
-                    {noNewNotifications && noOldNotifications && <>
-                        <Text style={{fontSize: 36, padding: 15}}>No Notifications</Text>
-                    </>}
+        <ScrollView style={{ padding: 12, backgroundColor: Colors.Background }}>
+            {!noNewNotifications && <>
+                <View style={{ paddingBottom: 12 }}>
+                    <Text style={globalStyles.H3}>New</Text>
+                    <FlashList
+                        renderItem={renderItem}
+                        data={newNotifications}
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        estimatedItemSize={100}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[Colors.primary, Colors.primaryLight]} />
+                        }
+                    />
+                </View>
+            </>}
+            {!noOldNotifications && <>
+                <View style={{}}>
+                    <Text style={globalStyles.H3}>Older</Text>
+                    <FlashList
+                        renderItem={renderItem}
+                        data={oldNotifications}
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        estimatedItemSize={100}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[Colors.primary, Colors.primaryLight]} />
+                        }
+                    />
+                </View>
+            </>}
+            {noNewNotifications && noOldNotifications && <>
+                <Text style={{ fontSize: 36, padding: 15 }}>No Notifications</Text>
+            </>}
 
-                    {/* Test add notification button */}
-                    <TouchableOpacity onPress={handleAddNotification}>
-                        <Text>Test add notification</Text>
-                    </TouchableOpacity>
+            {/* Test add notification button */}
+            <TouchableOpacity onPress={handleAddNotification}>
+                <Text>Test add notification</Text>
+            </TouchableOpacity>
 
-                    {/* Button to test notification load */}
-                    {/* <TouchableOpacity onPress={getNotifications}>
+            {/* Button to test notification load */}
+            {/* <TouchableOpacity onPress={getNotifications}>
                         <Text>test load notifs</Text>
                     </TouchableOpacity> */}
-                </ScrollView>
-            </>}
-        </>
+        </ScrollView>
     )
 }
 

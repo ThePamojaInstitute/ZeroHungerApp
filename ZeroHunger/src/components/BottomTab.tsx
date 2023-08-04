@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { View, TouchableOpacity, Text, Dimensions, Image, Platform } from "react-native";
 import styles from "../../styles/components/bottomTabStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { getFocusedRouteNameFromRoute, useIsFocused } from "@react-navigation/native"
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
 import LoginScreen from '../screens/Loginscreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen'
 import HomeScreen from '../screens/HomeScreen';
@@ -17,18 +17,11 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import Conversations from '../screens/Conversations';
 import Chat from './Chat';
 import NotificationsScreen from '../screens/NotificationsScreen';
-import {
-    useFonts,
-    PublicSans_600SemiBold,
-    PublicSans_500Medium,
-    PublicSans_400Regular
-} from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
 import PostsHistory from "../screens/PostsHistory";
 import Preferences from "../screens/Preferences";
-import WrappedLoginScreen from "../screens/Loginscreen";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 import { NotificationContext } from "../context/ChatNotificationContext";
@@ -40,7 +33,7 @@ const HomeStackNavigator = ({ navigation }) => {
     const { t, i18n } = useTranslation();
     return (
         <Stack.Navigator>
-            <Stack.Screen
+            {/* <Stack.Screen
                 name="OnboardingScreen"
                 component={OnboardingScreen}
                 options={({ route }) => ({
@@ -56,6 +49,33 @@ const HomeStackNavigator = ({ navigation }) => {
                         </View>
                     )
                 })}
+            /> */}
+            <Stack.Screen
+                name="LoginScreen"
+                component={LoginScreen}
+                options={{
+                    title: t("app.title"),
+                    headerTitleAlign: 'center',
+                    headerShadowVisible: false,
+                    headerStyle: {
+                        backgroundColor: Colors.Background,
+                    },
+                    headerLeft: () => (<></>),
+                    contentStyle: { backgroundColor: Colors.Background }
+                }}
+            />
+            <Stack.Screen
+                name="CreateAccountScreen"
+                component={CreateAccountScreen}
+                options={{
+                    title: t("app.title"),
+                    headerTitleAlign: 'center',
+                    headerShadowVisible: false,
+                    headerStyle: {
+                        backgroundColor: Colors.Background
+                    },
+                    contentStyle: { backgroundColor: Colors.Background }
+                }}
             />
             <Stack.Screen
                 name="HomeScreen"
@@ -101,33 +121,6 @@ const HomeStackNavigator = ({ navigation }) => {
                             />
                         </View>
                     )
-                }}
-            />
-            <Stack.Screen
-                name="LoginScreen"
-                component={LoginScreen}
-                options={{
-                    title: t("app.title"),
-                    headerTitleAlign: 'center',
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.Background,
-                    },
-                    headerLeft: () => (<></>),
-                    contentStyle: { backgroundColor: Colors.Background }
-                }}
-            />
-            <Stack.Screen
-                name="CreateAccountScreen"
-                component={CreateAccountScreen}
-                options={{
-                    title: t("app.title"),
-                    headerTitleAlign: 'center',
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.Background
-                    },
-                    contentStyle: { backgroundColor: Colors.Background }
                 }}
             />
             <Stack.Screen
@@ -336,17 +329,6 @@ const ChatStackNavigator = () => {
 const PostComponent = () => null
 
 const BottomTab = () => {
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
-
     const { unreadMessageCount, chatIsOpen } = useContext(NotificationContext);
 
     const [modalVisible, setModalVisible] = useState(false)
@@ -370,22 +352,6 @@ const BottomTab = () => {
                                     style={styles.icon}
                                 />
                             }
-                            {/* {focused
-                                ? <Ionicons
-                                    testID="Bottom.homeNavIcon"
-                                    name="home"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
-                                : <Ionicons
-                                    testID="Bottom.homeNavIconOutline"
-                                    name="home-outline"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
-                            } */}
                         </View>
                     ),
                     tabBarLabelPosition: "below-icon",
@@ -395,8 +361,7 @@ const BottomTab = () => {
                         if (routeName === 'LoginScreen' ||
                             routeName === 'CreateAccountScreen' ||
                             routeName === 'Chat' ||
-                            routeName === 'OnboardingScreen')
-                        {
+                            routeName === 'OnboardingScreen') {
                             return { display: "none" }
                         }
                         return styles.bottomBarTab
@@ -416,13 +381,6 @@ const BottomTab = () => {
                                     style={styles.postButton}
                                     onPress={() => setModalVisible(!modalVisible)}
                                 >
-                                    {/* <Ionicons
-                                        testID="Bottom.postNavIcon"
-                                        name="add-circle-outline"
-                                        size={28}
-                                        color={Colors.primary}
-                                        style={{ marginLeft: 3 }}
-                                    /> */}
                                     <Image
                                         source={require('../../assets/Group.png')}
                                         style={[styles.icon, { marginBottom: 5 }]}
@@ -514,22 +472,6 @@ const BottomTab = () => {
                                     style={styles.icon}
                                 />
                             }
-                            {/* {focused
-                                ? <Ionicons
-                                    testID="Bottom.messagesNavIcon"
-                                    name="chatbox-ellipses"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
-                                : <Ionicons
-                                    testID="Bottom.messagesNavIconOutline"
-                                    name="chatbox-ellipses-outline"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
-                            } */}
                             {!!unreadMessageCount &&
                                 <View style={[styles.circle, { right: unreadMessageCount > 99 ? -15 : unreadMessageCount > 9 ? -8 : -5 }]}>
                                     <Text style={styles.unreadCount}>{unreadMessageCount > 99 ? '99+' : unreadMessageCount}</Text>

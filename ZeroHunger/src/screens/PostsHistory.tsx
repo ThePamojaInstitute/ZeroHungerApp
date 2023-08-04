@@ -1,29 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Text, View, Pressable, TouchableOpacity, Dimensions } from "react-native"
 import HistoryPostRenderer from "../components/HistoryPostRenderer";
 import styles from "../../styles/screens/postsHistory";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import {
-    useFonts,
-    PublicSans_600SemiBold,
-    PublicSans_500Medium,
-    PublicSans_400Regular
-} from '@expo-google-fonts/public-sans';
 import Modal from 'react-native-modal';
 
 export const PostsHistory = ({ navigation }) => {
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
-
     const [showRequests, setShowRequests] = useState(true)
     const [modalVisible, setModalVisible] = useState(false)
     const [orderByNewest, setOrderByNewest] = useState(true)
@@ -101,70 +84,65 @@ export const PostsHistory = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            {!loaded && <Text>Loading...</Text>}
-            {loaded &&
-                <>
-                    <View testID="Home.subContainer" style={styles.subContainer}>
-                        <View testID="Home.requestsContainer" style={[
-                            {
-                                borderBottomColor: showRequests ?
-                                    'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                            },
-                            styles.pressable
-                        ]}>
-                            <Pressable
-                                style={styles.pressableText}
-                                onPress={() => setShowRequests(true)}
-                                testID="Home.requestsBtn"
-                            >
-                                <Text testID="Home.requestsLabel" style={globalStyles.H3}>My Requests</Text>
-                            </Pressable>
-                        </View>
-                        <View testID="Home.offersContainer" style={[
-                            {
-                                borderBottomColor: !showRequests ?
-                                    'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                            },
-                            styles.pressable
-                        ]}>
-                            <Pressable
-                                style={styles.pressableText}
-                                onPress={() => setShowRequests(false)}
-                                testID="Home.offersBtn"
-                            >
-                                <Text testID="Home.offersLabel" style={globalStyles.H3}>My Offers</Text>
-                            </Pressable>
-                        </View>
-                    </View>
-                    <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 10, alignItems: 'center' }}>
-                        <Text style={globalStyles.Small1}>Sorted by: </Text>
-                        <Pressable
-                            onPress={() => setModalVisible(true)}
-                            style={styles.sort}>
-                            <Text
-                                style={styles.sortText}
-                            >{orderByNewest ? 'Newest first' : 'Oldest first'}</Text>
-                            <Entypo name="chevron-down" size={18} color={Colors.primaryDark} />
-                        </Pressable>
-                    </View>
-                    {showRequests &&
-                        <HistoryPostRenderer
-                            navigation={navigation}
-                            type={"r"}
-                            setShowRequests={setShowRequests}
-                            orderByNewest={orderByNewest}
-                        />}
-                    {!showRequests &&
-                        <HistoryPostRenderer
-                            navigation={navigation}
-                            type={"o"}
-                            setShowRequests={setShowRequests}
-                            orderByNewest={orderByNewest}
+            <View testID="Home.subContainer" style={styles.subContainer}>
+                <View testID="Home.requestsContainer" style={[
+                    {
+                        borderBottomColor: showRequests ?
+                            'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                    },
+                    styles.pressable
+                ]}>
+                    <Pressable
+                        style={styles.pressableText}
+                        onPress={() => setShowRequests(true)}
+                        testID="Home.requestsBtn"
+                    >
+                        <Text testID="Home.requestsLabel" style={globalStyles.H3}>My Requests</Text>
+                    </Pressable>
+                </View>
+                <View testID="Home.offersContainer" style={[
+                    {
+                        borderBottomColor: !showRequests ?
+                            'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                    },
+                    styles.pressable
+                ]}>
+                    <Pressable
+                        style={styles.pressableText}
+                        onPress={() => setShowRequests(false)}
+                        testID="Home.offersBtn"
+                    >
+                        <Text testID="Home.offersLabel" style={globalStyles.H3}>My Offers</Text>
+                    </Pressable>
+                </View>
+            </View>
+            <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 10, alignItems: 'center' }}>
+                <Text style={globalStyles.Small1}>Sorted by: </Text>
+                <Pressable
+                    onPress={() => setModalVisible(true)}
+                    style={styles.sort}>
+                    <Text
+                        style={styles.sortText}
+                    >{orderByNewest ? 'Newest first' : 'Oldest first'}</Text>
+                    <Entypo name="chevron-down" size={18} color={Colors.primaryDark} />
+                </Pressable>
+            </View>
+            {showRequests &&
+                <HistoryPostRenderer
+                    navigation={navigation}
+                    type={"r"}
+                    setShowRequests={setShowRequests}
+                    orderByNewest={orderByNewest}
+                />}
+            {!showRequests &&
+                <HistoryPostRenderer
+                    navigation={navigation}
+                    type={"o"}
+                    setShowRequests={setShowRequests}
+                    orderByNewest={orderByNewest}
 
-                        />}
-                    <ModalComponent />
-                </>
-            }
+                />}
+            <ModalComponent />
         </View>
     )
 }

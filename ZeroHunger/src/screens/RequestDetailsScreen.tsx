@@ -2,16 +2,9 @@ import { View, Text, Image, TextInput, TouchableOpacity, LogBox } from "react-na
 import styles from "../../styles/screens/postDetailsStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
-import { FlashList } from "@shopify/flash-list";
-import {
-    useFonts,
-    PublicSans_600SemiBold,
-    PublicSans_500Medium,
-    PublicSans_400Regular
-} from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
 import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleAccessNeeds, handleExpiryDate, handlePreferences } from "../controllers/post";
@@ -19,17 +12,6 @@ import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleAccessN
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
 export const RequestDetailsScreen = ({ navigation }) => {
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
-
     let route: RouteProp<{
         params: PostModel
     }> = useRoute()
@@ -40,8 +22,6 @@ export const RequestDetailsScreen = ({ navigation }) => {
     const [inputHeight, setInputHeight] = useState(0)
     const [alertMsg, setAlertMsg] = useState('')
 
-    if (!loaded) return <Text>Loading...</Text>
-
     const sendMsg = () => {
         if (!message) {
             setAlertMsg("Please enter a message")
@@ -49,13 +29,13 @@ export const RequestDetailsScreen = ({ navigation }) => {
         }
 
         const post = {
-            title: route.params.title,
-            images: route.params.imageLink,
-            postedOn: route.params.postedOn,
-            postedBy: route.params.postedBy,
-            description: route.params.description,
-            postId: route.params.postId,
-            username: route.params.username,
+            title: route.params?.title,
+            images: route.params?.imageLink,
+            postedOn: route.params?.postedOn,
+            postedBy: route.params?.postedBy,
+            description: route.params?.description,
+            postId: route.params?.postId,
+            username: route.params?.username,
             type: "r"
         }
         navigation.navigate('Chat', {
@@ -64,11 +44,11 @@ export const RequestDetailsScreen = ({ navigation }) => {
         })
     }
 
-    const logistics = handlePreferences(route.params.logistics.sort().toString(), getLogisticsType)
-    const postalCode = formatPostalCode(route.params.postalCode)
-    const accessNeeds = handleAccessNeeds(route.params.accessNeeds, "r")
-    const categories = handlePreferences(route.params.categories.sort().toString(), getCategory)
-    const diet = handlePreferences(route.params.diet.sort().toString(), getDiet)
+    const logistics = handlePreferences(route.params?.logistics?.sort().toString(), getLogisticsType)
+    const postalCode = formatPostalCode(route.params?.postalCode)
+    const accessNeeds = handleAccessNeeds(route.params?.accessNeeds, "r")
+    const categories = handlePreferences(route.params?.categories?.sort().toString(), getCategory)
+    const diet = handlePreferences(route.params?.diet?.sort().toString(), getDiet)
 
     // const renderItem = ({ item }) => {
     //     return (
@@ -90,7 +70,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                 estimatedItemSize={166}
                 testID="ReqDet.imgsList"
             /> */}
-            {route.params.imageLink &&
+            {!!route.params.imageLink &&
                 <TouchableOpacity>
                     <Image
                         style={{ height: 200, width: 200 }}
