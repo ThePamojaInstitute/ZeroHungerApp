@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     containerIn: {
@@ -47,7 +47,8 @@ export default StyleSheet.create({
     },
     messageText: {
         fontSize: 15,
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         color: Colors.white,
         marginBottom: 15,
         marginRight: 35,
@@ -60,7 +61,8 @@ export default StyleSheet.create({
         alignSelf: 'flex-end',
         bottom: 0,
         fontSize: 11,
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         color: Colors.white,
         lineHeight: 13.2,
     }

@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     container: {
@@ -22,7 +22,8 @@ export default StyleSheet.create({
     inputLabel: {
         width: '100%',
         height: 19,
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 18,
         color: '#000000',
         alignItems: 'center',
@@ -39,12 +40,14 @@ export default StyleSheet.create({
         borderStyle: 'solid',
         borderColor: Colors.midLight,
         borderRadius: 10,
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 16,
         paddingLeft: 10
     },
     errorMsg: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 13,
         color: Colors.alert2,
         alignSelf: 'flex-start',

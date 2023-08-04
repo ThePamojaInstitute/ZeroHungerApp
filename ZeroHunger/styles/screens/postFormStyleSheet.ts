@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     formContainer: {
@@ -9,14 +9,16 @@ export default StyleSheet.create({
         backgroundColor: Colors.Background
     },
     formTitleText: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 18,
         color: Colors.dark,
         marginBottom: 3
     },
     formDescText: {
         marginBottom: 5,
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 13,
         color: '#656565'
     },
@@ -36,15 +38,18 @@ export default StyleSheet.create({
         marginLeft: 5,
         fontSize: 16,
         textAlignVertical: "top",
-        fontFamily: 'PublicSans_400Regular'
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
     },
     formCancelBtn: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 16,
         color: '#656565'
     },
     formLabel: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 18,
         color: Colors.dark
     },
@@ -69,12 +74,14 @@ export default StyleSheet.create({
         borderStyle: 'solid',
         borderColor: Colors.midLight,
         borderRadius: 10,
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 16,
         paddingLeft: 10
     },
     formErrorMsg: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 13,
         color: Colors.alert2,
         alignSelf: 'flex-start',

@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     item: {
@@ -21,7 +21,8 @@ export default StyleSheet.create({
         backgroundColor: Colors.primaryLight,
     },
     secondaryBtnLabel: {
-        fontFamily: 'PublicSans_500Medium',
+        fontFamily: Fonts.PublicSans_Medium,
+        fontWeight: '500',
         fontSize: 12,
         display: 'flex',
         alignItems: 'center',

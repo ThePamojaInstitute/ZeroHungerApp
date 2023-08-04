@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     authContainer: {
@@ -9,7 +9,8 @@ export default StyleSheet.create({
         marginTop: 20
     },
     errorMsg: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 13,
         color: Colors.alert2,
         alignSelf: 'flex-start',
@@ -27,7 +28,8 @@ export default StyleSheet.create({
     inputLabel: {
         width: '100%',
         height: 19,
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 18,
         color: '#000000',
         alignItems: 'center',
@@ -70,7 +72,8 @@ export default StyleSheet.create({
         borderRadius: 10,
     },
     forgotPassword: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 13,
         display: 'flex',
         alignItems: 'center',
@@ -95,7 +98,8 @@ export default StyleSheet.create({
         borderColor: '#B8B8B8',
     },
     dividerText: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 13,
         display: 'flex',
         alignItems: 'center',

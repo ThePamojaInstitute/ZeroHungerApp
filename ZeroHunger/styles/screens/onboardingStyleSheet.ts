@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 const dim = Dimensions.get('window')
 
@@ -23,7 +23,8 @@ export default StyleSheet.create({
         paddingBottom: dim.height * 0.25
     },
     text: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 16,
         color: Colors.dark,
         paddingBottom: 12,
@@ -33,14 +34,16 @@ export default StyleSheet.create({
         marginRight: 48
     },
     backButton: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 18,
         paddingLeft: dim.width * 0.2,
         paddingBottom: dim.height * 0.2,
         color: Colors.primaryDark
     },
     nextButton: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 18,
         paddingRight: dim.width * 0.2,
         paddingBottom: dim.height * 0.2,

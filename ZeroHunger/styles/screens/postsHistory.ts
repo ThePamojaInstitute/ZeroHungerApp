@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     modalItem: {
@@ -26,7 +26,8 @@ export default StyleSheet.create({
     },
     sortText: {
         color: Colors.primaryDark,
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 13
     },
     modal: {
