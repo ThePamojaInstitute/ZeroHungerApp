@@ -107,7 +107,7 @@ def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, use
 def sort_posts(posts, sortBy, page):
     try:
         if(sortBy == "distance"):
-            posts = posts.all().order_by(F('distance').desc(nulls_last=True))
+            posts = posts.all().order_by(F('distance').asc(nulls_last=True))
         elif(sortBy == "old"):
             posts = posts.all().order_by('postedOn')
         else:
