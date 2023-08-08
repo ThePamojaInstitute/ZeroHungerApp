@@ -168,23 +168,23 @@ export const RequestDetailsScreen = ({ navigation }) => {
                 </View>
                 <View testID="ReqDet.posterInfo" style={styles.information}>
                     <Text testID="ReqDet.posterInfoLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Poster Information</Text>
-                    <View testID="ReqDet.posterInfoCont" style={{ flexDirection: "row", marginRight: 12 }}>
+                    <View testID="ReqDet.posterInfoCont" style={{ flexDirection: "row", alignItems: 'center', justifyContent: 'flex-start' }}>
                         <Ionicons name="person-circle-sharp" color="#B8B8B8" size={40} />
+                        <Text
+                            testID="ReqDet.posterUsername"
+                            style={[
+                                globalStyles.H5,
+                                {
+                                    marginLeft: 3,
+                                    marginBottom: 5
+                                }]}
+                        >{route.params.username}</Text>
                         <View>
-                            <Text
-                                testID="ReqDet.posterUsername"
-                                style={[
-                                    globalStyles.H5,
-                                    {
-                                        marginLeft: 3,
-                                        marginTop: 2
-                                    }]}
-                            >{route.params.username}</Text>
-                            <View testID="ReqDet.locationDet" style={styles.location}>
+                            {/* <View testID="ReqDet.locationDet" style={styles.location}>
                                 <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
-                                {/* Placeholder postal code */}
+                                Placeholder postal code
                                 <Text testID="ReqDet.locationDetText" style={globalStyles.Small2}>XXXXXX</Text>
-                            </View>
+                            </View> */}
                         </View>
                     </View>
                 </View>
@@ -209,12 +209,12 @@ export const RequestDetailsScreen = ({ navigation }) => {
                     <View testID="ReqDet.meetPrefSubCont" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
                             <Text testID="ReqDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick up or delivery preference</Text>
-                            <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal code</Text>
+                            {/* <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal code</Text> */}
                             <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Access needs</Text>
                         </View>
                         <View style={{ flexShrink: 1 }}>
                             <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
-                            <Text testID="ReqDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase', marginBottom: 8 }]}>{postalCode}</Text>
+                            {/* <Text testID="ReqDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase', marginBottom: 8 }]}>{postalCode}</Text> */}
                             <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>{accessNeeds}</Text>
                         </View>
                     </View>

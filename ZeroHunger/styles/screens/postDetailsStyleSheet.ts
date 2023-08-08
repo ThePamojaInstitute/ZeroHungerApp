@@ -23,8 +23,7 @@ export default StyleSheet.create({
     },
     information: {
         paddingTop: 12,
-        paddingBottom: 20,
-        paddingRight: 12,
+        paddingBottom: 12,
         borderBottomWidth: 1,
         borderBottomColor: Colors.midLight
     },

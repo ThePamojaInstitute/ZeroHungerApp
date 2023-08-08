@@ -166,24 +166,24 @@ export const OfferDetailsScreen = ({ navigation }) => {
                 </View>
                 <View testID="OffDet.posterInfo" style={styles.information}>
                     <Text testID="OffDet.posterInfoLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Poster Information</Text>
-                    <View testID="OffDet.posterInfoCont" style={{ flexDirection: "row", marginRight: 12 }}>
+                    <View testID="OffDet.posterInfoCont" style={{ flexDirection: "row", alignItems: 'center', justifyContent: 'flex-start' }}>
                         <Ionicons name="person-circle-sharp" color="#B8B8B8" size={40} />
-                        <View>
-                            <Text
-                                testID="OffDet.posterUsername"
-                                style={[
-                                    globalStyles.H5,
-                                    {
-                                        marginLeft: 3,
-                                        marginTop: 2
-                                    }]}
-                            >{route.params.username}</Text>
+                        <Text
+                            testID="OffDet.posterUsername"
+                            style={[
+                                globalStyles.H5,
+                                {
+                                    marginLeft: 3,
+                                    marginBottom: 5
+                                }]}
+                        >{route.params.username}</Text>
+                        {/* <View>
                             <View testID="OffDet.locationDet" style={styles.location}>
                                 <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
-                                {/* Placeholder postal code */}
+                                Placeholder postal code
                                 <Text testID="OffDet.locationDetText" style={globalStyles.Small2}>XXXXXX</Text>
                             </View>
-                        </View>
+                        </View> */}
                     </View>
                 </View>
                 <View testID="OffDet.details" style={styles.information}>
@@ -207,12 +207,12 @@ export const OfferDetailsScreen = ({ navigation }) => {
                     <View testID="OffDet.meetPrefSubCont" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
                             <Text testID="OffDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick up or delivery preference</Text>
-                            <Text testID="OffDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal code</Text>
+                            {/* <Text testID="OffDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal code</Text> */}
                             <Text testID="OffDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Access needs</Text>
                         </View>
                         <View style={{ flexShrink: 1 }}>
                             <Text testID="OffDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
-                            <Text testID="OffDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase', marginBottom: 8 }]}>{postalCode}</Text>
+                            {/* <Text testID="OffDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase', marginBottom: 8 }]}>{postalCode}</Text> */}
                             <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>{accessNeeds}</Text>
                         </View>
                     </View>
