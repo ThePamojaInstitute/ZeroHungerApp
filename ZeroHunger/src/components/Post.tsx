@@ -21,6 +21,8 @@ interface Props {
 export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selectedPost, openModal, from }) => {
     const { user } = useContext(AuthContext);
 
+    if (!user) return null
+
     const handlePress = (post: PostModel) => {
         post.type === "r" ?
             navigation.navigate('RequestDetailsScreen', post) :
