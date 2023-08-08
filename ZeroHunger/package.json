@@ -76,7 +76,8 @@
     "react-native-web": "~0.18.7",
     "react-native-web-swiper": "^2.2.4",
     "react-router-dom": "^5.2.0",
-    "react-use-websocket": "^4.3.1"
+    "react-use-websocket": "^4.3.1",
+    "expo-image-manipulator": "~11.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
