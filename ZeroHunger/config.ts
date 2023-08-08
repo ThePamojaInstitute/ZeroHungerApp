@@ -15,8 +15,13 @@ const mockMMKV = {
 
 export const storage = Platform.OS === 'web' ? new MMKV() : mockMMKV
 
+<<<<<<< Updated upstream
 export const BaseURL = '127.0.0.1:8000'
 // export const BaseURL = 'zh-backend-azure-webapp.azurewebsites.net'
+=======
+export const BaseURL = 'http://10.0.0.104:8000' //'http://127.0.0.1:8000/'
+// export const BaseURL = 'https://zh-backend-azure-webapp.azurewebsites.net/'
+>>>>>>> Stashed changes
 
 export const passwordResetURL = 'https://zh-backend-azure-webapp.azurewebsites.net/users/reset_password/'
 

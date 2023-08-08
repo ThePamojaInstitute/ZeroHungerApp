@@ -27,9 +27,15 @@
       "ios": {
         "resourceClass": "m1-medium"
       }
-    }
+    },
+    "test": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "withoutCredentials": true
+      }
   },
   "submit": {
     "production": {}
+   } 
   }
 }
