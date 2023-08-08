@@ -6,7 +6,7 @@ export default StyleSheet.create({
         marginTop: 12,
         marginLeft: 12,
         marginRight: 8,
-        marginBottom: 32,
+        marginBottom: 5,
         justifyContent: "space-between"
     },
     Img: {

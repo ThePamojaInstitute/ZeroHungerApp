@@ -42,12 +42,14 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
         <DrawerContentScrollView {...props}>
             <View testID={`Drawer.${status}`} style={styles.drawerContainer}>
                 {/* Temporary default profile picture */}
-                <Ionicons name="person-circle-sharp" color="#B8B8B8" size={64} />
-                <View testID="Drawer.usernameCont" style={{ padding: 4, marginLeft: -25 }}>
-                    <Text testID="Drawer.username" style={[globalStyles.H2, { paddingBottom: 8 }]}>{user ? user['username'] : "User"}</Text>
-                    <TouchableOpacity testID="Drawer.accSettBtn" onPress={() => props.navigation.navigate("AccountSettingsScreen")}>
-                        <Text testID="Drawer.accSettBtnLabel" style={globalStyles.Body}> {t("menu.account.label")} </Text>
-                    </TouchableOpacity>
+                <View style={{ flexDirection: 'row' }}>
+                    <Ionicons name="person-circle-sharp" color="#B8B8B8" size={64} />
+                    <View testID="Drawer.usernameCont" style={{ padding: 4 }}>
+                        <Text testID="Drawer.username" style={[globalStyles.H2, { marginBottom: 7, marginLeft: 3.5 }]}>{user ? user['username'] : "User"}</Text>
+                        <TouchableOpacity testID="Drawer.accSettBtn" onPress={() => props.navigation.navigate("AccountSettingsScreen")}>
+                            <Text testID="Drawer.accSettBtnLabel" style={globalStyles.Body}> {t("menu.account.label")} </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View>
                     <TouchableOpacity testID="Drawer.closeBtn" onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}>
@@ -105,7 +107,14 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
 
 const DrawerTab = () => {
     return (
-        <Drawer.Navigator drawerContent={props => <CustomDrawer {...props} />}>
+        <Drawer.Navigator
+            drawerContent={props => <CustomDrawer {...props} />}
+            screenOptions={{
+                drawerStyle: {
+                    width: '85%'
+                }
+            }}
+        >
             <Drawer.Screen
                 name="BottomTab"
                 component={BottomTab}

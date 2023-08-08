@@ -207,7 +207,7 @@ export const HomeScreen = ({ navigation }) => {
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                     testID="FoodCategories.container"
-                    style={{ flexDirection: 'row', marginBottom: 10, marginTop: 5, marginLeft: 20 }}
+                    style={styles.filtersList}
                 >
                     <View style={styles.filter}>
                         <TouchableOpacity style={styles.filterBtn} onPress={() => openModal()}>

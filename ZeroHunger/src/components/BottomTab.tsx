@@ -187,6 +187,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     headerShown: true,
                     title: t("app.messages.label"),
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background,
                     },
@@ -268,6 +269,7 @@ const ChatStackNavigator = () => {
                     headerShown: true,
                     title: t("app.messages.label"),
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background,
                     },
@@ -281,6 +283,7 @@ const ChatStackNavigator = () => {
                     headerShown: true,
                     title: t("app.messages.label"),
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background,
                     },

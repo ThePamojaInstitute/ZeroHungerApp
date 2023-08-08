@@ -116,7 +116,7 @@ export const PostsHistory = ({ navigation }) => {
                     </Pressable>
                 </View>
             </View>
-            <View style={{ flexDirection: 'row', marginLeft: 20, marginTop: 10, alignItems: 'center' }}>
+            <View style={styles.sortContainer}>
                 <Text style={globalStyles.Small1}>Sorted by: </Text>
                 <Pressable
                     onPress={() => setModalVisible(true)}

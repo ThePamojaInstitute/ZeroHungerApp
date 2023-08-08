@@ -179,13 +179,13 @@ export const RequestDetailsScreen = ({ navigation }) => {
                                     marginBottom: 5
                                 }]}
                         >{route.params.username}</Text>
-                        <View>
-                            {/* <View testID="ReqDet.locationDet" style={styles.location}>
+                        {/* <View>
+                            <View testID="ReqDet.locationDet" style={styles.location}>
                                 <Ionicons name='location-outline' size={13} style={{ marginRight: 4 }} />
                                 Placeholder postal code
                                 <Text testID="ReqDet.locationDetText" style={globalStyles.Small2}>XXXXXX</Text>
-                            </View> */}
-                        </View>
+                            </View>
+                        </View> */}
                     </View>
                 </View>
                 <View testID="ReqDet.details" style={styles.information}>
