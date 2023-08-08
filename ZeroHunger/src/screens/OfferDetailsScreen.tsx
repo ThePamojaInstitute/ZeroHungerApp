@@ -89,7 +89,7 @@ export const OfferDetailsScreen = ({ navigation }) => {
                             <Text testID="OffDet.locationText" style={[globalStyles.Small2, { textTransform: 'uppercase' }]}>{postalCode}</Text>
                         </View>
                         {/* TODO: Implement edit posts */}
-                        <View>
+                        {/* <View>
                             <TouchableOpacity
                                 testID="OffDet.editBtn"
                                 style={[globalStyles.secondaryBtn, {
@@ -102,7 +102,7 @@ export const OfferDetailsScreen = ({ navigation }) => {
                                 <MaterialCommunityIcons name="pencil-box-outline" size={21} />
                                 <Text testID="OffDet.editBtnLabel" style={globalStyles.secondaryBtnLabel}>Edit</Text>
                             </TouchableOpacity>
-                        </View>
+                        </View> */}
                     </View>
                 </>}
 

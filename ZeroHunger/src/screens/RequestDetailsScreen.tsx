@@ -90,7 +90,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                                 <Text testID="ReqDet.locationText" style={[globalStyles.Small2, { textTransform: 'uppercase' }]}>{postalCode}</Text>
                             </View>
                             {/* TODO: Implement edit posts */}
-                            <View>
+                            {/* <View>
                                 <TouchableOpacity
                                     testID="ReqDet.editBtn"
                                     style={[globalStyles.secondaryBtn, {
@@ -103,7 +103,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                                     <MaterialCommunityIcons name="pencil-box-outline" size={21} />
                                     <Text testID="ReqDet.editBtnLabel" style={globalStyles.secondaryBtnLabel}>Edit</Text>
                                 </TouchableOpacity>
-                            </View>
+                            </View> */}
                         </View>
                     </>
                 }
