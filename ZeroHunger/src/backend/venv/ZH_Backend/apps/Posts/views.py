@@ -142,6 +142,9 @@ def get_coordinates(postal_code):
         url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{postal_code}.json?access_token={settings.MAPBOX_ACCESS_CODE}'
         res = requests.get(url, headers={'User-Agent': "python-requests/2.31.0"}).json()
 
+        if(len(res['features']) == 0):
+            return 'invalid', 'invalid'
+
         longitude = res['features'][0]['center'][0] 
         latitude = res['features'][0]['center'][1] 
 
@@ -163,6 +166,10 @@ class createPost(APIView):
             
         if(postal_code):
             lon, lat = get_coordinates(postal_code)
+
+            if(lon == "invalid"):
+                return Response("invalid postal code", status=400)
+
             request.data['postData']['longitude'] = float(lon)
             request.data['postData']['latitude'] = float(lat)
         else:
