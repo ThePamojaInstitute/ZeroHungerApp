@@ -1,83 +1,57 @@
 /** @type {Detox.DetoxConfig} */
 module.exports = {
+  logger: {
+    level: process.env.CI ? 'debug' : undefined,
+  },
   testRunner: {
+    $0: 'jest',
     args: {
-      '$0': 'jest',
-      config: 'e2e/jest.config.js'
+      config: 'e2e/jest.config.js',
+      _: ['e2e'],
     },
-    jest: {
-      setupTimeout: 120000
-    }
+  },
+  artifacts: {
+    plugins: {
+      log: process.env.CI ? 'failing' : undefined,
+      screenshot: 'failing',
+    },
   },
   apps: {
-    'ios.debug': {
-      type: 'ios.app',
-      binaryPath: 'ios/build/Build/Products/Debug-iphonesimulator/ZeroHunger.app',
-      build: 'xcodebuild -workspace ios/YOUR_APP.xcworkspace -scheme YOUR_APP -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build'
-    },
     'ios.release': {
       type: 'ios.app',
-      binaryPath: 'ios/build/Build/Products/Release-iphonesimulator/ZeroHunger.app',
-      build: 'xcodebuild -workspace ios/YOUR_APP.xcworkspace -scheme YOUR_APP -configuration Release -sdk iphonesimulator -derivedDataPath ios/build'
-    },
-    'android.debug': {
-      type: 'android.apk',
-      binaryPath: 'android/app/build/outputs/apk/debug/ZeroHunger-debug.apk',
-      build: 'cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug',
-      reversePorts: [
-        8081
-      ]
+      build:
+        'xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Release -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build',
+      binaryPath: 'ios/build/Build/Products/Release-iphonesimulator/eastestsexample.app',
     },
     'android.release': {
       type: 'android.apk',
-      binaryPath: 'android/app/build/outputs/apk/release/ZeroHunger-release.apk',
-      build: 'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release'
-    }
+      build:
+        'cd android && ./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release && cd ..',
+      binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
+    },
   },
   devices: {
     simulator: {
       type: 'ios.simulator',
       device: {
-        type: 'iPhone 12'
-      }
-    },
-    attached: {
-      type: 'android.attached',
-      device: {
-        adbName: '.*'
-      }
+        type: 'iPhone 14',
+      },
     },
     emulator: {
       type: 'android.emulator',
       device: {
-        avdName: 'Pixel_6_Pro_API_31_Android_Open_Source'
-      }
-    }
+        avdName: 'Pixel_6_Pro_API_31_Android_Open_Source',
+      },
+    },
   },
   configurations: {
-    'ios.sim.debug': {
+    'ios.release': {
       device: 'simulator',
-      app: 'ios.debug'
+      app: 'ios.release',
     },
-    'ios.sim.release': {
-      device: 'simulator',
-      app: 'ios.release'
-    },
-    'android.att.debug': {
-      device: 'attached',
-      app: 'android.debug'
-    },
-    'android.att.release': {
-      device: 'attached',
-      app: 'android.release'
-    },
-    'android.emu.debug': {
+    'android.debug': {
       device: 'emulator',
-      app: 'android.debug'
+      app: 'android.release',
     },
-    'android.emu.release': {
-      device: 'emulator',
-      app: 'android.release'
-    }
-  }
+  },
 };

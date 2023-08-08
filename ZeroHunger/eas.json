@@ -33,9 +33,6 @@
         "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
         "withoutCredentials": true
       }
-  },
-  "submit": {
-    "production": {}
-   } 
+  }
   }
 }
