@@ -181,7 +181,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 }}
             />
             <Stack.Screen
-                name={t("app.messages.label")}
+                name={'Chat'}
                 component={Chat}
                 options={{
                     headerShown: true,
