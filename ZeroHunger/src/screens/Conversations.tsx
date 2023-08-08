@@ -163,7 +163,7 @@ export const Conversations = ({ navigation }) => {
             {!empty && <View
                 testID="Conversations.subContainer"
                 style={{ height: Dimensions.get('window').height - 130 }}>
-                <View
+                {/* <View
                     testID="Conversations.searchContainer"
                     style={styles.searchContainer}>
                     <View
@@ -180,7 +180,7 @@ export const Conversations = ({ navigation }) => {
                             style={styles.searchInput}
                         />
                     </View>
-                </View>
+                </View> */}
                 {conversations.length === 0 &&
                     <ActivityIndicator animating size="large" color={Colors.primary} />}
                 <FlashList
@@ -197,7 +197,7 @@ export const Conversations = ({ navigation }) => {
                     }
                     ListEmptyComponent={() => {
                         if (empty) {
-                            return <Text style={{ fontSize: 20 }}>No posts available</Text>
+                            return <Text style={{ fontSize: 20 }}>No Messages</Text>
                         }
                         else if (firstLoad) {
                             return <ActivityIndicator

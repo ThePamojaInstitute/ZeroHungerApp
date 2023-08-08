@@ -32,8 +32,10 @@ export default StyleSheet.create({
     modal: {
         margin: 0,
         backgroundColor: Colors.offWhite,
-        borderRadius: 10,
+        // borderRadius: 10,
         elevation: 0,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20
     },
     modalContent: {
         alignItems: 'center',

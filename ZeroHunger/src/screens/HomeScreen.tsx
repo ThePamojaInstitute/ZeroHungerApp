@@ -75,7 +75,7 @@ export const HomeScreen = ({ navigation }) => {
                 <View style={{ flexDirection: 'row' }}>
                     {Platform.OS === "web" &&
                         <MaterialIcons
-                            style={{ padding: 16 }}
+                            style={{ padding: Platform.OS === 'web' ? 16 : 0 }}
                             name="refresh"
                             size={26}
                             color="black"
@@ -83,19 +83,19 @@ export const HomeScreen = ({ navigation }) => {
                         />
                     }
                     <Ionicons
-                        style={{ padding: 16 }}
+                        style={{ padding: Platform.OS === 'web' ? 16 : 0 }}
                         name="notifications-sharp"
                         size={22}
                         onPress={() => { navigation.navigate("NotificationsScreen") }}
                         testID="Home.notificationBtn"
                     />
-                    <Ionicons
+                    {/* <Ionicons
                         style={{ padding: 16 }}
                         name="md-search"
                         size={22}
                         // onPress={() => { }}
                         testID="Home.searchBtn"
-                    />
+                    /> */}
                 </View>
             )
         })

@@ -58,13 +58,13 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
 
             <DrawerItem
                 testID="Drawer.historyBtn"
-                label={() => <Text style={globalStyles.Body}>  {t("menu.history.label")}  </Text>}
+                label={() => <Text style={globalStyles.Body}>{t("menu.history.label")}</Text>}
                 icon={() => <Image source={require('../../assets/History.png')} style={styles.Img} />}
                 onPress={() => props.navigation.navigate("PostsHistory")}
             />
             <DrawerItem
                 testID="Drawer.dietRestBtn"
-                label={() => <Text style={globalStyles.Body}> {t("menu.preferences.label")} </Text>}
+                label={() => <Text style={globalStyles.Body}>{t("menu.preferences.label")}</Text>}
                 icon={() => <Image source={require('../../assets/Settings.png')} style={styles.Img} />}
                 onPress={() => props.navigation.navigate("Preferences")}
             />
@@ -76,13 +76,13 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
             />
             <DrawerItem
                 testID="Drawer.FAQBtn"
-                label={() => <Text style={globalStyles.Body}> {t("menu.faq.label")} </Text>}
+                label={() => <Text style={globalStyles.Body}>{t("menu.faq.label")}</Text>}
                 icon={() => <Image source={require('../../assets/Help.png')} style={styles.Img} />}
                 onPress={() => { }}
             />
             <DrawerItem
                 testID="Drawer.termsBtn"
-                label={() => <Text style={globalStyles.Body}> {t("menu.terms.label")}</Text>}
+                label={() => <Text style={globalStyles.Body}>{t("menu.terms.label")}</Text>}
                 icon={() => <Image source={require('../../assets/Scroll.png')} style={styles.Img} />}
                 onPress={() => { }}
 

@@ -89,7 +89,10 @@ const HomeStackNavigator = ({ navigation }) => {
                     },
                     headerLeft: () => (
                         <Ionicons
-                            style={{ marginLeft: 12, marginRight: 21 }}
+                            style={{
+                                marginLeft: Platform.OS === 'web' ? 12 : 0,
+                                marginRight: 21
+                            }}
                             name="menu"
                             size={24}
                             onPress={navigation.openDrawer}
@@ -112,13 +115,13 @@ const HomeStackNavigator = ({ navigation }) => {
                                 size={22}
                                 onPress={() => { navigation.navigate("NotificationsScreen") }}
                             />
-                            <Ionicons
+                            {/* <Ionicons
                                 style={{ padding: 16 }}
                                 name="md-search"
                                 size={22}
                                 onPress={() => { }}
                                 testID="Home.searchBtn"
-                            />
+                            /> */}
                         </View>
                     )
                 }}
@@ -233,6 +236,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     headerShown: true,
                     title: t("menu.history.label"),
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -402,7 +406,7 @@ const BottomTab = () => {
                                     onSwipeComplete={() => setModalVisible(!modalVisible)}
                                     swipeDirection={['down']}
                                     style={[styles.modal,
-                                    { marginTop: Dimensions.get('window').height * 0.69 }]}
+                                    { marginTop: Dimensions.get('window').height * 0.74 }]}
                                 >
                                     <View style={{ marginBottom: 30, marginTop: 12 }}>
                                         <View style={styles.modalContent}>
@@ -415,8 +419,8 @@ const BottomTab = () => {
                                         >
                                             <Ionicons
                                                 name="close"
-                                                size={30}
-                                                style={{ marginTop: -15 }}
+                                                size={28}
+                                                style={{ marginTop: -2 }}
                                             />
                                         </TouchableOpacity>
                                     </View>
@@ -435,7 +439,7 @@ const BottomTab = () => {
                                             > A Request for Food </Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
-                                            style={[globalStyles.secondaryBtn, { marginTop: 16, marginBottom: 15 }]}
+                                            style={[globalStyles.secondaryBtn, { marginTop: 16, marginBottom: 30 }]}
                                             onPress={() => {
                                                 setModalVisible(false)
                                                 navigation.navigate("OfferFormScreen")

@@ -23,9 +23,9 @@ export const PostsHistory = ({ navigation }) => {
                 onSwipeComplete={() => setModalVisible(!modalVisible)}
                 swipeDirection={['down']}
                 style={[styles.modal,
-                { marginTop: Dimensions.get('window').height * 0.78 }]}
+                { marginTop: Dimensions.get('window').height * 0.825 }]}
             >
-                <View style={{ marginBottom: 25 }}>
+                <View style={{ marginBottom: 10 }}>
                     <View
                         testID="Bottom.postNavModalCont"
                         style={styles.modalContent}>
@@ -39,7 +39,7 @@ export const PostsHistory = ({ navigation }) => {
                         style={styles.modalClose}
                         onPress={() => setModalVisible(!modalVisible)}
                     >
-                        <Ionicons name="close" size={30} />
+                        <Ionicons name="close" size={26} />
                     </TouchableOpacity>
                 </View>
                 <View style={{ alignItems: "flex-start", gap: 12 }}>
@@ -61,7 +61,7 @@ export const PostsHistory = ({ navigation }) => {
                         >Newest first</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={styles.modalItem}
+                        style={[styles.modalItem, { marginBottom: 20 }]}
                         onPress={() => {
                             setModalVisible(false)
                             setOrderByNewest(false)
