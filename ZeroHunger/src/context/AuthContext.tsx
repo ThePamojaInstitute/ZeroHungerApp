@@ -5,6 +5,7 @@ import { logOutUser } from "../controllers/auth";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as RootNavigation from '../../RootNavigation';
+import store from "../../store";
 
 const setItem = (key, value) => {
     if (Platform.OS === 'web') storage.set(key, value)
@@ -126,6 +127,12 @@ const AuthReducer = (state: Object, action: { type: string; payload: Object }) =
 export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE)
     const [firstLoad, setFirstLoad] = useState(true)
+
+    if (!store.isReady) {
+        store.isReady = true
+        store.dispatch = params => dispatch(params)
+        Object.freeze(store)
+    }
 
     if (Platform.OS === 'web') {
         const listener = storage.addOnValueChangedListener((changedKey) => {
