@@ -2,6 +2,8 @@ import axios from "axios"
 import { MMKV } from 'react-native-mmkv'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
+import { navigate } from "./RootNavigation";
+import store from "./store";
 
 // Mock object of MMKV only for development
 // Use actual MMKV for builds
@@ -24,7 +26,7 @@ export const WSBaseURL = 'ws://127.0.0.1:8000/'
 export const passwordResetURL = `${HttpBaseURL}users/reset_password`
 
 export const axiosInstance = axios.create({
-    baseURL: `${HttpBaseURL}`,
+    baseURL: HttpBaseURL,
     headers: { 'Content-Type': 'application/json' }
 })
 
@@ -76,11 +78,15 @@ const useMMKV = (error) => {
         })
         .catch((error2) => {
             // Retry failed, clean up and reject the promise
-            logOutUser()
+            logOutUser().then(() => {
+                store.dispatch({ type: "LOGOUT", payload: null })
+                navigate('LoginScreen', {})
+            })
             return Promise.reject(error2);
         })
         .finally(createAxiosResponseInterceptor); // Re-attach the interceptor by running the method
 }
+
 const useAsyncStorage = (error) => {
     console.log("using AsyncStorage");
 
@@ -101,7 +107,10 @@ const useAsyncStorage = (error) => {
             })
             .catch((error2) => {
                 // Retry failed, clean up and reject the promise
-                logOutUser()
+                logOutUser().then(() => {
+                    store.dispatch({ type: "LOGOUT", payload: null })
+                    navigate('LoginScreen', {})
+                })
                 return Promise.reject(error2);
             })
     }).finally(createAxiosResponseInterceptor); // Re-attach the interceptor by running the method
@@ -111,6 +120,8 @@ const createAxiosResponseInterceptor = () => {
     const interceptor = axiosInstance.interceptors.response.use(
         (response) => response,
         (error) => {
+            console.log(error);
+
             // Reject promise if usual error
             if (error.response.status !== 401) {
                 return Promise.reject(error);
