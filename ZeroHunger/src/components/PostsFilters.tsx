@@ -175,7 +175,7 @@ const PostsFilters = ({
             style={{ margin: 0 }}
         >
             <View style={[styles.modalContainer,
-            { maxHeight: Dimensions.get('window').height * 0.9 }]}>
+            { maxHeight: Dimensions.get('window').height * 0.92 }]}>
                 <View style={{ marginBottom: 25 }}>
                     <View
                         testID="Bottom.postNavModalCont"

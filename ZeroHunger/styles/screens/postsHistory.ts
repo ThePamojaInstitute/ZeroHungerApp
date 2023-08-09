@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     modalItem: {
@@ -26,14 +26,16 @@ export default StyleSheet.create({
     },
     sortText: {
         color: Colors.primaryDark,
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 13
     },
     modal: {
         margin: 0,
         backgroundColor: Colors.offWhite,
-        borderRadius: 10,
         elevation: 0,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20
     },
     modalContent: {
         alignItems: 'center',
@@ -48,14 +50,15 @@ export default StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: Colors.offWhite,
+        backgroundColor: Colors.Background,
     },
     subContainer: {
         flexDirection: 'row',
-        marginTop: 8,
-        marginRight: 16,
-        marginBottom: 4,
-        marginLeft: 16
+        paddingTop: 8,
+        paddingRight: 16,
+        paddingBottom: 4,
+        paddingLeft: 16,
+        backgroundColor: Colors.offWhite
     },
     pressable: {
         flexDirection: 'row',
@@ -68,4 +71,12 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         justifyContent: 'center',
     },
+    sortContainer: {
+        flexDirection: 'row',
+        paddingLeft: 20,
+        paddingTop: 10,
+        paddingBottom: 7.5,
+        alignItems: 'center',
+        backgroundColor: Colors.offWhite
+    }
 })

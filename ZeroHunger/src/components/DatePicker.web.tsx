@@ -18,7 +18,7 @@ const DatePicker = ({ setNeedBy, errField }) => {
         setDate(date)
         setSelected(true)
         const oneDayLater = moment(date).add(1, 'day')
-        const formattedDate = moment(oneDayLater.toDate().toDateString()).format('YYYY-MM-DD HH:mm')
+        const formattedDate = moment(oneDayLater.toDate(), 'YYYY-MM-DD HH:mm')
         setNeedBy(formattedDate)
     }
 

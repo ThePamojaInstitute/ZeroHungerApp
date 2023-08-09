@@ -4,6 +4,7 @@ import styles from "../../styles/components/quantityStyleSheet"
 import { Ionicons } from '@expo/vector-icons';
 // import { Picker } from '@react-native-picker/picker';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Fonts } from "../../styles/globalStyleSheet";
 
 const Quantity = () => {
     const [count, setCount] = useState(0);
@@ -104,12 +105,14 @@ const Quantity = () => {
                 dropDownDirection="TOP"
                 placeholder="Measurements"
                 placeholderStyle={{
-                    fontFamily: 'PublicSans_400Regular',
+                    fontFamily: Fonts.PublicSans_Regular,
+                    fontWeight: '400',
                     fontSize: 13,
                     color: '#656565'
                 }}
                 listItemLabelStyle={{
-                    fontFamily: 'PublicSans_400Regular',
+                    fontFamily: Fonts.PublicSans_Regular,
+                    fontWeight: '400',
                     fontSize: 13,
                 }}
             />

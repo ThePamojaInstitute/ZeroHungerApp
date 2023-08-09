@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { View, TouchableOpacity, Text, Dimensions, Image, Platform } from "react-native";
 import styles from "../../styles/components/bottomTabStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { getFocusedRouteNameFromRoute, useIsFocused } from "@react-navigation/native"
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
 import LoginScreen from '../screens/Loginscreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen'
 import HomeScreen from '../screens/HomeScreen';
@@ -17,18 +17,11 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import Conversations from '../screens/Conversations';
 import Chat from './Chat';
 import NotificationsScreen from '../screens/NotificationsScreen';
-import {
-    useFonts,
-    PublicSans_600SemiBold,
-    PublicSans_500Medium,
-    PublicSans_400Regular
-} from '@expo-google-fonts/public-sans';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Modal from 'react-native-modal';
 import PostsHistory from "../screens/PostsHistory";
 import Preferences from "../screens/Preferences";
-import WrappedLoginScreen from "../screens/Loginscreen";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 import { NotificationContext } from "../context/ChatNotificationContext";
@@ -40,7 +33,7 @@ const HomeStackNavigator = ({ navigation }) => {
     const { t, i18n } = useTranslation();
     return (
         <Stack.Navigator>
-            <Stack.Screen
+            {/* <Stack.Screen
                 name="OnboardingScreen"
                 component={OnboardingScreen}
                 options={({ route }) => ({
@@ -56,53 +49,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         </View>
                     )
                 })}
-            />
-            <Stack.Screen
-                name="HomeScreen"
-                component={HomeScreen}
-                options={{
-                    title: t("app.title"),
-                    headerTitleAlign: 'left',
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite
-                    },
-                    headerLeft: () => (
-                        <Ionicons
-                            style={{ marginLeft: 12, marginRight: 21 }}
-                            name="menu"
-                            size={24}
-                            onPress={navigation.openDrawer}
-                            testID="Home.drawerBtn"
-                        />
-                    ),
-                    headerRight: () => (
-                        <View style={{ flexDirection: 'row' }}>
-                            {Platform.OS === "web" &&
-                                <MaterialIcons
-                                    style={{ padding: 16 }}
-                                    name="refresh"
-                                    size={26}
-                                    color="black"
-                                />
-                            }
-                            <Ionicons
-                                style={{ padding: 16 }}
-                                name="notifications-sharp"
-                                size={22}
-                                onPress={() => { navigation.navigate("NotificationsScreen") }}
-                            />
-                            <Ionicons
-                                style={{ padding: 16 }}
-                                name="md-search"
-                                size={22}
-                                onPress={() => { }}
-                                testID="Home.searchBtn"
-                            />
-                        </View>
-                    )
-                }}
-            />
+            /> */}
             <Stack.Screen
                 name="LoginScreen"
                 component={LoginScreen}
@@ -128,6 +75,55 @@ const HomeStackNavigator = ({ navigation }) => {
                         backgroundColor: Colors.Background
                     },
                     contentStyle: { backgroundColor: Colors.Background }
+                }}
+            />
+            <Stack.Screen
+                name="HomeScreen"
+                component={HomeScreen}
+                options={{
+                    title: t("app.title"),
+                    headerTitleAlign: 'left',
+                    headerShadowVisible: false,
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite
+                    },
+                    headerLeft: () => (
+                        <Ionicons
+                            style={{
+                                marginLeft: Platform.OS === 'web' ? 12 : 0,
+                                marginRight: 21
+                            }}
+                            name="menu"
+                            size={24}
+                            onPress={navigation.openDrawer}
+                            testID="Home.drawerBtn"
+                        />
+                    ),
+                    headerRight: () => (
+                        <View style={{ flexDirection: 'row' }}>
+                            {Platform.OS === "web" &&
+                                <MaterialIcons
+                                    style={{ padding: 16 }}
+                                    name="refresh"
+                                    size={26}
+                                    color="black"
+                                />
+                            }
+                            <Ionicons
+                                style={{ padding: 16 }}
+                                name="notifications-sharp"
+                                size={22}
+                                onPress={() => { navigation.navigate("NotificationsScreen") }}
+                            />
+                            {/* <Ionicons
+                                style={{ padding: 16 }}
+                                name="md-search"
+                                size={22}
+                                onPress={() => { }}
+                                testID="Home.searchBtn"
+                            /> */}
+                        </View>
+                    )
                 }}
             />
             <Stack.Screen
@@ -185,12 +181,13 @@ const HomeStackNavigator = ({ navigation }) => {
                 }}
             />
             <Stack.Screen
-                name={t("app.messages.label")}
+                name={'Chat'}
                 component={Chat}
                 options={{
                     headerShown: true,
                     title: t("app.messages.label"),
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background,
                     },
@@ -240,6 +237,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     headerShown: true,
                     title: t("menu.history.label"),
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
@@ -271,6 +269,7 @@ const ChatStackNavigator = () => {
                     headerShown: true,
                     title: t("app.messages.label"),
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background,
                     },
@@ -284,6 +283,7 @@ const ChatStackNavigator = () => {
                     headerShown: true,
                     title: t("app.messages.label"),
                     headerTitleAlign: 'center',
+                    headerShadowVisible: false,
                     headerStyle: {
                         backgroundColor: Colors.Background,
                     },
@@ -336,17 +336,6 @@ const ChatStackNavigator = () => {
 const PostComponent = () => null
 
 const BottomTab = () => {
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
-
     const { unreadMessageCount, chatIsOpen } = useContext(NotificationContext);
 
     const [modalVisible, setModalVisible] = useState(false)
@@ -370,22 +359,6 @@ const BottomTab = () => {
                                     style={styles.icon}
                                 />
                             }
-                            {/* {focused
-                                ? <Ionicons
-                                    testID="Bottom.homeNavIcon"
-                                    name="home"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
-                                : <Ionicons
-                                    testID="Bottom.homeNavIconOutline"
-                                    name="home-outline"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
-                            } */}
                         </View>
                     ),
                     tabBarLabelPosition: "below-icon",
@@ -395,8 +368,7 @@ const BottomTab = () => {
                         if (routeName === 'LoginScreen' ||
                             routeName === 'CreateAccountScreen' ||
                             routeName === 'Chat' ||
-                            routeName === 'OnboardingScreen')
-                        {
+                            routeName === 'OnboardingScreen') {
                             return { display: "none" }
                         }
                         return styles.bottomBarTab
@@ -416,13 +388,6 @@ const BottomTab = () => {
                                     style={styles.postButton}
                                     onPress={() => setModalVisible(!modalVisible)}
                                 >
-                                    {/* <Ionicons
-                                        testID="Bottom.postNavIcon"
-                                        name="add-circle-outline"
-                                        size={28}
-                                        color={Colors.primary}
-                                        style={{ marginLeft: 3 }}
-                                    /> */}
                                     <Image
                                         source={require('../../assets/Group.png')}
                                         style={[styles.icon, { marginBottom: 5 }]}
@@ -444,7 +409,7 @@ const BottomTab = () => {
                                     onSwipeComplete={() => setModalVisible(!modalVisible)}
                                     swipeDirection={['down']}
                                     style={[styles.modal,
-                                    { marginTop: Dimensions.get('window').height * 0.69 }]}
+                                    { marginTop: Dimensions.get('window').height * 0.74 }]}
                                 >
                                     <View style={{ marginBottom: 30, marginTop: 12 }}>
                                         <View style={styles.modalContent}>
@@ -457,8 +422,8 @@ const BottomTab = () => {
                                         >
                                             <Ionicons
                                                 name="close"
-                                                size={30}
-                                                style={{ marginTop: -15 }}
+                                                size={28}
+                                                style={{ marginTop: -2 }}
                                             />
                                         </TouchableOpacity>
                                     </View>
@@ -477,7 +442,7 @@ const BottomTab = () => {
                                             > A Request for Food </Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
-                                            style={[globalStyles.secondaryBtn, { marginTop: 16, marginBottom: 15 }]}
+                                            style={[globalStyles.secondaryBtn, { marginTop: 16, marginBottom: 30 }]}
                                             onPress={() => {
                                                 setModalVisible(false)
                                                 navigation.navigate("OfferFormScreen")
@@ -514,22 +479,6 @@ const BottomTab = () => {
                                     style={styles.icon}
                                 />
                             }
-                            {/* {focused
-                                ? <Ionicons
-                                    testID="Bottom.messagesNavIcon"
-                                    name="chatbox-ellipses"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
-                                : <Ionicons
-                                    testID="Bottom.messagesNavIconOutline"
-                                    name="chatbox-ellipses-outline"
-                                    size={24}
-                                    color={Colors.primary}
-                                    style={{ marginBottom: -10 }}
-                                />
-                            } */}
                             {!!unreadMessageCount &&
                                 <View style={[styles.circle, { right: unreadMessageCount > 99 ? -15 : unreadMessageCount > 9 ? -8 : -5 }]}>
                                     <Text style={styles.unreadCount}>{unreadMessageCount > 99 ? '99+' : unreadMessageCount}</Text>

@@ -20,10 +20,11 @@ i18n
   .use(initReactI18next)
   .init(
     {
-      debug: true,
+      debug: false,
       fallbackLng: 'en',
       resources,
-      lng: "en"
+      lng: "en",
+      compatibilityJSON: 'v3',
     }
 
   );

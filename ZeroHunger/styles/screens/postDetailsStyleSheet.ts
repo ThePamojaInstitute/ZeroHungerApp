@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     container: {
@@ -23,8 +23,7 @@ export default StyleSheet.create({
     },
     information: {
         paddingTop: 12,
-        paddingBottom: 20,
-        paddingRight: 12,
+        paddingBottom: 12,
         borderBottomWidth: 1,
         borderBottomColor: Colors.midLight
     },
@@ -64,7 +63,8 @@ export default StyleSheet.create({
         color: Colors.alert2
     },
     Tag: {
-        fontFamily: 'PublicSans_500Medium',
+        fontFamily: Fonts.PublicSans_Medium,
+        fontWeight: '500',
         fontSize: 12,
         color: Colors.dark
     },

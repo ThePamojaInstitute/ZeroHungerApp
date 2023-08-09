@@ -209,7 +209,7 @@ class userPreferences(APIView):
             print(e)
             return Response(e.__str__(), 500)
         
-        return Response({"success!!"}, 204)
+        return Response(status=204)
 
 class getNotifications(APIView):
     def post(self, request, format=None):

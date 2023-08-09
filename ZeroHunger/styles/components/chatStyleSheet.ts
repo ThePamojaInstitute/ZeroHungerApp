@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     chatBar: {
@@ -29,7 +29,8 @@ export default StyleSheet.create({
         paddingLeft: 10,
         paddingRight: -20,
         paddingVertical: 6.5,
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 15,
         maxHeight: 70,
         width: '100%'
@@ -66,7 +67,8 @@ export default StyleSheet.create({
     },
     postMsgTitle: {
         color: Colors.dark,
-        fontFamily: 'PublicSans_500Medium',
+        fontFamily: Fonts.PublicSans_Medium,
+        fontWeight: '500',
         fontSize: 15
     },
     postMsgNeedBy: {

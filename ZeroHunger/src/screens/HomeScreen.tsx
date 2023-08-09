@@ -14,12 +14,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import FeedPostRenderer from "../components/FeedPostRenderer";
-import {
-    useFonts,
-    PublicSans_600SemiBold,
-    PublicSans_500Medium,
-    PublicSans_400Regular
-} from '@expo-google-fonts/public-sans';
 import { useTranslation } from "react-i18next";
 import { default as _PostsFilters } from "../components/PostsFilters";
 import { getPreferencesLogistics } from "../controllers/preferences";
@@ -31,17 +25,6 @@ import { axiosInstance } from "../../config";
 const PostsFilters = forwardRef(_PostsFilters)
 
 export const HomeScreen = ({ navigation }) => {
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
-
     const modalRef = useRef(null)
 
     const openModal = () => {
@@ -92,7 +75,7 @@ export const HomeScreen = ({ navigation }) => {
                 <View style={{ flexDirection: 'row' }}>
                     {Platform.OS === "web" &&
                         <MaterialIcons
-                            style={{ padding: 16 }}
+                            style={{ padding: Platform.OS === 'web' ? 16 : 0 }}
                             name="refresh"
                             size={26}
                             color="black"
@@ -100,19 +83,19 @@ export const HomeScreen = ({ navigation }) => {
                         />
                     }
                     <Ionicons
-                        style={{ padding: 16 }}
+                        style={{ padding: Platform.OS === 'web' ? 16 : 0 }}
                         name="notifications-sharp"
                         size={22}
                         onPress={() => { navigation.navigate("NotificationsScreen") }}
                         testID="Home.notificationBtn"
                     />
-                    <Ionicons
+                    {/* <Ionicons
                         style={{ padding: 16 }}
                         name="md-search"
                         size={22}
                         // onPress={() => { }}
                         testID="Home.searchBtn"
-                    />
+                    /> */}
                 </View>
             )
         })
@@ -187,106 +170,101 @@ export const HomeScreen = ({ navigation }) => {
     const { t, i18n } = useTranslation();
     return (
         <View testID="Home.container" style={styles.container}>
-            {!loaded && <Text> {t("home.loading.label")} </Text>}
-            {loaded && user &&
-                <>
-                    <View testID="Home.subContainer" style={styles.subContainer}>
-                        <View testID="Home.requestsContainer" style={[
-                            {
-                                borderBottomColor: showRequests ?
-                                    'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                            },
-                            styles.pressable
-                        ]}>
-                            <Pressable
-                                style={styles.pressableText}
-                                onPress={() => setShowRequests(true)}
-                                testID="Home.requestsBtn"
-                            >
-                                <Text testID="Home.requestsLabel" style={globalStyles.H3}>{t("home.requests.label")}</Text>
-                            </Pressable>
-                        </View>
-                        <View testID="Home.offersContainer" style={[
-                            {
-                                borderBottomColor: !showRequests ?
-                                    'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                            },
-                            styles.pressable
-                        ]}>
-                            <Pressable
-                                style={styles.pressableText}
-                                onPress={() => setShowRequests(false)}
-                                testID="Home.offersBtn"
-                            >
-                                <Text testID="Home.offersLabel" style={globalStyles.H3}>{t("home.offers.label")}</Text>
-                            </Pressable>
-                        </View>
+            <View testID="Home.subContainer" style={styles.subContainer}>
+                <View testID="Home.requestsContainer" style={[
+                    {
+                        borderBottomColor: showRequests ?
+                            'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                    },
+                    styles.pressable
+                ]}>
+                    <Pressable
+                        style={styles.pressableText}
+                        onPress={() => setShowRequests(true)}
+                        testID="Home.requestsBtn"
+                    >
+                        <Text testID="Home.requestsLabel" style={globalStyles.H3}>{t("home.requests.label")}</Text>
+                    </Pressable>
+                </View>
+                <View testID="Home.offersContainer" style={[
+                    {
+                        borderBottomColor: !showRequests ?
+                            'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                    },
+                    styles.pressable
+                ]}>
+                    <Pressable
+                        style={styles.pressableText}
+                        onPress={() => setShowRequests(false)}
+                        testID="Home.offersBtn"
+                    >
+                        <Text testID="Home.offersLabel" style={globalStyles.H3}>{t("home.offers.label")}</Text>
+                    </Pressable>
+                </View>
+            </View>
+            <View>
+                <ScrollView
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    testID="FoodCategories.container"
+                    style={styles.filtersList}
+                >
+                    <View style={styles.filter}>
+                        <TouchableOpacity style={styles.filterBtn} onPress={() => openModal()}>
+                            <Image
+                                source={require('../../assets/Filter.png')}
+                                style={{
+                                    resizeMode: 'cover',
+                                    width: 16,
+                                    height: 14,
+                                }} />
+                        </TouchableOpacity>
                     </View>
-                    <View>
-                        <ScrollView
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            testID="FoodCategories.container"
-                            style={{ flexDirection: 'row', marginBottom: 10, marginTop: 5, marginLeft: 20 }}
-                        >
-                            <View style={styles.filter}>
-                                <TouchableOpacity style={styles.filterBtn} onPress={() => openModal()}>
-                                    <Image
-                                        source={require('../../assets/Filter.png')}
-                                        style={{
-                                            resizeMode: 'cover',
-                                            width: 16,
-                                            height: 14,
-                                        }} />
-                                </TouchableOpacity>
-                            </View>
-                            {filters.map(item => {
-                                return renderFilter(item)
-                            })}
-                        </ScrollView>
-                    </View>
-                    <PostsFilters
-                        ref={modalRef}
-                        sortBy={sortBy}
-                        setSortBy={setSortBy}
-                        categories={categories}
-                        setCategories={setCategories}
-                        diet={diet}
-                        setDiet={setDiet}
-                        logistics={prefLogistics}
-                        setLogistics={setPrefLogistics}
-                        distance={distance}
-                        setDistance={setDistance}
-                        updater={updater}
-                        showFilter={showFilter}
-                        setShowFilter={setShowFilter}
-                    />
-                    {showRequests &&
-                        <FeedPostRenderer
-                            type={"r"}
-                            navigation={navigation}
-                            setShowRequests={setShowRequests}
-                            sortBy={sortBy}
-                            categories={categories}
-                            diet={diet}
-                            logistics={logistics}
-                            accessNeeds={accessNeeds}
-                            setUpdater={setUpdater}
-                        />}
-                    {!showRequests &&
-                        <FeedPostRenderer
-                            type={"o"}
-                            navigation={navigation}
-                            setShowRequests={setShowRequests}
-                            sortBy={sortBy}
-                            categories={categories}
-                            diet={diet}
-                            logistics={logistics}
-                            accessNeeds={accessNeeds}
-                            setUpdater={setUpdater}
-                        />}
-                </>
-            }
+                    {filters.map(item => {
+                        return renderFilter(item)
+                    })}
+                </ScrollView>
+            </View>
+            <PostsFilters
+                ref={modalRef}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                categories={categories}
+                setCategories={setCategories}
+                diet={diet}
+                setDiet={setDiet}
+                logistics={prefLogistics}
+                setLogistics={setPrefLogistics}
+                distance={distance}
+                setDistance={setDistance}
+                updater={updater}
+                showFilter={showFilter}
+                setShowFilter={setShowFilter}
+            />
+            {showRequests &&
+                <FeedPostRenderer
+                    type={"r"}
+                    navigation={navigation}
+                    setShowRequests={setShowRequests}
+                    sortBy={sortBy}
+                    categories={categories}
+                    diet={diet}
+                    logistics={logistics}
+                    accessNeeds={accessNeeds}
+                    setUpdater={setUpdater}
+                />}
+            {!showRequests &&
+                <FeedPostRenderer
+                    type={"o"}
+                    navigation={navigation}
+                    setShowRequests={setShowRequests}
+                    sortBy={sortBy}
+                    categories={categories}
+                    diet={diet}
+                    logistics={logistics}
+                    accessNeeds={accessNeeds}
+                    setUpdater={setUpdater}
+                />}
         </View>
     )
 }

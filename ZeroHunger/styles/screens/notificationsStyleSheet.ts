@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     notification: {
@@ -39,7 +39,8 @@ export default StyleSheet.create({
     },
     postTagLabel: {
         color: Colors.dark,
-        fontFamily: 'PublicSans_500Medium',
+        fontFamily: Fonts.PublicSans_Medium,
+        fontWeight: '500',
         fontSize: 12,
         alignItems: 'center'
     },

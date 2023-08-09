@@ -1,5 +1,4 @@
 import axios from "axios"
-import { logOutUser } from "./src/controllers/auth";
 import { MMKV } from 'react-native-mmkv'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
@@ -28,6 +27,35 @@ export const axiosInstance = axios.create({
     baseURL: `${HttpBaseURL}`,
     headers: { 'Content-Type': 'application/json' }
 })
+
+const logOutUser = async () => {
+    try {
+        let refreshToken: string
+        if (Platform.OS === 'web') {
+            refreshToken = storage.getString('refresh_token')
+        } else {
+            refreshToken = await AsyncStorage.getItem('refresh_token')
+        }
+
+        // const token = storage.getString('refresh_token')
+
+        await axiosInstance.post('users/logOut', {
+            refresh_token: refreshToken
+        }, {
+            headers: { 'Content-Type': 'application/json' }
+        }).then(() => {
+            if (Platform.OS === 'web') {
+                storage.delete('refresh_token')
+                storage.delete('access_token')
+            } else {
+                AsyncStorage.removeItem('refresh_token')
+                AsyncStorage.removeItem('access_token')
+            }
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
 
 const useMMKV = (error) => {
     console.log("using MMKV");

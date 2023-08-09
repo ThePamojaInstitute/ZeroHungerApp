@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     bottomBarText: {
@@ -32,8 +32,10 @@ export default StyleSheet.create({
     modal: {
         margin: 0,
         backgroundColor: Colors.offWhite,
-        borderRadius: 10,
+        // borderRadius: 10,
         elevation: 0,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20
     },
     modalContent: {
         alignItems: 'center',
@@ -65,13 +67,15 @@ export default StyleSheet.create({
     },
     unreadCount: {
         color: Colors.white,
-        fontFamily: 'PublicSans_600Semibold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 11,
         marginHorizontal: 4,
         marginVertical: 1,
     },
     cancelBtn: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 16,
         color: '#656565'
     }
