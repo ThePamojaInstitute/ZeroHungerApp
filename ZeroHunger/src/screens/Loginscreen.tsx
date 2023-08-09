@@ -66,6 +66,7 @@ export const LoginScreen = ({ navigation }) => {
     NativeSyntheticEvent<TextInputSubmitEditingEventData>)) => {
     e.preventDefault()
     Keyboard.dismiss()
+    setErrMsg('')
     dispatch({ type: "LOGIN_START", payload: null })
     logInUser({
       "username": data['username'].toLowerCase(),

@@ -111,7 +111,8 @@ const DrawerTab = () => {
             drawerContent={props => <CustomDrawer {...props} />}
             screenOptions={{
                 drawerStyle: {
-                    width: '85%'
+                    width: '85%',
+                    maxWidth: 400
                 }
             }}
         >
