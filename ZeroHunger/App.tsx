@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as SplashScreen from 'expo-splash-screen';
 import useFonts from './src/hooks/useFonts';
 import { useTranslation } from "react-i18next";
+import { navigationRef } from './RootNavigation';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -57,7 +58,7 @@ export default function App() {
       <AuthContextProvider>
         <QueryClientProvider client={queryClient}>
           <NotificationContextProvider>
-            <NavigationContainer>
+            <NavigationContainer ref={navigationRef}>
               <AlertProvider>
                 <>
                   <Stack.Navigator>
