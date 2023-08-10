@@ -1,5 +1,7 @@
 import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -10,8 +12,10 @@ import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { useState, useEffect } from "react";
 import styles from "../../styles/screens/permissionsStyleSheet";
 import postalStyles from "../../styles/screens/postFormStyleSheet"
+import loginStyles from "../../styles/screens/loginStyleSheet"
+import { savePreferences } from "../controllers/preferences";
 
-export const PermissionsScreen1 = ({ navigation }) => {
+export const PermissionsScreen = ({ navigation }) => {
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
         PublicSans_400Regular,
@@ -31,8 +35,26 @@ export const PermissionsScreen1 = ({ navigation }) => {
         })
     })
 
+    const { user, accessToken } = useContext(AuthContext);
+
     const [postalCode, setPostalCode] = useState('')
     const [errMsg, setErrMsg] = useState("")
+
+    const savePostalCode = async () => {
+        savePreferences(postalCode, null, null, accessToken).then(res => {
+            console.log(res)
+            if (res.msg === "success") {
+                navigation.navigate('HomeScreen')
+                return
+            } else if (res.res) {
+                setErrMsg(res.res)
+                return
+            } else {
+                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+                return
+            }
+        })
+    }
 
     return (
         <View>
@@ -62,14 +84,20 @@ export const PermissionsScreen1 = ({ navigation }) => {
                             maxLength={7}
                         />
                     </View>
-
-                    <TouchableOpacity>
-                        
-                    </TouchableOpacity>
+                    
+                    <View>
+                        <TouchableOpacity 
+                            style={[globalStyles.defaultBtn, {padding: 12}]} 
+                            onPress={savePostalCode}
+                        >
+                            <Text style={globalStyles.defaultBtnLabel}>Continue</Text>
+                        </TouchableOpacity>
+                        {errMsg && <Text style={loginStyles.errorMsg}>{errMsg}</Text>}
+                    </View>
                 </View>
             </>}
         </View>
     )
 }
 
-export default PermissionsScreen1
+export default PermissionsScreen
