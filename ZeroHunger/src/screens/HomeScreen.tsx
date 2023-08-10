@@ -21,7 +21,18 @@ import { Char } from "../../types";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { axiosInstance, storage } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logOutUser } from "../controllers/auth";
 
+
+const getItemFromLocalStorage = async (key: string) => {
+    let item: string
+    if (Platform.OS === 'web') {
+        item = storage.getString(key)
+    } else {
+        item = await AsyncStorage.getItem(key)
+    }
+    return item
+}
 
 const PostsFilters = forwardRef(_PostsFilters)
 
@@ -32,7 +43,7 @@ export const HomeScreen = ({ navigation }) => {
         modalRef.current.publicHandler()
     }
 
-    const { user } = useContext(AuthContext)
+    const { user, dispatch } = useContext(AuthContext)
     const { setChatIsOpen } = useContext(NotificationContext);
 
     const [showRequests, setShowRequests] = useState(true)
@@ -56,15 +67,26 @@ export const HomeScreen = ({ navigation }) => {
     })
 
     const getNotifications = async () => {
-        const lastSeen = Platform.OS === 'web' ?
-            storage.getString('lastSeen') : await AsyncStorage.getItem('lastSeen')
+        const allowExpiringPosts = await getItemFromLocalStorage('allowExpiringPosts')
+        console.log(allowExpiringPosts);
 
+        if (allowExpiringPosts === undefined || allowExpiringPosts === 'false') return
+
+        const lastSeen = await getItemFromLocalStorage('lastSeen')
         if (lastSeen === new Date().toDateString()) return
 
-        const accessToken = Platform.OS === 'web' ?
-            storage.getString('access_token') : await AsyncStorage.getItem('access_token')
-
-        if (!accessToken) return
+        const accessToken = await getItemFromLocalStorage('access_token')
+        if (!accessToken) {
+            logOutUser().then(() => {
+                dispatch({ type: "LOGOUT", payload: null })
+            }).then(() => {
+                alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
+                navigation.navigate('LoginScreen')
+            }).catch(() => {
+                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+            })
+            return
+        }
 
         try {
             const res = await axiosInstance.get('/users/getNotifications', {
