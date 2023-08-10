@@ -4,18 +4,26 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
-
-import json
-import time
-
-from .models import BasicUser
-from apps.Chat.models import Conversation
 from django.db.models import Q
+from apps.Chat.models import Conversation
+from .models import BasicUser
+from apps.Posts.models import RequestPost, OfferPost
+from apps.Posts.views import serialize_posts
 from .serializers import RegistrationSerializer, LoginSerializer, UpdateUserSerializer
-from .forms import EditProfileForm
-
+from datetime import timedelta, datetime
 import jwt
+
+
+def get_expiring_tomorrow_posts(user):
+    tomorrow = datetime.now().date() + timedelta(days=1)
+
+    requests = RequestPost.objects.filter(postedBy__pk=user.pk, expiryDate__date=tomorrow)
+    offers = OfferPost.objects.filter(postedBy__pk=user.pk, expiryDate__date=tomorrow)
+
+    serialized_requests = serialize_posts(requests, "r")
+    serialized_offers = serialize_posts(offers, "o")
+
+    return serialized_requests.data + serialized_offers.data
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -212,63 +220,68 @@ class userPreferences(APIView):
         return Response(status=204)
 
 class getNotifications(APIView):
-    def post(self, request, format=None):
+    def get(self, request, format=None):
         try:
-            user = BasicUser.objects.get(username=request.data['username'])
-            notifications = user.notifications
-            return Response(json.dumps(notifications, indent=1), status=200)
-        except Exception as e:
-            print(e)
-            return Response(status=400)
+            decoded_token =  jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except:
+            return Response("Token invalid or not given", 401)
         
-class addNotification(APIView):
-    def post(self, request, format=None):
         try:
-            user = BasicUser.objects.get(username=request.data['user']['username'])
-            data = request.data['notification']
-            notifications = user.notifications
-
-            notification = {
-                "type" : data['type'],
-                "user" : data['user'],
-                "food" : data['food'],
-                "time" : time.time()
-            }
-            notifications.append(notification)
-            user.save()
-
-            return Response(status=200)
-            
+            expiring_tomorrow_posts = get_expiring_tomorrow_posts(user)
         except Exception as e:
-            print(e)
-            return Response(status=400)
+            Response(e, 500)
 
-class clearNotification(APIView):
-    def post(self, request, format=None):
-        try:
-            user = BasicUser.objects.get(username=request.data['user']['username'])
-            timestamp = request.data['timestamp']
-            notifications = user.notifications
+        return Response(expiring_tomorrow_posts, 200)
 
-            for notif in notifications:
-                if notif['time'] == timestamp:
-                    notifications.remove(notif)
+# class addNotification(APIView):
+#     def post(self, request, format=None):
+#         try:
+#             user = BasicUser.objects.get(username=request.data['user']['username'])
+#             data = request.data['notification']
+#             notifications = user.notifications
 
-            user.save()
+#             notification = {
+#                 "type" : data['type'],
+#                 "user" : data['user'],
+#                 "food" : data['food'],
+#                 "time" : time.time()
+#             }
+#             notifications.append(notification)
+#             user.save()
+
+#             return Response(status=200)
             
-            return Response(status=200)
-        except Exception as e:
-            print(e)
-            return Response(status=400)
+#         except Exception as e:
+#             print(e)
+#             return Response(status=400)
+
+# class clearNotification(APIView):
+#     def post(self, request, format=None):
+#         try:
+#             user = BasicUser.objects.get(username=request.data['user']['username'])
+#             timestamp = request.data['timestamp']
+#             notifications = user.notifications
+
+#             for notif in notifications:
+#                 if notif['time'] == timestamp:
+#                     notifications.remove(notif)
+
+#             user.save()
+            
+#             return Response(status=200)
+#         except Exception as e:
+#             print(e)
+#             return Response(status=400)
         
-class clearAllNotifications(APIView):
-    def post(self, request, format=None):
-        try:
-            user = BasicUser.objects.get(username=request.data['username'])
-            setattr(user, 'notifications', [])
-            user.save()
-            return Response(status=200)
-        except Exception as e:
-            print(e)
-            return Response(status=400)
-        return Response(status=204)
+# class clearAllNotifications(APIView):
+#     def post(self, request, format=None):
+#         try:
+#             user = BasicUser.objects.get(username=request.data['username'])
+#             setattr(user, 'notifications', [])
+#             user.save()
+#             return Response(status=200)
+#         except Exception as e:
+#             print(e)
+#             return Response(status=400)
+#         return Response(status=204)
