@@ -5,7 +5,7 @@ import { Platform } from "react-native";
 import { navigate } from "./RootNavigation";
 import store from "./store";
 
-export const ENV: 'production' | 'development' = 'development'
+export const ENV: 'production' | 'development' = 'production'
 
 // Mock object of MMKV only for development
 // Use actual MMKV for builds
@@ -18,7 +18,7 @@ const mockMMKV = {
     getAllKeys: () => { }
 }
 
-export const storage = ENV !== 'development' ? new MMKV() :
+export const storage = ENV === 'production' ? new MMKV() :
     Platform.OS === 'web' ? new MMKV() : mockMMKV
 
 // export const HttpBaseURL = 'http://127.0.0.1:8000/'
@@ -38,7 +38,7 @@ export const axiosInstance = axios.create({
 const logOutUser = async () => {
     try {
         let refreshToken: string
-        if (ENV !== 'development') {
+        if (ENV === 'production') {
             refreshToken = storage.getString('refresh_token')
         } else {
             if (Platform.OS === 'web') {
@@ -54,7 +54,7 @@ const logOutUser = async () => {
         }, {
             headers: { 'Content-Type': 'application/json' }
         }).then(() => {
-            if (ENV !== 'development') {
+            if (ENV === 'production') {
                 storage.delete('refresh_token')
                 storage.delete('access_token')
             } else {
@@ -149,7 +149,7 @@ const createAxiosResponseInterceptor = () => {
              */
             axiosInstance.interceptors.response.eject(interceptor);
 
-            if (ENV !== 'development') return useMMKV(error)
+            if (ENV === 'production') return useMMKV(error)
             // MMKV doesn't work with the Expo emulator
             // Use MMKV for builds
             else {
@@ -162,7 +162,7 @@ const createAxiosResponseInterceptor = () => {
 createAxiosResponseInterceptor(); // Execute the method once during start
 
 export const setTokens = (data: object) => {
-    if (ENV !== 'development') {
+    if (ENV === 'production') {
         storage.set('refresh_token', data['refresh'])
         storage.set('access_token', data['access'])
     } else {
