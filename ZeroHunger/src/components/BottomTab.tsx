@@ -17,7 +17,7 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import Conversations from '../screens/Conversations';
 import Chat from './Chat';
 import NotificationsScreen from '../screens/NotificationsScreen';
-import PermissionsScreen1 from '../screens/PermissionsScreen1';
+import PermissionsScreen1 from '../screens/PermissionsScreen';
 import {
     useFonts,
     PublicSans_600SemiBold,
@@ -41,23 +41,6 @@ const HomeStackNavigator = ({ navigation }) => {
     const { t, i18n } = useTranslation();
     return (
         <Stack.Navigator>
-            <Stack.Screen
-                name="PermissionsScreen1"
-                component={PermissionsScreen1}
-                options={{
-                    title: t("app.title"),
-                    headerTitleAlign: 'center',
-                    // headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite
-                    },
-                    headerRight: () => (
-                        <TouchableOpacity onPress={() => { navigation.navigate("OnboardingScreen") }}>
-                            <Text>test</Text>
-                        </TouchableOpacity>
-                    )
-                }}
-            />
             <Stack.Screen
                 name="OnboardingScreen"
                 component={OnboardingScreen}
@@ -151,18 +134,24 @@ const HomeStackNavigator = ({ navigation }) => {
                     contentStyle: { backgroundColor: Colors.Background }
                 }}
             />
-            {/* <Stack.Screen
-                name="PermissionsScreen1"
+            <Stack.Screen
+                name="PermissionsScreen"
                 component={PermissionsScreen1}
                 options={{
                     title: t("app.title"),
                     headerTitleAlign: 'center',
                     // headerShadowVisible: false,
                     headerStyle: {
-                        backgroundColor: Colors.Background
+                        backgroundColor: Colors.offWhite
                     },
+                    headerLeft: () => (<></>),
+                    headerRight: () => (
+                        <TouchableOpacity onPress={() => { navigation.navigate("LoginScreen") }}>
+                            <Text>Skip</Text>
+                        </TouchableOpacity>
+                    )
                 }}
-            /> */}
+            />
             <Stack.Screen
                 name="RequestFormScreen"
                 component={RequestFormScreen}

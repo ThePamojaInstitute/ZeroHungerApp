@@ -90,7 +90,7 @@ export const CreateAccountScreen = ({ navigation }) => {
 
               setTokens(resp.data)
             }).then(() => {
-              navigation.navigate('PermissionsScreen1')
+              navigation.navigate('PermissionsScreen')
             })
         } else {
           dispatch({ type: "LOGIN_FAILURE", payload: res.res })
@@ -126,7 +126,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           "expo_push_token": expoPushToken
         }
         handleLogin(credentials)
-        navigation.navigate("PermissionsScreen1")
+        navigation.navigate("PermissionsScreen")
       } else {
         if (!res.res['username'] && !res.res['email']) {
           alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
