@@ -71,7 +71,8 @@ export const LoginScreen = ({ navigation }) => {
     logInUser({
       "username": data['username'].toLowerCase(),
       "password": data['password'],
-      "expo_push_token": expoPushToken
+      "expo_push_token": expoPushToken,
+      'Platform': Platform.OS
     })
       .then(async res => {
         if (res.msg === "success") {

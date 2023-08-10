@@ -36,7 +36,7 @@ export const Conversations = ({ navigation }) => {
                 if (Platform.OS == 'web') {
                     token = storage.getString('access_token')
                 } else {
-                    await AsyncStorage.getItem('access_token')
+                    token = await AsyncStorage.getItem('access_token')
                 }
             }
 

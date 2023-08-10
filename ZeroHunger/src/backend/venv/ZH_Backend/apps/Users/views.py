@@ -126,13 +126,14 @@ class deleteUser(APIView):
     
 class logIn(APIView):
     def post(self,request, format=None):
-         
         serializer = LoginSerializer(data=request.data)
         if (serializer.is_valid()):
             try:
                 user = BasicUser.objects.get(username=request.data['username'])
-                user.set_expo_push_token(request.data['expo_push_token'])
-                user.save()
+                platform = request.data['Platform']
+                if(platform != 'web'):
+                    user.set_expo_push_token(request.data['expo_push_token'])
+                    user.save()
             except Exception as e:
                 print(e)
                 pass
@@ -144,11 +145,13 @@ class logOut(APIView):
     def post(self,request, format=None):
         try:
                refresh_token = request.data["refresh_token"]
+               platform = request.data["Platform"]
                try:  
                     decoded_user = jwt.decode(refresh_token, settings.SECRET_KEY)
                     user = BasicUser.objects.get(pk=decoded_user['user_id'])
-                    user.set_expo_push_token("")
-                    user.save()
+                    if(platform != 'web'):
+                        user.set_expo_push_token("")
+                        user.save()
                except Exception as e:
                    print(e)
                    pass

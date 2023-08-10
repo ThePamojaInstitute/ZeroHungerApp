@@ -84,7 +84,8 @@ export async function logOutUser() {
         }
 
         await axiosInstance.post('users/logOut', {
-            refresh_token: refreshToken
+            refresh_token: refreshToken,
+            Platform: Platform.OS
         }, {
             headers: { 'Content-Type': 'application/json' }
         }).then(() => {
