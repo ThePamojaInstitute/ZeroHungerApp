@@ -19,7 +19,7 @@ import { default as _PostsFilters } from "../components/PostsFilters";
 import { getPreferencesLogistics } from "../controllers/preferences";
 import { Char } from "../../types";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { axiosInstance, storage } from "../../config";
+import { ENV, axiosInstance, storage } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logOutUser } from "../controllers/auth";
 
@@ -67,15 +67,20 @@ export const HomeScreen = ({ navigation }) => {
     })
 
     const getNotifications = async () => {
-        const allowExpiringPosts = await getItemFromLocalStorage('allowExpiringPosts')
-        console.log(allowExpiringPosts);
+        const allowExpiringPosts = ENV === 'production' ?
+            storage.getString('allowExpiringPosts')
+            : await getItemFromLocalStorage('allowExpiringPosts')
 
         if (allowExpiringPosts === undefined || allowExpiringPosts === 'false') return
 
-        const lastSeen = await getItemFromLocalStorage('lastSeen')
+        const lastSeen = ENV === 'production' ?
+            storage.getString('lastSeen')
+            : await getItemFromLocalStorage('lastSeen')
         if (lastSeen === new Date().toDateString()) return
 
-        const accessToken = await getItemFromLocalStorage('access_token')
+        const accessToken = ENV === 'production' ?
+            storage.getString('access_token')
+            : await getItemFromLocalStorage('access_token')
         if (!accessToken) {
             logOutUser().then(() => {
                 dispatch({ type: "LOGOUT", payload: null })

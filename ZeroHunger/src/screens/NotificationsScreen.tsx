@@ -1,6 +1,6 @@
 import { View, ScrollView, Text, TouchableOpacity, Image, RefreshControl, Dimensions, Platform } from "react-native"
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
-import { axiosInstance, storage } from "../../config";
+import { ENV, axiosInstance, storage } from "../../config";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
@@ -85,7 +85,11 @@ export const NotificationsScreen = ({ navigation }) => {
     const [height, setHeight] = useState(0)
 
     useEffect(() => {
-        setLocalStorage('lastSeen', new Date().toDateString())
+        if (ENV === 'production') {
+            storage.set('lastSeen', new Date().toDateString())
+        } else {
+            setLocalStorage('lastSeen', new Date().toDateString())
+        }
     }, [])
 
     const posts = route.params['posts']

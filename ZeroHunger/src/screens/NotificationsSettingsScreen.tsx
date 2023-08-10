@@ -3,15 +3,8 @@ import { View, ScrollView, Text, Switch } from "react-native"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { Platform } from "expo-modules-core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { axiosInstance, storage } from "../../config";
+import { ENV, axiosInstance, storage } from "../../config";
 
-
-const getAccessToken = async () => {
-    const accessToken = Platform.OS === 'web' ?
-        storage.getString('access_token') : await AsyncStorage.getItem('access_token')
-
-    return accessToken
-}
 
 const setLocalStorageItem = async (key: string, value: string) => {
     if (Platform.OS === 'web') {
@@ -22,9 +15,18 @@ const setLocalStorageItem = async (key: string, value: string) => {
     return
 }
 
+const getAccessToken = async () => {
+    const accessToken = Platform.OS === 'web' ?
+        storage.getString('access_token') : await AsyncStorage.getItem('access_token')
+
+    return accessToken
+}
+
 const getNotificationsSettings = async () => {
     try {
-        const accessToken = await getAccessToken()
+        const accessToken = ENV === 'production' ?
+            storage.getString('access_token') :
+            await getAccessToken()
 
         const res = await axiosInstance.get('/users/getNotificationsSettings', {
             headers: {
@@ -48,11 +50,17 @@ const getSettings = async (
     setSettings(settings)
     setAllowExpiringPosts(settings['expiringPosts'])
     setAllowNewMessages(settings['newMessages'])
-    setLocalStorageItem('allowExpiringPosts', settings['expiringPosts'])
+    if (ENV === 'production') {
+        storage.set('allowExpiringPosts', settings['expiringPosts'])
+    } else {
+        setLocalStorageItem('allowExpiringPosts', settings['expiringPosts'])
+    }
 }
 
 const updateSettings = async (allowExpiringPosts: boolean, allowNewMessages: boolean) => {
-    const accessToken = await getAccessToken()
+    const accessToken = ENV === 'production' ?
+        storage.getString('access_token') :
+        await getAccessToken()
 
     try {
         await axiosInstance.put('/users/updateNotificationsSettings', {
