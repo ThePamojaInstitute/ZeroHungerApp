@@ -7,20 +7,28 @@ export default StyleSheet.create({
 
 
     view: {
+        flex: 1,
         alignContent: "center",
-        justifyContent: "center",
+        // justifyContent: "center",
         alignItems: "center",
-        padding: 24,
+        // padding: 24,
         // backgroundColor: Colors.offWhite
     },
     image: {
-        // flex: 1,
-        height: dim.height / 2,
-        width: dim.width / 2,
-        // marginBottom: 48
+        flex: 1,
+        // height: dim.height / 2,
+        // width: dim.width / 2,
+        height: '80%',
+        width: '80%',
+        // marginTop: 24,
+        // paddingBottom: '15%',
     }, 
     dots: {
         paddingBottom: dim.height * 0.25
+    },
+    title: {
+        paddingBottom: 12,
+        paddingTop: 48,
     },
     text: {
         fontFamily: 'PublicSans_400Regular',
@@ -29,8 +37,8 @@ export default StyleSheet.create({
         paddingBottom: 12,
         textAlign: "center",
         textAlignVertical: "center",
-        marginLeft: 48,
-        marginRight: 48
+        marginLeft: 40,
+        marginRight: 40
     },
     backButton: {
         fontFamily: 'PublicSans_600SemiBold',
@@ -47,7 +55,8 @@ export default StyleSheet.create({
         color: Colors.primaryDark
     },
     continueButton: {
-        paddingRight: dim.width * 0.175,
-        paddingBottom: (dim.height * 0.2) + 18
+        // padding: 12,
+        marginRight: dim.width * 0.1,
+        marginBottom: (dim.height * 0.2) + 18
     }
 })

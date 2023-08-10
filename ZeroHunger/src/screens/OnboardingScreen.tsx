@@ -19,29 +19,29 @@ type Props = {
 
 //TEMP: Show onboarding on first app launch only using AsyncStorage
 export const OnboardingScreen = ({ navigation }, props: Props) => {
-    // useEffect(() => {
-    //     async function setData() {
-    //         if(Platform.OS === "web") {
-    //             const appData = storage.getString("appLaunched")
-    //             if(!appData) {
-    //                 storage.set("appLaunched", "false")
-    //             }
-    //             else {
-    //                 navigation.navigate("LoginScreen")
-    //             }
-    //         }
-    //         else {
-    //             const appData = await AsyncStorage.getItem("appLaunched")
-    //             if(!appData) {
-    //                 AsyncStorage.setItem("appLaunched", "false")
-    //             }
-    //             else {
-    //                 navigation.navigate("LoginScreen")
-    //             }
-    //         }
-    //     }
-    //     setData()
-    // }, [])
+    useEffect(() => {
+        async function setData() {
+            if(Platform.OS === "web") {
+                const appData = storage.getString("appLaunched")
+                if(!appData) {
+                    storage.set("appLaunched", "false")
+                }
+                else {
+                    navigation.navigate("LoginScreen")
+                }
+            }
+            else {
+                const appData = await AsyncStorage.getItem("appLaunched")
+                if(!appData) {
+                    AsyncStorage.setItem("appLaunched", "false")
+                }
+                else {
+                    navigation.navigate("LoginScreen")
+                }
+            }
+        }
+        setData()
+    }, [])
 
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({
@@ -64,6 +64,7 @@ export const OnboardingScreen = ({ navigation }, props: Props) => {
 
     return (
         <Swiper 
+            containerStyle={{padding: 0}}
             controlsProps={{
                 dotsTouchable: true,
                 prevTitle: 'Back',
@@ -77,20 +78,20 @@ export const OnboardingScreen = ({ navigation }, props: Props) => {
                         Back
                     </Text>,
                 lastNextElement: 
-                    <View style={styles.continueButton}>
+                    // <View style={styles.continueButton}>
                         <TouchableOpacity 
-                            style={[globalStyles.defaultBtn, {padding: 18}]}
+                            style={[globalStyles.defaultBtn, styles.continueButton]}
                             onPress={() => {if(!props.activeIndex) navigation.navigate("LoginScreen")}}
                         >
                             <Text style={globalStyles.defaultBtnLabel}>Continue</Text>
                         </TouchableOpacity>
-                    </View>
+                    // </View>
             }}
         >
             <View style={styles.view}>
                 <Image source={require('../../assets/Onboarding1.png')} resizeMode="center" style={styles.image}/>
                 <View style={styles.view}>
-                    <Text style={[globalStyles.H1, {paddingBottom: 12}]}>Respond to Requests</Text>
+                    <Text style={[globalStyles.H1, styles.title]}>Respond to Requests</Text>
                     <Text style={styles.text}>
                         Browse through and fulfill requests made by other users who need help with food.
                     </Text>
@@ -99,16 +100,16 @@ export const OnboardingScreen = ({ navigation }, props: Props) => {
             <View style={styles.view}>
                 <Image source={require('../../assets/Onboarding2.png')} resizeMode="center" style={styles.image}/>
                 <View style={styles.view}>
-                    <Text style={[globalStyles.H1, {paddingBottom: 12}]}>Accept Offers</Text>
+                    <Text style={[globalStyles.H1, styles.title]}>Accept Offers</Text>
                     <Text style={styles.text}>
                         Explore and pick-up offers made by other users who want to share food and provide assistance.
                     </Text>
                 </View>
             </View>
-            <View style={styles.view}>
+            <View style={[styles.view, {padding: 0}]}>
                 <Image source={require('../../assets/Onboarding3.png')} resizeMode="center" style={styles.image}/>
                 <View style={styles.view}>
-                    <Text style={[globalStyles.H1, {paddingBottom: 12}]}>Make Requests & Offers</Text>
+                    <Text style={[globalStyles.H1, styles.title]}>Make Requests & Offers</Text>
                     <Text style={styles.text}>
                         Create your own requests or offers of food assistance.
                     </Text>
