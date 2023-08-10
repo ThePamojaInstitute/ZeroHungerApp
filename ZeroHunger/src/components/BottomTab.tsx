@@ -65,7 +65,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         backgroundColor: Colors.offWhite
                     },
                     headerRight: () => (
-                        <View style={{ marginRight: 24 }}>
+                        <View style={{ marginRight: 12 }}>
                             <TouchableOpacity onPress={() => { navigation.navigate("LoginScreen") }}>
                                 <Text style={globalStyles.Body}>Skip</Text>
                             </TouchableOpacity>

@@ -19,29 +19,29 @@ type Props = {
 
 //TEMP: Show onboarding on first app launch only using AsyncStorage
 export const OnboardingScreen = ({ navigation }, props: Props) => {
-    useEffect(() => {
-        async function setData() {
-            if(Platform.OS === "web") {
-                const appData = storage.getString("appLaunched")
-                if(!appData) {
-                    storage.set("appLaunched", "false")
-                }
-                else {
-                    navigation.navigate("LoginScreen")
-                }
-            }
-            else {
-                const appData = await AsyncStorage.getItem("appLaunched")
-                if(!appData) {
-                    AsyncStorage.setItem("appLaunched", "false")
-                }
-                else {
-                    navigation.navigate("LoginScreen")
-                }
-            }
-        }
-        setData()
-    }, [])
+    // useEffect(() => {
+    //     async function setData() {
+    //         if(Platform.OS === "web") {
+    //             const appData = storage.getString("appLaunched")
+    //             if(!appData) {
+    //                 storage.set("appLaunched", "false")
+    //             }
+    //             else {
+    //                 navigation.navigate("LoginScreen")
+    //             }
+    //         }
+    //         else {
+    //             const appData = await AsyncStorage.getItem("appLaunched")
+    //             if(!appData) {
+    //                 AsyncStorage.setItem("appLaunched", "false")
+    //             }
+    //             else {
+    //                 navigation.navigate("LoginScreen")
+    //             }
+    //         }
+    //     }
+    //     setData()
+    // }, [])
 
     const [loaded, setLoaded] = useState(false)
     let [fontsLoaded] = useFonts({

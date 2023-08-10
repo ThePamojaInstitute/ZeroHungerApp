@@ -18,7 +18,7 @@ export default StyleSheet.create({
         height: dim.height / 2,
         width: dim.width / 2,
         // marginBottom: 48
-    },
+    }, 
     dots: {
         paddingBottom: dim.height * 0.25
     },
@@ -35,14 +35,14 @@ export default StyleSheet.create({
     backButton: {
         fontFamily: 'PublicSans_600SemiBold',
         fontSize: 18,
-        paddingLeft: dim.width * 0.2,
+        paddingLeft: dim.width * 0.15,
         paddingBottom: dim.height * 0.2,
         color: Colors.primaryDark
     },
     nextButton: {
         fontFamily: 'PublicSans_600SemiBold',
         fontSize: 18,
-        paddingRight: dim.width * 0.2,
+        paddingRight: dim.width * 0.15,
         paddingBottom: dim.height * 0.2,
         color: Colors.primaryDark
     },

@@ -35,32 +35,39 @@ export const PermissionsScreen1 = ({ navigation }) => {
     const [errMsg, setErrMsg] = useState("")
 
     return (
-        <View style={styles.view}>
-            <Image source={require('../../assets/Placeholder.png')} resizeMode="center" style={styles.image}/>
-            <Text style={[globalStyles.H2, styles.title]}>
-                Where would you like to exchange food?
-            </Text>
-            <Text style={[globalStyles.Body, styles.body]}>
-                We'll show you requests and offers based on your location. No other users will see your location.
-            </Text>
-            
-            <View testID="Request.formInputContainer" style={postalStyles.formInputContainer}>
-                <TextInput
-                    value={postalCode}
-                    nativeID="postalCode"
-                    testID="Request.postalCodeInput"
-                    placeholder="XXX XXX"
-                    placeholderTextColor="#656565"
-                    style={[postalStyles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
-                    onChangeText={newText => {
-                        setPostalCode(newText)
-                        setErrMsg("")
-                    }}
-                    onChange={() => setErrMsg("")}
-                    maxLength={7}
-                />
-            </View>
+        <View>
+            {loaded && <>
+                <View style={styles.view}>
+                    <Image source={require('../../assets/Placeholder.png')} resizeMode="center" style={styles.image}/>
+                    <Text style={[globalStyles.H2, styles.title]}>
+                        Where would you like to exchange food?
+                    </Text>
+                    <Text style={[globalStyles.Body, styles.body]}>
+                        We'll show you requests and offers based on your location. No other users will see your location.
+                    </Text>
+                    
+                    <View testID="Request.formInputContainer" style={[postalStyles.formInputContainer, {paddingTop: 12}]}>
+                        <TextInput
+                            value={postalCode}
+                            nativeID="postalCode"
+                            testID="Request.postalCodeInput"
+                            placeholder="XXX XXX"
+                            placeholderTextColor="#656565"
+                            style={[postalStyles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                            onChangeText={newText => {
+                                setPostalCode(newText)
+                                setErrMsg("")
+                            }}
+                            onChange={() => setErrMsg("")}
+                            maxLength={7}
+                        />
+                    </View>
 
+                    <TouchableOpacity>
+                        
+                    </TouchableOpacity>
+                </View>
+            </>}
         </View>
     )
 }
