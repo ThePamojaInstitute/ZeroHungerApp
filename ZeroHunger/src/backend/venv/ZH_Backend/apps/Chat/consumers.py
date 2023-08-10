@@ -4,6 +4,7 @@ from .models import Conversation, Message
 from apps.Chat.serializers import MessageSerializer
 from apps.Users.models import BasicUser
 from collections import defaultdict
+from django.contrib.auth.models import AnonymousUser
 from uuid import UUID
 import json
 import requests
@@ -138,6 +139,8 @@ class ChatConsumer(JsonWebsocketConsumer):
             )
 
         elif message_type == "read_messages":
+            if(type(self.user) == AnonymousUser): return
+
             messages_to_me = self.conversation.messages.filter(to_user=self.user['user_id'])
             messages_to_me.update(read=True)
 
