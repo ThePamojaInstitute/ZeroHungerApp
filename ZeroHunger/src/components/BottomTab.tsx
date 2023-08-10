@@ -51,6 +51,11 @@ const HomeStackNavigator = ({ navigation }) => {
                     headerStyle: {
                         backgroundColor: Colors.offWhite
                     },
+                    headerRight: () => (
+                        <TouchableOpacity onPress={() => { navigation.navigate("OnboardingScreen") }}>
+                            <Text>test</Text>
+                        </TouchableOpacity>
+                    )
                 }}
             />
             <Stack.Screen
@@ -66,7 +71,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     },
                     headerRight: () => (
                         <View style={{ marginRight: 12 }}>
-                            <TouchableOpacity onPress={() => { navigation.navigate("LoginScreen") }}>
+                            <TouchableOpacity onPress={() => { navigation.navigate("PermissionsScreen1") }}>
                                 <Text style={globalStyles.Body}>Skip</Text>
                             </TouchableOpacity>
                         </View>
@@ -379,6 +384,14 @@ const BottomTab = () => {
 
     const [modalVisible, setModalVisible] = useState(false)
 
+    const bottomTabDisabledScreens = [
+        'LoginScreen', 
+        'CreateAccountScreen', 
+        'Chat',
+        'OnboardingScreen',
+        'PermissionsScreen1'
+    ]
+
     return (
         <Tab.Navigator>
             <Tab.Screen
@@ -420,11 +433,7 @@ const BottomTab = () => {
                     tabBarLabelStyle: styles.bottomBarText,
                     tabBarStyle: ((route) => {
                         const routeName = getFocusedRouteNameFromRoute(route) ?? ""
-                        if (routeName === 'LoginScreen' ||
-                            routeName === 'CreateAccountScreen' ||
-                            routeName === 'Chat' ||
-                            routeName === 'OnboardingScreen')
-                        {
+                        if(!bottomTabDisabledScreens.includes(routeName)) {
                             return { display: "none" }
                         }
                         return styles.bottomBarTab
