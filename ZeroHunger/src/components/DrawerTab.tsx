@@ -139,14 +139,9 @@ const DrawerTab = () => {
             <Drawer.Screen
                 name="BottomTab"
                 component={BottomTab}
-                // options={{
-                //     headerShown: false,
-                //     drawerItemStyle: { height: 0 }
-                // // }}
                 options={({ route }) => {
                     const routeName = getFocusedRouteNameFromRoute(route) ?? ""
                     if(!drawerTabEnabledScreens.includes(routeName))
-                        console.log("test")
                         return ({swipeEnabled: false})
                 }}
             />
