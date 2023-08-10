@@ -1,19 +1,21 @@
 import { useContext, useEffect, useState } from "react";
 import {
     View, Text, Dimensions, Image,
-    TouchableHighlight, TextInput, RefreshControl, ActivityIndicator
+    TouchableHighlight, TextInput, RefreshControl, ActivityIndicator, Platform
 } from "react-native";
 import styles from "../../styles/screens/conversationsStyleSheet"
-import { Colors } from "../../styles/globalStyleSheet";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
-import { axiosInstance } from "../../config";
+import { ENV, axiosInstance, storage } from "../../config";
 import { ConversationModel } from "../models/Conversation";
 import { FlashList } from "@shopify/flash-list";
 import moment from 'moment';
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { Pressable } from "@react-native-material/core";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Conversations = ({ navigation }) => {
     const { user, accessToken } = useContext(AuthContext);
@@ -27,9 +29,20 @@ export const Conversations = ({ navigation }) => {
 
     const getConversations = async () => {
         try {
+            let token: string
+            if (ENV === 'production') {
+                token = storage.getString('access_token')
+            } else {
+                if (Platform.OS == 'web') {
+                    token = storage.getString('access_token')
+                } else {
+                    await AsyncStorage.getItem('access_token')
+                }
+            }
+
             const res = await axiosInstance.get("chat/conversations/", {
                 headers: {
-                    Authorization: `${accessToken}`
+                    Authorization: `${token}`
                 }
             });
 
