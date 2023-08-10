@@ -1,11 +1,12 @@
 import { createContext, useEffect, useReducer, Dispatch, useState } from "react"
 import jwt_decode from "jwt-decode";
-import { ENV, axiosInstance, storage } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import { logOutUser } from "../controllers/auth";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as RootNavigation from '../../RootNavigation';
 import store from "../../store";
+import { ENV } from "../../env";
 
 const setItem = (key, value) => {
     if (ENV === 'production') storage.set(key, value)

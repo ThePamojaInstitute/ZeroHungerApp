@@ -1,8 +1,9 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { ENV, axiosInstance, storage } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import { Char } from "../../types";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ENV } from "../../env";
 
 export default function useFetchPosts(
     type: "r" | "o",

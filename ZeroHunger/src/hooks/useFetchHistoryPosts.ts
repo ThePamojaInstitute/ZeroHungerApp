@@ -1,7 +1,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { ENV, axiosInstance, storage } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ENV } from "../../env";
 
 export default function useFetchHistoryPosts(type: "r" | "o", orderByNewest: boolean) {
     const getPosts = async ({ pageParam = 0 }) => {

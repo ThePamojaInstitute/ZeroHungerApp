@@ -19,9 +19,10 @@ import { default as _PostsFilters } from "../components/PostsFilters";
 import { getPreferencesLogistics } from "../controllers/preferences";
 import { Char } from "../../types";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { ENV, axiosInstance, storage } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logOutUser } from "../controllers/auth";
+import { ENV } from "../../env";
 
 
 const getItemFromLocalStorage = async (key: string) => {

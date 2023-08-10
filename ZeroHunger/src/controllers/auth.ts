@@ -1,6 +1,7 @@
-import { ENV, axiosInstance, storage } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Platform } from "react-native"
+import { ENV } from "../../env";
 
 
 export async function createUser(user: Object, acceptedTerms: boolean) {

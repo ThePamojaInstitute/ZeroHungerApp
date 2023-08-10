@@ -4,8 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import { navigate } from "./RootNavigation";
 import store from "./store";
-
-export const ENV: 'production' | 'development' = 'production'
+import { ENV } from "./env";
 
 // Mock object of MMKV only for development
 // Use actual MMKV for builds

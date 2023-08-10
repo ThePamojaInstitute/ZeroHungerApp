@@ -3,7 +3,8 @@ import { View, ScrollView, Text, Switch } from "react-native"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { Platform } from "expo-modules-core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ENV, axiosInstance, storage } from "../../config";
+import { axiosInstance, storage } from "../../config";
+import { ENV } from "../../env";
 
 
 const setLocalStorageItem = async (key: string, value: string) => {

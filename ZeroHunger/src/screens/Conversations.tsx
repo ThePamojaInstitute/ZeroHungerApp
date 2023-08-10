@@ -1,24 +1,23 @@
 import { useContext, useEffect, useState } from "react";
 import {
     View, Text, Dimensions, Image,
-    TouchableHighlight, TextInput, RefreshControl, ActivityIndicator, Platform
+    TouchableHighlight, RefreshControl, ActivityIndicator, Platform
 } from "react-native";
 import styles from "../../styles/screens/conversationsStyleSheet"
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import { Colors } from "../../styles/globalStyleSheet";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
-import { ENV, axiosInstance, storage } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import { ConversationModel } from "../models/Conversation";
 import { FlashList } from "@shopify/flash-list";
 import moment from 'moment';
-import { MaterialIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { Pressable } from "@react-native-material/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ENV } from "../../env";
 
 export const Conversations = ({ navigation }) => {
-    const { user, accessToken } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const { unreadFromUsers } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
 

@@ -1,6 +1,6 @@
 import { View, ScrollView, Text, TouchableOpacity, Image, RefreshControl, Dimensions, Platform } from "react-native"
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
-import { ENV, axiosInstance, storage } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
@@ -15,6 +15,7 @@ import Modal from 'react-native-modal';
 import styles from "../../styles/screens/notificationsStyleSheet";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ENV } from "../../env";
 
 const NotificationsModal = ({ modalVisible, setModalVisible, height, setHeight, navigate }) => (
     <Modal
