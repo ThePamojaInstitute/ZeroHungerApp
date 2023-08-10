@@ -285,3 +285,42 @@ class getNotifications(APIView):
 #             print(e)
 #             return Response(status=400)
 #         return Response(status=204)
+
+class getNotificationsSettings(APIView):
+    def get(self, request, format=None):
+        try:
+            decoded_token =  jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except:
+            return Response("Token invalid or not given", 401)
+        
+        try:
+            permissions = {
+                'newMessages': user.allowNewMessagesNotifications,
+                'expiringPosts': user.allowExpiringPostsNotifications
+            }
+        except Exception as e:
+            Response(e, 500)
+
+        return Response(permissions, 200)
+    
+class updateNotificationsSettings(APIView):
+    def put(self, request, format=None):
+        try:
+            decoded_token =  jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except:
+            return Response("Token invalid or not given", 401)
+        
+        try:
+            allowExpiringPosts = request.data['data']['allowExpiringPosts']
+            allowNewMessages =  request.data['data']['allowNewMessages']
+
+            user.allowExpiringPostsNotifications = allowExpiringPosts
+            user.allowNewMessagesNotifications = allowNewMessages
+
+            user.save()
+        except Exception as e:
+            return Response(e, 500)
+
+        return Response(status=204)

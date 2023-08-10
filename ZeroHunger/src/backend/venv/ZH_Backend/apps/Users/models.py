@@ -25,6 +25,8 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=len(LOGISTICS_CHOICES), default='', blank=True)
     diet = MultiSelectField(choices=DIET_REQUIREMENTS, max_length=len(DIET_REQUIREMENTS), default='', blank=True)
     notifications = models.JSONField(default=list)
+    allowNewMessagesNotifications = models.BooleanField(default=True)
+    allowExpiringPostsNotifications = models.BooleanField(default=True)
 
     REQUIRED_FIELDS = ["email"]
 
