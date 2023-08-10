@@ -365,7 +365,7 @@ const BottomTab = () => {
                     tabBarLabelPosition: "below-icon",
                     tabBarLabelStyle: styles.bottomBarText,
                     tabBarStyle: ((route) => {
-                        const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+                        const routeName = getFocusedRouteNameFromRoute(route) ?? "LoginScreen"
                         if (routeName === 'LoginScreen' ||
                             routeName === 'CreateAccountScreen' ||
                             routeName === 'Chat' ||
