@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
@@ -35,7 +35,8 @@ export default StyleSheet.create({
         backgroundColor: Colors.offWhite,
         elevation: 0,
         borderTopLeftRadius: 20,
-        borderTopRightRadius: 20
+        borderTopRightRadius: 20,
+        marginTop: Dimensions.get('window').height * 0.825
     },
     modalContent: {
         alignItems: 'center',
