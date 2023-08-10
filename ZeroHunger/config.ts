@@ -5,6 +5,8 @@ import { Platform } from "react-native";
 import { navigate } from "./RootNavigation";
 import store from "./store";
 
+export const ENV: 'production' | 'development' = 'development'
+
 // Mock object of MMKV only for development
 // Use actual MMKV for builds
 const mockMMKV = {
@@ -16,10 +18,13 @@ const mockMMKV = {
     getAllKeys: () => { }
 }
 
-export const storage = Platform.OS === 'web' ? new MMKV() : mockMMKV
+export const storage = ENV !== 'development' ? new MMKV() :
+    Platform.OS === 'web' ? new MMKV() : mockMMKV
 
-export const HttpBaseURL = 'http://127.0.0.1:8000/'
-export const WSBaseURL = 'ws://127.0.0.1:8000/'
+// export const HttpBaseURL = 'http://127.0.0.1:8000/'
+// export const WSBaseURL = 'ws://127.0.0.1:8000/'
+export const HttpBaseURL = 'http://172.22.10.170:8000/'
+export const WSBaseURL = 'ws://172.22.10.170:8000/'
 // export const HttpBaseURL = 'https://zh-backend-azure-webapp.azurewebsites.net/'
 // export const WSBaseURL = 'ws://zh-backend-azure-webapp.azurewebsites.net/'
 
@@ -33,25 +38,32 @@ export const axiosInstance = axios.create({
 const logOutUser = async () => {
     try {
         let refreshToken: string
-        if (Platform.OS === 'web') {
+        if (ENV !== 'development') {
             refreshToken = storage.getString('refresh_token')
         } else {
-            refreshToken = await AsyncStorage.getItem('refresh_token')
+            if (Platform.OS === 'web') {
+                refreshToken = storage.getString('refresh_token')
+            } else {
+                refreshToken = await AsyncStorage.getItem('refresh_token')
+            }
         }
-
-        // const token = storage.getString('refresh_token')
 
         await axiosInstance.post('users/logOut', {
             refresh_token: refreshToken
         }, {
             headers: { 'Content-Type': 'application/json' }
         }).then(() => {
-            if (Platform.OS === 'web') {
+            if (ENV !== 'development') {
                 storage.delete('refresh_token')
                 storage.delete('access_token')
             } else {
-                AsyncStorage.removeItem('refresh_token')
-                AsyncStorage.removeItem('access_token')
+                if (Platform.OS === 'web') {
+                    storage.delete('refresh_token')
+                    storage.delete('access_token')
+                } else {
+                    AsyncStorage.removeItem('refresh_token')
+                    AsyncStorage.removeItem('access_token')
+                }
             }
         })
     } catch (e) {
@@ -136,22 +148,29 @@ const createAxiosResponseInterceptor = () => {
              */
             axiosInstance.interceptors.response.eject(interceptor);
 
+            if (ENV !== 'development') return useMMKV(error)
             // MMKV doesn't work with the Expo emulator
             // Use MMKV for builds
-            if (Platform.OS === 'web') return useMMKV(error)
-
-            return useAsyncStorage(error)
+            else {
+                if (Platform.OS === 'web') return useMMKV(error)
+                return useAsyncStorage(error)
+            }
         }
     );
 }
 createAxiosResponseInterceptor(); // Execute the method once during start
 
 export const setTokens = (data: object) => {
-    if (Platform.OS === 'web') {
+    if (ENV !== 'development') {
         storage.set('refresh_token', data['refresh'])
         storage.set('access_token', data['access'])
     } else {
-        AsyncStorage.setItem('refresh_token', data['refresh'])
-        AsyncStorage.setItem('access_token', data['access'])
+        if (Platform.OS === 'web') {
+            storage.set('refresh_token', data['refresh'])
+            storage.set('access_token', data['access'])
+        } else {
+            AsyncStorage.setItem('refresh_token', data['refresh'])
+            AsyncStorage.setItem('access_token', data['access'])
+        }
     }
 }
