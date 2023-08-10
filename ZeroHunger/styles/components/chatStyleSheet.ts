@@ -73,13 +73,12 @@ export default StyleSheet.create({
     },
     postMsgNeedBy: {
         backgroundColor: Colors.primaryLight,
-        paddingLeft: 8,
-        paddingRight: 8,
-        paddingTop: 4,
-        paddingBottom: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
         borderRadius: 4,
-        marginTop: -3,
-        marginBottom: -10
+        marginTop: -15,
+        marginLeft: 5,
+        alignSelf: 'flex-start'
     },
     postMsgIn: {
         position: 'relative',

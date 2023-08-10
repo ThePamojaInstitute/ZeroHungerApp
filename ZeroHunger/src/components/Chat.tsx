@@ -10,6 +10,7 @@ import { FlashList } from "@shopify/flash-list";
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { Char } from '../../types';
 import { WSBaseURL } from '../../config';
+import { handleExpiryDate } from '../controllers/post';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -164,6 +165,13 @@ export const Chat = ({ navigation, route }) => {
         description: string,
         postId: Number,
         username: string,
+        expiryDate: string,
+        distance: number | null,
+        logistics: Char[],
+        categories: Char[],
+        diet: Char[],
+        accessNeeds: Char,
+        postalCode: string,
         type: Char
     ) => {
         type === "r" ?
@@ -175,6 +183,13 @@ export const Chat = ({ navigation, route }) => {
                 description,
                 postId,
                 username,
+                expiryDate,
+                distance,
+                logistics,
+                categories,
+                diet,
+                accessNeeds,
+                postalCode,
             })
             :
             navigation.navigate('OfferDetailsScreen', {
@@ -185,6 +200,13 @@ export const Chat = ({ navigation, route }) => {
                 description,
                 postId,
                 username,
+                expiryDate,
+                distance,
+                logistics,
+                categories,
+                diet,
+                accessNeeds,
+                postalCode,
             })
     }
 
@@ -200,6 +222,13 @@ export const Chat = ({ navigation, route }) => {
                 content.description,
                 content.postId,
                 content.username,
+                content.expiryDate,
+                content.distance,
+                content.logistics,
+                content.categories,
+                content.diet,
+                content.accessNeeds,
+                content.postalCode,
                 content.type
             )}>
                 <View testID='Chat.postCont' style={user['username'] === item.to_user['username'] ? styles.postMsgContainerIn : styles.postMsgContainerOut}>
@@ -213,28 +242,36 @@ export const Chat = ({ navigation, route }) => {
                                 style={styles.postMsgImg}
                                 source={content.images ? { uri: content.images } : require('../../assets/Post.png')}
                             />}
-                            <View testID='Chat.postMsgSubCont' style={styles.postMsgSubCont}>
-                                <Text testID='Chat.postMsgTitle' style={[styles.postMsgTitle, {
-                                    color: user['username'] === item.to_user['username'] ?
-                                        Colors.dark : Colors.white
-                                }]}>{content.title}</Text>
-                                <View testID='Chat.postMsgLocation' style={styles.postMsgLocation}>
-                                    <Ionicons name='location-outline' size={13}
-                                        testID='Chat.postMsgLocationIcon'
-                                        style={{
-                                            marginRight: 4,
+                            <View>
+                                <View testID='Chat.postMsgSubCont' style={styles.postMsgSubCont}>
+                                    <Text
+                                        testID='Chat.postMsgTitle'
+                                        style={[styles.postMsgTitle, {
                                             color: user['username'] === item.to_user['username'] ?
                                                 Colors.dark : Colors.white
-                                        }} />
-                                    {/* Placeholder distance away */}
-                                    <Text testID='Chat.postMsgDistance' style={[globalStyles.Small2,
-                                    {
-                                        color: user['username'] === item.to_user['username'] ?
-                                            Colors.dark : Colors.white
-                                    }]}>{1}km away</Text>
+                                        }]}
+                                        ellipsizeMode="tail"
+                                        numberOfLines={1}
+                                    >{content.title}</Text>
+                                    <View testID='Chat.postMsgLocation' style={[styles.postMsgLocation,
+                                    (user['username'] === content.username) ? { opacity: 0, height: 0 } : {}]}>
+                                        <Ionicons name='location-outline' size={13}
+                                            testID='Chat.postMsgLocationIcon'
+                                            style={{
+                                                marginRight: 4,
+                                                color: user['username'] === item.to_user['username'] ?
+                                                    Colors.dark : Colors.white
+                                            }} />
+                                        {/* Placeholder distance away */}
+                                        <Text testID='Chat.postMsgDistance' style={[globalStyles.Small2,
+                                        {
+                                            color: user['username'] === item.to_user['username'] ?
+                                                Colors.dark : Colors.white
+                                        }]}>{content.distance ? content.distance.toFixed(1) : 'x'} km away</Text>
+                                    </View>
                                 </View>
-                                <View testID='Chat.postMsgNeedBy' style={styles.postMsgNeedBy}>
-                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>Need in {3} days</Text>
+                                <View testID='Chat.postMsgNeedBy' style={[styles.postMsgNeedBy]}>
+                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>{handleExpiryDate(content.expiryDate, content.type)}</Text>
                                 </View>
                             </View>
                         </View>

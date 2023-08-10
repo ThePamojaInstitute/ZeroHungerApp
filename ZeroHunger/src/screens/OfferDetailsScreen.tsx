@@ -36,6 +36,13 @@ export const OfferDetailsScreen = ({ navigation }) => {
             description: route.params.description,
             postId: route.params.postId,
             username: route.params.username,
+            expiryDate: route.params?.expiryDate,
+            distance: route.params?.distance,
+            logistics: route.params?.logistics,
+            categories: route.params?.categories,
+            diet: route.params?.diet,
+            accessNeeds: route.params?.accessNeeds,
+            postalCode: route.params?.postalCode,
             type: "o"
         }
         navigation.navigate('Chat', {
