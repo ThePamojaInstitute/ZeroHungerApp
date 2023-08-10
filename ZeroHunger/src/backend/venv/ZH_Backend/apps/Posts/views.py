@@ -321,9 +321,11 @@ class ImageUploader(APIView):
 # Temporary view till the redis server and Celery are setup
 class deleteExpiredPosts(APIView):
     def post(self, request):
+        today = datetime.now().date()
+
         try:
-            RequestPost.objects.filter(expiryDate__lt=datetime.now()).delete()
-            OfferPost.objects.filter(expiryDate__lt=datetime.now()).delete()
+            RequestPost.objects.filter(expiryDate__date=today).delete()
+            OfferPost.objects.filter(expiryDate__date=today).delete()
             
             return Response(status=204)
         except Exception as e:
