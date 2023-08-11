@@ -20,10 +20,8 @@ const mockMMKV = {
 export const storage = ENV === 'production' ? new MMKV() :
     Platform.OS === 'web' ? new MMKV() : mockMMKV
 
-// export const HttpBaseURL = 'http://127.0.0.1:8000/'
-// export const WSBaseURL = 'ws://127.0.0.1:8000/'
-export const HttpBaseURL = 'http://192.168.2.103:8000/'
-export const WSBaseURL = 'ws://192.168.2.103:8000/'
+export const HttpBaseURL = 'http://127.0.0.1:8000/'
+export const WSBaseURL = 'ws://127.0.0.1:8000/'
 // export const HttpBaseURL = 'https://zh-backend-azure-webapp.azurewebsites.net/'
 // export const WSBaseURL = 'ws://zh-backend-azure-webapp.azurewebsites.net/'
 
@@ -93,6 +91,9 @@ const useMMKV = (error) => {
             logOutUser().then(() => {
                 store.dispatch({ type: "LOGOUT", payload: null })
                 navigate('LoginScreen', {})
+            }).catch(() => {
+                store.dispatch({ type: "LOGOUT", payload: null })
+                navigate('LoginScreen', {})
             })
             return Promise.reject(error2);
         })
@@ -120,6 +121,9 @@ const useAsyncStorage = (error) => {
             .catch((error2) => {
                 // Retry failed, clean up and reject the promise
                 logOutUser().then(() => {
+                    store.dispatch({ type: "LOGOUT", payload: null })
+                    navigate('LoginScreen', {})
+                }).catch(() => {
                     store.dispatch({ type: "LOGOUT", payload: null })
                     navigate('LoginScreen', {})
                 })
