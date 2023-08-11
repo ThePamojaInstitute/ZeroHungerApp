@@ -123,9 +123,9 @@ const DrawerTab = () => {
                 name="BottomTab"
                 component={BottomTab}
                 options={({ route }) => {
-                    const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+                    const routeName = getFocusedRouteNameFromRoute(route) ?? "LoginScreen"
                     if (!drawerTabEnabledScreens.includes(routeName))
-                        return ({ swipeEnabled: false })
+                        return ({ swipeEnabled: false, headerShown: false, })
                 }}
             />
         </Drawer.Navigator>

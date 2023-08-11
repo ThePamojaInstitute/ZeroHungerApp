@@ -397,7 +397,7 @@ const BottomTab = () => {
                     tabBarStyle: ((route) => {
 
                         const routeName = getFocusedRouteNameFromRoute(route) ?? "LoginScreen"
-                        if (!bottomTabDisabledScreens.includes(routeName)) {
+                        if (bottomTabDisabledScreens.includes(routeName)) {
                             return { display: "none" }
                         }
                         return styles.bottomBarTab
