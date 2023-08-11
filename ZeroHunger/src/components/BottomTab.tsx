@@ -25,6 +25,7 @@ import Preferences from "../screens/Preferences";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 import { NotificationContext } from "../context/ChatNotificationContext";
+import PermissionsScreen from "../screens/PermissionsScreen";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -41,9 +42,12 @@ const HomeStackNavigator = ({ navigation }) => {
                     // headerTitleStyle: globalStyles.H4,
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite
+                    },
                     headerRight: () => (
-                        <View style={{ marginRight: 24 }}>
-                            <TouchableOpacity onPress={() => { navigation.navigate("LoginScreen") }}>
+                        <View style={{ marginRight: 12 }}>
+                            <TouchableOpacity onPress={() => { navigation.navigate("PermissionsScreen1") }}>
                                 <Text style={globalStyles.Body}>Skip</Text>
                             </TouchableOpacity>
                         </View>
@@ -123,6 +127,24 @@ const HomeStackNavigator = ({ navigation }) => {
                                 testID="Home.searchBtn"
                             /> */}
                         </View>
+                    )
+                }}
+            />
+            <Stack.Screen
+                name="PermissionsScreen"
+                component={PermissionsScreen}
+                options={{
+                    title: t("app.title"),
+                    headerTitleAlign: 'center',
+                    // headerShadowVisible: false,
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite
+                    },
+                    headerLeft: () => (<></>),
+                    headerRight: () => (
+                        <TouchableOpacity onPress={() => { navigation.navigate("LoginScreen") }}>
+                            <Text>Skip</Text>
+                        </TouchableOpacity>
                     )
                 }}
             />
@@ -341,6 +363,14 @@ const BottomTab = () => {
     const [modalVisible, setModalVisible] = useState(false)
     const [height, setHeight] = useState(0)
 
+    const bottomTabDisabledScreens = [
+        'LoginScreen',
+        'CreateAccountScreen',
+        'Chat',
+        'OnboardingScreen',
+        'PermissionsScreen'
+    ]
+
     return (
         <Tab.Navigator>
             <Tab.Screen
@@ -365,11 +395,9 @@ const BottomTab = () => {
                     tabBarLabelPosition: "below-icon",
                     tabBarLabelStyle: styles.bottomBarText,
                     tabBarStyle: ((route) => {
+
                         const routeName = getFocusedRouteNameFromRoute(route) ?? "LoginScreen"
-                        if (routeName === 'LoginScreen' ||
-                            routeName === 'CreateAccountScreen' ||
-                            routeName === 'Chat' ||
-                            routeName === 'OnboardingScreen') {
+                        if (bottomTabDisabledScreens.includes(routeName)) {
                             return { display: "none" }
                         }
                         return styles.bottomBarTab

@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { View, Text, TouchableOpacity, GestureResponderEvent, Image } from "react-native"
 import styles from "../../styles/components/drawerTabStyleSheet"
 import { globalStyles } from "../../styles/globalStyleSheet";
+import { getFocusedRouteNameFromRoute, useIsFocused } from "@react-navigation/native"
 import { DrawerActions } from '@react-navigation/native';
 import {
     createDrawerNavigator,
@@ -106,10 +107,13 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
 }
 
 const DrawerTab = () => {
+    const drawerTabEnabledScreens = ['HomeScreen']
+
     return (
         <Drawer.Navigator
             drawerContent={props => <CustomDrawer {...props} />}
             screenOptions={{
+                drawerItemStyle: { height: 0 },
                 drawerStyle: {
                     width: '85%',
                     maxWidth: 400
@@ -119,9 +123,10 @@ const DrawerTab = () => {
             <Drawer.Screen
                 name="BottomTab"
                 component={BottomTab}
-                options={{
-                    headerShown: false,
-                    drawerItemStyle: { height: 0 }
+                options={({ route }) => {
+                    const routeName = getFocusedRouteNameFromRoute(route) ?? "LoginScreen"
+                    if (!drawerTabEnabledScreens.includes(routeName))
+                        return ({ swipeEnabled: false, headerShown: false, })
                 }}
             />
         </Drawer.Navigator>
