@@ -7,9 +7,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test": "jest --watchAll",
-    "eas-build-pre-install": "./eas-hooks/eas-build-pre-install.sh",
-    "eas-build-on-success": "./eas-hooks/eas-build-on-success.sh"
+    "test": "jest --watchAll"
   },
   "jest": {
     "preset": "jest-expo",
@@ -61,12 +59,13 @@
     "jest-expo": "^48.0.2",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
+    "node": "^20.5.0",
     "npm": "^9.4.2",
     "react": "18.2.0",
     "react-datepicker": "^4.11.0",
     "react-dom": "18.2.0",
-    "react-i18next": "^13.0.2",
     "react-hook-form": "^7.45.2",
+    "react-i18next": "^13.0.2",
     "react-native": "0.71.8",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-gesture-handler": "~2.9.0",

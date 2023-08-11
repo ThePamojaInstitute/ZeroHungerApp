@@ -5,7 +5,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "plugins": ["@config-plugins/detox"],
+    "plugins": [
+      "@config-plugins/detox"
+    ],
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -34,7 +36,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "9a464943-be80-4f23-bffe-2029a9867b66"
+        "projectId": "9a256bfa-fa6b-46dc-8bd0-b8952a213cd7"
       }
     }
   }
