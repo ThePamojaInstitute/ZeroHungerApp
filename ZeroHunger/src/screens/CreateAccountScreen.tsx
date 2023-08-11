@@ -131,6 +131,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       }
     })
   }
+
   return (
     <View testID="SignUp.container" style={styles.authContainer}>
       <NotificationsTest setExpoToken={setExpoPushToken} />
@@ -152,9 +153,9 @@ export const CreateAccountScreen = ({ navigation }) => {
               value: 50,
               message: "Username length should be at most 50 characters"
             },
-            pattern: {
-              value: /^(?!.*__).*$/,
-              message: "Username shouldn't include \"__\""
+            validate: {
+              containsUnderscore: (str) => /^(?!.*__).*$/.test(str) || "Username shouldn't include \"__\"",
+              NotAlphanum: (str) => /^[a-zA-Z0-9]*$/.test(str) || "Username should only include alphanumeric characters"
             }
           }}
           render={({ field: { onChange, onBlur, value } }) => (
