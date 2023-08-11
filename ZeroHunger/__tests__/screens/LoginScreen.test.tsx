@@ -2,121 +2,315 @@ import React from "react";
 import { Linking } from "react-native";
 import LoginScreen from "../../src/screens/Loginscreen";
 import * as Utils from "../../src/controllers/auth";
-import { axiosInstance } from "../../config";
+import { axiosInstance, passwordResetURL } from "../../config";
 import { AuthContext } from "../../src/context/AuthContext";
 import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import MockAdapter from "axios-mock-adapter"
+import { AlertContext, AlertContextFields, AlertContextType } from "../../src/context/Alert";
+import { mock } from "jest-mock-extended";
+import { NavigationContext } from "@react-navigation/native"
+import styles from "../../styles/screens/loginStyleSheet"
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import { useFonts } from '@expo-google-fonts/public-sans';
 
 
-jest.mock('jwt-decode', () => () => ({}))
+jest.mock('@expo-google-fonts/public-sans', () => ({
+    useFonts: jest.fn()
+}))
+
 const mockNavigation = {
     navigate: jest.fn(),
 };
 const mockEvent = { preventDefault: jest.fn() };
 const mockDispatch = jest.fn()
 const mockAxios = new MockAdapter(axiosInstance)
+const mockAlert = mock<AlertContextFields>()
+const mockAlertDispatch: React.Dispatch<any> = jest.fn()
+const mockAlertValue: AlertContextType = {
+    alert: mockAlert,
+    dispatch: mockAlertDispatch
+}
+
+// fake NavigationContext value data
+const actualNav = jest.requireActual("@react-navigation/native");
+const navContext = {
+    ...actualNav.navigation,
+    navigate: () => { },
+    dangerouslyGetState: () => { },
+    setOptions: () => { },
+    addListener: () => () => { },
+    isFocused: () => true,
+};
 
 const spyLogInUser = jest.spyOn(Utils, 'logInUser')
 const spyCanOpenURL = jest.spyOn(Linking, 'canOpenURL')
 const spyOpenURL = jest.spyOn(Linking, 'openURL')
 
 afterEach(() => {
+    (useFonts as jest.Mock).mockImplementation(() => [true])
     jest.clearAllMocks()
 })
 
+const authContextValues = {
+    user: "",
+    accessToken: "",
+    refreshToken: "",
+    loading: false,
+    error: "",
+    dispatch: mockDispatch
+}
+
+const testComponent = (
+    <AuthContext.Provider value={authContextValues}>
+        <AlertContext.Provider value={mockAlertValue}>
+            <NavigationContext.Provider value={navContext}>
+                <LoginScreen navigation={mockNavigation} />
+            </NavigationContext.Provider>
+        </AlertContext.Provider>
+    </AuthContext.Provider >
+)
+
+
+describe('on loading', () => {
+    it('shows loading', () => {
+        (useFonts as jest.Mock).mockImplementation(() => [false])
+        const { getAllByText } = render(testComponent)
+
+        expect(getAllByText('Loading...').length).toBe(1)
+    })
+
+    it('doesn\'t show default elements', () => {
+        (useFonts as jest.Mock).mockImplementation(() => [false])
+        const { queryAllByText } = render(testComponent)
+
+        expect(queryAllByText("Username").length).toBe(0)
+        expect(queryAllByText("Password").length).toBe(0)
+        expect(queryAllByText("Forgot password?").length).toBe(0)
+        expect(queryAllByText("Login").length).toBe(0)
+        expect(queryAllByText("OR").length).toBe(0)
+        expect(queryAllByText("Sign Up").length).toBe(0)
+    })
+})
 
 describe('on load', () => {
     it('renders default elements', () => {
-        const { getAllByText, getAllByPlaceholderText } = render(<LoginScreen navigation={mockNavigation} />)
+        const { getAllByText } = render(testComponent)
+
+        expect(getAllByText("Username").length).toBe(1)
+        expect(getAllByText("Password").length).toBe(1)
+        expect(getAllByText("Forgot password?").length).toBe(1)
         expect(getAllByText("Login").length).toBe(1)
-        getAllByPlaceholderText("Username")
-        getAllByPlaceholderText("Password")
+        expect(getAllByText("OR").length).toBe(1)
+        expect(getAllByText("Sign Up").length).toBe(1)
     });
 
-    it('does not navigate to the landing page if user is not logged in', () => {
-        render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: null }}>
-                <LoginScreen navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
+    it('renders default globalStyles', () => {
+        const { getByTestId } = render(testComponent)
+
+        const container = getByTestId('Login.container')
+        const usernameInputContainer = getByTestId('Login.usernameInputContainer')
+        const usernameLabel = getByTestId('Login.usernameLabel')
+        const usernameInput = getByTestId('Login.usernameInput')
+        const passwordInputContainer = getByTestId('Login.passwordInputContainer')
+        const innerPasswordInputContainer = getByTestId('Login.innerPasswordInputContainer')
+        const passwordLabel = getByTestId('Login.passwordLabel')
+        const passwordInput = getByTestId('Login.passwordInput')
+        const forgotPassword = getByTestId('Login.forgotPassword')
+        const loginButton = getByTestId('Login.Button')
+        const loginButtonLabel = getByTestId('Login.ButtonLabel')
+        const SignUpButton = getByTestId('SignUp.Button')
+        const SignUpButtonLabel = getByTestId('SignUp.ButtonLabel')
+        const divider = getByTestId('divider')
+        const dividerLine1 = getByTestId('dividerLine1')
+        const dividerLine2 = getByTestId('dividerLine2')
+        const dividerText = getByTestId('dividerText')
+
+        expect(container.props.style).toBe(styles.authContainer)
+        expect(usernameInputContainer.props.style).toBe(styles.inputContainer)
+        expect(usernameLabel.props.style[0]).toBe(styles.inputLabel)
+        expect(usernameLabel.props.style[1].color).toBe(Colors.dark)
+        expect(usernameInput.props.style[0]).toBe(styles.input)
+        expect(usernameInput.props.style[1].borderColor).toBe(Colors.midLight)
+        expect(passwordInputContainer.props.style).toBe(styles.inputContainer)
+        expect(passwordLabel.props.style[0]).toBe(styles.inputLabel)
+        expect(passwordLabel.props.style[1].color).toBe(Colors.dark)
+        expect(innerPasswordInputContainer.props.style[0]).toBe(styles.passwordInputContainer)
+        expect(innerPasswordInputContainer.props.style[1].borderColor).toBe(Colors.midLight)
+        expect(passwordInput.props.style).toBe(styles.passwordInput)
+        expect(forgotPassword.parent.parent.props.style).toStrictEqual({ width: '90%' })
+        expect(forgotPassword.props.style).toBe(styles.forgotPassword)
+        expect(loginButton.parent.parent.props.style[0]).toBe(globalStyles.defaultBtn)
+        expect(loginButtonLabel.props.style).toBe(globalStyles.defaultBtnLabel)
+        expect(SignUpButton.parent.parent.props.style[0]).toBe(globalStyles.outlineBtn)
+        expect(SignUpButtonLabel.props.style).toBe(globalStyles.outlineBtnLabel)
+        expect(divider.props.style).toBe(styles.divider)
+        expect(dividerLine1.props.style).toBe(styles.dividerLine)
+        expect(dividerLine2.props.style).toBe(styles.dividerLine)
+        expect(dividerText.props.style).toBe(styles.dividerText)
+    });
+
+    it('does not navigate to the home page if user is not logged in', () => {
+        render(testComponent)
 
         expect(mockNavigation.navigate).not.toBeCalled()
     })
 
-    it('navigates to the landing page when the user is logged in', () => {
+    it('navigates to the home page when the user is logged in', () => {
         render(
             <AuthContext.Provider value={{ user: "User", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: null }}>
-                <LoginScreen navigation={mockNavigation} />
+                <AlertContext.Provider value={mockAlertValue}>
+                    <NavigationContext.Provider value={navContext}>
+                        <LoginScreen navigation={mockNavigation} />
+                    </NavigationContext.Provider>
+                </AlertContext.Provider>
             </AuthContext.Provider>
         )
 
-        expect(mockNavigation.navigate).toBeCalledWith('LandingPageScreenTemp')
+        expect(mockNavigation.navigate).toBeCalledWith('HomeScreen')
     })
 })
 
 describe('events on login button press', () => {
     it('calls preventDefault', async () => {
-        const { getByTestId } = render(<LoginScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(testComponent)
 
         await act(() => {
-            fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
+            fireEvent.press(getByTestId("Login.Button"), mockEvent)
         })
 
         expect(mockEvent.preventDefault).toBeCalled()
     })
 
-    it('shows error message when not entering username', async () => {
-        const { getByTestId, getByText, queryAllByText } = render(<LoginScreen navigation={mockNavigation} />)
-        await act(() => {
-            fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
+    describe('when not entering username', () => {
+        it('shows error message', async () => {
+            const { getByTestId, queryAllByText } = render(testComponent)
+
+            await act(() => {
+                fireEvent.press(getByTestId("Login.Button"), mockEvent)
+            })
+
+            const usernameErrMsgContainer = getByTestId('Login.usernameErrMsgContainer')
+            const usernameErrMsg = getByTestId('Login.usernameErrMsg')
+
+            expect(queryAllByText("Please enter a username").length).toBe(1)
+            expect(queryAllByText("Please enter a password").length).toBe(0)
+            expect(usernameErrMsgContainer.props.style).toBe(styles.errorMsgContainer)
+            expect(usernameErrMsg.props.style).toBe(styles.errorMsg)
         })
 
-        getByText("Please enter a username")
-        expect(queryAllByText("Please enter a password").length).toBe(0)
+        it('changes username label and text input\'s globalStyles', async () => {
+            const { getByTestId } = render(testComponent)
+
+            await act(() => {
+                fireEvent.press(getByTestId("Login.Button"), mockEvent)
+            })
+
+            const usernameLabel = getByTestId('Login.usernameLabel')
+            const usernameInput = getByTestId('Login.usernameInput')
+
+            expect(usernameLabel.props.style[1].color).toBe(Colors.alert2)
+            expect(usernameInput.props.style[1].borderColor).toBe(Colors.alert2)
+        })
+
+        it('removes error message and globalStyles when input value changes', async () => {
+            const { getByTestId, queryAllByText } = render(testComponent)
+            const usernameInput = getByTestId('Login.usernameInput')
+            const usernameLabel = getByTestId('Login.usernameLabel')
+
+            await act(() => {
+                fireEvent.press(getByTestId("Login.Button"), mockEvent)
+            })
+
+            expect(queryAllByText("Please enter a username").length).toBe(1)
+            expect(usernameLabel.props.style[1].color).toBe(Colors.alert2)
+            expect(usernameInput.props.style[1].borderColor).toBe(Colors.alert2)
+
+            await act(() => {
+                fireEvent.changeText(usernameInput, 'username')
+            })
+
+            expect(queryAllByText("Please enter a username").length).toBe(0)
+            expect(usernameLabel.props.style[1].color).toBe(Colors.dark)
+            expect(usernameInput.props.style[1].borderColor).toBe(Colors.midLight)
+        })
     })
 
-    it('shows error message when entering username but not password', async () => {
-        const { getByTestId, getByText } = render(<LoginScreen navigation={mockNavigation} />)
-        const usernameInput = getByTestId("LogIn.usernameInput")
+    describe('when entering username but not password', () => {
+        it('shows error message', async () => {
+            const { getByTestId, queryAllByText } = render(testComponent)
 
-        fireEvent.changeText(usernameInput, 'username')
+            const usernameInput = getByTestId("Login.usernameInput")
+            fireEvent.changeText(usernameInput, 'username')
 
-        await act(() => {
-            fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
+            await act(() => {
+                fireEvent.press(getByTestId("Login.Button"), mockEvent)
+            })
+
+            const passwordErrMsgContainer = getByTestId('Login.passwordErrMsgContainer')
+            const passwordErrMsg = getByTestId('Login.passwordErrMsg')
+
+            expect(queryAllByText("Please enter a password").length).toBe(1)
+            expect(queryAllByText("Please enter a username").length).toBe(0)
+            expect(passwordErrMsgContainer.props.style).toBe(styles.errorMsgContainer)
+            expect(passwordErrMsg.props.style).toBe(styles.errorMsg)
         })
 
-        getByText("Please enter a password")
-    })
+        it('changes password label and text input\'s globalStyles', async () => {
+            const { getByTestId } = render(testComponent)
 
-    it('shows no errors when entering both username and password', async () => {
-        const { getByTestId, queryAllByText } = render(<LoginScreen navigation={mockNavigation} />)
-        const usernameInput = getByTestId("LogIn.usernameInput")
-        const passwordInput = getByTestId("LogIn.passwordInput")
+            const usernameInput = getByTestId("Login.usernameInput")
+            fireEvent.changeText(usernameInput, 'username')
 
-        fireEvent.changeText(usernameInput, 'username')
-        fireEvent.changeText(passwordInput, 'password')
+            await act(() => {
+                fireEvent.press(getByTestId("Login.Button"), mockEvent)
+            })
 
-        await act(() => {
-            fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
+            const passwordLabel = getByTestId('Login.passwordLabel')
+            const innerPasswordInputContainer = getByTestId('Login.innerPasswordInputContainer')
+
+            expect(passwordLabel.props.style[1].color).toBe(Colors.alert2)
+            expect(innerPasswordInputContainer.props.style[1].borderColor).toBe(Colors.alert2)
         })
-        expect(queryAllByText("Please enter a password").length).toBe(0)
-        expect(queryAllByText("Please enter a username").length).toBe(0)
+
+        it('removes error message and globalStyles when input value changes', async () => {
+            const { getByTestId, queryAllByText } = render(testComponent)
+
+            const usernameInput = getByTestId("Login.usernameInput")
+            fireEvent.changeText(usernameInput, 'username')
+
+            const passwordLabel = getByTestId('Login.passwordLabel')
+            const passwordInput = getByTestId('Login.passwordInput')
+            const innerPasswordInputContainer = getByTestId('Login.innerPasswordInputContainer')
+
+            await act(() => {
+                fireEvent.press(getByTestId("Login.Button"), mockEvent)
+            })
+
+            expect(queryAllByText("Please enter a password").length).toBe(1)
+            expect(passwordLabel.props.style[1].color).toBe(Colors.alert2)
+            expect(innerPasswordInputContainer.props.style[1].borderColor).toBe(Colors.alert2)
+
+            await act(() => {
+                fireEvent.changeText(passwordInput, 'password')
+            })
+
+            expect(queryAllByText("Please enter a password").length).toBe(0)
+            expect(queryAllByText("Please enter a username").length).toBe(0)
+            expect(passwordLabel.props.style[1].color).toBe(Colors.dark)
+            expect(innerPasswordInputContainer.props.style[1].borderColor).toBe(Colors.midLight)
+        })
     })
 
     it('calls dispatch function to LOGIN_START', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <LoginScreen navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
-        const usernameInput = getByTestId("LogIn.usernameInput")
-        const passwordInput = getByTestId("LogIn.passwordInput")
+        const { getByTestId } = render(testComponent)
+        const usernameInput = getByTestId("Login.usernameInput")
+        const passwordInput = getByTestId("Login.passwordInput")
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(passwordInput, 'password')
 
         await act(() => {
-            fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
+            fireEvent.press(getByTestId("Login.Button"), mockEvent)
         })
 
         expect(mockDispatch).toBeCalled()
@@ -124,86 +318,83 @@ describe('events on login button press', () => {
     })
 
     it('calls logInUser function', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <LoginScreen navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
-        const usernameInput = getByTestId("LogIn.usernameInput")
-        const passwordInput = getByTestId("LogIn.passwordInput")
+        const { getByTestId } = render(testComponent)
+        const usernameInput = getByTestId("Login.usernameInput")
+        const passwordInput = getByTestId("Login.passwordInput")
 
         spyLogInUser.mockResolvedValue({ msg: "success", res: null })
+        mockAxios.onPost('users/token/').reply(200, { 'access': "token" })
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(passwordInput, 'password')
 
         await act(() => {
-            fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
+            fireEvent.press(getByTestId("Login.Button"), mockEvent)
         })
 
         expect(spyLogInUser).toBeCalled()
-        expect(spyLogInUser).toBeCalledWith({ "username": 'username', "password": 'password' })
+        expect(spyLogInUser).toBeCalledWith({
+            "username": 'username',
+            "password": 'password',
+            "expo_push_token": ""
+        })
     })
 })
 
 describe('logInUser function', () => {
     it('calls dispatch when the post requests resolves', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <LoginScreen navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
-        const usernameInput = getByTestId("LogIn.usernameInput")
-        const passwordInput = getByTestId("LogIn.passwordInput")
+        const { getByTestId } = render(testComponent)
+        const usernameInput = getByTestId("Login.usernameInput")
+        const passwordInput = getByTestId("Login.passwordInput")
 
         spyLogInUser.mockResolvedValue({ msg: "success", res: null })
-        mockAxios.onPost('/token/').reply(200, { refresh: 'refresh_tokne', access: 'access_token' })
+        mockAxios.onPost('users/token/').reply(200, { refresh: 'refresh_tokne', access: 'access_token' })
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(passwordInput, 'password')
 
         await act(() => {
-            fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
+            fireEvent.press(getByTestId("Login.Button"), mockEvent)
         })
 
         expect(spyLogInUser).toBeCalled()
-        expect(spyLogInUser).toBeCalledWith({ "username": 'username', "password": 'password' })
+        expect(spyLogInUser).toBeCalledWith({
+            "username": 'username',
+            "password": 'password',
+            "expo_push_token": ""
+        })
         expect(mockDispatch).toBeCalledTimes(2)
         expect(mockDispatch).toHaveBeenNthCalledWith(2, { "payload": { "token": { "access": "access_token", "refresh": "refresh_tokne" }, "user": {} }, "type": "LOGIN_SUCCESS" })
     })
 
-    it('navigates the landing page when the post request resolves', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <LoginScreen navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
-        const usernameInput = getByTestId("LogIn.usernameInput")
-        const passwordInput = getByTestId("LogIn.passwordInput")
+    it('navigates the home page when the post request resolves', async () => {
+        const { getByTestId } = render(testComponent)
+        const usernameInput = getByTestId("Login.usernameInput")
+        const passwordInput = getByTestId("Login.passwordInput")
 
         spyLogInUser.mockResolvedValue({ msg: "success", res: null })
-        mockAxios.onPost('/token/').reply(200, { refresh: 'refresh_tokne', access: 'access_token' })
+        mockAxios.onPost('users/token/').reply(200, { refresh: 'refresh_tokne', access: 'access_token' })
 
         fireEvent.changeText(usernameInput, 'username')
         fireEvent.changeText(passwordInput, 'password')
 
         await act(() => {
-            fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
+            fireEvent.press(getByTestId("Login.Button"), mockEvent)
         })
 
         expect(spyLogInUser).toBeCalled()
-        expect(spyLogInUser).toBeCalledWith({ "username": 'username', "password": 'password' })
-        expect(mockNavigation.navigate).toBeCalledWith('LandingPageScreenTemp')
+        expect(spyLogInUser).toBeCalledWith({
+            "username": 'username',
+            "password": 'password',
+            "expo_push_token": ""
+        })
+        expect(mockNavigation.navigate).toBeCalledWith('HomeScreen')
     })
 
     it('calls dispatch with LOGIN_FAILURE when the response login fails', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <LoginScreen navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
-        const usernameInput = getByTestId("LogIn.usernameInput")
-        const passwordInput = getByTestId("LogIn.passwordInput")
+        const { getByTestId } = render(testComponent)
+        const usernameInput = getByTestId("Login.usernameInput")
+        const passwordInput = getByTestId("Login.passwordInput")
 
         spyLogInUser.mockResolvedValue({ msg: "failure", res: null })
 
@@ -211,18 +402,35 @@ describe('logInUser function', () => {
         fireEvent.changeText(passwordInput, 'password')
 
         await act(() => {
-            fireEvent.press(getByTestId("LogIn.Button"), mockEvent)
+            fireEvent.press(getByTestId("Login.Button"), mockEvent)
         })
 
         expect(spyLogInUser).toBeCalled()
         expect(mockDispatch).toBeCalledTimes(2)
         expect(mockDispatch).toHaveBeenNthCalledWith(2, { "payload": null, "type": "LOGIN_FAILURE" })
     })
+
+    it('shows invalid credentials alert when the response login fails', async () => {
+        const { getByTestId, queryAllByText } = render(testComponent)
+        const usernameInput = getByTestId("Login.usernameInput")
+        const passwordInput = getByTestId("Login.passwordInput")
+
+        spyLogInUser.mockResolvedValue({ msg: "failure", res: null })
+
+        fireEvent.changeText(usernameInput, 'username')
+        fireEvent.changeText(passwordInput, 'password')
+
+        await act(() => {
+            fireEvent.press(getByTestId("Login.Button"), mockEvent)
+        })
+
+        expect(queryAllByText('Invalid credentials').length).toBe(1)
+    })
 })
 
 describe('testing navigation', () => {
     it('navigates to CreateAccount screen when pressing Sign Up button', () => {
-        const { getByTestId } = render(<LoginScreen navigation={mockNavigation} />)
+        const { getByTestId } = render(testComponent)
 
         const button = getByTestId("SignUp.Button")
         fireEvent.press(button)
@@ -233,49 +441,80 @@ describe('testing navigation', () => {
 
 describe('password recovery', () => {
     it('calls canOpenURL when pressing on the button', () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <LoginScreen navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
 
         const button = getByTestId("passwordReset.Button")
         fireEvent.press(button)
 
-        expect(spyCanOpenURL).toBeCalledWith("http://127.0.0.1:8000/password-reset/")
+        expect(spyCanOpenURL).toBeCalledWith(passwordResetURL)
     })
 
     it('opens url if supported', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <LoginScreen navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
 
         spyCanOpenURL.mockResolvedValue(true)
         const button = getByTestId("passwordReset.Button")
         fireEvent.press(button)
 
-        expect(spyCanOpenURL).toBeCalledWith("http://127.0.0.1:8000/password-reset/")
+        expect(spyCanOpenURL).toBeCalledWith(passwordResetURL)
         await waitFor(() => {
-            expect(spyOpenURL).toBeCalledWith("http://127.0.0.1:8000/password-reset/")
+            expect(spyOpenURL).toBeCalledWith(passwordResetURL)
         })
     })
 
     it('doesnt open url if not supported', async () => {
-        const { getByTestId } = render(
-            <AuthContext.Provider value={{ user: "", accessToken: "", refreshToken: "", loading: false, error: "", dispatch: mockDispatch }}>
-                <LoginScreen navigation={mockNavigation} />
-            </AuthContext.Provider>
-        )
+        const { getByTestId } = render(testComponent)
 
         spyCanOpenURL.mockResolvedValue(false)
         const button = getByTestId("passwordReset.Button")
         fireEvent.press(button)
 
-        expect(spyCanOpenURL).toBeCalledWith("http://127.0.0.1:8000/password-reset/")
+        expect(spyCanOpenURL).toBeCalledWith(passwordResetURL)
         await waitFor(() => {
             expect(spyOpenURL).not.toBeCalled()
         })
+    })
+})
+
+describe('password show/hide', () => {
+    it('renders with eye-off icon', () => {
+        const { getByTestId } = render(testComponent)
+        const eyeIcon = getByTestId('eyeIcon').parent.parent.parent
+
+        expect(eyeIcon.props.name).toBe("eye-off-outline")
+    })
+
+    it('eye icon changes when pressed', () => {
+        const { getByTestId } = render(testComponent)
+        const eyeIcon = getByTestId('eyeIcon').parent.parent.parent
+
+        expect(eyeIcon.props.name).toBe("eye-off-outline")
+
+        fireEvent.press(eyeIcon)
+
+        expect(eyeIcon.props.name).toBe("eye-outline")
+    })
+
+    it('hides password when eye icon is off', () => {
+        const { getByTestId } = render(testComponent)
+        const eyeIcon = getByTestId('eyeIcon').parent.parent.parent
+        const passwordInput = getByTestId('Login.passwordInput')
+
+        expect(eyeIcon.props.name).toBe("eye-off-outline")
+        expect(passwordInput.props.secureTextEntry).toBe(true)
+    })
+
+    it('shows password when eye icon is not off', () => {
+        const { getByTestId } = render(testComponent)
+        const eyeIcon = getByTestId('eyeIcon').parent.parent.parent
+        const passwordInput = getByTestId('Login.passwordInput')
+
+        expect(eyeIcon.props.name).toBe("eye-off-outline")
+        expect(passwordInput.props.secureTextEntry).toBe(true)
+
+        fireEvent.press(eyeIcon)
+
+        expect(eyeIcon.props.name).toBe("eye-outline")
+        expect(passwordInput.props.secureTextEntry).toBe(false)
     })
 })

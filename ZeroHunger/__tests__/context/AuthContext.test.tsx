@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity } from 'react-native'
 import { AuthContext, AuthContextProvider, setToken } from "../../src/context/AuthContext"
 import * as Utils from "../../src/controllers/auth";
 import { axiosInstance } from '../../config'
-import AsyncStorage from '@react-native-async-storage/async-storage/jest/async-storage-mock'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { act, fireEvent, render, waitFor } from "@testing-library/react-native"
 import MockAdapter from "axios-mock-adapter"
 
@@ -268,7 +268,7 @@ describe('initializeTokenState function', () => {
 
     it('sets tokens when refresh post request resolves', async () => {
         AsyncStorage.setItem('refresh_token', "token")
-        mockAxios.onPost('token/refresh/').reply(200, { refresh: 'refresh_token', access: 'access_token' })
+        mockAxios.onPost('users/token/refresh/').replyOnce(200, { refresh: 'refresh_token', access: 'access_token' })
 
         await waitFor(() => {
             render(<AuthContextProvider>
@@ -276,13 +276,15 @@ describe('initializeTokenState function', () => {
             </AuthContextProvider>)
         })
 
-        expect(AsyncStorage.setItem).toHaveBeenNthCalledWith(4, "access_token", "access_token")
-        expect(AsyncStorage.setItem).toHaveBeenNthCalledWith(5, "refresh_token", "refresh_token")
+        await waitFor(() => {
+            expect(AsyncStorage.setItem).toHaveBeenNthCalledWith(4, "access_token", "access_token")
+            expect(AsyncStorage.setItem).toHaveBeenNthCalledWith(5, "refresh_token", "refresh_token")
+        })
     })
 
     it('doesnt set tokens when refresh post request rejects', async () => {
         AsyncStorage.setItem('refresh_token', "token")
-        mockAxios.onPost('token/refresh/').reply(401)
+        mockAxios.onPost('users/token/refresh/').replyOnce(401, {})
 
         await waitFor(() => {
             render(<AuthContextProvider>
@@ -297,7 +299,7 @@ describe('initializeTokenState function', () => {
 
     it('logs user out when refresh token is expired', async () => {
         AsyncStorage.setItem('refresh_token', "token")
-        mockAxios.onPost('token/refresh/').reply(200)
+        mockAxios.onPost('users/token/refresh/').reply(200)
         const spyLogOutUser = jest.spyOn(Utils, 'logOutUser').mockResolvedValue()
 
         await waitFor(() => {

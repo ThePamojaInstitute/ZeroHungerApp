@@ -1,86 +1,81 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import 'react-native-gesture-handler';
 import * as React from 'react'
-import { TouchableOpacity } from "react-native"
-import Feedscreen from './src/screens/FeedScreen';
-import LoginScreen from './src/screens/Loginscreen';
-import CreateAccountScreen from './src/screens/CreateAccountScreen';
-import LandingPageScreen from './src/screens/LandingPageScreen';
 import { AuthContextProvider } from './src/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AlertProvider } from './src/context/Alert';
+import SnackBar from './src/components/Snackbar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NotificationContextProvider } from './src/context/ChatNotificationContext';
+import DrawerTab from './src/components/DrawerTab';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as SplashScreen from 'expo-splash-screen';
+import useFonts from './src/hooks/useFonts';
+import { useTranslation } from "react-i18next";
+import { navigationRef } from './RootNavigation';
 
-// export default function App() {
-//   return (
-//     <AuthContextProvider>
-//       <View style={styles.container}>
-//         <LoginScreen />
-//         {/* <CreateAccountScreen /> */}
-//       </View>r
-//     </AuthContextProvider>
-//   );
-// }
 
+SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 const Stack = createNativeStackNavigator();
 
-// const Tab = createBottomTabNavigator();
-
 export default function App() {
+  const [appIsReady, setAppIsReady] = React.useState(false);
+
+  React.useEffect(() => {
+    async function prepare() {
+      try {
+        // Pre-load fonts, make any API calls you need to do here
+        await useFonts()
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        // Tell the application to render
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  React.useEffect(() => {
+    onLayoutRootView().catch(console.error)
+  }, [appIsReady])
+
+  const onLayoutRootView = async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }
+
+  if (!appIsReady) {
+    return null;
+  }
+
   return (
-    <AuthContextProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="LandingPageScreenTemp"
-            component={LandingPageScreen}
-            options={{
-              title: "Zero Hunger",
-              headerTitleAlign: 'center',
-              headerLeft: () => (
-                <TouchableOpacity style={styles.buttonPlaceholder}>
-                  <Text>Profile Picture</Text>
-                </TouchableOpacity>
-              ),
-              headerRight: () => (
-                <TouchableOpacity style={styles.buttonPlaceholder}>
-                  <Text>Notif Icon</Text>
-                </TouchableOpacity>
-              )
-            }}
-          />
-          <Stack.Screen
-            name="LoginScreen"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="CreateAccountScreen" //Placeholder header to return to login screen
-            component={CreateAccountScreen}
-          // options={{headerShown: false}}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AuthContextProvider>
+    <SafeAreaProvider style={{ height: '99%' }}>
+      <AuthContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <NotificationContextProvider>
+            <NavigationContainer ref={navigationRef}>
+              <AlertProvider>
+                <>
+                  <Stack.Navigator>
+                    <Stack.Screen
+                      name="ZeroHunger"
+                      component={DrawerTab}
+                      options={{ headerShown: false }}
+                    />
+
+                  </Stack.Navigator>
+                  <SnackBar />
+                </>
+              </AlertProvider>
+            </NavigationContainer>
+          </NotificationContextProvider>
+        </QueryClientProvider>
+      </AuthContextProvider>
+    </SafeAreaProvider>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  buttonPlaceholder: {
-    borderWidth: 2,
-    width: 50,
-    height: 50,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    marginRight: 10,
-    marginLeft: 10,
-  },
-});
