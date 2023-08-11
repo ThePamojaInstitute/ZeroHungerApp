@@ -113,6 +113,7 @@ const DrawerTab = () => {
         <Drawer.Navigator
             drawerContent={props => <CustomDrawer {...props} />}
             screenOptions={{
+                drawerItemStyle: { height: 0 },
                 drawerStyle: {
                     width: '85%',
                     maxWidth: 400
