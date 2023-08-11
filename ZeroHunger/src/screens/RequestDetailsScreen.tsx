@@ -36,6 +36,13 @@ export const RequestDetailsScreen = ({ navigation }) => {
             description: route.params?.description,
             postId: route.params?.postId,
             username: route.params?.username,
+            expiryDate: route.params?.expiryDate,
+            distance: route.params?.distance,
+            logistics: route.params?.logistics,
+            categories: route.params?.categories,
+            diet: route.params?.diet,
+            accessNeeds: route.params?.accessNeeds,
+            postalCode: route.params?.postalCode,
             type: "r"
         }
         navigation.navigate('Chat', {

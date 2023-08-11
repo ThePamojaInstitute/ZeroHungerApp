@@ -9,7 +9,7 @@ import {
     Platform,
 } from "react-native";
 import styles from "../../styles/screens/homeStyleSheet"
-import { globalStyles } from "../../styles/globalStyleSheet"
+import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet"
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
@@ -19,8 +19,21 @@ import { default as _PostsFilters } from "../components/PostsFilters";
 import { getPreferencesLogistics } from "../controllers/preferences";
 import { Char } from "../../types";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { axiosInstance } from "../../config";
+import { axiosInstance, storage } from "../../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logOutUser } from "../controllers/auth";
+import { ENV } from "../../env";
 
+
+const getItemFromLocalStorage = async (key: string) => {
+    let item: string
+    if (Platform.OS === 'web') {
+        item = storage.getString(key)
+    } else {
+        item = await AsyncStorage.getItem(key)
+    }
+    return item
+}
 
 const PostsFilters = forwardRef(_PostsFilters)
 
@@ -31,7 +44,7 @@ export const HomeScreen = ({ navigation }) => {
         modalRef.current.publicHandler()
     }
 
-    const { user } = useContext(AuthContext)
+    const { user, dispatch } = useContext(AuthContext)
     const { setChatIsOpen } = useContext(NotificationContext);
 
     const [showRequests, setShowRequests] = useState(true)
@@ -44,6 +57,7 @@ export const HomeScreen = ({ navigation }) => {
     const [updater, setUpdater] = useState(() => () => { })
     const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet' | 'logistics' | 'location'>('')
     const [distance, setDistance] = useState(50)
+    const [expiringPosts, setExpiringPosts] = useState<object[]>()
 
     // on navigation change
     useFocusEffect(() => {
@@ -53,10 +67,50 @@ export const HomeScreen = ({ navigation }) => {
         setChatIsOpen(false)
     })
 
+    const getNotifications = async () => {
+        const allowExpiringPosts = ENV === 'production' ?
+            storage.getString('allowExpiringPosts')
+            : await getItemFromLocalStorage('allowExpiringPosts')
+
+        if (allowExpiringPosts === undefined || allowExpiringPosts === 'false') return
+
+        const lastSeen = ENV === 'production' ?
+            storage.getString('lastSeen')
+            : await getItemFromLocalStorage('lastSeen')
+        if (lastSeen === new Date().toDateString()) return
+
+        const accessToken = ENV === 'production' ?
+            storage.getString('access_token')
+            : await getItemFromLocalStorage('access_token')
+        if (!accessToken) {
+            logOutUser().then(() => {
+                dispatch({ type: "LOGOUT", payload: null })
+            }).then(() => {
+                alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
+                navigation.navigate('LoginScreen')
+            }).catch(() => {
+                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+            })
+            return
+        }
+
+        try {
+            const res = await axiosInstance.get('/users/getNotifications', {
+                headers: {
+                    Authorization: accessToken
+                }
+            })
+            setExpiringPosts(res.data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     // on mount
     useEffect(() => {
         if (!user) {
             navigation.navigate('LoginScreen')
+            return
         }
 
         // This is temporary till the redis server and Celery are setup
@@ -65,6 +119,7 @@ export const HomeScreen = ({ navigation }) => {
         } catch (error) {
             console.log(error);
         }
+        getNotifications()
 
         setChatIsOpen(false)
     }, [])
@@ -82,13 +137,39 @@ export const HomeScreen = ({ navigation }) => {
                             onPress={updater}
                         />
                     }
-                    <Ionicons
-                        style={{ padding: Platform.OS === 'web' ? 16 : 0 }}
-                        name="notifications-sharp"
-                        size={22}
-                        onPress={() => { navigation.navigate("NotificationsScreen") }}
-                        testID="Home.notificationBtn"
-                    />
+                    <View>
+                        <Ionicons
+                            style={{ margin: Platform.OS === 'web' ? 16 : 0 }}
+                            name="notifications-sharp"
+                            size={22}
+                            onPress={() => {
+                                navigation.navigate("NotificationsScreen", { posts: expiringPosts })
+                                setExpiringPosts([])
+                            }}
+                            testID="Home.notificationBtn"
+                        />
+                        {!!expiringPosts?.length &&
+                            <View style={{
+                                height: 15,
+                                minWidth: 15,
+                                backgroundColor: Colors.alert2,
+                                borderRadius: 7.5,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                position: 'absolute',
+                                top: Platform.OS === 'web' ? 13 : -4,
+                                right: Platform.OS === 'web' ? 10 : expiringPosts.length > 9 ? -11 : -5,
+                            }}>
+                                <Text style={{
+                                    color: Colors.white,
+                                    fontFamily: Fonts.PublicSans_SemiBold,
+                                    fontWeight: '600',
+                                    fontSize: 11,
+                                    marginHorizontal: 4,
+                                }}>{expiringPosts.length > 9 ? '9+' : expiringPosts.length}</Text>
+                            </View>
+                        }
+                    </View>
                     {/* <Ionicons
                         style={{ padding: 16 }}
                         name="md-search"
@@ -99,7 +180,7 @@ export const HomeScreen = ({ navigation }) => {
                 </View>
             )
         })
-    }, [updater])
+    }, [updater, expiringPosts])
 
     // useEffect(() => {
     //     if (unreadMessageCount > 0 && !chatIsOpen) {

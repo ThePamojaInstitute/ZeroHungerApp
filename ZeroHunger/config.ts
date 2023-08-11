@@ -2,6 +2,9 @@ import axios from "axios"
 import { MMKV } from 'react-native-mmkv'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
+import { navigate } from "./RootNavigation";
+import store from "./store";
+import { ENV } from "./env";
 
 // Mock object of MMKV only for development
 // Use actual MMKV for builds
@@ -14,7 +17,8 @@ const mockMMKV = {
     getAllKeys: () => { }
 }
 
-export const storage = Platform.OS === 'web' ? new MMKV() : mockMMKV
+export const storage = ENV === 'production' ? new MMKV() :
+    Platform.OS === 'web' ? new MMKV() : mockMMKV
 
 export const HttpBaseURL = 'http://127.0.0.1:8000/'
 export const WSBaseURL = 'ws://127.0.0.1:8000/'
@@ -24,32 +28,40 @@ export const WSBaseURL = 'ws://127.0.0.1:8000/'
 export const passwordResetURL = `${HttpBaseURL}users/reset_password`
 
 export const axiosInstance = axios.create({
-    baseURL: `${HttpBaseURL}`,
+    baseURL: HttpBaseURL,
     headers: { 'Content-Type': 'application/json' }
 })
 
 const logOutUser = async () => {
     try {
         let refreshToken: string
-        if (Platform.OS === 'web') {
+        if (ENV === 'production') {
             refreshToken = storage.getString('refresh_token')
         } else {
-            refreshToken = await AsyncStorage.getItem('refresh_token')
+            if (Platform.OS === 'web') {
+                refreshToken = storage.getString('refresh_token')
+            } else {
+                refreshToken = await AsyncStorage.getItem('refresh_token')
+            }
         }
 
-        // const token = storage.getString('refresh_token')
-
         await axiosInstance.post('users/logOut', {
-            refresh_token: refreshToken
+            refresh_token: refreshToken,
+            Platform: Platform.OS
         }, {
             headers: { 'Content-Type': 'application/json' }
         }).then(() => {
-            if (Platform.OS === 'web') {
+            if (ENV === 'production') {
                 storage.delete('refresh_token')
                 storage.delete('access_token')
             } else {
-                AsyncStorage.removeItem('refresh_token')
-                AsyncStorage.removeItem('access_token')
+                if (Platform.OS === 'web') {
+                    storage.delete('refresh_token')
+                    storage.delete('access_token')
+                } else {
+                    AsyncStorage.removeItem('refresh_token')
+                    AsyncStorage.removeItem('access_token')
+                }
             }
         })
     } catch (e) {
@@ -76,11 +88,18 @@ const useMMKV = (error) => {
         })
         .catch((error2) => {
             // Retry failed, clean up and reject the promise
-            logOutUser()
+            logOutUser().then(() => {
+                store.dispatch({ type: "LOGOUT", payload: null })
+                navigate('LoginScreen', {})
+            }).catch(() => {
+                store.dispatch({ type: "LOGOUT", payload: null })
+                navigate('LoginScreen', {})
+            })
             return Promise.reject(error2);
         })
         .finally(createAxiosResponseInterceptor); // Re-attach the interceptor by running the method
 }
+
 const useAsyncStorage = (error) => {
     console.log("using AsyncStorage");
 
@@ -101,7 +120,13 @@ const useAsyncStorage = (error) => {
             })
             .catch((error2) => {
                 // Retry failed, clean up and reject the promise
-                logOutUser()
+                logOutUser().then(() => {
+                    store.dispatch({ type: "LOGOUT", payload: null })
+                    navigate('LoginScreen', {})
+                }).catch(() => {
+                    store.dispatch({ type: "LOGOUT", payload: null })
+                    navigate('LoginScreen', {})
+                })
                 return Promise.reject(error2);
             })
     }).finally(createAxiosResponseInterceptor); // Re-attach the interceptor by running the method
@@ -111,6 +136,8 @@ const createAxiosResponseInterceptor = () => {
     const interceptor = axiosInstance.interceptors.response.use(
         (response) => response,
         (error) => {
+            console.log(error);
+
             // Reject promise if usual error
             if (error.response.status !== 401) {
                 return Promise.reject(error);
@@ -125,22 +152,29 @@ const createAxiosResponseInterceptor = () => {
              */
             axiosInstance.interceptors.response.eject(interceptor);
 
+            if (ENV === 'production') return useMMKV(error)
             // MMKV doesn't work with the Expo emulator
             // Use MMKV for builds
-            if (Platform.OS === 'web') return useMMKV(error)
-
-            return useAsyncStorage(error)
+            else {
+                if (Platform.OS === 'web') return useMMKV(error)
+                return useAsyncStorage(error)
+            }
         }
     );
 }
 createAxiosResponseInterceptor(); // Execute the method once during start
 
 export const setTokens = (data: object) => {
-    if (Platform.OS === 'web') {
+    if (ENV === 'production') {
         storage.set('refresh_token', data['refresh'])
         storage.set('access_token', data['access'])
     } else {
-        AsyncStorage.setItem('refresh_token', data['refresh'])
-        AsyncStorage.setItem('access_token', data['access'])
+        if (Platform.OS === 'web') {
+            storage.set('refresh_token', data['refresh'])
+            storage.set('access_token', data['access'])
+        } else {
+            AsyncStorage.setItem('refresh_token', data['refresh'])
+            AsyncStorage.setItem('access_token', data['access'])
+        }
     }
 }

@@ -339,6 +339,7 @@ const BottomTab = () => {
     const { unreadMessageCount, chatIsOpen } = useContext(NotificationContext);
 
     const [modalVisible, setModalVisible] = useState(false)
+    const [height, setHeight] = useState(0)
 
     return (
         <Tab.Navigator>
@@ -364,7 +365,7 @@ const BottomTab = () => {
                     tabBarLabelPosition: "below-icon",
                     tabBarLabelStyle: styles.bottomBarText,
                     tabBarStyle: ((route) => {
-                        const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+                        const routeName = getFocusedRouteNameFromRoute(route) ?? "LoginScreen"
                         if (routeName === 'LoginScreen' ||
                             routeName === 'CreateAccountScreen' ||
                             routeName === 'Chat' ||
@@ -408,52 +409,58 @@ const BottomTab = () => {
                                     onBackdropPress={() => setModalVisible(!modalVisible)}
                                     onSwipeComplete={() => setModalVisible(!modalVisible)}
                                     swipeDirection={['down']}
-                                    style={[styles.modal,
-                                    { marginTop: Dimensions.get('window').height * 0.74 }]}
+                                    style={[styles.modal, height ? { marginTop: Dimensions.get('window').height - (height + 20) } : {}]}
                                 >
-                                    <View style={{ marginBottom: 30, marginTop: 12 }}>
-                                        <View style={styles.modalContent}>
-                                            <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>What would you like to post?</Text>
+                                    <View
+                                        onLayout={(event) => {
+                                            const height = event.nativeEvent.layout.height;
+                                            setHeight(height)
+                                        }}
+                                    >
+                                        <View style={{ marginBottom: 30, marginTop: 12 }}>
+                                            <View style={styles.modalContent}>
+                                                <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>What would you like to post?</Text>
+                                            </View>
+                                            <TouchableOpacity
+                                                testID="Bottom.postNavModalClose"
+                                                style={styles.modalClose}
+                                                onPress={() => setModalVisible(!modalVisible)}
+                                            >
+                                                <Ionicons
+                                                    name="close"
+                                                    size={28}
+                                                    style={{ marginTop: -2 }}
+                                                />
+                                            </TouchableOpacity>
                                         </View>
-                                        <TouchableOpacity
-                                            testID="Bottom.postNavModalClose"
-                                            style={styles.modalClose}
-                                            onPress={() => setModalVisible(!modalVisible)}
-                                        >
-                                            <Ionicons
-                                                name="close"
-                                                size={28}
-                                                style={{ marginTop: -2 }}
-                                            />
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View style={{ alignItems: "center" }}>
-                                        <TouchableOpacity
-                                            style={[globalStyles.secondaryBtn, { marginTop: 10 }]}
-                                            onPress={() => {
-                                                setModalVisible(false)
-                                                navigation.navigate("RequestFormScreen")
-                                            }}
-                                            testID="Bottom.postNavModalReqBtn"
-                                        >
-                                            <Text
-                                                testID="Bottom.postNavModalReqLabel"
-                                                style={[globalStyles.secondaryBtnLabel]}
-                                            > A Request for Food </Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[globalStyles.secondaryBtn, { marginTop: 16, marginBottom: 30 }]}
-                                            onPress={() => {
-                                                setModalVisible(false)
-                                                navigation.navigate("OfferFormScreen")
-                                            }}
-                                            testID="Bottom.postNavModalOffBtn"
-                                        >
-                                            <Text
-                                                testID="Bottom.postNavModalOffLabel"
-                                                style={[globalStyles.secondaryBtnLabel]}
-                                            >An Offering of Food</Text>
-                                        </TouchableOpacity>
+                                        <View style={{ alignItems: "center" }}>
+                                            <TouchableOpacity
+                                                style={[globalStyles.secondaryBtn, { marginTop: 10 }]}
+                                                onPress={() => {
+                                                    setModalVisible(false)
+                                                    navigation.navigate("RequestFormScreen")
+                                                }}
+                                                testID="Bottom.postNavModalReqBtn"
+                                            >
+                                                <Text
+                                                    testID="Bottom.postNavModalReqLabel"
+                                                    style={[globalStyles.secondaryBtnLabel]}
+                                                > A Request for Food </Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={[globalStyles.secondaryBtn, { marginTop: 16, marginBottom: 30 }]}
+                                                onPress={() => {
+                                                    setModalVisible(false)
+                                                    navigation.navigate("OfferFormScreen")
+                                                }}
+                                                testID="Bottom.postNavModalOffBtn"
+                                            >
+                                                <Text
+                                                    testID="Bottom.postNavModalOffLabel"
+                                                    style={[globalStyles.secondaryBtnLabel]}
+                                                >An Offering of Food</Text>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                 </Modal>
                             </View>

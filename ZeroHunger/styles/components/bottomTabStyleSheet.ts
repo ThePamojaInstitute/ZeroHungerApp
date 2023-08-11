@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
@@ -32,10 +32,10 @@ export default StyleSheet.create({
     modal: {
         margin: 0,
         backgroundColor: Colors.offWhite,
-        // borderRadius: 10,
         elevation: 0,
         borderTopLeftRadius: 20,
-        borderTopRightRadius: 20
+        borderTopRightRadius: 20,
+        marginTop: Dimensions.get('window').height * 0.74
     },
     modalContent: {
         alignItems: 'center',
@@ -71,7 +71,7 @@ export default StyleSheet.create({
         fontWeight: '600',
         fontSize: 11,
         marginHorizontal: 4,
-        marginVertical: 1,
+        // marginVertical: 1,
     },
     cancelBtn: {
         fontFamily: Fonts.PublicSans_Regular,

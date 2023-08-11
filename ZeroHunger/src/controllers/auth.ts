@@ -1,6 +1,7 @@
 import { axiosInstance, storage } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Platform } from "react-native"
+import { ENV } from "../../env";
 
 
 export async function createUser(user: Object, acceptedTerms: boolean) {
@@ -74,25 +75,32 @@ export async function logInUser(user: Object) {
 export async function logOutUser() {
     try {
         let refreshToken
-        if (Platform.OS === 'web') {
-            refreshToken = storage.getString('refresh_token')
-        } else {
-            refreshToken = await AsyncStorage.getItem('refresh_token')
+        if (ENV === 'production') storage.getString('refresh_token')
+        else {
+            if (Platform.OS === 'web') {
+                refreshToken = storage.getString('refresh_token')
+            } else {
+                refreshToken = await AsyncStorage.getItem('refresh_token')
+            }
         }
 
-        // const token = storage.getString('refresh_token')
-
         await axiosInstance.post('users/logOut', {
-            refresh_token: refreshToken
+            refresh_token: refreshToken,
+            Platform: Platform.OS
         }, {
             headers: { 'Content-Type': 'application/json' }
         }).then(() => {
-            if (Platform.OS === 'web') {
+            if (ENV === 'production') {
                 storage.delete('refresh_token')
                 storage.delete('access_token')
             } else {
-                AsyncStorage.removeItem('refresh_token')
-                AsyncStorage.removeItem('access_token')
+                if (Platform.OS === 'web') {
+                    storage.delete('refresh_token')
+                    storage.delete('access_token')
+                } else {
+                    AsyncStorage.removeItem('refresh_token')
+                    AsyncStorage.removeItem('access_token')
+                }
             }
         })
     } catch (e) {

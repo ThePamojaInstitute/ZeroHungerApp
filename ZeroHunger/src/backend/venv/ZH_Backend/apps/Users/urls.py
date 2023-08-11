@@ -35,11 +35,10 @@ from .views import (
     logOut, 
     MyTokenObtainPairView, 
     getNotifications,
-    addNotification,
-    clearNotification,
-    clearAllNotifications, 
     userPreferences,
-    edit_account_view
+    edit_account_view,
+    getNotificationsSettings,
+    updateNotificationsSettings
 )
 
 urlpatterns = [
@@ -51,9 +50,11 @@ urlpatterns = [
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('getNotifications', getNotifications.as_view()),
-    path('addNotification', addNotification.as_view()),
-    path('clearNotification', clearNotification.as_view()),
-    path('clearAllNotifications', clearAllNotifications.as_view()),
+    path('getNotificationsSettings', getNotificationsSettings.as_view()),
+    path('updateNotificationsSettings', updateNotificationsSettings.as_view()),
+    # path('addNotification', addNotification.as_view()),
+    # path('clearNotification', clearNotification.as_view()),
+    # path('clearAllNotifications', clearAllNotifications.as_view()),
       # Password reset links (ref: https://github.com/django/django/blob/master/django/contrib/auth/views.py)
     path('reset_password/', auth_views.PasswordResetView.as_view(template_name="password_reset/password_reset.html"), name="reset_password"),
     path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(template_name="password_reset/password_reset_done.html"), name="password_reset_done"),
