@@ -7,7 +7,8 @@ import {
   GestureResponderEvent,
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
-  Keyboard
+  Keyboard,
+  Platform
 } from "react-native";
 import styles from "../../styles/screens/createAccountStyleSheet"
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
@@ -57,7 +58,8 @@ export const CreateAccountScreen = ({ navigation }) => {
     logInUser({
       "username": credentials['username'],
       "password": credentials['password'],
-      "expo_push_token": expoPushToken
+      "expo_push_token": expoPushToken,
+      "Platform": Platform.OS
     })
       .then(async res => {
         if (res.msg === "success") {
@@ -155,7 +157,7 @@ export const CreateAccountScreen = ({ navigation }) => {
             },
             validate: {
               containsUnderscore: (str) => /^(?!.*__).*$/.test(str) || "Username shouldn't include \"__\"",
-              NotAlphanum: (str) => /^[a-zA-Z0-9]*$/.test(str) || "Username should only include alphanumeric characters"
+              NotAlphanum: (str) => /^[a-zA-Z0-9_\.\-]*$/.test(str) || "Username should only include alphanumeric characters, underscores, or periods"
             }
           }}
           render={({ field: { onChange, onBlur, value } }) => (
