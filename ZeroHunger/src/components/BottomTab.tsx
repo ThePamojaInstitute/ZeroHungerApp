@@ -368,7 +368,7 @@ const BottomTab = () => {
         'CreateAccountScreen',
         'Chat',
         'OnboardingScreen',
-        'PermissionsScreen1'
+        'PermissionsScreen'
     ]
 
     return (
