@@ -25,6 +25,12 @@ export const Colors = {
     accent6: '#DBB364',
 }
 
+export const Fonts = {
+    PublicSans_Regular: 'PublicSans_Regular',
+    PublicSans_Medium: 'PublicSans_Medium',
+    PublicSans_SemiBold: 'PublicSans_SemiBold',
+}
+
 export const globalStyles = StyleSheet.create({
     defaultBtn: {
         display: "flex",
@@ -40,7 +46,8 @@ export const globalStyles = StyleSheet.create({
         backgroundColor: Colors.primary,
     },
     defaultBtnLabel: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontStyle: 'normal',
         fontSize: 17,
         display: 'flex',
@@ -61,7 +68,8 @@ export const globalStyles = StyleSheet.create({
         backgroundColor: Colors.primaryLight,
     },
     secondaryBtnLabel: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontStyle: 'normal',
         fontSize: 17,
         display: 'flex',
@@ -85,7 +93,8 @@ export const globalStyles = StyleSheet.create({
         borderColor: Colors.primary
     },
     outlineBtnLabel: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontStyle: 'normal',
         fontSize: 17,
         display: 'flex',
@@ -102,57 +111,68 @@ export const globalStyles = StyleSheet.create({
         backgroundColor: Colors.primary,
     },
     H1: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 28,
         color: Colors.dark
     },
     H2: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 22,
         color: Colors.dark
     },
     H3: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 20,
         color: Colors.dark
     },
     H4: {
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 18,
         color: Colors.dark
     },
     H5: {
-        fontFamily: 'PublicSans_500Medium',
+        fontFamily: Fonts.PublicSans_Medium,
+        fontWeight: '500',
         fontSize: 15,
         color: Colors.dark
     },
     Body: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 16,
         color: Colors.dark
     },
     Small1: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 13,
         color: Colors.dark
     },
     Small2: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 11,
         color: Colors.dark
     },
     Button: {
-        fontFamily: 'PublicSans_600Semibold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 17,
         color: Colors.dark
     },
     Tag: {
-        fontFamily: 'PublicSans_500Medium',
+        fontFamily: Fonts.PublicSans_Medium,
+        fontWeight: '500',
         fontSize: 12,
         color: Colors.dark
     },
     Link: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 18,
         textDecorationLine: 'underline',
         color: Colors.dark,

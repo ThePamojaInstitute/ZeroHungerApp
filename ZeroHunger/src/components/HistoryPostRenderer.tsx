@@ -1,5 +1,5 @@
-import React, { forwardRef, useContext, useEffect, useRef } from "react";
-import { Text, ActivityIndicator } from "react-native"
+import React, { forwardRef, useContext, useEffect, useRef, useState } from "react";
+import { Text, ActivityIndicator, RefreshControl } from "react-native"
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
 import { Colors } from "../../styles/globalStyleSheet";
@@ -18,7 +18,8 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
     const { user, accessToken } = useContext(AuthContext);
     const { dispatch: alert } = useAlert()
 
-    // const [refreshing, setRefreshing] = useState(false)
+    const [refreshing, setRefreshing] = useState(false)
+
     const selectedPost = useRef(0)
     const modalRef = useRef(null)
 
@@ -127,6 +128,9 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
                 estimatedItemSize={125}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
+                }
             />
             <MyPostModal
                 ref={modalRef}

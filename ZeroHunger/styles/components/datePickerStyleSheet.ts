@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     datePickerContainer: {
@@ -23,7 +23,8 @@ export default StyleSheet.create({
         resizeMode: 'contain'
     },
     datePickerDate: {
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 13,
         color: '#656565',
         marginTop: 2

@@ -6,12 +6,6 @@ import { useAlert } from "../context/Alert";
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
 import { deletePost, markAsFulfilled } from "../controllers/post";
-import {
-    useFonts,
-    PublicSans_600SemiBold,
-    PublicSans_500Medium,
-    PublicSans_400Regular
-} from '@expo-google-fonts/public-sans';
 import useFetchFeedPosts from "../hooks/useFetchFeedPosts";
 import { useIsFocused } from '@react-navigation/native';
 import { Post } from "./Post";
@@ -22,18 +16,6 @@ import { default as _MyPostModal } from "./MyPostModal";
 const MyPostModal = forwardRef(_MyPostModal)
 
 export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, categories, diet, logistics, accessNeeds, setUpdater }) => {
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
-
-
     const { dispatch: alert } = useAlert()
     const { accessToken } = useContext(AuthContext);
 
@@ -60,7 +42,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
 
     useEffect(() => {
         const updater = () => {
-            listRef.current.scrollToOffset({ animated: false, offset: 0 })
+            listRef?.current?.scrollToOffset({ animated: false, offset: 0 })
             refetch()
         }
         setUpdater(() => () => updater())
@@ -73,8 +55,6 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
             refetch()
         } else return
     }, [isFocused])
-
-    if (!loaded) return <Text>Loading...</Text>
 
     if (!data) return <Text>An error occurred while fetching data</Text>
 

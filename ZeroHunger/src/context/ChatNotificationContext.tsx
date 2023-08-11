@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { AuthContext } from "./AuthContext";
-import { BaseURL } from "../../config";
+import { WSBaseURL } from "../../config";
 
 const DefaultProps = {
     unreadMessageCount: 0,
@@ -27,7 +27,7 @@ export const NotificationContextProvider: React.FC<{ children: ReactNode }> = ({
     const [chatIsOpen, setChatIsOpen] = useState(false)
     const [unreadFromUsers, setUnreadFromUsers] = useState<string[]>([])
 
-    const { readyState } = useWebSocket(user ? `ws://${BaseURL}/notifications/` : null, {
+    const { readyState } = useWebSocket(user ? `${WSBaseURL}notifications/` : null, {
         queryParams: {
             token: user ? accessToken : ""
         },

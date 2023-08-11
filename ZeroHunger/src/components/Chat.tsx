@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, } from 'react'
-import { Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator, Button, Pressable } from 'react-native';
+import { Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator, Pressable } from 'react-native';
 import styles from "../../styles/components/chatStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { AuthContext } from '../context/AuthContext';
@@ -9,7 +9,8 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import { FlashList } from "@shopify/flash-list";
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { Char } from '../../types';
-import { BaseURL } from '../../config';
+import { WSBaseURL } from '../../config';
+import { handleExpiryDate } from '../controllers/post';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -76,7 +77,7 @@ export const Chat = ({ navigation, route }) => {
         } else console.log("end!!");
     }
 
-    const { readyState, sendJsonMessage } = useWebSocket(user ? `ws://${BaseURL}/chats/${conversationName}/` : null, {
+    const { readyState, sendJsonMessage } = useWebSocket(user ? `${WSBaseURL}chats/${conversationName}/` : null, {
         queryParams: {
             token: user ? accessToken : ""
         },
@@ -164,12 +165,15 @@ export const Chat = ({ navigation, route }) => {
         description: string,
         postId: Number,
         username: string,
+        expiryDate: string,
+        distance: number | null,
+        logistics: Char[],
+        categories: Char[],
+        diet: Char[],
+        accessNeeds: Char,
+        postalCode: string,
         type: Char
     ) => {
-        //Placeholder image
-        imagesLink = imagesLink ? imagesLink :
-            "https://images.pexels.com/photos/1118332/pexels-photo-1118332.jpeg?auto=compress&cs=tinysrgb&w=600"
-
         type === "r" ?
             navigation.navigate('RequestDetailsScreen', {
                 title,
@@ -179,6 +183,13 @@ export const Chat = ({ navigation, route }) => {
                 description,
                 postId,
                 username,
+                expiryDate,
+                distance,
+                logistics,
+                categories,
+                diet,
+                accessNeeds,
+                postalCode,
             })
             :
             navigation.navigate('OfferDetailsScreen', {
@@ -189,6 +200,13 @@ export const Chat = ({ navigation, route }) => {
                 description,
                 postId,
                 username,
+                expiryDate,
+                distance,
+                logistics,
+                categories,
+                diet,
+                accessNeeds,
+                postalCode,
             })
     }
 
@@ -204,6 +222,13 @@ export const Chat = ({ navigation, route }) => {
                 content.description,
                 content.postId,
                 content.username,
+                content.expiryDate,
+                content.distance,
+                content.logistics,
+                content.categories,
+                content.diet,
+                content.accessNeeds,
+                content.postalCode,
                 content.type
             )}>
                 <View testID='Chat.postCont' style={user['username'] === item.to_user['username'] ? styles.postMsgContainerIn : styles.postMsgContainerOut}>
@@ -212,33 +237,41 @@ export const Chat = ({ navigation, route }) => {
                         style={user['username'] === item.to_user['username'] ?
                             styles.postMsgIn : styles.postMsgOut}>
                         <View testID='Chat.postMsgCont' style={styles.postMsgCont}>
-                            <Image
+                            {<Image
                                 testID='Chat.postMsgImg'
                                 style={styles.postMsgImg}
-                                source={{ uri: content.images }}
-                            />
-                            <View testID='Chat.postMsgSubCont' style={styles.postMsgSubCont}>
-                                <Text testID='Chat.postMsgTitle' style={[styles.postMsgTitle, {
-                                    color: user['username'] === item.to_user['username'] ?
-                                        Colors.dark : Colors.white
-                                }]}>{content.title}</Text>
-                                <View testID='Chat.postMsgLocation' style={styles.postMsgLocation}>
-                                    <Ionicons name='location-outline' size={13}
-                                        testID='Chat.postMsgLocationIcon'
-                                        style={{
-                                            marginRight: 4,
+                                source={content.images ? { uri: content.images } : require('../../assets/Post.png')}
+                            />}
+                            <View>
+                                <View testID='Chat.postMsgSubCont' style={styles.postMsgSubCont}>
+                                    <Text
+                                        testID='Chat.postMsgTitle'
+                                        style={[styles.postMsgTitle, {
                                             color: user['username'] === item.to_user['username'] ?
                                                 Colors.dark : Colors.white
-                                        }} />
-                                    {/* Placeholder distance away */}
-                                    <Text testID='Chat.postMsgDistance' style={[globalStyles.Small2,
-                                    {
-                                        color: user['username'] === item.to_user['username'] ?
-                                            Colors.dark : Colors.white
-                                    }]}>{1}km away</Text>
+                                        }]}
+                                        ellipsizeMode="tail"
+                                        numberOfLines={1}
+                                    >{content.title}</Text>
+                                    <View testID='Chat.postMsgLocation' style={[styles.postMsgLocation,
+                                    (user['username'] === content.username) ? { opacity: 0, height: 0 } : {}]}>
+                                        <Ionicons name='location-outline' size={13}
+                                            testID='Chat.postMsgLocationIcon'
+                                            style={{
+                                                marginRight: 4,
+                                                color: user['username'] === item.to_user['username'] ?
+                                                    Colors.dark : Colors.white
+                                            }} />
+                                        {/* Placeholder distance away */}
+                                        <Text testID='Chat.postMsgDistance' style={[globalStyles.Small2,
+                                        {
+                                            color: user['username'] === item.to_user['username'] ?
+                                                Colors.dark : Colors.white
+                                        }]}>{content.distance ? content.distance.toFixed(1) : 'x'} km away</Text>
+                                    </View>
                                 </View>
-                                <View testID='Chat.postMsgNeedBy' style={styles.postMsgNeedBy}>
-                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>Need in {3} days</Text>
+                                <View testID='Chat.postMsgNeedBy' style={[styles.postMsgNeedBy]}>
+                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>{handleExpiryDate(content.expiryDate, content.type)}</Text>
                                 </View>
                             </View>
                         </View>
@@ -322,10 +355,7 @@ export const Chat = ({ navigation, route }) => {
                 onChangeText={setMessage}
                 onSubmitEditing={handleSend}
                 maxLength={250}
-            />
-            <Button testID='MessageSend.Button' mode="contained" onPress={handleSend}>
-                Send
-            </Button> */}
+            /> */}
         </View>
     )
 }

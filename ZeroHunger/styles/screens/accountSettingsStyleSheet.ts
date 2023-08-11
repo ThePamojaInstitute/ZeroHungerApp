@@ -1,33 +1,13 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
-    deleteUserBtn: {
-        title: "Login",
-        width: "50%",
-        borderRadius: 25,
-        marginTop: 20,
-        height: 50,
-        alignItems: "center",
-        backgroundColor: "red",
-    },
-    deleteUserBtnText: {
-        color: "#FFFFFF",
-        padding: 15,
-        marginLeft: 10,
-        fontSize: 15,
-    },
-    authContainer: {
-        backgroundColor: "#EFF1F7",
-        alignItems: "center",
+    container: {
+        backgroundColor: Colors.Background,
+        alignItems: "flex-start",
         justifyContent: "center",
-        marginTop: 20
-    },
-    errorMsg: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        color: Colors.alert2,
-        alignSelf: 'flex-start',
+        marginTop: 20,
+        marginLeft: 10
     },
     inputContainer: {
         display: 'flex',
@@ -42,7 +22,8 @@ export default StyleSheet.create({
     inputLabel: {
         width: '100%',
         height: 19,
-        fontFamily: 'PublicSans_600SemiBold',
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
         fontSize: 18,
         color: '#000000',
         alignItems: 'center',
@@ -59,48 +40,21 @@ export default StyleSheet.create({
         borderStyle: 'solid',
         borderColor: Colors.midLight,
         borderRadius: 10,
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
+        fontSize: 16,
+        paddingLeft: 10
+    },
+    errorMsg: {
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
+        fontSize: 13,
+        color: Colors.alert2,
+        alignSelf: 'flex-start',
     },
     errorMsgContainer: {
         width: "90%",
         marginTop: -5,
         marginBottom: 5
     },
-    passwordInputContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        backgroundColor: Colors.white,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: Colors.midLight,
-        borderRadius: 10,
-    },
-    passwordInput: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        width: '100%',
-        padding: 10,
-        gap: 10,
-        backgroundColor: Colors.white,
-        borderRadius: 10,
-    },
-    termsAndCondContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 0,
-        gap: 9,
-        width: "90%",
-        marginTop: 5,
-    },
-    termsAndCondText: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 13,
-        color: '#656565'
-    },
-    termsAndCondAcceptText: {
-        fontFamily: 'PublicSans_400Regular',
-        fontSize: 16,
-        color: Colors.dark,
-        marginLeft: 5
-    }
 })

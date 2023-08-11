@@ -102,13 +102,16 @@ export const createPost = async (post: {
 
     try {
         const res = await axiosInstance.post('/posts/createPost', post)
+
         if (res.status === 201) {
             return { msg: "success", res: res.data }
         } else {
             return { msg: "failure", res: res.data }
         }
     } catch (error) {
-        console.log(error);
+        if (error.response.data === 'invalid postal code') {
+            return { msg: "Please enter a valid postal code", res: null }
+        }
         return { msg: "failure", res: error }
     }
 }
@@ -163,13 +166,10 @@ export const markAsFulfilled = async (postType: Char, postId: Number, token: str
     }
 }
 
-export const handleImageUpload = async (images: string[]) => {
-    if (images.length === 0) return ''
+export const handleImageUpload = async (base64Images: string[]) => {
+    if (base64Images.length === 0) return ''
 
-    let imageString = images[0];
-    imageString = imageString.substring(imageString.indexOf(",") + 1);
-
-    const res = await axiosInstance.post("posts/testBlobImage", { "IMAGE": imageString })
+    const res = await axiosInstance.post("posts/testBlobImage", { "IMAGE": base64Images[0] })
     let result = res.data;
 
     console.log('Processing Request');

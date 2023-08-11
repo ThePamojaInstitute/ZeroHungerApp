@@ -1,17 +1,18 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.offWhite,
+        backgroundColor: Colors.Background,
     },
     subContainer: {
         flexDirection: 'row',
-        marginTop: 8,
-        marginRight: 16,
-        marginBottom: 4,
-        marginLeft: 16
+        paddingTop: 8,
+        paddingRight: 16,
+        paddingBottom: 4,
+        paddingLeft: 16,
+        backgroundColor: Colors.offWhite,
     },
     categoriesContainer: {
         marginTop: 8,
@@ -51,10 +52,18 @@ export default StyleSheet.create({
         backgroundColor: Colors.primaryLight,
     },
     filterBtnLabel: {
-        fontFamily: 'PublicSans_500Medium',
+        fontFamily: Fonts.PublicSans_Medium,
+        fontWeight: '500',
         fontSize: 12,
         display: 'flex',
         alignItems: 'center',
         color: Colors.dark,
     },
+    filtersList: {
+        flexDirection: 'row',
+        paddingBottom: 10,
+        paddingTop: 5,
+        paddingLeft: 20,
+        backgroundColor: Colors.offWhite
+    }
 })

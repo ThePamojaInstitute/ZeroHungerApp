@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../globalStyleSheet";
+import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     conversation: {
@@ -41,7 +41,8 @@ export default StyleSheet.create({
         lineHeight: 18,
         marginTop: -1,
         position: 'relative',
-        fontFamily: 'PublicSans_500Medium'
+        fontFamily: Fonts.PublicSans_Medium,
+        fontWeight: '500',
     },
     usernameUnread: {
         alignSelf: 'stretch',
@@ -51,7 +52,8 @@ export default StyleSheet.create({
         lineHeight: 18,
         marginTop: -1,
         position: 'relative',
-        fontFamily: 'PublicSans_600SemiBold'
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
     },
     lastMessage: {
         alignSelf: 'stretch',
@@ -60,7 +62,8 @@ export default StyleSheet.create({
         letterSpacing: 0,
         lineHeight: 15.6,
         position: 'relative',
-        fontFamily: 'PublicSans_400Regular'
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
     },
     lastMessageUnread: {
         alignSelf: 'stretch',
@@ -69,7 +72,8 @@ export default StyleSheet.create({
         letterSpacing: 0,
         lineHeight: 15.6,
         position: 'relative',
-        fontFamily: 'PublicSans_600SemiBold'
+        fontFamily: Fonts.PublicSans_SemiBold,
+        fontWeight: '600',
     },
     ellipseFrame: {
         alignItems: 'flex-start',
@@ -98,7 +102,8 @@ export default StyleSheet.create({
         paddingHorizontal: 0,
         position: 'absolute',
         color: Colors.dark,
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 13.2
     },
     searchContainer: {
@@ -124,7 +129,8 @@ export default StyleSheet.create({
     searchInput: {
         backgroundColor: Colors.white,
         color: '#646464',
-        fontFamily: 'PublicSans_400Regular',
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
         fontSize: 16,
         lineHeight: 20.8,
         width: '50%'

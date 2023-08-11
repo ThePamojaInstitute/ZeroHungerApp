@@ -13,7 +13,7 @@ import requests
 class BasicUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True)
     USERNAME_FIELD = "username"
-    email = models.CharField(max_length=128, unique = True )
+    email = models.EmailField(max_length=128, unique=True)
     EMAIL_FIELD = "email"
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -25,6 +25,8 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=len(LOGISTICS_CHOICES), default='', blank=True)
     diet = MultiSelectField(choices=DIET_REQUIREMENTS, max_length=len(DIET_REQUIREMENTS), default='', blank=True)
     notifications = models.JSONField(default=list)
+    allowNewMessagesNotifications = models.BooleanField(default=True)
+    allowExpiringPostsNotifications = models.BooleanField(default=True)
 
     REQUIRED_FIELDS = ["email"]
 

@@ -1,6 +1,7 @@
 import { axiosInstance, storage } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Platform } from "react-native"
+import { ENV } from "../../env";
 
 
 export async function createUser(user: Object, acceptedTerms: boolean) {
@@ -12,7 +13,7 @@ export async function createUser(user: Object, acceptedTerms: boolean) {
     }
 }
 
-export async function editUser(accessToken: string, user:object) {
+export async function editUser(accessToken: string, editedUser: object) {
     try {
         const res = await axiosInstance.put('users/editUser',
             {
@@ -21,25 +22,21 @@ export async function editUser(accessToken: string, user:object) {
                     'Authorization': accessToken,
                     credentials: 'include'
                 },
-                data: {
-                    user
-                }
+                data: { user: editedUser }
             })
-            return { msg: "success", res: res.data }
-
+        return { msg: "success", res: res.data }
     }
     catch (error) {
-       return { msg: "failure", res: error.response.data }
+        return { msg: "failure", res: error.response.data }
     }
 }
 
-export async function deleteUser(userId: string, token: string) {
+export async function deleteUser(token: string) {
     try {
         const res = await axiosInstance.delete("users/deleteUser", {
             headers: {
                 Authorization: `${token}`
             },
-            data: { user_id: userId }
         })
         if (res.status === 200) {
             return "success"
@@ -78,26 +75,49 @@ export async function logInUser(user: Object) {
 export async function logOutUser() {
     try {
         let refreshToken
-        if (Platform.OS === 'web') {
-            refreshToken = storage.getString('refresh_token')
-        } else {
-            refreshToken = await AsyncStorage.getItem('refresh_token')
+        if (ENV === 'production') storage.getString('refresh_token')
+        else {
+            if (Platform.OS === 'web') {
+                refreshToken = storage.getString('refresh_token')
+            } else {
+                refreshToken = await AsyncStorage.getItem('refresh_token')
+            }
         }
 
-        // const token = storage.getString('refresh_token')
-
         await axiosInstance.post('users/logOut', {
-            refresh_token: refreshToken
+            refresh_token: refreshToken,
+            Platform: Platform.OS
         }, {
             headers: { 'Content-Type': 'application/json' }
         }).then(() => {
-            if (Platform.OS === 'web') {
-                storage.clearAll()
+            if (ENV === 'production') {
+                storage.delete('refresh_token')
+                storage.delete('access_token')
             } else {
-                AsyncStorage.clear()
+                if (Platform.OS === 'web') {
+                    storage.delete('refresh_token')
+                    storage.delete('access_token')
+                } else {
+                    AsyncStorage.removeItem('refresh_token')
+                    AsyncStorage.removeItem('access_token')
+                }
             }
         })
     } catch (e) {
         console.log('logout not working', e)
+    }
+}
+
+export const getAccount = async (accessToken: string) => {
+    try {
+        const res = await axiosInstance.get('users/editUser', {
+            headers: {
+                Authorization: `${accessToken}`
+            }
+        })
+
+        return res.data
+    } catch (err) {
+        console.log(err);
     }
 }

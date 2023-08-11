@@ -4,7 +4,7 @@ from rest_framework.parsers import JSONParser
 from django.conf import settings
 from django.db.models import FloatField, ExpressionWrapper, F, When, Case, Value
 from django.db.models.lookups import Exact
-from django.db.models.functions import Cos, Sin, Sqrt, Radians, ASin, Round
+from django.db.models.functions import Cos, Sin, Sqrt, Radians, ASin, Round, Power
 from .models import OfferPost, RequestPost
 from .serializers import createOfferSerializer, createRequestSerializer
 from apps.Users.models import BasicUser
@@ -95,10 +95,12 @@ def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, use
         posts = posts.all().annotate(distance=Case(
             When(Exact(F('postedBy'), user.pk), then=None), # if this user is the owner of the post return None
             default=ExpressionWrapper( # this equation uses Haversine formula to calculate the distance between two points
-            Round(((2 * ASin(Sqrt((Sin((Radians(F('latitude')) - Radians(lat1))/2)**2 + Cos(Radians(lat1)) * Cos(Radians(F('latitude'))) * Sin((Radians(F('longitude')) - Radians(lng1)) /2)**2)))) * 6371), 5),
+            Round(((2 * ASin(Sqrt((Power(Sin((Radians(F('latitude')) - Radians(lat1))/2), 2)
+                + Cos(Radians(lat1)) * Cos(Radians(F('latitude')))
+                * Power(Sin((Radians(F('longitude')) - Radians(lng1)) /2), 2))))) * 6371), 5),
             output_field=FloatField())
         ))
-        
+
         return posts
     except Exception as e:
         print(e)
@@ -107,7 +109,7 @@ def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, use
 def sort_posts(posts, sortBy, page):
     try:
         if(sortBy == "distance"):
-            posts = posts.all().order_by(F('distance').desc(nulls_last=True))
+            posts = posts.all().order_by(F('distance').asc(nulls_last=True))
         elif(sortBy == "old"):
             posts = posts.all().order_by('postedOn')
         else:
@@ -142,6 +144,9 @@ def get_coordinates(postal_code):
         url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{postal_code}.json?access_token={settings.MAPBOX_ACCESS_CODE}'
         res = requests.get(url, headers={'User-Agent': "python-requests/2.31.0"}).json()
 
+        if(len(res['features']) == 0):
+            return 'invalid', 'invalid'
+
         longitude = res['features'][0]['center'][0] 
         latitude = res['features'][0]['center'][1] 
 
@@ -163,6 +168,10 @@ class createPost(APIView):
             
         if(postal_code):
             lon, lat = get_coordinates(postal_code)
+
+            if(lon == "invalid"):
+                return Response("invalid postal code", status=400)
+
             request.data['postData']['longitude'] = float(lon)
             request.data['postData']['latitude'] = float(lat)
         else:
@@ -314,9 +323,11 @@ class ImageUploader(APIView):
 # Temporary view till the redis server and Celery are setup
 class deleteExpiredPosts(APIView):
     def post(self, request):
+        today = datetime.now().date()
+
         try:
-            RequestPost.objects.filter(expiryDate__lt=datetime.now()).delete()
-            OfferPost.objects.filter(expiryDate__lt=datetime.now()).delete()
+            RequestPost.objects.filter(expiryDate__date=today).delete()
+            OfferPost.objects.filter(expiryDate__date=today).delete()
             
             return Response(status=204)
         except Exception as e:

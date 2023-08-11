@@ -3,6 +3,7 @@ import { axiosInstance, storage } from "../../config";
 import { Char } from "../../types";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ENV } from "../../env";
 
 export default function useFetchPosts(
     type: "r" | "o",
@@ -14,10 +15,14 @@ export default function useFetchPosts(
 ) {
     const getPosts = async ({ pageParam = 0 }) => {
         let accessToken: string
-        if (Platform.OS === 'web') {
+        if (ENV === 'production') {
             accessToken = storage.getString('access_token')
         } else {
-            accessToken = await AsyncStorage.getItem('access_token')
+            if (Platform.OS === 'web') {
+                accessToken = storage.getString('access_token')
+            } else {
+                accessToken = await AsyncStorage.getItem('access_token')
+            }
         }
 
         const res = await axiosInstance.get(`posts/requestPostsForFeed`, {

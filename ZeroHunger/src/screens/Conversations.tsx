@@ -1,39 +1,23 @@
 import { useContext, useEffect, useState } from "react";
 import {
     View, Text, Dimensions, Image,
-    TouchableHighlight, TextInput, RefreshControl, ActivityIndicator
+    TouchableHighlight, RefreshControl, ActivityIndicator, Platform
 } from "react-native";
 import styles from "../../styles/screens/conversationsStyleSheet"
 import { Colors } from "../../styles/globalStyleSheet";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
-import { axiosInstance } from "../../config";
+import { axiosInstance, storage } from "../../config";
 import { ConversationModel } from "../models/Conversation";
 import { FlashList } from "@shopify/flash-list";
 import moment from 'moment';
-import {
-    useFonts,
-    PublicSans_600SemiBold,
-    PublicSans_500Medium,
-    PublicSans_400Regular
-} from '@expo-google-fonts/public-sans';
-import { MaterialIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ENV } from "../../env";
 
 export const Conversations = ({ navigation }) => {
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
-
-    const { user, accessToken } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const { unreadFromUsers } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
 
@@ -44,9 +28,20 @@ export const Conversations = ({ navigation }) => {
 
     const getConversations = async () => {
         try {
+            let token: string
+            if (ENV === 'production') {
+                token = storage.getString('access_token')
+            } else {
+                if (Platform.OS == 'web') {
+                    token = storage.getString('access_token')
+                } else {
+                    token = await AsyncStorage.getItem('access_token')
+                }
+            }
+
             const res = await axiosInstance.get("chat/conversations/", {
                 headers: {
-                    Authorization: `${accessToken}`
+                    Authorization: `${token}`
                 }
             });
 
@@ -173,63 +168,59 @@ export const Conversations = ({ navigation }) => {
             </TouchableHighlight>
         )
     };
-    const {t, i18n} = useTranslation();
+    const { t, i18n } = useTranslation();
     return (
         <View testID="Conversations.container" style={{ backgroundColor: Colors.Background }}>
-            {!loaded && <Text> t("home.loading.label") </Text>}
-            {loaded &&
-                <>
-                    {empty && <Text testID="Conversations.noMsgs" style={styles.noMsgs}>No Messages</Text>}
-                    {!empty && <View
-                        testID="Conversations.subContainer"
-                        style={{ height: Dimensions.get('window').height - 130 }}>
-                        <View
-                            testID="Conversations.searchContainer"
-                            style={styles.searchContainer}>
-                            <View
-                                testID="Conversations.searchInputContainer"
-                                style={styles.searchInputContainer}>
-                                <MaterialIcons
-                                    style={styles.searchIcon}
-                                    name="search"
-                                    size={24}
-                                    color="black" />
-                                <TextInput
-                                    testID="Conversations.searchInput"
-                                    placeholder="Search messages"
-                                    style={styles.searchInput}
-                                />
-                            </View>
-                        </View>
-                        {conversations.length === 0 &&
-                            <ActivityIndicator animating size="large" color={Colors.primary} />}
-                        <FlashList
-                            data={conversations}
-                            renderItem={renderItem}
-                            testID="Conversations.List"
-                            estimatedItemSize={100}
-                            refreshControl={
-                                <RefreshControl
-                                    refreshing={refreshing}
-                                    onRefresh={refresh}
-                                    colors={[Colors.primary, Colors.primaryLight]}
-                                />
-                            }
-                            ListEmptyComponent={() => {
-                                if (empty) {
-                                    return <Text style={{ fontSize: 20 }}>No posts available</Text>
-                                }
-                                else if (firstLoad) {
-                                    return <ActivityIndicator
-                                        animating
-                                        size="large"
-                                        color={Colors.primary}
-                                    />
-                                }
-                            }}
+            {empty && <Text testID="Conversations.noMsgs" style={styles.noMsgs}>No Messages</Text>}
+            {!empty && <View
+                testID="Conversations.subContainer"
+                style={{ height: Dimensions.get('window').height - 130 }}>
+                {/* <View
+                    testID="Conversations.searchContainer"
+                    style={styles.searchContainer}>
+                    <View
+                        testID="Conversations.searchInputContainer"
+                        style={styles.searchInputContainer}>
+                        <MaterialIcons
+                            style={styles.searchIcon}
+                            name="search"
+                            size={24}
+                            color="black" />
+                        <TextInput
+                            testID="Conversations.searchInput"
+                            placeholder="Search messages"
+                            style={styles.searchInput}
                         />
-                    </View>}
-                </>
+                    </View>
+                </View> */}
+                {conversations.length === 0 &&
+                    <ActivityIndicator animating size="large" color={Colors.primary} />}
+                <FlashList
+                    data={conversations}
+                    renderItem={renderItem}
+                    testID="Conversations.List"
+                    estimatedItemSize={100}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={refresh}
+                            colors={[Colors.primary, Colors.primaryLight]}
+                        />
+                    }
+                    ListEmptyComponent={() => {
+                        if (empty) {
+                            return <Text style={{ fontSize: 20 }}>No Messages</Text>
+                        }
+                        else if (firstLoad) {
+                            return <ActivityIndicator
+                                animating
+                                size="large"
+                                color={Colors.primary}
+                            />
+                        }
+                    }}
+                />
+            </View>
             }
         </View>
     );

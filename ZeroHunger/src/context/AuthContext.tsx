@@ -5,10 +5,15 @@ import { logOutUser } from "../controllers/auth";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as RootNavigation from '../../RootNavigation';
+import store from "../../store";
+import { ENV } from "../../env";
 
 const setItem = (key, value) => {
-    if (Platform.OS === 'web') storage.set(key, value)
-    else AsyncStorage.setItem(key, value)
+    if (ENV === 'production') storage.set(key, value)
+    else {
+        if (Platform.OS === 'web') storage.set(key, value)
+        else AsyncStorage.setItem(key, value)
+    }
 }
 
 export const setToken = (type: string, value: string) => {
@@ -127,7 +132,13 @@ export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE)
     const [firstLoad, setFirstLoad] = useState(true)
 
-    if (Platform.OS === 'web') {
+    if (!store.isReady) {
+        store.isReady = true
+        store.dispatch = params => dispatch(params)
+        Object.freeze(store)
+    }
+
+    if (ENV === 'production' || Platform.OS === 'web') {
         const listener = storage.addOnValueChangedListener((changedKey) => {
             try {
                 const token = storage.getString(changedKey)
@@ -159,11 +170,16 @@ export const AuthContextProvider = ({ children }) => {
     const initializeTokenState = async () => {
         try {
             let refreshToken
-            if (Platform.OS === 'web') {
+            if (ENV === 'production') {
                 refreshToken = storage.getString('refresh_token')
             }
             else {
-                refreshToken = await AsyncStorage.getItem('refresh_token')
+                if (Platform.OS === 'web') {
+                    refreshToken = storage.getString('refresh_token')
+                }
+                else {
+                    refreshToken = await AsyncStorage.getItem('refresh_token')
+                }
             }
 
             if (refreshToken) {
