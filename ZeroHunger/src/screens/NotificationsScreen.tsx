@@ -80,20 +80,43 @@ const setLocalStorage = async (key: string, value: string) => {
     return
 }
 
+const getItemFromLocalStorage = async (key: string) => {
+    let item: string
+    if (Platform.OS === 'web') {
+        item = storage.getString(key)
+    } else {
+        item = await AsyncStorage.getItem(key)
+    }
+    return item
+}
+
+const getAccessToken = async () => {
+    const accessToken = ENV === 'production' ?
+        storage.getString('access_token')
+        : await getItemFromLocalStorage('access_token')
+
+    return accessToken
+}
+
+const getNotifications = async (accessToken: string) => {
+    try {
+        const res = await axiosInstance.get('/users/getNotifications', {
+            headers: {
+                Authorization: accessToken
+            }
+        })
+
+        return res.data
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const NotificationsScreen = ({ navigation }) => {
     const route = useRoute()
     const [modalVisible, setModalVisible] = useState(false)
     const [height, setHeight] = useState(0)
-
-    useEffect(() => {
-        if (ENV === 'production') {
-            storage.set('lastSeen', new Date().toDateString())
-        } else {
-            setLocalStorage('lastSeen', new Date().toDateString())
-        }
-    }, [])
-
-    const posts = route.params['posts']
+    const [posts, setPosts] = useState<object[]>()
 
     useEffect(() => {
         navigation.setOptions({
@@ -111,6 +134,21 @@ export const NotificationsScreen = ({ navigation }) => {
                 </View>
             )
         })
+
+        if (ENV === 'production') {
+            storage.set('lastSeen', new Date().toDateString())
+        } else {
+            setLocalStorage('lastSeen', new Date().toDateString())
+        }
+
+        if (!route.params['posts']) {
+            getAccessToken().then(token => {
+                getNotifications(token).then(data => {
+                    setPosts(data)
+                })
+            })
+        } else setPosts(route.params['posts'])
+
     }, [])
 
     // //Time threshold for notifications to become "old"

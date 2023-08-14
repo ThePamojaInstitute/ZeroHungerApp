@@ -35,6 +35,19 @@ const getItemFromLocalStorage = async (key: string) => {
     return item
 }
 
+const setLocalStorageItem = async (key: string, value: string) => {
+    if (ENV === 'production') {
+        storage.set(key, value.toString())
+    } else {
+        if (Platform.OS === 'web') {
+            storage.set(key, value.toString())
+        } else {
+            await AsyncStorage.setItem(key, value.toString())
+        }
+    }
+    return
+}
+
 const PostsFilters = forwardRef(_PostsFilters)
 
 export const HomeScreen = ({ navigation }) => {
@@ -100,7 +113,12 @@ export const HomeScreen = ({ navigation }) => {
                     Authorization: accessToken
                 }
             })
-            setExpiringPosts(res.data)
+
+            if (res.status === 200) {
+                setExpiringPosts(res.data)
+            } else if (res.status === 204) {
+                setLocalStorageItem('allowExpiringPosts', 'false')
+            }
         } catch (error) {
             console.log(error);
         }

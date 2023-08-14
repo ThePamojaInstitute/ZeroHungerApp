@@ -221,6 +221,9 @@ class getNotifications(APIView):
         except:
             return Response("Token invalid or not given", 401)
         
+        if(user.allowExpiringPostsNotifications == False):
+            return Response(status=204)
+        
         try:
             expiring_tomorrow_posts = get_expiring_tomorrow_posts(user)
         except Exception as e:

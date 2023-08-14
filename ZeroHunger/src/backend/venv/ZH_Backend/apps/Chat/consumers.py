@@ -104,9 +104,13 @@ class ChatConsumer(JsonWebsocketConsumer):
 
                 print(f'Push message: {push_message}')
 
-                if(len(receiver.get_expo_push_token()) > 0):
+                if(len(receiver.get_expo_push_token()) > 0 and receiver.allowNewMessagesNotifications == True):
                     try:
-                        res = requests.post('https://exp.host/--/api/v2/push/send', json=push_message, headers={'User-Agent': "python-requests/2.31.0"})
+                        res = requests.post(
+                            'https://exp.host/--/api/v2/push/send',
+                            json=push_message,
+                            headers={'User-Agent': "python-requests/2.31.0"}
+                        )
                         print(res)
                     except Exception as e:
                         print(e)
