@@ -109,17 +109,8 @@ class deleteUser(APIView):
 
         try:
             user = BasicUser.objects.get(pk=decoded_token['user_id'])
-            username = user.username
             user.delete()
 
-            try:
-                Conversation.objects.filter(
-                    (Q(name__startswith=f"{username}__") | 
-                    Q(name__endswith=f"__{username}"))).delete()
-            except Exception as e:
-                print(e)
-                return Response({"Error while deleting conversations"}, 500)
-            
             return Response({"User deleted"}, 200)
         except:
             return Response(status=404)
