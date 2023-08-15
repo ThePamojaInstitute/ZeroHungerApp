@@ -109,7 +109,7 @@ const Location = ({ state, setState }) => {
     return (
         <View style={styles.modalItemContainer}>
             <View>
-                <Text style={globalStyles.H5}>Select maximum distance</Text>
+                <Text style={globalStyles.H5}>Maximum distance away</Text>
                 <View style={{ flexDirection: 'row' }}>
                     <Slider
                         value={state}
@@ -142,7 +142,8 @@ const PostsFilters = ({
     setDistance,
     updater,
     showFilter,
-    setShowFilter
+    setShowFilter,
+    setModalIsOpen
 }, ref: React.Ref<object>) => {
     const [modalVisible, setModalVisible] = useState(false)
 
@@ -154,6 +155,7 @@ const PostsFilters = ({
         updater()
         setModalVisible(!modalVisible)
         setShowFilter('')
+        setModalIsOpen(false)
     }
 
     return (

@@ -7,6 +7,7 @@ import {
     ScrollView,
     Image,
     Platform,
+    ActivityIndicator
 } from "react-native";
 import styles from "../../styles/screens/homeStyleSheet"
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet"
@@ -16,7 +17,7 @@ import { NotificationContext } from "../context/ChatNotificationContext";
 import FeedPostRenderer from "../components/FeedPostRenderer";
 import { useTranslation } from "react-i18next";
 import { default as _PostsFilters } from "../components/PostsFilters";
-import { getPreferencesLogistics } from "../controllers/preferences";
+import { getPreferences, getPreferencesLogistics } from "../controllers/preferences";
 import { Char } from "../../types";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { axiosInstance, storage } from "../../config";
@@ -50,11 +51,12 @@ const setLocalStorageItem = async (key: string, value: string) => {
 
 const PostsFilters = forwardRef(_PostsFilters)
 
-export const HomeScreen = ({ navigation }) => {
+export const HomeScreen = ({ navigation, route }) => {
     const modalRef = useRef(null)
 
     const openModal = () => {
         modalRef.current.publicHandler()
+        setModalIsOpen(true)
     }
 
     const { user, dispatch } = useContext(AuthContext)
@@ -71,6 +73,9 @@ export const HomeScreen = ({ navigation }) => {
     const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet' | 'logistics' | 'location'>('')
     const [distance, setDistance] = useState(15)
     const [expiringPosts, setExpiringPosts] = useState<object[]>()
+    const [initialized, setInitialized] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const [modalIsOpen, setModalIsOpen] = useState(false)
 
     // on navigation change
     useFocusEffect(() => {
@@ -79,6 +84,17 @@ export const HomeScreen = ({ navigation }) => {
         }
         setChatIsOpen(false)
     })
+
+    const handlelogOut = () => {
+        logOutUser().then(() => {
+            dispatch({ type: "LOGOUT", payload: null })
+        }).then(() => {
+            alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
+            navigation.navigate('LoginScreen')
+        }).catch(() => {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+        })
+    }
 
     const getNotifications = async () => {
         const allowExpiringPosts = ENV === 'production' ?
@@ -96,14 +112,7 @@ export const HomeScreen = ({ navigation }) => {
             storage.getString('access_token')
             : await getItemFromLocalStorage('access_token')
         if (!accessToken) {
-            logOutUser().then(() => {
-                dispatch({ type: "LOGOUT", payload: null })
-            }).then(() => {
-                alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
-                navigation.navigate('LoginScreen')
-            }).catch(() => {
-                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-            })
+            handlelogOut()
             return
         }
 
@@ -124,6 +133,28 @@ export const HomeScreen = ({ navigation }) => {
         }
     }
 
+    const initializeFilters = async () => {
+        try {
+            const accessToken = ENV === 'production' ?
+                storage.getString('access_token')
+                : await getItemFromLocalStorage('access_token')
+
+            if (!accessToken) {
+                handlelogOut()
+                return
+            }
+
+            const data = await getPreferences(accessToken)
+
+            // setPostalCode(data['postalCode'])
+            setDistance(data['distance'])
+            setDiet(data['diet'])
+            // setLogistics(data['logistics'])
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     // on mount
     useEffect(() => {
         if (!user) {
@@ -137,10 +168,31 @@ export const HomeScreen = ({ navigation }) => {
         } catch (error) {
             console.log(error);
         }
+
+        initializeFilters().finally(() => setInitialized(true)).catch(err => {
+            console.log(err);
+            setInitialized(true)
+        })
         getNotifications()
 
         setChatIsOpen(false)
     }, [])
+
+    useEffect(() => {
+        if (route.params?.reload) {
+            setIsLoading(true)
+            initializeFilters()
+
+            route.params.reload = false
+        }
+    }, [route.params?.reload])
+
+    useEffect(() => {
+        if (modalIsOpen) return
+
+        updater()
+        setIsLoading(false)
+    }, [distance, diet])
 
     useEffect(() => {
         navigation.setOptions({
@@ -200,14 +252,6 @@ export const HomeScreen = ({ navigation }) => {
         })
     }, [updater, expiringPosts])
 
-    // useEffect(() => {
-    //     if (unreadMessageCount > 0 && !chatIsOpen) {
-    //         alert!({
-    //             type: 'open', message: `You have ${unreadMessageCount} new ${unreadMessageCount > 1
-    //                 ? 'messages' : 'message'}`, alertType: 'info'
-    //         })
-    //     }
-    // }, [unreadMessageCount])
 
     useEffect(() => {
         setLogistics([])
@@ -324,48 +368,59 @@ export const HomeScreen = ({ navigation }) => {
                     })}
                 </ScrollView>
             </View>
-            <PostsFilters
-                ref={modalRef}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                categories={categories}
-                setCategories={setCategories}
-                diet={diet}
-                setDiet={setDiet}
-                logistics={prefLogistics}
-                setLogistics={setPrefLogistics}
-                distance={distance}
-                setDistance={setDistance}
-                updater={updater}
-                showFilter={showFilter}
-                setShowFilter={setShowFilter}
-            />
-            {showRequests &&
-                <FeedPostRenderer
-                    type={"r"}
-                    navigation={navigation}
-                    setShowRequests={setShowRequests}
-                    sortBy={sortBy}
-                    categories={categories}
-                    diet={diet}
-                    logistics={logistics}
-                    accessNeeds={accessNeeds}
-                    distance={distance}
-                    setUpdater={setUpdater}
-                />}
-            {!showRequests &&
-                <FeedPostRenderer
-                    type={"o"}
-                    navigation={navigation}
-                    setShowRequests={setShowRequests}
-                    sortBy={sortBy}
-                    categories={categories}
-                    diet={diet}
-                    logistics={logistics}
-                    accessNeeds={accessNeeds}
-                    distance={distance}
-                    setUpdater={setUpdater}
-                />}
+            {initialized ?
+                <>
+                    <PostsFilters
+                        ref={modalRef}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        categories={categories}
+                        setCategories={setCategories}
+                        diet={diet}
+                        setDiet={setDiet}
+                        logistics={prefLogistics}
+                        setLogistics={setPrefLogistics}
+                        distance={distance}
+                        setDistance={setDistance}
+                        updater={updater}
+                        showFilter={showFilter}
+                        setShowFilter={setShowFilter}
+                        setModalIsOpen={setModalIsOpen}
+                    />
+                    {!isLoading ?
+                        <>
+                            {showRequests &&
+                                <FeedPostRenderer
+                                    type={"r"}
+                                    navigation={navigation}
+                                    setShowRequests={setShowRequests}
+                                    sortBy={sortBy}
+                                    categories={categories}
+                                    diet={diet}
+                                    logistics={logistics}
+                                    accessNeeds={accessNeeds}
+                                    distance={distance}
+                                    setUpdater={setUpdater}
+                                />}
+                            {!showRequests &&
+                                <FeedPostRenderer
+                                    type={"o"}
+                                    navigation={navigation}
+                                    setShowRequests={setShowRequests}
+                                    sortBy={sortBy}
+                                    categories={categories}
+                                    diet={diet}
+                                    logistics={logistics}
+                                    accessNeeds={accessNeeds}
+                                    distance={distance}
+                                    setUpdater={setUpdater}
+                                />}
+                        </> :
+                        <ActivityIndicator animating size="large" color={Colors.primary} />
+                    }
+                </> :
+                <ActivityIndicator animating size="large" color={Colors.primary} />
+            }
         </View>
     )
 }
