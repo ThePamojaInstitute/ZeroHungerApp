@@ -44,4 +44,9 @@ export default StyleSheet.create({
         fontSize: 12,
         alignItems: 'center'
     },
+    noNotifications: {
+        fontSize: 20,
+        alignSelf: 'center',
+        marginTop: 10
+    }
 })

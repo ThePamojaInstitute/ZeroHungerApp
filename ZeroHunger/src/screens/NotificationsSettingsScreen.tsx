@@ -9,9 +9,9 @@ import { ENV } from "../../env";
 
 const setLocalStorageItem = async (key: string, value: string) => {
     if (Platform.OS === 'web') {
-        storage.set(key, value)
+        storage.set(key, value.toString())
     } else {
-        await AsyncStorage.setItem(key, value)
+        await AsyncStorage.setItem(key, value.toString())
     }
     return
 }
