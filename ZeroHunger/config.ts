@@ -178,3 +178,11 @@ export const setTokens = (data: object) => {
         }
     }
 }
+
+export const getAccessToken = async () => {
+    const accessToken = (ENV === 'production' || Platform.OS === 'web') ?
+        storage.getString('access_token') :
+        await AsyncStorage.getItem('access_token')
+
+    return accessToken
+}
