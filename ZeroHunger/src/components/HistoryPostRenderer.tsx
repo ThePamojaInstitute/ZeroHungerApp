@@ -19,7 +19,6 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
     const { dispatch: alert } = useAlert()
 
     const [refreshing, setRefreshing] = useState(false)
-    const [loaded, setLoaded] = useState(false)
 
     const selectedPost = useRef(0)
     const modalRef = useRef(null)
@@ -34,8 +33,9 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
         isError,
         hasNextPage,
         fetchNextPage,
-        refetch
-    } = useFetchHistoryPosts(type, orderByNewest, setLoaded)
+        refetch,
+        isFetchedAfterMount
+    } = useFetchHistoryPosts(type, orderByNewest)
 
     useEffect(() => {
         refetch()
@@ -49,7 +49,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
 
     const flattenData = data.pages.flatMap((page) => page.data)
 
-    if (flattenData.length === 0 && loaded) {
+    if (flattenData.length === 0 && isFetchedAfterMount) {
         return <Text
             testID="Posts.noPostsText"
             style={rendererStyles.noPostsText}
@@ -121,7 +121,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
 
     return (
         <>
-            {loaded ?
+            {isFetchedAfterMount ?
                 <FlashList
                     data={flattenData}
                     renderItem={renderItem}

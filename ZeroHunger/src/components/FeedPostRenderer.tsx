@@ -20,7 +20,6 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
     const { accessToken } = useContext(AuthContext);
 
     const [refreshing, setRefreshing] = useState(false)
-    const [loaded, setLoaded] = useState(false)
 
     const selectedPost = useRef(0)
     const modalRef = useRef(null)
@@ -38,8 +37,9 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         isError,
         hasNextPage,
         fetchNextPage,
-        refetch
-    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, accessNeeds, distance, setLoaded)
+        refetch,
+        isFetchedAfterMount
+    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, accessNeeds, distance)
 
     useEffect(() => {
         const updater = () => {
@@ -57,15 +57,13 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         } else return
     }, [isFocused])
 
-    // if (!data) return <Text>An error occurred while fetching data</Text>
-
     if (isLoading) return <ActivityIndicator animating size="large" color={Colors.primary} />
 
     if (isError) return <Text>An error occurred while fetching data</Text>
 
     const flattenData = data.pages.flatMap((page) => page.data)
 
-    if (flattenData.length === 0 && loaded) {
+    if (flattenData.length === 0 && isFetchedAfterMount) {
         return <Text
             testID="Posts.noPostsText"
             style={styles.noPostsText}
@@ -137,7 +135,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
 
     return (
         <>
-            {loaded ?
+            {isFetchedAfterMount ?
                 <FlashList
                     ref={listRef}
                     testID="Posts.list"
