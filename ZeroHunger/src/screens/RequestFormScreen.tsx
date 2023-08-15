@@ -25,6 +25,7 @@ import { useTranslation } from "react-i18next";
 import { Char, PostFromData } from "../../types";
 import { useForm, Controller } from "react-hook-form"
 import { getAccessToken } from "../../config";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 
 export const RequestFormScreen = ({ navigation }) => {
@@ -37,20 +38,16 @@ export const RequestFormScreen = ({ navigation }) => {
         setValue,
         setError,
         formState: { errors },
+        clearErrors,
     } = useForm<PostFromData>();
-
-    useEffect(() => {
-        getAccessToken().then(accessToken => {
-            intitializePreferences(accessToken, setAccessNeeds, setLogistics, setPostalCode, setDiet)
-        })
-    }, [])
 
     const [imagesURIs, setImagesURIs] = useState([])
     const [base64Images, setBase64Images] = useState([])
     const [desc, setDesc] = useState("")
     const [loading, setLoading] = useState(false)
     const [logistics, setLogistics] = useState<Char[]>([])
-    const [postalCode, setPostalCode] = useState('')
+    const [defaultPostalCode, setDefaultPostalCode] = useState('')
+    const [useDefaultPostal, setUseDefaultPostal] = useState(false)
     const [accessNeeds, setAccessNeeds] = useState<Char>()
     const [categories, setCategories] = useState<Char[]>([])
     const [diet, setDiet] = useState<Char[]>([])
@@ -69,10 +66,10 @@ export const RequestFormScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
-        if (postalCode) {
-            setValue("postalCode", postalCode)
-        }
-    }, [postalCode])
+        getAccessToken().then(accessToken => {
+            intitializePreferences(accessToken, setAccessNeeds, setLogistics, setDefaultPostalCode, setDiet)
+        })
+    }, [])
 
     useEffect(() => {
         if (errors.title) scrollTo('title')
@@ -105,7 +102,18 @@ export const RequestFormScreen = ({ navigation }) => {
             ),
             headerRight: () => (
                 <TouchableOpacity
-                    onPress={handleSubmit(handlePress)}
+                    onPress={() => {
+                        if (useDefaultPostal && !defaultPostalCode) {
+                            setError('postalCode', {
+                                type: 'validation',
+                                message: "You don't have a default postal code. Please enter a valid one"
+                            })
+                            setUseDefaultPostal(false)
+                            return
+                        }
+
+                        handleSubmit(handlePress)()
+                    }}
                     testID="Request.createBtn"
                     style={globalStyles.navDefaultBtn}
                 >
@@ -116,7 +124,7 @@ export const RequestFormScreen = ({ navigation }) => {
                 </TouchableOpacity>
             )
         })
-    }, [imagesURIs, base64Images, desc, logistics, postalCode, accessNeeds, categories, diet, needBy])
+    }, [imagesURIs, base64Images, desc, logistics, defaultPostalCode, accessNeeds, categories, diet, needBy])
 
     useEffect(() => {
         if (errField === 'accessNeeds') {
@@ -140,6 +148,14 @@ export const RequestFormScreen = ({ navigation }) => {
             setErrField('')
         }
     }, [needBy])
+
+    useEffect(() => {
+        if (useDefaultPostal) {
+            setValue('postalCode', defaultPostalCode)
+        } else {
+            setValue('postalCode', '')
+        }
+    }, [useDefaultPostal])
 
     const submitPost = async (data: object) => {
         const imageURL = await handleImageUpload(base64Images)
@@ -359,39 +375,53 @@ export const RequestFormScreen = ({ navigation }) => {
                 <Text
                     testID="Request.dateDesc"
                     style={styles.formDescText}
-                >Please indicate the postal code of your desired pick up or delivery location.</Text>
-                <View
-                    testID="Request.formInputContainer"
-                    style={styles.formInputContainer}
-                >
-                    <Controller
-                        defaultValue=""
-                        control={control}
-                        rules={{
-                            required: "Please enter a postal code to your request",
-                            pattern: {
-                                value: /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
-                                message: "Please enter a valid postal code"
-                            }
+                >Please indicate the postal code of your desired pick up or delivery location. No one else will see your postal code.</Text>
+                <View style={styles.choiceContainer}>
+                    <MaterialCommunityIcons
+                        name={useDefaultPostal ? "checkbox-marked" : "checkbox-blank-outline"}
+                        size={22}
+                        onPress={() => {
+                            clearErrors('postalCode')
+                            setUseDefaultPostal(!useDefaultPostal)
                         }}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <TextInput
-                                value={value}
-                                nativeID="postalCode"
-                                testID="Request.postalCodeInput"
-                                placeholder="XXX XXX"
-                                placeholderTextColor="#656565"
-                                style={[styles.formInput,
-                                { borderColor: errors.postalCode ? Colors.alert2 : Colors.midLight }]}
-                                onChangeText={onChange}
-                                onChange={onChange}
-                                maxLength={7}
-                                onBlur={onBlur}
-                            />
-                        )}
-                        name="postalCode"
+                        style={styles.icon}
                     />
+                    <Text style={globalStyles.Body}>Use my default postal code</Text>
                 </View>
+                {!useDefaultPostal &&
+                    <View
+                        testID="Request.formInputContainer"
+                        style={styles.formInputContainer}
+                    >
+                        <Controller
+                            defaultValue=""
+                            control={control}
+                            rules={{
+                                required: "Please enter a postal code to your request",
+                                pattern: {
+                                    value: /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
+                                    message: "Please enter a valid postal code"
+                                }
+                            }}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    value={value}
+                                    nativeID="postalCode"
+                                    testID="Request.postalCodeInput"
+                                    placeholder="XXX XXX"
+                                    placeholderTextColor="#656565"
+                                    style={[styles.formInput,
+                                    { borderColor: errors.postalCode ? Colors.alert2 : Colors.midLight }]}
+                                    onChangeText={onChange}
+                                    onChange={onChange}
+                                    maxLength={7}
+                                    onBlur={onBlur}
+                                />
+                            )}
+                            name="postalCode"
+                        />
+                    </View>
+                }
             </View>
             {errors.postalCode &&
                 <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{errors.postalCode.message}</Text>}

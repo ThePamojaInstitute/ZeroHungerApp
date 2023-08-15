@@ -101,8 +101,10 @@ def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, dis
             output_field=FloatField())
         ))
 
-        if(distance > 0):
+        if(distance > 0 and len(user.postalCode) > 0):
             posts = posts.filter(distance__lte=distance)
+        else: 
+            posts = posts.exclude(postedBy=user)
 
         return posts
     except Exception as e:
