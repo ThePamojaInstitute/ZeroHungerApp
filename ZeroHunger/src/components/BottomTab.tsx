@@ -82,6 +82,24 @@ const HomeStackNavigator = ({ navigation }) => {
                 }}
             />
             <Stack.Screen
+                name="PermissionsScreen"
+                component={PermissionsScreen}
+                options={{
+                    title: t("app.title"),
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite
+                    },
+                    contentStyle: { backgroundColor: Colors.Background },
+                    headerLeft: () => (<></>),
+                    headerRight: () => (
+                        <TouchableOpacity onPress={() => { navigation.navigate("LoginScreen") }}>
+                            <Text>Skip</Text>
+                        </TouchableOpacity>
+                    )
+                }}
+            />
+            <Stack.Screen
                 name="HomeScreen"
                 component={HomeScreen}
                 options={{
@@ -127,24 +145,6 @@ const HomeStackNavigator = ({ navigation }) => {
                                 testID="Home.searchBtn"
                             /> */}
                         </View>
-                    )
-                }}
-            />
-            <Stack.Screen
-                name="PermissionsScreen"
-                component={PermissionsScreen}
-                options={{
-                    title: t("app.title"),
-                    headerTitleAlign: 'center',
-                    // headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite
-                    },
-                    headerLeft: () => (<></>),
-                    headerRight: () => (
-                        <TouchableOpacity onPress={() => { navigation.navigate("LoginScreen") }}>
-                            <Text>Skip</Text>
-                        </TouchableOpacity>
                     )
                 }}
             />
