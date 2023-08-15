@@ -7,26 +7,26 @@ import styles from "../../styles/screens/permissionsStyleSheet";
 import postalStyles from "../../styles/screens/postFormStyleSheet"
 import loginStyles from "../../styles/screens/loginStyleSheet"
 import { savePreferences } from "../controllers/preferences";
+import { getAccessToken } from "../../config";
 
 export const PermissionsScreen = ({ navigation }) => {
-    const { accessToken } = useContext(AuthContext);
-
     const [postalCode, setPostalCode] = useState('')
     const [errMsg, setErrMsg] = useState("")
 
     const savePostalCode = async () => {
-        savePreferences(postalCode, null, null, accessToken).then(res => {
-            if (res.msg === "success") {
-                navigation.navigate('HomeScreen')
-                return
-            } else if (res.res) {
-                setErrMsg(res.res)
-                return
-            } else {
-                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                return
-            }
-        })
+        const accessToken = await getAccessToken()
+
+        const res = await savePreferences(postalCode, null, null, null, accessToken)
+        if (res.msg === "success") {
+            navigation.navigate('HomeScreen')
+            return
+        } else if (res.res) {
+            setErrMsg(res.res)
+            return
+        } else {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+            return
+        }
     }
 
     return (

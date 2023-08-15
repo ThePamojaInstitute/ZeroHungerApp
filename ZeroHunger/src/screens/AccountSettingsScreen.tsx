@@ -16,12 +16,12 @@ import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useTranslation } from "react-i18next";
 import { Controller, useForm } from "react-hook-form";
 import { AccountSettingsFormData } from "../../types";
-import { passwordResetURL } from "../../config";
+import { getAccessToken, passwordResetURL } from "../../config";
 import Alert from 'react-native-awesome-alerts';
 
 
 export const AccountSettingsScreen = ({ navigation }) => {
-  const { accessToken, dispatch } = useContext(AuthContext);
+  const { dispatch } = useContext(AuthContext);
   const { dispatch: alert } = useAlert()
   const {
     control,
@@ -46,53 +46,55 @@ export const AccountSettingsScreen = ({ navigation }) => {
     })
   }, [])
 
-  const handleDeleteUser = () => {
-    deleteUser(accessToken).then(res => {
-      if (res === "success") {
-        logOutUser().then(() => {
-          dispatch({ type: "LOGOUT", payload: null })
-          alert!({ type: 'open', message: 'Account deleted successfully!', alertType: 'success' })
-          navigation.navigate('LoginScreen')
-        }).catch(err => {
-          alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-          console.log(err);
-        })
-      } else {
+  const handleDeleteUser = async () => {
+    const accessToken = await getAccessToken()
+
+    const res = await deleteUser(accessToken)
+    if (res === "success") {
+      logOutUser().then(() => {
+        dispatch({ type: "LOGOUT", payload: null })
+        alert!({ type: 'open', message: 'Account deleted successfully!', alertType: 'success' })
+        navigation.navigate('LoginScreen')
+      }).catch(err => {
         alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-        console.log(res);
-      }
-    })
+        console.log(err);
+      })
+    } else {
+      alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+      console.log(res);
+    }
   }
 
-  const handleModifyUser = (data: object) => {
+  const handleModifyUser = async (data: object) => {
     const editedUser = {
       "username": data['username'].toLowerCase(),
       "email": data['email'].toLowerCase(),
     }
 
-    editUser(accessToken, editedUser).then(res => {
-      if (res.msg === "success") {
-        alert!({ type: 'open', message: 'Account modified successfully!', alertType: 'success' })
-        navigation.navigate('LoginScreen')
-      } else {
-        if (!res.res.includes("username") && !res.res.includes("email")) {
-          alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
-        }
+    const accessToken = await getAccessToken()
 
-        if (res.res.includes("username")) {
-          setError('username', {
-            type: "server",
-            message: "Username is taken"
-          })
-        }
-        if (res.res.includes("email")) {
-          setError('email', {
-            type: "server",
-            message: "There is already an account associated with this email"
-          })
-        }
+    const res = await editUser(accessToken, editedUser)
+    if (res.msg === "success") {
+      alert!({ type: 'open', message: 'Account modified successfully!', alertType: 'success' })
+      navigation.navigate('LoginScreen')
+    } else {
+      if (!res.res.includes("username") && !res.res.includes("email")) {
+        alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
       }
-    })
+
+      if (res.res.includes("username")) {
+        setError('username', {
+          type: "server",
+          message: "Username is taken"
+        })
+      }
+      if (res.res.includes("email")) {
+        setError('email', {
+          type: "server",
+          message: "There is already an account associated with this email"
+        })
+      }
+    }
   }
 
   const handlePasswordReset = () => {
@@ -106,9 +108,11 @@ export const AccountSettingsScreen = ({ navigation }) => {
   }
 
   useEffect(() => {
-    getAccount(accessToken).then(data => {
-      setUsername(data['username'])
-      setEmail(data['email'])
+    getAccessToken().then(accessToken => {
+      getAccount(accessToken).then(data => {
+        setUsername(data['username'])
+        setEmail(data['email'])
+      })
     })
   }, [])
 

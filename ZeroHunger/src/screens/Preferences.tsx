@@ -1,6 +1,5 @@
-import { useContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, Dimensions, ActivityIndicator } from "react-native";
-import { AuthContext } from "../context/AuthContext";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import styles from "../../styles/screens/postFormStyleSheet"
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -10,9 +9,10 @@ import { useAlert } from "../context/Alert";
 import { DIETREQUIREMENTS, LOGISTICS, getDietType, getLogisticsType, getPreferences, savePreferences } from "../controllers/preferences";
 import { Char } from "../../types";
 import Slider from "@react-native-community/slider";
+import { getAccessToken } from "../../config";
+
 
 export const Preferences = ({ navigation }) => {
-    const { accessToken } = useContext(AuthContext);
     const { dispatch: alert } = useAlert()
 
     const [errMsg, setErrMsg] = useState("")
@@ -24,12 +24,14 @@ export const Preferences = ({ navigation }) => {
 
     useEffect(() => {
         setIsLoading(true)
-        getPreferences(accessToken).then(data => {
-            setPostalCode(data['postalCode'])
-            setDistance(data['distance'])
-            setDietRequirements(data['diet'])
-            setLogistics(data['logistics'])
-        }).finally(() => setIsLoading(false)).catch(() => setIsLoading(false))
+        getAccessToken().then(token => {
+            getPreferences(token).then(data => {
+                setPostalCode(data['postalCode'])
+                setDistance(data['distance'])
+                setDietRequirements(data['diet'])
+                setLogistics(data['logistics'])
+            }).finally(() => setIsLoading(false)).catch(() => setIsLoading(false))
+        })
     }, [])
 
     useEffect(() => {
@@ -44,19 +46,20 @@ export const Preferences = ({ navigation }) => {
 
 
     const handleSave = async () => {
-        savePreferences(postalCode, distance, dietRequirements, logistics, accessToken).then(res => {
-            if (res.msg === "success") {
-                alert!({ type: 'open', message: 'Preferences updated successfully!', alertType: 'success' })
-                navigation.navigate('HomeScreen', { reload: true })
-                return
-            } else if (res.res) {
-                setErrMsg(res.res)
-                return
-            } else {
-                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                return
-            }
-        })
+        const accessToken = await getAccessToken()
+
+        const res = await savePreferences(postalCode, distance, dietRequirements, logistics, accessToken)
+        if (res.msg === "success") {
+            alert!({ type: 'open', message: 'Preferences updated successfully!', alertType: 'success' })
+            navigation.navigate('HomeScreen', { reload: true })
+            return
+        } else if (res.res) {
+            setErrMsg(res.res)
+            return
+        } else {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+            return
+        }
     }
 
     const renderItem = (item: Char, state: Char[], setState: React.Dispatch<React.SetStateAction<Char[]>>, getter: (char: Char) => string) => {

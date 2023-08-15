@@ -24,9 +24,10 @@ import FoodFilters from "../components/FoodFilters";
 import { useTranslation } from "react-i18next";
 import { Char, PostFromData } from "../../types";
 import { Controller, useForm } from "react-hook-form";
+import { getAccessToken } from "../../config";
 
 export const OfferFormScreen = ({ navigation }) => {
-    const { user, accessToken } = useContext(AuthContext)
+    const { user } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
     const { t, i18n } = useTranslation();
     const {
@@ -38,7 +39,9 @@ export const OfferFormScreen = ({ navigation }) => {
     } = useForm<PostFromData>();
 
     useEffect(() => {
-        intitializePreferences(accessToken, setAccessNeeds, setLogistics, setPostalCode, setDiet)
+        getAccessToken().then(accessToken => {
+            intitializePreferences(accessToken, setAccessNeeds, setLogistics, setPostalCode, setDiet)
+        })
     }, [])
 
     const [imagesURIs, setImagesURIs] = useState([])

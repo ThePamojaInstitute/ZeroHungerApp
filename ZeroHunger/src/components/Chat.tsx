@@ -9,8 +9,9 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import { FlashList } from "@shopify/flash-list";
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { Char } from '../../types';
-import { WSBaseURL } from '../../config';
+import { WSBaseURL, storage } from '../../config';
 import { handleExpiryDate } from '../controllers/post';
+import { ENV } from '../../env';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -79,7 +80,9 @@ export const Chat = ({ navigation, route }) => {
 
     const { readyState, sendJsonMessage } = useWebSocket(user ? `${WSBaseURL}chats/${conversationName}/` : null, {
         queryParams: {
-            token: user ? accessToken : ""
+            token: user ?
+                ENV === 'production' ? storage.getString('access_token') : accessToken
+                : ""
         },
         onOpen: () => {
             console.log("WebSocket connected!");

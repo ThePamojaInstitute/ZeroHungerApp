@@ -1,9 +1,8 @@
-import React, { forwardRef, useContext, useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { Text, RefreshControl, ActivityIndicator } from "react-native";
 import styles from "../../styles/components/postRendererStyleSheet"
 import { Colors } from "../../styles/globalStyleSheet";
 import { useAlert } from "../context/Alert";
-import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
 import { deletePost, markAsFulfilled } from "../controllers/post";
 import useFetchFeedPosts from "../hooks/useFetchFeedPosts";
@@ -11,13 +10,13 @@ import { useIsFocused } from '@react-navigation/native';
 import { Post } from "./Post";
 import { PostModel } from "../models/Post";
 import { default as _MyPostModal } from "./MyPostModal";
+import { getAccessToken } from "../../config";
 
 
 const MyPostModal = forwardRef(_MyPostModal)
 
 export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, categories, diet, logistics, accessNeeds, distance, setUpdater }) => {
     const { dispatch: alert } = useAlert()
-    const { accessToken } = useContext(AuthContext);
 
     const [refreshing, setRefreshing] = useState(false)
 
@@ -76,7 +75,9 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         }
     }
 
-    const handleDelete = (postId: Number) => {
+    const handleDelete = async (postId: Number) => {
+        const accessToken = await getAccessToken()
+
         deletePost(type, postId, accessToken).then(res => {
             if (res.msg == "success") {
                 refetch()
@@ -87,7 +88,9 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         })
     }
 
-    const handleMarkAsFulfilled = (postId: Number) => {
+    const handleMarkAsFulfilled = async (postId: Number) => {
+        const accessToken = await getAccessToken()
+
         markAsFulfilled(type, postId, accessToken).then(res => {
             if (res.msg == "success") {
                 refetch()

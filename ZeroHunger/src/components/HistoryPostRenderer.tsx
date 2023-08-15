@@ -10,12 +10,13 @@ import useFetchHistoryPosts from "../hooks/useFetchHistoryPosts";
 import { PostModel } from "../models/Post";
 import { Post } from "./Post";
 import { default as _MyPostModal } from "./MyPostModal";
+import { getAccessToken } from "../../config";
 
 
 const MyPostModal = forwardRef(_MyPostModal)
 
 export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderByNewest }) => {
-    const { user, accessToken } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const { dispatch: alert } = useAlert()
 
     const [refreshing, setRefreshing] = useState(false)
@@ -62,7 +63,9 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
         }
     }
 
-    const handleDelete = (postId: Number) => {
+    const handleDelete = async (postId: Number) => {
+        const accessToken = await getAccessToken()
+
         deletePost(type, postId, accessToken).then(res => {
             if (res.msg == "success") {
                 refetch()
@@ -73,7 +76,9 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
         })
     }
 
-    const handleMarkAsFulfilled = (postId: Number) => {
+    const handleMarkAsFulfilled = async (postId: Number) => {
+        const accessToken = await getAccessToken()
+
         markAsFulfilled(type, postId, accessToken).then(res => {
             if (res.msg == "success") {
                 refetch()
