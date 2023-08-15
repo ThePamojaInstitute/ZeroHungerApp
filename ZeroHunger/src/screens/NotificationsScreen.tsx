@@ -1,8 +1,7 @@
-import { View, ScrollView, Text, TouchableOpacity, Image, RefreshControl, Dimensions, Platform } from "react-native"
+import { View, Text, TouchableOpacity, Image, Dimensions, Platform, ActivityIndicator } from "react-native"
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
 import { axiosInstance, storage } from "../../config";
-import { useContext, useState, useEffect } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useState, useEffect } from "react";
 import { FlashList } from "@shopify/flash-list";
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
@@ -16,6 +15,7 @@ import styles from "../../styles/screens/notificationsStyleSheet";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ENV } from "../../env";
+
 
 const NotificationsModal = ({ modalVisible, setModalVisible, height, setHeight, navigate }) => (
     <Modal
@@ -114,9 +114,11 @@ const getNotifications = async (accessToken: string) => {
 
 export const NotificationsScreen = ({ navigation }) => {
     const route = useRoute()
+
     const [modalVisible, setModalVisible] = useState(false)
     const [height, setHeight] = useState(0)
     const [posts, setPosts] = useState<object[]>()
+    const [isEmpty, setIsEmpty] = useState(false)
 
     useEffect(() => {
         navigation.setOptions({
@@ -133,7 +135,7 @@ export const NotificationsScreen = ({ navigation }) => {
                     />
                 </View>
             )
-        })
+        }, [])
 
         if (ENV === 'production') {
             storage.set('lastSeen', new Date().toDateString())
@@ -141,14 +143,14 @@ export const NotificationsScreen = ({ navigation }) => {
             setLocalStorage('lastSeen', new Date().toDateString())
         }
 
-        if (!route.params['posts']) {
+        if (!route.params['posts'] || !route.params['posts'].length) {
             getAccessToken().then(token => {
                 getNotifications(token).then(data => {
-                    setPosts(data)
+                    if (!data.length) setIsEmpty(true)
+                    else setPosts(data)
                 })
             })
         } else setPosts(route.params['posts'])
-
     }, [])
 
     // //Time threshold for notifications to become "old"
@@ -431,13 +433,20 @@ export const NotificationsScreen = ({ navigation }) => {
 
     return (
         <View style={{ height: '100%', backgroundColor: Colors.Background, padding: 5 }}>
-            <FlashList
-                renderItem={renderItem}
-                data={posts}
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                estimatedItemSize={100}
-            />
+            {!isEmpty ?
+                (posts && !!posts.length) ?
+                    <FlashList
+                        renderItem={renderItem}
+                        data={posts}
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        estimatedItemSize={100}
+                    />
+                    :
+                    <ActivityIndicator animating size="large" color={Colors.primary} />
+                :
+                <Text style={styles.noNotifications}>No notifications!</Text>
+            }
             <View>
                 <NotificationsModal
                     modalVisible={modalVisible}
