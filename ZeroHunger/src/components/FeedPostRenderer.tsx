@@ -20,6 +20,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
     const { accessToken } = useContext(AuthContext);
 
     const [refreshing, setRefreshing] = useState(false)
+    const [loaded, setLoaded] = useState(false)
 
     const selectedPost = useRef(0)
     const modalRef = useRef(null)
@@ -38,7 +39,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, accessNeeds, distance)
+    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, accessNeeds, distance, setLoaded)
 
     useEffect(() => {
         const updater = () => {
@@ -56,7 +57,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         } else return
     }, [isFocused])
 
-    if (!data) return <Text>An error occurred while fetching data</Text>
+    // if (!data) return <Text>An error occurred while fetching data</Text>
 
     if (isLoading) return <ActivityIndicator animating size="large" color={Colors.primary} />
 
@@ -64,7 +65,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
 
     const flattenData = data.pages.flatMap((page) => page.data)
 
-    if (flattenData.length === 0) {
+    if (flattenData.length === 0 && loaded) {
         return <Text
             testID="Posts.noPostsText"
             style={styles.noPostsText}
@@ -136,20 +137,23 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
 
     return (
         <>
-            <FlashList
-                ref={listRef}
-                testID="Posts.list"
-                renderItem={renderItem}
-                data={flattenData}
-                onEndReached={loadNext}
-                onEndReachedThreshold={0.3}
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                estimatedItemSize={125}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
-                }
-            />
+            {loaded ?
+                <FlashList
+                    ref={listRef}
+                    testID="Posts.list"
+                    renderItem={renderItem}
+                    data={flattenData}
+                    onEndReached={loadNext}
+                    onEndReachedThreshold={0.3}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    estimatedItemSize={125}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
+                    }
+                /> :
+                <ActivityIndicator animating size="large" color={Colors.primary} />
+            }
             <MyPostModal
                 ref={modalRef}
                 selectedPost={selectedPost}

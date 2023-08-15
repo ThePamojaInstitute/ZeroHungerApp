@@ -4,7 +4,11 @@ import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ENV } from "../../env";
 
-export default function useFetchHistoryPosts(type: "r" | "o", orderByNewest: boolean) {
+export default function useFetchHistoryPosts(
+    type: "r" | "o",
+    orderByNewest: boolean,
+    setLoaded: React.Dispatch<React.SetStateAction<boolean>>
+) {
     const getPosts = async ({ pageParam = 0 }) => {
         let accessToken
         if (ENV === 'production') {
@@ -27,6 +31,8 @@ export default function useFetchHistoryPosts(type: "r" | "o", orderByNewest: boo
                 'page': pageParam,
             }
         })
+        setLoaded(true)
+
         return {
             data: res.data,
             nextPage: pageParam + 1,

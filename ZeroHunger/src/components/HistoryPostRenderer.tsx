@@ -19,6 +19,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
     const { dispatch: alert } = useAlert()
 
     const [refreshing, setRefreshing] = useState(false)
+    const [loaded, setLoaded] = useState(false)
 
     const selectedPost = useRef(0)
     const modalRef = useRef(null)
@@ -34,7 +35,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchHistoryPosts(type, orderByNewest)
+    } = useFetchHistoryPosts(type, orderByNewest, setLoaded)
 
     useEffect(() => {
         refetch()
@@ -48,7 +49,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
 
     const flattenData = data.pages.flatMap((page) => page.data)
 
-    if (flattenData.length === 0) {
+    if (flattenData.length === 0 && loaded) {
         return <Text
             testID="Posts.noPostsText"
             style={rendererStyles.noPostsText}
@@ -120,18 +121,21 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
 
     return (
         <>
-            <FlashList
-                data={flattenData}
-                renderItem={renderItem}
-                onEndReached={loadNext}
-                onEndReachedThreshold={0.3}
-                estimatedItemSize={125}
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
-                }
-            />
+            {loaded ?
+                <FlashList
+                    data={flattenData}
+                    renderItem={renderItem}
+                    onEndReached={loadNext}
+                    onEndReachedThreshold={0.3}
+                    estimatedItemSize={125}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
+                    }
+                /> :
+                <ActivityIndicator animating size="large" color={Colors.primary} />
+            }
             <MyPostModal
                 ref={modalRef}
                 selectedPost={selectedPost}

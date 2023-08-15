@@ -12,7 +12,8 @@ export default function useFetchPosts(
     diet: Char[],
     logistics: Char[],
     accessNeeds: Char,
-    distance: Number
+    distance: Number,
+    setLoaded: React.Dispatch<React.SetStateAction<boolean>>
 ) {
     const getPosts = async ({ pageParam = 0 }) => {
         let accessToken: string
@@ -41,6 +42,8 @@ export default function useFetchPosts(
                 'distance': distance
             }
         })
+        setLoaded(true)
+
         return {
             data: res.data,
             nextPage: pageParam + 1,
