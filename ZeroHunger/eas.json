@@ -20,14 +20,13 @@
     "test": {
       "android": {
         "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
-        "withoutCredentials": true
+        "withoutCredentials": true,
+        "buildType": "apk"
       },
       "ios": {
         "resourceClass": "m1-medium"
-      },
-      "android": {
-        "buildType": "apk"
       }
+ 
     }
   },
   "submit": {
