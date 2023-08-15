@@ -26,6 +26,7 @@ import { Char, PostFromData } from "../../types";
 import { useForm, Controller } from "react-hook-form"
 import { getAccessToken } from "../../config";
 
+
 export const RequestFormScreen = ({ navigation }) => {
     const { user } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
@@ -287,6 +288,7 @@ export const RequestFormScreen = ({ navigation }) => {
                     setState={setCategories}
                     foodType={FOODCATEGORIES}
                     getType={getCategory}
+                    name={'categories'}
                 />
             </View>
             <View>
@@ -303,6 +305,7 @@ export const RequestFormScreen = ({ navigation }) => {
                     setState={setDiet}
                     foodType={DIETPREFERENCES}
                     getType={getDiet}
+                    name={'diet'}
                 />
             </View>
             {/* <View style={{ opacity: 0.5 }}>

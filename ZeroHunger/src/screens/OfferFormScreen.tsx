@@ -26,6 +26,7 @@ import { Char, PostFromData } from "../../types";
 import { Controller, useForm } from "react-hook-form";
 import { getAccessToken } from "../../config";
 
+
 export const OfferFormScreen = ({ navigation }) => {
     const { user } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
@@ -279,6 +280,7 @@ export const OfferFormScreen = ({ navigation }) => {
                     setState={setCategories}
                     foodType={FOODCATEGORIES}
                     getType={getCategory}
+                    name={'categories'}
                 />
             </View>
             <View>
@@ -295,6 +297,7 @@ export const OfferFormScreen = ({ navigation }) => {
                     setState={setDiet}
                     foodType={DIETPREFERENCES}
                     getType={getDiet}
+                    name={'diet'}
                 />
             </View>
             {/* <View style={{ opacity: 0.5 }}>
