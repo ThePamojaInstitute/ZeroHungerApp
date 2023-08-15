@@ -116,7 +116,7 @@ const Location = ({ state, setState }) => {
                         onValueChange={setState}
                         style={{ width: Dimensions.get('window').width * 0.8, height: 40, maxWidth: 500 }}
                         minimumValue={1}
-                        maximumValue={100}
+                        maximumValue={30}
                         step={1}
                         minimumTrackTintColor={Colors.primary}
                         maximumTrackTintColor="#B8B8B8"
@@ -150,27 +150,21 @@ const PostsFilters = ({
 
     useImperativeHandle(ref, () => ({ publicHandler: openMe }), [openMe])
 
+    const handleModalClose = () => {
+        updater()
+        setModalVisible(!modalVisible)
+        setShowFilter('')
+    }
+
     return (
         <Modal
             testID="Bottom.postNavModal"
             isVisible={modalVisible}
             animationIn="slideInUp"
             backdropOpacity={0.5}
-            onBackButtonPress={() => {
-                updater()
-                setModalVisible(!modalVisible)
-                setShowFilter('')
-            }}
-            onBackdropPress={() => {
-                updater()
-                setModalVisible(!modalVisible)
-                setShowFilter('')
-            }}
-            onSwipeComplete={() => {
-                updater()
-                setModalVisible(!modalVisible)
-                setShowFilter('')
-            }}
+            onBackButtonPress={handleModalClose}
+            onBackdropPress={handleModalClose}
+            onSwipeComplete={handleModalClose}
             swipeDirection={['down']}
             style={{ margin: 0 }}
         >
@@ -188,11 +182,7 @@ const PostsFilters = ({
                     <TouchableOpacity
                         testID="Bottom.postNavModalClose"
                         style={styles.modalClose}
-                        onPress={() => {
-                            updater()
-                            setModalVisible(!modalVisible)
-                            setShowFilter('')
-                        }}
+                        onPress={handleModalClose}
                     >
                         <Ionicons name="close" size={30} />
                     </TouchableOpacity>

@@ -64,7 +64,7 @@ def get_post(post_id, post_type):
     except:
         return Response("Post not found", 404)
     
-def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, user):
+def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, distance, user):
     try:
         if(posts_type == "r"):
             posts = RequestPost.objects.all().filter(fulfilled=False, expiryDate__gte=datetime.now())
@@ -100,6 +100,9 @@ def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, use
                 * Power(Sin((Radians(F('longitude')) - Radians(lng1)) /2), 2))))) * 6371), 5),
             output_field=FloatField())
         ))
+
+        if(distance > 0):
+            posts = posts.filter(distance__lte=distance)
 
         return posts
     except Exception as e:
@@ -231,11 +234,12 @@ class requestPostsForFeed(APIView):
             diet = request.GET.getlist('diet[]',"")
             logistics = request.GET.getlist('logistics[]',"")
             accessNeeds = request.GET.get('accessNeeds',"")
+            distance = request.GET.get('distance',15)
         except Exception as e:
             return Response(e.__str__(), 400) 
 
         try:
-            posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds, user)
+            posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds, float(distance), user)
             posts = sort_posts(posts, sortBy, page)
         except Exception as e:
             return Response(e.__str__(), 500) 

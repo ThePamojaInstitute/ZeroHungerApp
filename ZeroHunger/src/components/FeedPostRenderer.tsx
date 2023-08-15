@@ -15,7 +15,7 @@ import { default as _MyPostModal } from "./MyPostModal";
 
 const MyPostModal = forwardRef(_MyPostModal)
 
-export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, categories, diet, logistics, accessNeeds, setUpdater }) => {
+export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, categories, diet, logistics, accessNeeds, distance, setUpdater }) => {
     const { dispatch: alert } = useAlert()
     const { accessToken } = useContext(AuthContext);
 
@@ -38,7 +38,7 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, accessNeeds)
+    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, accessNeeds, distance)
 
     useEffect(() => {
         const updater = () => {

@@ -69,7 +69,7 @@ export const HomeScreen = ({ navigation }) => {
     const [accessNeeds, setAccessNeeds] = useState<Char>()
     const [updater, setUpdater] = useState(() => () => { })
     const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet' | 'logistics' | 'location'>('')
-    const [distance, setDistance] = useState(50)
+    const [distance, setDistance] = useState(15)
     const [expiringPosts, setExpiringPosts] = useState<object[]>()
 
     // on navigation change
@@ -350,6 +350,7 @@ export const HomeScreen = ({ navigation }) => {
                     diet={diet}
                     logistics={logistics}
                     accessNeeds={accessNeeds}
+                    distance={distance}
                     setUpdater={setUpdater}
                 />}
             {!showRequests &&
@@ -362,6 +363,7 @@ export const HomeScreen = ({ navigation }) => {
                     diet={diet}
                     logistics={logistics}
                     accessNeeds={accessNeeds}
+                    distance={distance}
                     setUpdater={setUpdater}
                 />}
         </View>
