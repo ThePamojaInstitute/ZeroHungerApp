@@ -75,7 +75,13 @@ export const getDietType = (type: Char) => {
     }
 }
 
-export const savePreferences = async (postalCode: string, dietRequirements: Char[], logistics: Char[], accessToken: string) => {
+export const savePreferences = async (
+    postalCode: string,
+    distance: Number,
+    dietRequirements: Char[],
+    logistics: Char[],
+    accessToken: string
+) => {
     const canadianPostalCodeRegex = /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i
 
     if (postalCode.length > 0 && !postalCode.match(canadianPostalCodeRegex)) {
@@ -84,6 +90,7 @@ export const savePreferences = async (postalCode: string, dietRequirements: Char
 
     const data = {
         postalCode: postalCode.toUpperCase(),
+        distance: distance,
         dietRequirements: dietRequirements,
         logistics: logistics
     }
