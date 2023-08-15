@@ -177,6 +177,7 @@ class userPreferences(APIView):
             data['logistics'] = user.get_logistics()
             data['diet'] = user.get_diet()
             data['postalCode'] = user.get_postal_code()
+            data['distance'] = user.get_distance()
 
             return Response(data, 200)
         except Exception as e:
@@ -195,11 +196,11 @@ class userPreferences(APIView):
             return Response("User not found", 404)
         
         data = request.data['data']
-        
         try:  
             user.set_logistics(data['logistics'])
             user.set_diet(data['dietRequirements'])
             user.set_postal_code(data['postalCode'])
+            user.set_distance(data['distance'])
             if(data['postalCode']):
                 user.update_coordinates()
             else:

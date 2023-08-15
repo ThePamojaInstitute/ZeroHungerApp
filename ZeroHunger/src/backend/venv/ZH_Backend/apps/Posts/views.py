@@ -239,7 +239,7 @@ class requestPostsForFeed(APIView):
             return Response(e.__str__(), 400) 
 
         try:
-            posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds, float(distance), user)
+            posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds, int(distance), user)
             posts = sort_posts(posts, sortBy, page)
         except Exception as e:
             return Response(e.__str__(), 500) 

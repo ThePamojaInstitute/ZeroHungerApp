@@ -24,7 +24,8 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
     latitude = models.FloatField(validators=[MinValueValidator(-90), MaxValueValidator(90)], null=True, blank=True, default=None)
     logistics = MultiSelectField(choices=LOGISTICS_CHOICES, max_length=len(LOGISTICS_CHOICES), default='', blank=True)
     diet = MultiSelectField(choices=DIET_REQUIREMENTS, max_length=len(DIET_REQUIREMENTS), default='', blank=True)
-    notifications = models.JSONField(default=list)
+    # notifications = models.JSONField(default=list)
+    distance = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(30)], blank=True, default=15)
     allowNewMessagesNotifications = models.BooleanField(default=True)
     allowExpiringPostsNotifications = models.BooleanField(default=True)
 
@@ -58,6 +59,12 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
 
     def set_diet(self, diet):
         self.diet = diet
+
+    def get_distance(self):
+        return self.distance
+
+    def set_distance(self, distance):
+        self.distance = distance
     
     def has_perm(self, perm, obj=None):
         return self.is_superuser
