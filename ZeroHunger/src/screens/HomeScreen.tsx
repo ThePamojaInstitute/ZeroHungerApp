@@ -17,7 +17,7 @@ import { NotificationContext } from "../context/ChatNotificationContext";
 import FeedPostRenderer from "../components/FeedPostRenderer";
 import { useTranslation } from "react-i18next";
 import { default as _PostsFilters } from "../components/PostsFilters";
-import { getPreferences, getPreferencesLogistics } from "../controllers/preferences";
+import { getPreferences } from "../controllers/preferences";
 import { Char } from "../../types";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { axiosInstance, storage } from "../../config";
@@ -66,9 +66,7 @@ export const HomeScreen = ({ navigation, route }) => {
     const [sortBy, setSortBy] = useState<'new' | 'old' | 'distance'>('new')
     const [categories, setCategories] = useState<Char[]>([])
     const [diet, setDiet] = useState<Char[]>([])
-    const [prefLogistics, setPrefLogistics] = useState<Char[]>([])
     const [logistics, setLogistics] = useState<Char[]>([])
-    const [accessNeeds, setAccessNeeds] = useState<Char>()
     const [updater, setUpdater] = useState(() => () => { })
     const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet' | 'logistics' | 'location'>('')
     const [distance, setDistance] = useState(15)
@@ -146,10 +144,9 @@ export const HomeScreen = ({ navigation, route }) => {
 
             const data = await getPreferences(accessToken)
 
-            // setPostalCode(data['postalCode'])
             setDistance(data['distance'])
             setDiet(data['diet'])
-            // setLogistics(data['logistics'])
+            setLogistics(data['logistics'])
         } catch (error) {
             console.log(error);
         }
@@ -192,7 +189,7 @@ export const HomeScreen = ({ navigation, route }) => {
 
         updater()
         setIsLoading(false)
-    }, [distance, diet])
+    }, [distance, diet, logistics])
 
     useEffect(() => {
         navigation.setOptions({
@@ -252,13 +249,6 @@ export const HomeScreen = ({ navigation, route }) => {
         })
     }, [updater, expiringPosts])
 
-
-    useEffect(() => {
-        setLogistics([])
-        setAccessNeeds(null)
-        getPreferencesLogistics(prefLogistics, setAccessNeeds, setLogistics)
-    }, [prefLogistics])
-
     const handleOpen = (item: string) => {
         switch (item) {
             case 'Sort':
@@ -306,7 +296,7 @@ export const HomeScreen = ({ navigation, route }) => {
         'Sort',
         `Food category${categories.length > 0 ? ` (${categories.length})` : ''}`,
         `Dietary preference${diet.length > 0 ? ` (${diet.length})` : ''}`,
-        `Delivery / Pick up${prefLogistics.length > 0 ? ` (${prefLogistics.length})` : ''}`,
+        `Delivery / Pick up${logistics.length > 0 ? ` (${logistics.length})` : ''}`,
         'Location'
     ]
 
@@ -378,8 +368,8 @@ export const HomeScreen = ({ navigation, route }) => {
                         setCategories={setCategories}
                         diet={diet}
                         setDiet={setDiet}
-                        logistics={prefLogistics}
-                        setLogistics={setPrefLogistics}
+                        logistics={logistics}
+                        setLogistics={setLogistics}
                         distance={distance}
                         setDistance={setDistance}
                         updater={updater}
@@ -398,7 +388,6 @@ export const HomeScreen = ({ navigation, route }) => {
                                     categories={categories}
                                     diet={diet}
                                     logistics={logistics}
-                                    accessNeeds={accessNeeds}
                                     distance={distance}
                                     setUpdater={setUpdater}
                                 />}
@@ -411,7 +400,6 @@ export const HomeScreen = ({ navigation, route }) => {
                                     categories={categories}
                                     diet={diet}
                                     logistics={logistics}
-                                    accessNeeds={accessNeeds}
                                     distance={distance}
                                     setUpdater={setUpdater}
                                 />}

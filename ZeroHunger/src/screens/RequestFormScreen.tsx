@@ -156,6 +156,10 @@ export const RequestFormScreen = ({ navigation }) => {
     }, [useDefaultPostal])
 
     const submitPost = async (data: object) => {
+        logistics.sort()
+        categories.sort()
+        diet.sort()
+
         const imageURL = await handleImageUpload(base64Images)
         const res = await createPost({
             postData: {
@@ -163,11 +167,11 @@ export const RequestFormScreen = ({ navigation }) => {
                 images: imageURL,
                 postedBy: user['user_id'],
                 description: desc,
-                logistics: logistics.sort(),
+                logistics: logistics,
                 postalCode: data['postalCode'],
                 accessNeeds: accessNeeds,
-                categories: categories.sort(),
-                diet: diet.sort(),
+                categories: categories,
+                diet: diet,
                 expiryDate: needBy
             },
             postType: 'r'

@@ -1,6 +1,5 @@
 import { axiosInstance } from "../../config"
 import { Char } from "../../types"
-import { ACCESSNEEDSPREFERENCES, LOGISTICSPREFERENCES } from "./post"
 
 interface ILOGISTICS {
     PICKUP: Char,
@@ -126,46 +125,14 @@ export const getPreferences = async (accessToken: string) => {
     }
 }
 
-export const getPreferencesLogistics = (
-    data: Char[],
-    setAccessNeeds: React.Dispatch<React.SetStateAction<Char>>,
-    setLogistics: React.Dispatch<React.SetStateAction<Char[]>>,
-) => { // converts from post's logistics to preferences' logistics and access needs
-    if (data.length === 0) {
-        setAccessNeeds(ACCESSNEEDSPREFERENCES.NONE)
-    } else {
-        if (data.includes(LOGISTICS.PICKUP)) {
-            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.PICKUP])
-        }
-
-        if (data.includes(LOGISTICS.DELIVERY)) {
-            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
-            setAccessNeeds(ACCESSNEEDSPREFERENCES.DELIVERY)
-        }
-
-        if (data.includes(LOGISTICS.PUBLIC)) {
-            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.PUBLIC])
-        }
-
-        if (data.includes(LOGISTICS.WHEELCHAIR)) {
-            setAccessNeeds(ACCESSNEEDSPREFERENCES.WHEELCHAIR)
-        }
-
-        if (!data.includes(LOGISTICS.DELIVERY) && !data.includes(LOGISTICS.WHEELCHAIR)) {
-            setAccessNeeds(ACCESSNEEDSPREFERENCES.NONE)
-        }
-    }
-}
-
 export const intitializePreferences = (
     accessToken: string,
-    setAccessNeeds: React.Dispatch<React.SetStateAction<Char>>,
     setLogistics: React.Dispatch<React.SetStateAction<Char[]>>,
     setPostalCode: React.Dispatch<React.SetStateAction<string>>,
     setDiet: React.Dispatch<React.SetStateAction<Char[]>>,
 ) => {
     getPreferences(accessToken).then(data => {
-        getPreferencesLogistics(data['logistics'], setAccessNeeds, setLogistics)
+        setLogistics(data['logistics'])
 
         if (data['postalCode']) {
             setPostalCode(data['postalCode'])
