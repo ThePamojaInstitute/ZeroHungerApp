@@ -9,6 +9,7 @@ from .models import OfferPost, RequestPost
 from .serializers import createOfferSerializer, createRequestSerializer
 from apps.Users.models import BasicUser
 from datetime import datetime
+from apps.Posts.choices import LOGISTICS_CHOICES, DIET_PREFERENCES, FOOD_CATEGORIES
 
 import uuid
 import jwt
@@ -27,6 +28,20 @@ connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;
 #Install Azurite on your local machine using this ^ guide before trying to use this
 
     
+def create_filter(field, choices, type):
+    field_filter = Q()
+
+    for choice in choices:
+        if(choice[0] in field):
+            if(type == 'logistics'):
+                field_filter &= Q( logistics__contains=choice[0] )
+            elif(type == 'diet'):
+                field_filter &= Q( diet__contains=choice[0] )
+            elif(type == 'categories'):
+                field_filter &= Q( categories__contains=choice[0] )
+
+    return field_filter
+
 def get_user_posts(posts_type, order_by_newest, page, user_id):
     try:
         if(posts_type == "r"):
@@ -72,19 +87,16 @@ def get_filtered_posts(posts_type, categories, diet, logistics, distance, user):
             posts = OfferPost.objects.all().filter(fulfilled=False, expiryDate__gte=datetime.now())
 
         if(len(categories) > 0):
-            categories.sort()
-            str_categories = ",".join(x for x in categories)
-            posts = posts.filter(categories__contains=str_categories)
+            categories_filter = create_filter(categories, FOOD_CATEGORIES, 'categories')
+            posts = posts.filter(categories_filter)
 
         if(len(diet) > 0):
-            diet.sort()
-            str_diet = ",".join(x for x in diet)
-            posts = posts.filter(diet__contains=str_diet)
+            diet_filter = create_filter(logistics, DIET_PREFERENCES, 'diet')
+            posts = posts.filter(diet_filter)
 
         if(len(logistics) > 0):
-            logistics.sort()
-            str_logistics = ",".join(x for x in logistics)
-            posts = posts.filter(logistics__contains=str_logistics)
+            logistics_filter = create_filter(logistics, LOGISTICS_CHOICES, 'logistics')
+            posts = posts.filter(logistics_filter)
 
         lat1 = user.latitude
         lng1 = user.longitude
@@ -160,10 +172,6 @@ def get_coordinates(postal_code):
 
 class createPost(APIView):
     def post(self, request, format=JSONParser):
-        request.data['postData']['categories']
-        request.data['postData']['diet']
-        request.data['postData']['logistics']
-
         postal_code = request.data['postData']['postalCode']
 
         if(len(postal_code) == 0):
@@ -247,6 +255,7 @@ class requestPostsForFeed(APIView):
         try:
             serializer = serialize_posts(posts, postsType)
         except Exception as e:
+            print(e)
             return Response("Error while serializing posts", 500) 
 
         return Response(serializer.data, status=201)
