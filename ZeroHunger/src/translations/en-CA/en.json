@@ -16,7 +16,11 @@
 		"post":	{
 			"label" : "Post",
 			"requestButton":"A Request For Food",
-			"offerButton":"An Offer For Food"
+			"offerButton":"An Offer For Food",
+			"snippet": {
+				"distance": "{{ distanceCalculated }} km away",
+				"expiry": "Need in {{ expiryCalculated }} days"
+			}
 
 		},
 		"messages":	{
@@ -188,35 +192,15 @@
 	},
 
 	"menu": {
-		"account":	{
-			"label": "Account Settings"
-		},
-		"history":	{
-			"label": "Request and Offer History"
-		},
-		"preferences":
-		{
-			"label": "Edit Preferences"
-		},
-		"diet": {
-			"label": "Dietary Preferences"
-		},
-		"notifications": {
-			"label": "Notifications Settings"
-		},
-		"faq":	{
-			"label": "FAQs"
-		},
-		"terms": {
-			"label": "Terms and Conditions"
-		},
-		"privacy":	{
-			"label": "Privacy Policy"
-		},
-		"logout": {
-			"label": "Log Out"
-		}
-
+		"account.label": "Account Settings",
+		"history.label":	"Request and Offer History",
+		"preferences.label": "Preferences",
+		"notifications.label": "Notifications Settings", 
+		"faq.label": "FAQs",
+		"guidelines.label": "Guidelines",
+		"terms.label": "Terms and Conditions",
+		"privacy.label": "Privacy Policy",
+		"logout.label": "Log out"
 	},
 	
 	"onboarding": [
@@ -238,7 +222,7 @@
 		"signin": {
 			"loading.label":"Loading",
 			"username.label" :"Username",
-			"email.label": "Email",
+			"email.label": "Email address",
 			"pass.label": "Password",
 			"passForgot.label": "Forgot password?",
 			"submit.label": "Sign in",
@@ -246,15 +230,17 @@
 			"create": "Create an account",
 			"error": {
 				"incorrect": "The email address or password you have entered is incorrect.",
-				"noUser": "There is no account registered with this email address. Create an account"
+				"noUser": "There is no account registered with this email address. ",
+				"noUser.link": "Create an account"
 			}
 		},
 		"signup": {
 			"loading.label":"Loading",
 			"user.label":	"Username",
 			"display.label": "Display name",
-			"email.label":	"Email Address",
+			"email.label":	"Email address",
 			"pass.label": "Password",
+			"pass.desc": "{{ ['Must be at least 6 characters long', 'Must contain an uppercase letter and a lower case letter (A, z)', 'Must contain a number' ] }}",
 			"passConfirm.label": "Confirm Password",
 			"terms" : {
 				"label":	"Terms and conditions",
@@ -265,21 +251,62 @@
 			"submit.label": "Sign up",
 			"error": {
 				"required": "Please fill out all of the required fields.",
+				"requiredField": "This field is required.",
 				"userTaken": "This username is already taken. Please try again.",
+				"emailTaken": "An account already exists with this email address.",
 				"email": "Please enter a valid email address.",
 				"passShort": "The password you entered is too short",
+				"passCase": "Your password must contain an uppercase letter and a lower case letter.",
+				"passNum": "Your password must contain a number",
 				"passMatch": "The passwords you have entered do not match.",
 				"terms": "You must accept the terms and conditions to create an account."
 			}	
+		},
+		"forgotPass": {
+			"request": {
+				"heading": "Forgot your password",
+				"text": "Please enter the email address you'd like your password reset information to be sent to.",
+				"email.label": "Email address",
+				"submit.label": "Request reset link"
+			},
+			"requestConfirm": {
+				"heading": "Request sent",
+				"text": "If there is an account associated with the email address you entered, you will receive a password reset link soon."
+			},
+			"reset": {
+				"heading": "Reset your password",
+				"text": "Enter a new password to reset the password on your account. We’ll ask for this password whenever you log in.",
+				"pass.label": "New password",
+				"pass.desc": "{{ ['Must be at least 6 characters long', 'Must contain an uppercase letter and a lower case letter (A, z)', 'Must contain a number' ] }}",
+				"passConfirm.label": "Confirm new password",
+				"submit.label": "Reset password"
+			},
+			"resetConfirm": {
+				"heading": "Your password has been reset",
+				"text": "We'll ask for your new password whenever you log in.",
+				"button.label": "Take me to Zero Hunger"
+			},
+			"error": {
+				"required": "Please fill out all of the required fields.",
+				"requiredField": "This field is required.",
+				"passShort": "The password you entered is too short",
+				"passCase": "Your password must contain an uppercase letter and a lower case letter.",
+				"passNum": "Your password must contain a number",
+				"passMatch": "The passwords you have entered do not match."
+			}
 		}
 	},
 
 	"permissions": {
 		"location": {
 			"heading": "See food offers and requests in your area",
-			"text": "We’ll show you requests and offers based on your location. No other users will see your location.",
-			"submit.label": "Use my current location",
-			"alt.label": "Input postal code"
+			"text": "We’ll show you requests and offers based on your postal code",
+			"postalCode.label": "Your postal code",
+			"postalCode.desc": "Other people will only see an estimate of how far away your postal code is from theirs (i.e., 5 km away)",
+			"postalCode.placeholder": "XXX XXX",
+			"error.invalid": "The postal code you entered is not valid.",
+			"submit.label": "Save my postal code",
+			"alt.label": "Not right now"
 		},
 		"notifications": {
 			"heading": "Never miss a thing",
@@ -289,10 +316,45 @@
 		}
 	},
 
+	"guidelines": {
+		"header.text": "Guidelines",
+		"content": [
+				{
+					"heading": "I will...",
+					"listCheck": [
+						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
+						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
+						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+					] 
+				},
+				{
+					"heading": "I won't...",
+					"listX": [
+						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
+						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
+						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+					] 
+				},
+				{
+					"heading": "Tips and tricks.",
+					"listCheck": [
+						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
+						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
+						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+					] 
+				}
+		]
+	},
+
 	"home": {
 		"requests.label": "Requests",
 		"offers.label": "Offers",
-		"loading.label":"Loading..."
+		"loading.label":"Loading...",
+		"fallback": {
+			"heading": "No requests matching your filters",
+			"text": "Try removing some of your filters to get more results.",
+			"button.label": "Clear filters"
+		}
 	},
 	
 	"request": {
