@@ -122,18 +122,7 @@ export const RequestFormScreen = ({ navigation }) => {
                 </TouchableOpacity>
             )
         })
-    }, [imagesURIs, base64Images, desc, logistics, defaultPostalCode, accessNeeds, categories, diet, needBy])
-
-    // useEffect(() => {
-    //     if (errField === 'accessNeeds') {
-    //         setErrField('')
-    //     }
-
-    //     if (accessNeeds === ACCESSNEEDSPREFERENCES.DELIVERY
-    //         && !logistics.includes(LOGISTICSPREFERENCES.DELIVERY)) {
-    //         setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
-    //     }
-    // }, [accessNeeds])
+    }, [imagesURIs, base64Images, desc, logistics, defaultPostalCode, useDefaultPostal, accessNeeds, categories, diet, needBy])
 
     useEffect(() => {
         if (errField === 'categories') {
