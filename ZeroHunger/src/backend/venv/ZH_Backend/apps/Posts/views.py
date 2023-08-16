@@ -70,7 +70,7 @@ def get_filtered_posts(posts_type, categories, diet, logistics, distance, user):
             posts = RequestPost.objects.all().filter(fulfilled=False, expiryDate__gte=datetime.now())
         else:
             posts = OfferPost.objects.all().filter(fulfilled=False, expiryDate__gte=datetime.now())
-            
+
         if(len(categories) > 0):
             categories.sort()
             str_categories = ",".join(x for x in categories)
@@ -81,11 +81,10 @@ def get_filtered_posts(posts_type, categories, diet, logistics, distance, user):
             str_diet = ",".join(x for x in diet)
             posts = posts.filter(diet__contains=str_diet)
 
-        # if(len(logistics) > 0):
-        #     posts = posts.filter(logistics__contains=logistics)
-
-        # if(accessNeeds != 'a'):
-        #     posts = posts.filter(accessNeeds=accessNeeds)
+        if(len(logistics) > 0):
+            logistics.sort()
+            str_logistics = ",".join(x for x in logistics)
+            posts = posts.filter(logistics__contains=str_logistics)
 
         lat1 = user.latitude
         lng1 = user.longitude
@@ -161,9 +160,9 @@ def get_coordinates(postal_code):
 
 class createPost(APIView):
     def post(self, request, format=JSONParser):
-        request.data['postData']['categories'].sort()
-        request.data['postData']['diet'].sort()
-        request.data['postData']['logistics'].sort()
+        request.data['postData']['categories']
+        request.data['postData']['diet']
+        request.data['postData']['logistics']
 
         postal_code = request.data['postData']['postalCode']
 
