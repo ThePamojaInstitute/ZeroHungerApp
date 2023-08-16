@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from django.conf import settings
-from django.db.models import FloatField, ExpressionWrapper, F, When, Case, Value
+from django.db.models import FloatField, ExpressionWrapper, F, When, Case, Value, Q
 from django.db.models.lookups import Exact
 from django.db.models.functions import Cos, Sin, Sqrt, Radians, ASin, Round, Power
 from .models import OfferPost, RequestPost
@@ -64,7 +64,7 @@ def get_post(post_id, post_type):
     except:
         return Response("Post not found", 404)
     
-def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, distance, user):
+def get_filtered_posts(posts_type, categories, diet, logistics, distance, user):
     try:
         if(posts_type == "r"):
             posts = RequestPost.objects.all().filter(fulfilled=False, expiryDate__gte=datetime.now())
@@ -102,9 +102,9 @@ def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, dis
         ))
 
         if(distance > 0 and len(user.postalCode) > 0):
-            posts = posts.filter(distance__lte=distance)
-        else: 
-            posts = posts.exclude(postedBy=user)
+            posts = posts.filter((~Q(postedBy=user) & Q(distance__lte=distance)) | Q(postedBy=user))
+        # else: 
+        #     posts = posts.exclude(postedBy=user)
 
         return posts
     except Exception as e:
@@ -235,13 +235,12 @@ class requestPostsForFeed(APIView):
             categories = request.GET.getlist('categories[]',"")
             diet = request.GET.getlist('diet[]',"")
             logistics = request.GET.getlist('logistics[]',"")
-            accessNeeds = request.GET.get('accessNeeds',"")
             distance = request.GET.get('distance',15)
         except Exception as e:
             return Response(e.__str__(), 400) 
 
         try:
-            posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds, int(distance), user)
+            posts = get_filtered_posts(postsType, categories, diet, logistics, int(distance), user)
             posts = sort_posts(posts, sortBy, page)
         except Exception as e:
             return Response(e.__str__(), 500) 
