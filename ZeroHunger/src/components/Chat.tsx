@@ -326,7 +326,10 @@ export const Chat = ({ navigation, route }) => {
                         maxLength={250}
                         multiline={true}
                         onContentSizeChange={event => {
-                            setInputHeight(event.nativeEvent.contentSize.height);
+                            const height = event.nativeEvent.contentSize.height
+                            if (height === 0) return
+
+                            setInputHeight(height);
                         }}
                         numberOfLines={3}
                     />
