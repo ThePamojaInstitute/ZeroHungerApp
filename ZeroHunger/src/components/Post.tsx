@@ -92,7 +92,8 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                 }
                 <View
                     testID="Posts.tag"
-                    style={[styles.postTag, [(user['username'] === post.username && from !== "history") ? { marginTop: 20 } : {}]]}>
+                    style={[styles.postTag, [((user['username'] === post.username && from !== "history") ||
+                        (post.distance === null && from !== "history")) ? { marginTop: 20 } : {}]]}>
                     {/* Placeholder need by date */}
                     <Text testID="Posts.tagLabel" style={styles.postTagLabel}>{handleExpiryDate(post.expiryDate, post.type)}</Text>
                 </View>

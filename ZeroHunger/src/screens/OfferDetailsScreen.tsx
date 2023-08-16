@@ -7,7 +7,7 @@ import { AuthContext } from "../context/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
-import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleAccessNeeds, handleExpiryDate, handlePreferences } from "../controllers/post";
+import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleExpiryDate, handlePreferences } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -53,7 +53,7 @@ export const OfferDetailsScreen = ({ navigation }) => {
 
     const logistics = handlePreferences(route.params.logistics.sort().toString(), getLogisticsType)
     const postalCode = formatPostalCode(route.params.postalCode)
-    const accessNeeds = handleAccessNeeds(route.params.accessNeeds, "o")
+    // const accessNeeds = handleAccessNeeds(route.params.accessNeeds, "o")
     const categories = handlePreferences(route.params.categories.sort().toString(), getCategory)
     const diet = handlePreferences(route.params.diet.sort().toString(), getDiet)
 
@@ -198,13 +198,13 @@ export const OfferDetailsScreen = ({ navigation }) => {
                     <View testID="OffDet.detailsSub" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
                             <Text testID="OffDet.detailCat" style={[globalStyles.Small1, styles.smallText]}>Food category</Text>
-                            <Text testID="OffDet.detailsQuant" style={[globalStyles.Small1, styles.smallText]}>Quantity</Text>
+                            {/* <Text testID="OffDet.detailsQuant" style={[globalStyles.Small1, styles.smallText]}>Quantity</Text> */}
                             <Text testID="OffDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary requirements</Text>
                         </View>
                         {/* Temporary details values */}
                         <View style={{ flexShrink: 1 }}>
                             <Text testID="OffDet.detailCatVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{categories}</Text>
-                            <Text testID="OffDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
+                            {/* <Text testID="OffDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text> */}
                             <Text testID="OffDet.detailsReqVal" style={globalStyles.Small1}>{diet}</Text>
                         </View>
                     </View>
@@ -220,7 +220,7 @@ export const OfferDetailsScreen = ({ navigation }) => {
                         <View style={{ flexShrink: 1 }}>
                             <Text testID="OffDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
                             {/* <Text testID="OffDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase', marginBottom: 8 }]}>{postalCode}</Text> */}
-                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>{accessNeeds}</Text>
+                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>{route.params?.accessNeeds}</Text>
                         </View>
                     </View>
                 </View>

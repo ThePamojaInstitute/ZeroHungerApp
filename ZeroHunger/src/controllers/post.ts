@@ -5,12 +5,8 @@ import { Char } from "../../types";
 interface ILOGISTICSPREFERENCES {
     PICKUP: Char,
     DELIVERY: Char,
-    PUBLIC: Char
-}
-interface IACCESSNEEDSPREFERENCES {
-    NONE: Char,
-    WHEELCHAIR: Char,
-    DELIVERY: Char
+    PUBLIC: Char,
+    WHEELCHAIR: Char
 }
 interface IFOODCATEGORIES {
     Fruits: Char,
@@ -41,12 +37,8 @@ interface IDIETPREFERENCES {
 export const LOGISTICSPREFERENCES: ILOGISTICSPREFERENCES = {
     PICKUP: 'a',
     DELIVERY: 'b',
-    PUBLIC: 'c'
-}
-export const ACCESSNEEDSPREFERENCES: IACCESSNEEDSPREFERENCES = {
-    NONE: 'a',
-    WHEELCHAIR: 'b',
-    DELIVERY: 'c'
+    PUBLIC: 'c',
+    WHEELCHAIR: 'd'
 }
 export const FOODCATEGORIES: IFOODCATEGORIES = {
     Fruits: 'a',
@@ -82,7 +74,7 @@ export const createPost = async (post: {
         description: string,
         logistics: Char[],
         postalCode: string,
-        accessNeeds: Char,
+        accessNeeds: string,
         categories: Char[],
         diet: Char[],
         expiryDate: string,
@@ -185,6 +177,8 @@ export const getLogisticsType = (char: Char) => {
             return 'Delivery'
         case LOGISTICSPREFERENCES.PUBLIC:
             return 'Meet at a public location'
+        case LOGISTICSPREFERENCES.WHEELCHAIR:
+            return 'Location must be wheelchair accessible'
         default:
             return ''
     }
@@ -222,26 +216,6 @@ export const formatPostalCode = (postalCode: string) => {
     return postalCode
 }
 
-export const handleAccessNeeds = (char: Char, postType: "r" | "o") => {
-    switch (char) {
-        case ACCESSNEEDSPREFERENCES.NONE:
-            return 'No access needs'
-        case ACCESSNEEDSPREFERENCES.WHEELCHAIR:
-            if (postType === 'r') {
-                return 'Pick up location must be wheelchair accessible'
-            } else if (postType === 'o') {
-                return 'Delivery location must be wheelchair accessible'
-            }
-        case ACCESSNEEDSPREFERENCES.DELIVERY:
-            if (postType === 'r') {
-                return 'Delivery only'
-            } else if (postType === 'o') {
-                return 'Pick up only'
-            }
-        default:
-            return ''
-    }
-}
 
 export const getCategory = (char: Char) => {
     switch (char) {

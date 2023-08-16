@@ -4,7 +4,7 @@ import { Platform } from "react-native"
 import { ENV } from "../../env";
 
 
-export async function createUser(user: Object, acceptedTerms: boolean) {
+export async function createUser(user: Object) {
     try {
         const res = await axiosInstance.post("users/createUser", user)
         return { msg: "success", res: res.data }

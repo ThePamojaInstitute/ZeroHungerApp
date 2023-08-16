@@ -5,10 +5,8 @@ import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import Quantity from "../components/Quantity";
 import {
-    ACCESSNEEDSPREFERENCES,
     DIETPREFERENCES,
     FOODCATEGORIES,
-    LOGISTICSPREFERENCES,
     createPost,
     getCategory,
     getDiet
@@ -18,7 +16,7 @@ import { useAlert } from "../context/Alert";
 import { handleImageUpload } from "../controllers/post";
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
 import Logistics from "../components/Logistics";
-import AccessNeeds from "../components/AccessNeeds";
+// import AccessNeeds from "../components/AccessNeeds";
 import { intitializePreferences } from "../controllers/preferences";
 import FoodFilters from "../components/FoodFilters";
 import { useTranslation } from "react-i18next";
@@ -48,12 +46,12 @@ export const RequestFormScreen = ({ navigation }) => {
     const [logistics, setLogistics] = useState<Char[]>([])
     const [defaultPostalCode, setDefaultPostalCode] = useState('')
     const [useDefaultPostal, setUseDefaultPostal] = useState(false)
-    const [accessNeeds, setAccessNeeds] = useState<Char>()
+    const [accessNeeds, setAccessNeeds] = useState('')
     const [categories, setCategories] = useState<Char[]>([])
     const [diet, setDiet] = useState<Char[]>([])
     const [needBy, setNeedBy] = useState<string>()
     const [dataSourceCords, setDataSourceCords] = useState([]);
-    const [errField, setErrField] = useState<'' | 'categories' | 'needBy' | 'accessNeeds'>("")
+    const [errField, setErrField] = useState<'' | 'categories' | 'needBy'>("")
 
     const scrollView = useRef(null)
 
@@ -67,7 +65,7 @@ export const RequestFormScreen = ({ navigation }) => {
 
     useEffect(() => {
         getAccessToken().then(accessToken => {
-            intitializePreferences(accessToken, setAccessNeeds, setLogistics, setDefaultPostalCode, setDiet)
+            intitializePreferences(accessToken, setLogistics, setDefaultPostalCode, setDiet)
         })
     }, [])
 
@@ -126,16 +124,16 @@ export const RequestFormScreen = ({ navigation }) => {
         })
     }, [imagesURIs, base64Images, desc, logistics, defaultPostalCode, accessNeeds, categories, diet, needBy])
 
-    useEffect(() => {
-        if (errField === 'accessNeeds') {
-            setErrField('')
-        }
+    // useEffect(() => {
+    //     if (errField === 'accessNeeds') {
+    //         setErrField('')
+    //     }
 
-        if (accessNeeds === ACCESSNEEDSPREFERENCES.DELIVERY
-            && !logistics.includes(LOGISTICSPREFERENCES.DELIVERY)) {
-            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
-        }
-    }, [accessNeeds])
+    //     if (accessNeeds === ACCESSNEEDSPREFERENCES.DELIVERY
+    //         && !logistics.includes(LOGISTICSPREFERENCES.DELIVERY)) {
+    //         setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
+    //     }
+    // }, [accessNeeds])
 
     useEffect(() => {
         if (errField === 'categories') {
@@ -208,10 +206,6 @@ export const RequestFormScreen = ({ navigation }) => {
         } else if (!needBy) {
             setErrField('needBy')
             scrollTo('needBy')
-            return
-        } else if (!accessNeeds) {
-            setErrField('accessNeeds')
-            scrollTo('accessNeeds')
             return
         }
 
@@ -350,17 +344,6 @@ export const RequestFormScreen = ({ navigation }) => {
                 </Text>
                 <DatePicker setNeedBy={setNeedBy} errField={errField} />
             </View>
-            <View>
-                <Text
-                    testID="Request.dateLabel"
-                    style={styles.formTitleText}
-                >Pick up or delivery preferences</Text>
-                <Text
-                    testID="Request.dateDesc"
-                    style={styles.formDescText}
-                >Select all that apply.</Text>
-                <Logistics logistics={logistics} setLogistics={setLogistics} />
-            </View>
             <View
                 onLayout={(event) => {
                     const layout = event.nativeEvent.layout;
@@ -391,7 +374,7 @@ export const RequestFormScreen = ({ navigation }) => {
                 {!useDefaultPostal &&
                     <View
                         testID="Request.formInputContainer"
-                        style={styles.formInputContainer}
+                        style={[styles.formInputContainer, { marginBottom: 20 }]}
                     >
                         <Controller
                             defaultValue=""
@@ -425,7 +408,35 @@ export const RequestFormScreen = ({ navigation }) => {
             </View>
             {errors.postalCode &&
                 <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{errors.postalCode.message}</Text>}
-            <View
+            <View style={{ marginBottom: 10 }}>
+                <Text
+                    testID="Request.dateLabel"
+                    style={styles.formTitleText}
+                >Pick up or delivery preferences</Text>
+                <Text
+                    testID="Request.dateDesc"
+                    style={styles.formDescText}
+                >Select all that apply.</Text>
+                <Logistics logistics={logistics} setLogistics={setLogistics} />
+            </View>
+            <View>
+                <Text testID="Offer.descTitle" style={styles.formTitleText}>Access needs for pick up or delivery</Text>
+                <Text testID="Offer.descDesc" style={styles.formDescText}>Please indicate if you have any access needs for receiving your requested food.</Text>
+            </View>
+            <View style={styles.formDescInputView}>
+                <TextInput
+                    value={accessNeeds}
+                    nativeID="desc"
+                    testID="Offer.descInput"
+                    placeholder="Enter access needs"
+                    placeholderTextColor="#656565"
+                    style={styles.formInputText}
+                    multiline={true}
+                    onChangeText={setAccessNeeds}
+                    maxLength={128}
+                />
+            </View>
+            {/* <View
                 onLayout={(event) => {
                     const layout = event.nativeEvent.layout;
                     dataSourceCords['accessNeeds'] = layout.y;
@@ -441,7 +452,7 @@ export const RequestFormScreen = ({ navigation }) => {
                     style={styles.formDescText}
                 >Please indicate if you have any access needs for receiving your requested food.</Text>
                 <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} postType={"r"} />
-            </View>
+            </View> */}
             <View>
                 <Text
                     testID="Request.descTitle"
@@ -461,9 +472,7 @@ export const RequestFormScreen = ({ navigation }) => {
                     placeholderTextColor="#656565"
                     style={styles.formInputText}
                     multiline={true}
-                    onChangeText={newText => {
-                        setDesc(newText)
-                    }}
+                    onChangeText={setDesc}
                     maxLength={1024}
                 />
             </View>

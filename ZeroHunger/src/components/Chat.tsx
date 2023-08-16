@@ -173,7 +173,7 @@ export const Chat = ({ navigation, route }) => {
         logistics: Char[],
         categories: Char[],
         diet: Char[],
-        accessNeeds: Char,
+        accessNeeds: string,
         postalCode: string,
         type: Char
     ) => {

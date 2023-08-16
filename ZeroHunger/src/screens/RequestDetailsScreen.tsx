@@ -7,7 +7,7 @@ import { AuthContext } from "../context/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
-import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleAccessNeeds, handleExpiryDate, handlePreferences } from "../controllers/post";
+import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleExpiryDate, handlePreferences } from "../controllers/post";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -53,7 +53,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
 
     const logistics = handlePreferences(route.params?.logistics?.sort().toString(), getLogisticsType)
     const postalCode = formatPostalCode(route.params?.postalCode)
-    const accessNeeds = handleAccessNeeds(route.params?.accessNeeds, "r")
+    // const accessNeeds = handleAccessNeeds(route.params?.accessNeeds, "r")
     const categories = handlePreferences(route.params?.categories?.sort().toString(), getCategory)
     const diet = handlePreferences(route.params?.diet?.sort().toString(), getDiet)
 
@@ -200,13 +200,13 @@ export const RequestDetailsScreen = ({ navigation }) => {
                     <View testID="ReqDet.detailsSub" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
                             <Text testID="ReqDet.detailCat" style={[globalStyles.Small1, styles.smallText]}>Food category</Text>
-                            <Text testID="ReqDet.detailsQuant" style={[globalStyles.Small1, styles.smallText]}>Quantity</Text>
+                            {/* <Text testID="ReqDet.detailsQuant" style={[globalStyles.Small1, styles.smallText]}>Quantity</Text> */}
                             <Text testID="ReqDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary requirements</Text>
                         </View>
                         {/* Temporary details values */}
                         <View style={{ flexShrink: 1 }}>
                             <Text testID="ReqDet.detailCatVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{categories}</Text>
-                            <Text testID="ReqDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text>
+                            {/* <Text testID="ReqDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text> */}
                             <Text testID="ReqDet.detailsReqVal" style={globalStyles.Small1}>{diet}</Text>
                         </View>
                     </View>
@@ -222,7 +222,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                         <View style={{ flexShrink: 1 }}>
                             <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
                             {/* <Text testID="ReqDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase', marginBottom: 8 }]}>{postalCode}</Text> */}
-                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>{accessNeeds}</Text>
+                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>{route.params?.accessNeeds}</Text>
                         </View>
                     </View>
                 </View>

@@ -100,7 +100,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       "email": data['email'].toLowerCase(),
       "password": data['password'],
       "confPassword": data['confPass']
-    }, isAccepted).then(res => {
+    }).then(res => {
       if (res.msg === "success") {
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
         alert!({ type: 'open', message: 'Account created successfully!', alertType: 'success' })
