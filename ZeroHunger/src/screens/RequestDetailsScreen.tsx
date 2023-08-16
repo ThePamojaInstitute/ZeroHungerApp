@@ -21,6 +21,12 @@ export const RequestDetailsScreen = ({ navigation }) => {
     const [message, setMessage] = useState("Hi " + route.params.username + ", do you still need this? I have some to share")
     const [inputHeight, setInputHeight] = useState(0)
     const [alertMsg, setAlertMsg] = useState('')
+    const [heights, setHeights] = useState({
+        'categories': 0,
+        'diet': 0,
+        'logistics': 0,
+        'accessNeeds': 0
+    })
 
     const sendMsg = () => {
         if (!message) {
@@ -53,7 +59,6 @@ export const RequestDetailsScreen = ({ navigation }) => {
 
     const logistics = handlePreferences(route.params?.logistics?.sort().toString(), getLogisticsType)
     const postalCode = formatPostalCode(route.params?.postalCode)
-    // const accessNeeds = handleAccessNeeds(route.params?.accessNeeds, "r")
     const categories = handlePreferences(route.params?.categories?.sort().toString(), getCategory)
     const diet = handlePreferences(route.params?.diet?.sort().toString(), getDiet)
 
@@ -199,15 +204,42 @@ export const RequestDetailsScreen = ({ navigation }) => {
                     <Text testID="ReqDet.detailsLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Request Details</Text>
                     <View testID="ReqDet.detailsSub" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
-                            <Text testID="ReqDet.detailCat" style={[globalStyles.Small1, styles.smallText]}>Food category</Text>
+                            <Text
+                                testID="ReqDet.detailCat"
+                                style={[globalStyles.Small1, styles.smallText,
+                                { height: heights.categories ?? 'auto' }]}
+                            >Food category</Text>
                             {/* <Text testID="ReqDet.detailsQuant" style={[globalStyles.Small1, styles.smallText]}>Quantity</Text> */}
-                            <Text testID="ReqDet.detailsReq" style={[globalStyles.Small1, styles.smallText]}>Dietary requirements</Text>
+                            <Text
+                                testID="ReqDet.detailsReq"
+                                style={[globalStyles.Small1, styles.smallText,
+                                { height: heights.diet ?? 'auto' }]}
+                            >Dietary requirements</Text>
                         </View>
-                        {/* Temporary details values */}
                         <View style={{ flexShrink: 1 }}>
-                            <Text testID="ReqDet.detailCatVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{categories}</Text>
+                            <Text
+                                testID="ReqDet.detailCatVal"
+                                style={[globalStyles.Small1, { marginBottom: 8 }]}
+                                onLayout={(event) => {
+                                    const layout = event.nativeEvent.layout;
+                                    setHeights(current => ({
+                                        ...current,
+                                        categories: layout.height
+                                    }))
+                                }}
+                            >{categories}</Text>
                             {/* <Text testID="ReqDet.detailsQuantVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>N/A</Text> */}
-                            <Text testID="ReqDet.detailsReqVal" style={globalStyles.Small1}>{diet}</Text>
+                            <Text
+                                testID="ReqDet.detailsReqVal"
+                                style={globalStyles.Small1}
+                                onLayout={(event) => {
+                                    const layout = event.nativeEvent.layout;
+                                    setHeights(current => ({
+                                        ...current,
+                                        diet: layout.height
+                                    }))
+                                }}
+                            >{diet}</Text>
                         </View>
                     </View>
                 </View>
@@ -215,14 +247,42 @@ export const RequestDetailsScreen = ({ navigation }) => {
                     <Text testID="ReqDet.meetPrefLabel" style={[globalStyles.H4, { paddingBottom: 12 }]}>Meeting Preferences</Text>
                     <View testID="ReqDet.meetPrefSubCont" style={{ flexDirection: "row" }}>
                         <View style={{ marginRight: 24 }}>
-                            <Text testID="ReqDet.meetPrefPickOrDel" style={[globalStyles.Small1, styles.smallText]}>Pick up or delivery preference</Text>
-                            {/* <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Postal code</Text> */}
-                            <Text testID="ReqDet.meetPrefPostal" style={[globalStyles.Small1, styles.smallText]}>Access needs</Text>
+                            <Text
+                                testID="ReqDet.meetPrefPickOrDel"
+                                style={[globalStyles.Small1, styles.smallText,
+                                { height: heights.logistics ?? 'auto' }]}
+                            >Pick up or delivery preference</Text>
+                            <Text
+                                testID="ReqDet.meetPrefPostal"
+                                style={[globalStyles.Small1, styles.smallText,
+                                { height: heights.accessNeeds ?? 'auto' }]}
+                            >Access needs</Text>
                         </View>
                         <View style={{ flexShrink: 1 }}>
-                            <Text testID="ReqDet.meetPrefPickOrDelVal" style={[globalStyles.Small1, { marginBottom: 8 }]}>{logistics}</Text>
-                            {/* <Text testID="ReqDet.meetPrefPostalVal" style={[globalStyles.Small1, { textTransform: 'uppercase', marginBottom: 8 }]}>{postalCode}</Text> */}
-                            <Text testID="ReqDet.meetPrefPostalVal" style={globalStyles.Small1}>{route.params?.accessNeeds}</Text>
+                            <Text
+                                testID="ReqDet.meetPrefPickOrDelVal"
+                                style={[globalStyles.Small1, { marginBottom: 8 }]}
+                                onLayout={(event) => {
+                                    const layout = event.nativeEvent.layout;
+                                    setHeights(current => ({
+                                        ...current,
+                                        logistics: layout.height
+                                    }))
+                                }}
+                            >{logistics}</Text>
+                            <Text
+                                testID="ReqDet.meetPrefPostalVal"
+                                style={globalStyles.Small1}
+                                onLayout={(event) => {
+                                    const layout = event.nativeEvent.layout;
+                                    setHeights(current => ({
+                                        ...current,
+                                        accessNeeds: layout.height
+                                    }))
+                                }}
+                            >
+                                {!!route.params?.accessNeeds ? route.params?.accessNeeds : 'None'}
+                            </Text>
                         </View>
                     </View>
                 </View>
