@@ -121,3 +121,20 @@ export const getAccount = async (accessToken: string) => {
         console.log(err);
     }
 }
+
+export const getNotifications = async (accessToken: string, from: string) => {
+    try {
+        const res = await axiosInstance.get('/users/getNotifications', {
+            headers: {
+                Authorization: accessToken
+            },
+            params: {
+                from: from
+            }
+        })
+
+        return res
+    } catch (error) {
+        console.log(error);
+    }
+}
