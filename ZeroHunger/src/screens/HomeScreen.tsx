@@ -83,6 +83,13 @@ export const HomeScreen = ({ navigation, route }) => {
         setChatIsOpen(false)
     })
 
+    const clearFilters = () => {
+        setCategories([])
+        setDiet([])
+        setLogistics([])
+        setDistance(30)
+    }
+
     const handlelogOut = () => {
         logOutUser().then(() => {
             dispatch({ type: "LOGOUT", payload: null })
@@ -118,6 +125,9 @@ export const HomeScreen = ({ navigation, route }) => {
             const res = await axiosInstance.get('/users/getNotifications', {
                 headers: {
                     Authorization: accessToken
+                },
+                params: {
+                    from: 'home'
                 }
             })
 
@@ -390,6 +400,7 @@ export const HomeScreen = ({ navigation, route }) => {
                                     logistics={logistics}
                                     distance={distance}
                                     setUpdater={setUpdater}
+                                    clearFilters={clearFilters}
                                 />}
                             {!showRequests &&
                                 <FeedPostRenderer
@@ -402,6 +413,7 @@ export const HomeScreen = ({ navigation, route }) => {
                                     logistics={logistics}
                                     distance={distance}
                                     setUpdater={setUpdater}
+                                    clearFilters={clearFilters}
                                 />}
                         </> :
                         <ActivityIndicator animating size="large" color={Colors.primary} />
