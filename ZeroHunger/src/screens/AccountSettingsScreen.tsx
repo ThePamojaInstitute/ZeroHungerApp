@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Linking,
   Platform,
+  Image,
 } from "react-native";
 import styles from "../../styles/screens/accountSettingsStyleSheet"
 import { AuthContext } from "../context/AuthContext";
@@ -201,37 +202,84 @@ export const AccountSettingsScreen = ({ navigation }) => {
         <View testID="SignUp.emailErrMsgContainer" style={styles.errorMsgContainer}>
           <Text testID="SignUp.emailErrMsg" style={styles.errorMsg}>{errors.email.message}</Text>
         </View>}
-      <TouchableOpacity
-        testID="AccSett.deleteUserBtn"
-        style={[globalStyles.defaultBtn, { width: '40%', marginLeft: 10 }]}
-        onPress={handlePasswordReset}
-      >
-        <Text
-          testID="AccSett.deleteUserBtnText"
-          style={globalStyles.defaultBtnLabel}
-        >Reset Password</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        testID="AccSett.deleteUserBtn"
-        style={[globalStyles.secondaryBtn, { width: '40%', marginLeft: 10, backgroundColor: Colors.alert2 }]}
-        onPress={() => { setShowAlert(true) }}
-      >
-        <Text
-          testID="AccSett.deleteUserBtnText"
-          style={globalStyles.defaultBtnLabel}
-        >Delete User</Text>
-      </TouchableOpacity>
+      <View style={{ width: '95%' }}>
+        <TouchableOpacity
+          testID="AccSett.deleteUserBtn"
+          style={[globalStyles.defaultBtn, {
+            width: '100%',
+            maxWidth: 500,
+            alignSelf: Platform.OS === 'web' ? 'flex-start' : 'center',
+            marginLeft: 10
+          }]}
+          onPress={handlePasswordReset}
+        >
+          <Text
+            testID="AccSett.deleteUserBtnText"
+            style={globalStyles.defaultBtnLabel}
+          >Reset Password</Text>
+        </TouchableOpacity>
+      </View>
+      <View testID="SignUp.emailInputContainer" style={[styles.inputContainer, { width: '95%', marginTop: 20 }]}>
+        <Text testID="SignUp.emailLabel" style={[styles.inputLabel,
+        { color: errors.email ? Colors.alert2 : Colors.dark, marginBottom: 5 }]}
+        >Delete account</Text>
+        <View>
+          <Text style={[globalStyles.Small1, { marginBottom: 10, color: Colors.primaryDark }]}>
+            When you delete your account, all of your data, posts, and chat history will be permanently deleted as well.
+          </Text>
+          <Text
+            style={[globalStyles.Small1, { marginBottom: 10, color: Colors.primaryDark }]}>
+            Account deletion is irreversible. You cannot restore your account.
+          </Text>
+          <Text style={[globalStyles.Small1, { color: Colors.primaryDark }]}>
+            Learn more about how we handle your data in our <Text
+              style={{ textDecorationLine: 'underline' }}
+              onPress={() => { /** TODO: navigate to privacy policy screen */ }}
+            >privacy policy</Text>.</Text>
+        </View>
+        <TouchableOpacity
+          testID="AccSett.deleteUserBtn"
+          style={[globalStyles.secondaryBtn, {
+            width: '100%',
+            maxWidth: 500,
+            marginLeft: 10,
+            backgroundColor: Colors.alert2,
+            alignSelf: Platform.OS === 'web' ? 'flex-start' : 'center',
+            marginTop: 10
+          }]}
+          onPress={() => { setShowAlert(true) }}
+        >
+          <Image source={require('../../assets/Delete.png')} style={{
+            resizeMode: 'cover',
+            width: 24,
+            height: 24,
+            position: 'absolute',
+            left: 25
+          }} />
+          <Text
+            testID="AccSett.deleteUserBtnText"
+            style={globalStyles.defaultBtnLabel}
+          >Delete my account</Text>
+        </TouchableOpacity>
+      </View>
       <Alert
+        contentContainerStyle={{ borderRadius: 10 }}
         show={showAlert}
         showProgress={false}
-        title="Account Deletion"
-        message="Are you sure you want to delete this account?"
+        title="Delete account"
+        message="Are you sure you want to delete your account and all of your data?"
         closeOnTouchOutside={Platform.OS === 'web' ? false : true}
         closeOnHardwareBackPress={Platform.OS === 'web' ? false : true}
         showCancelButton={true}
         showConfirmButton={true}
-        cancelText="No, cancel"
-        confirmText="Yes, delete it"
+        titleStyle={[globalStyles.H2, { alignSelf: 'flex-start', marginLeft: -15, paddingTop: -20 }]}
+        messageStyle={[globalStyles.Body, { color: Colors.primaryDark, paddingBottom: -10 }]}
+        cancelButtonStyle={{ backgroundColor: Colors.white, marginRight: 25 }}
+        cancelButtonTextStyle={[globalStyles.Button, { color: Colors.primaryDark }]}
+        cancelText="Cancel"
+        confirmButtonStyle={[globalStyles.defaultBtn, { width: 120, height: 40, marginTop: 5, marginLeft: 25 }]}
+        confirmButtonTextStyle={globalStyles.defaultBtnLabel}
+        confirmText="Delete"
         confirmButtonColor={Colors.alert2}
         onCancelPressed={() => {
           setShowAlert(false)
