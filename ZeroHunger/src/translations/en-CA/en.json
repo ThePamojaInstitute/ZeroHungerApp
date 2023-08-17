@@ -8,7 +8,9 @@
 			"skip":	"Skip",
 			"continue": "Continue",
 			"cancel":"Cancel",
-			"loading":"Loading..."
+			"loading":"Loading...",
+			"backToHome": "Back to Home",
+			"clearAll" : "Clear all"
 		},
 		"contact.email": "xxx@xxx.com",
 		"sort": {
@@ -673,12 +675,35 @@
 		"fallback": {
 			"heading": "No messages yet",
 			"text": "Start a conversation by replying to a food request or offer.",
-			"button.label": "Back to Home"
+			"button.label": "{{ app.strings.backToHome }}"
 		},
 		"chat": {
 			"input.placeholder": "Type a message",
 			"submit.label": "Send",
 			"options": "{{ overlay.chatOptions }}"
+		}
+	},
+
+	"notifications": {
+		"page": {
+			"heading": "Notifications",
+			"fallback": {
+				"heading": "No notifications",
+				"text": "You will be notified when one of your posts is expiring soon",
+				"button.label": "{{ app.strings.backToHome }}"
+			}
+		},
+		"snippet": {
+			"request": {
+				"text": "Your request for {{ requestTitle }} will expire in {{ expiryCalculated }} days",
+				"buttonExtend.label": "Extend by 1 week",
+				"timeStamp": "{{ calculatedNotificationTime }} ago"
+			},
+			"offer": {
+				"text": "Your offer for {{ requestTitle }} will expire in {{ expiryCalculated }} days",
+				"buttonExtend.label": "Extend by 1 week",
+				"timeStamp": "{{ calculatedNotificationTime }} ago"
+			}
 		}
 	},
 
@@ -730,6 +755,13 @@
 					"label": "Delete post",
 					"value": "delete"
 				}
+			]
+		},
+		"notificationsOptions": {
+			"heading": "Notifications options",
+			"options": [
+				{ "label": "{{ app.strings.clearAll }}" },
+				{ "label": "{{ menu.side.notificationsLabel }}" }
 			]
 		},
 		"chatOptions": {
