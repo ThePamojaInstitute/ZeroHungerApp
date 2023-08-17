@@ -20,34 +20,11 @@ import { default as _PostsFilters } from "../components/PostsFilters";
 import { getPreferences } from "../controllers/preferences";
 import { Char } from "../../types";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { axiosInstance, storage } from "../../config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { logOutUser } from "../controllers/auth";
+import { axiosInstance, getItemFromLocalStorage, setLocalStorageItem, storage } from "../../config";
+import { getNotifications, logOutUser } from "../controllers/auth";
 import { ENV } from "../../env";
+import { useAlert } from "../context/Alert";
 
-
-const getItemFromLocalStorage = async (key: string) => {
-    let item: string
-    if (Platform.OS === 'web') {
-        item = storage.getString(key)
-    } else {
-        item = await AsyncStorage.getItem(key)
-    }
-    return item
-}
-
-const setLocalStorageItem = async (key: string, value: string) => {
-    if (ENV === 'production') {
-        storage.set(key, value.toString())
-    } else {
-        if (Platform.OS === 'web') {
-            storage.set(key, value.toString())
-        } else {
-            await AsyncStorage.setItem(key, value.toString())
-        }
-    }
-    return
-}
 
 const PostsFilters = forwardRef(_PostsFilters)
 
@@ -60,7 +37,8 @@ export const HomeScreen = ({ navigation, route }) => {
     }
 
     const { user, dispatch } = useContext(AuthContext)
-    const { setChatIsOpen } = useContext(NotificationContext);
+    const { setChatIsOpen } = useContext(NotificationContext)
+    const { dispatch: alert } = useAlert()
 
     const [showRequests, setShowRequests] = useState(true)
     const [sortBy, setSortBy] = useState<'new' | 'old' | 'distance'>('new')
@@ -101,7 +79,7 @@ export const HomeScreen = ({ navigation, route }) => {
         })
     }
 
-    const getNotifications = async () => {
+    const handleGetNotifications = async () => {
         const allowExpiringPosts = ENV === 'production' ?
             storage.getString('allowExpiringPosts')
             : await getItemFromLocalStorage('allowExpiringPosts')
@@ -122,14 +100,7 @@ export const HomeScreen = ({ navigation, route }) => {
         }
 
         try {
-            const res = await axiosInstance.get('/users/getNotifications', {
-                headers: {
-                    Authorization: accessToken
-                },
-                params: {
-                    from: 'home'
-                }
-            })
+            const res = await getNotifications(accessToken, 'notifications')
 
             if (res.status === 200) {
                 setExpiringPosts(res.data)
@@ -180,7 +151,7 @@ export const HomeScreen = ({ navigation, route }) => {
             console.log(err);
             setInitialized(true)
         })
-        getNotifications()
+        handleGetNotifications()
 
         setChatIsOpen(false)
     }, [])

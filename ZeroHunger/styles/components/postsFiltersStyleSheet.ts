@@ -28,7 +28,6 @@ export default StyleSheet.create({
         borderBottomWidth: 1,
         borderStyle: 'solid',
         borderBottomColor: '#D1D1D1',
-        paddingBottom: 10
     },
     modalContent: {
         alignItems: 'center',
@@ -48,8 +47,7 @@ export default StyleSheet.create({
     },
     filtersSelected: {
         color: Colors.primaryDark,
-        marginBottom: -5,
-        marginTop: 7,
+        marginBottom: 5,
         marginLeft: 6
     },
     sortItem: {

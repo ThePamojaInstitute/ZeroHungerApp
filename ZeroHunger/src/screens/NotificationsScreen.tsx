@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity, Image, Dimensions, Platform, ActivityIndicator, Pressable } from "react-native"
+import { View, Text, TouchableOpacity, Image, Dimensions, ActivityIndicator, Pressable } from "react-native"
 import { useIsFocused } from '@react-navigation/native';
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
-import { axiosInstance, storage } from "../../config";
+import { getAccessToken, setLocalStorageItem, storage } from "../../config";
 import { useState, useEffect } from "react";
 import { FlashList } from "@shopify/flash-list";
 import { Ionicons } from '@expo/vector-icons';
@@ -14,8 +14,10 @@ import Modal from 'react-native-modal';
 // import { useAlert } from "../context/Alert";
 import styles from "../../styles/screens/notificationsStyleSheet";
 import { useRoute } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ENV } from "../../env";
+import { getNotifications } from "../controllers/auth";
+import { extendExpiryDate } from "../controllers/post";
+import { useAlert } from "../context/Alert";
 
 
 const NoNotifications = ({ navigate }) => (
@@ -97,53 +99,10 @@ const NotificationsModal = ({ modalVisible, setModalVisible, height, setHeight, 
     </Modal>
 )
 
-const setLocalStorage = async (key: string, value: string) => {
-    if (Platform.OS === 'web') {
-        storage.set(key, value)
-    } else {
-        await AsyncStorage.setItem(key, value)
-    }
-    return
-}
-
-const getItemFromLocalStorage = async (key: string) => {
-    let item: string
-    if (Platform.OS === 'web') {
-        item = storage.getString(key)
-    } else {
-        item = await AsyncStorage.getItem(key)
-    }
-    return item
-}
-
-const getAccessToken = async () => {
-    const accessToken = ENV === 'production' ?
-        storage.getString('access_token')
-        : await getItemFromLocalStorage('access_token')
-
-    return accessToken
-}
-
-const getNotifications = async (accessToken: string) => {
-    try {
-        const res = await axiosInstance.get('/users/getNotifications', {
-            headers: {
-                Authorization: accessToken
-            },
-            params: {
-                from: 'notifications'
-            }
-        })
-
-        return res.data
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 export const NotificationsScreen = ({ navigation }) => {
     const route = useRoute()
     const isFocused = useIsFocused()
+    const { dispatch: alert } = useAlert()
 
     const [modalVisible, setModalVisible] = useState(false)
     const [height, setHeight] = useState(0)
@@ -171,32 +130,39 @@ export const NotificationsScreen = ({ navigation }) => {
         if (ENV === 'production') {
             storage.set('lastSeen', new Date().toDateString())
         } else {
-            setLocalStorage('lastSeen', new Date().toDateString())
+            setLocalStorageItem('lastSeen', new Date().toDateString())
         }
 
         setFirstLoad(false)
-        if (!route.params['posts'] || !route.params['posts'].length) {
-            getAccessToken().then(token => {
-                getNotifications(token).then(data => {
-                    if (!data.length) setIsEmpty(true)
-                    else setPosts(data)
-                })
-            })
-        } else setPosts(route.params['posts'])
+        handleGetNotifications()
     }, [])
 
     useEffect(() => {
         if (firstLoad || !isFocused) return
 
-        if (!route.params['posts'] || !route.params['posts'].length) {
-            getAccessToken().then(token => {
-                getNotifications(token).then(data => {
-                    if (!data.length) setIsEmpty(true)
-                    else setPosts(data)
-                })
-            })
-        } else setPosts(route.params['posts'])
+        handleGetNotifications()
     }, [isFocused])
+
+    const handleGetNotifications = async () => {
+        if (!route.params['posts'] || !route.params['posts'].length) {
+            const accessToken = await getAccessToken()
+
+            const res = await getNotifications(accessToken, 'notifications')
+            if (!res.data.length) setIsEmpty(true)
+            else setPosts(res.data)
+        } else setPosts(route.params['posts'])
+    }
+
+    const handleExtendExpiryDate = async (postId: Number, postType: "r" | "o") => {
+        const res = await extendExpiryDate(postId, postType)
+
+        if (res.msg === 'success') {
+            alert!({ type: 'open', message: 'Post updated successfully!', alertType: 'success' })
+            await handleGetNotifications()
+        } else {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+        }
+    }
 
     // //Time threshold for notifications to become "old"
     // const old_threshold = 3600 * 24 * 2 //2 days
@@ -463,15 +429,28 @@ export const NotificationsScreen = ({ navigation }) => {
                         <View
                             testID="Posts.tag"
                             style={{
-                                borderRadius: 4,
-                                backgroundColor: '#F0D2C6',
-                                paddingVertical: 4,
-                                paddingHorizontal: 6,
-                                alignSelf: 'flex-start',
-                                marginBottom: 10,
-                            }}>
+                                // borderRadius: 4,
+                                // backgroundColor: '#F0D2C6',
+                                // paddingVertical: 4,
+                                // paddingHorizontal: 6,
+                                // alignSelf: 'flex-start',
+                                // marginBottom: 10,
+                                // width: '100%'
+                            }}
+                        >
                             {/* Placeholder need by date */}
-                            <Text testID="Posts.tagLabel" style={globalStyles.Tag}>Expiring soon</Text>
+                            {/* <Text testID="Posts.tagLabel" style={globalStyles.Tag}>Expiring soon</Text> */}
+                            <Pressable
+                                style={[globalStyles.defaultBtn, { height: 20, marginTop: 0, width: 135 }]}
+                                onPress={() => { handleExtendExpiryDate(item.postId, item.type) }}
+                            >
+                                <Image source={require('../../assets/Extend.png')} style={{
+                                    resizeMode: 'cover',
+                                    width: 13,
+                                    height: 13,
+                                }} />
+                                <Text style={[globalStyles.Tag, { color: Colors.white, marginLeft: -5 }]}>Extend by 1 week</Text>
+                            </Pressable>
                         </View>
                     </View>
                 </View>
