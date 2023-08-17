@@ -1,4 +1,5 @@
-import { View, Text, TouchableOpacity, Image, Dimensions, Platform, ActivityIndicator } from "react-native"
+import { View, Text, TouchableOpacity, Image, Dimensions, Platform, ActivityIndicator, Pressable } from "react-native"
+import { useIsFocused } from '@react-navigation/native';
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
 import { axiosInstance, storage } from "../../config";
 import { useState, useEffect } from "react";
@@ -16,6 +17,31 @@ import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ENV } from "../../env";
 
+
+const NoNotifications = ({ navigate }) => (
+    <View style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: Dimensions.get('window').height * 0.15,
+        paddingHorizontal: 50,
+    }}>
+        <Text
+            style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
+            No notifications
+        </Text>
+        <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
+            You will be notified when one of your posts is expiring soon
+        </Text>
+        <Pressable
+            style={[globalStyles.defaultBtn, { width: '90%' }]}
+            onPress={() => navigate('HomeScreen')}
+        >
+            <Text style={globalStyles.defaultBtnLabel}>
+                Back to Home
+            </Text>
+        </Pressable>
+    </View>
+)
 
 const NotificationsModal = ({ modalVisible, setModalVisible, height, setHeight, navigate }) => (
     <Modal
@@ -103,6 +129,9 @@ const getNotifications = async (accessToken: string) => {
         const res = await axiosInstance.get('/users/getNotifications', {
             headers: {
                 Authorization: accessToken
+            },
+            params: {
+                from: 'notifications'
             }
         })
 
@@ -114,11 +143,13 @@ const getNotifications = async (accessToken: string) => {
 
 export const NotificationsScreen = ({ navigation }) => {
     const route = useRoute()
+    const isFocused = useIsFocused()
 
     const [modalVisible, setModalVisible] = useState(false)
     const [height, setHeight] = useState(0)
     const [posts, setPosts] = useState<object[]>()
     const [isEmpty, setIsEmpty] = useState(false)
+    const [firstLoad, setFirstLoad] = useState(true)
 
     useEffect(() => {
         navigation.setOptions({
@@ -143,6 +174,7 @@ export const NotificationsScreen = ({ navigation }) => {
             setLocalStorage('lastSeen', new Date().toDateString())
         }
 
+        setFirstLoad(false)
         if (!route.params['posts'] || !route.params['posts'].length) {
             getAccessToken().then(token => {
                 getNotifications(token).then(data => {
@@ -152,6 +184,19 @@ export const NotificationsScreen = ({ navigation }) => {
             })
         } else setPosts(route.params['posts'])
     }, [])
+
+    useEffect(() => {
+        if (firstLoad || !isFocused) return
+
+        if (!route.params['posts'] || !route.params['posts'].length) {
+            getAccessToken().then(token => {
+                getNotifications(token).then(data => {
+                    if (!data.length) setIsEmpty(true)
+                    else setPosts(data)
+                })
+            })
+        } else setPosts(route.params['posts'])
+    }, [isFocused])
 
     // //Time threshold for notifications to become "old"
     // const old_threshold = 3600 * 24 * 2 //2 days
@@ -411,7 +456,10 @@ export const NotificationsScreen = ({ navigation }) => {
                             fontFamily: Fonts.PublicSans_Regular,
                             fontWeight: '400',
                             fontSize: 15,
-                        }}>Your {item.type === 'r' ? 'request' : 'offer'} for <Text style={{ fontFamily: Fonts.PublicSans_SemiBold, fontWeight: '600' }}>{item.title}</Text> will expire at the end of today!</Text>
+                        }}>
+                            Your {item.type === 'r' ? 'request' : 'offer'} for
+                            <Text style={{ fontFamily: Fonts.PublicSans_SemiBold, fontWeight: '600' }}>{` ${item.title} `}</Text>
+                            will expire at the end of today!</Text>
                         <View
                             testID="Posts.tag"
                             style={{
@@ -445,7 +493,7 @@ export const NotificationsScreen = ({ navigation }) => {
                     :
                     <ActivityIndicator animating size="large" color={Colors.primary} />
                 :
-                <Text style={styles.noNotifications}>No notifications!</Text>
+                <NoNotifications navigate={navigation.navigate} />
             }
             <View>
                 <NotificationsModal
