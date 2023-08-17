@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import {
     View, Text, Dimensions, Image,
-    TouchableHighlight, RefreshControl, ActivityIndicator, Platform, Pressable
+    TouchableHighlight, RefreshControl, ActivityIndicator, Pressable
 } from "react-native";
 import { useIsFocused } from '@react-navigation/native';
 import styles from "../../styles/screens/conversationsStyleSheet"
@@ -9,13 +9,11 @@ import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
-import { axiosInstance, storage } from "../../config";
+import { axiosInstance, getAccessToken } from "../../config";
 import { ConversationModel } from "../models/Conversation";
 import { FlashList } from "@shopify/flash-list";
 import moment from 'moment';
 import { useTranslation } from "react-i18next";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ENV } from "../../env";
 
 const NoMessages = ({ navigate }) => (
     <View style={{
@@ -55,20 +53,9 @@ export const Conversations = ({ navigation }) => {
 
     const getConversations = async () => {
         try {
-            let token: string
-            if (ENV === 'production') {
-                token = storage.getString('access_token')
-            } else {
-                if (Platform.OS == 'web') {
-                    token = storage.getString('access_token')
-                } else {
-                    token = await AsyncStorage.getItem('access_token')
-                }
-            }
-
             const res = await axiosInstance.get("chat/conversations/", {
                 headers: {
-                    Authorization: `${token}`
+                    Authorization: await getAccessToken()
                 }
             });
 

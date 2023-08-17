@@ -1,4 +1,4 @@
-import { axiosInstance } from "../../config"
+import { axiosInstance, getAccessToken } from "../../config"
 import { Char } from "../../types"
 
 interface ILOGISTICS {
@@ -78,8 +78,7 @@ export const savePreferences = async (
     postalCode: string,
     distance: Number,
     dietRequirements: Char[],
-    logistics: Char[],
-    accessToken: string
+    logistics: Char[]
 ) => {
     const canadianPostalCodeRegex = /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i
 
@@ -97,7 +96,7 @@ export const savePreferences = async (
     try {
         const res = await axiosInstance.post('users/userPreferences', {
             headers: {
-                Authorization: `${accessToken}`
+                Authorization: await getAccessToken()
             },
             data: data
         })
@@ -111,11 +110,11 @@ export const savePreferences = async (
     }
 }
 
-export const getPreferences = async (accessToken: string) => {
+export const getPreferences = async () => {
     try {
         const res = await axiosInstance.get('users/userPreferences', {
             headers: {
-                Authorization: `${accessToken}`
+                Authorization: await getAccessToken()
             }
         })
 
@@ -125,25 +124,23 @@ export const getPreferences = async (accessToken: string) => {
     }
 }
 
-export const intitializePreferences = (
-    accessToken: string,
+export const intitializePreferences = async (
     setLogistics: React.Dispatch<React.SetStateAction<Char[]>>,
     setPostalCode: React.Dispatch<React.SetStateAction<string>>,
     setDiet: React.Dispatch<React.SetStateAction<Char[]>>,
 ) => {
-    getPreferences(accessToken).then(data => {
-        setLogistics(data['logistics'])
+    const data = await getPreferences()
+    setLogistics(data['logistics'])
 
-        if (data['postalCode']) {
-            setPostalCode(data['postalCode'])
-        }
+    if (data['postalCode']) {
+        setPostalCode(data['postalCode'])
+    }
 
-        if (data['diet']) {
-            Object.keys(DIETREQUIREMENTS).map(value => {
-                if (data['diet'].includes(DIETREQUIREMENTS[value])) {
-                    setDiet((oldArray: Char[]) => [...oldArray, DIETREQUIREMENTS[value]])
-                }
-            })
-        }
-    })
+    if (data['diet']) {
+        Object.keys(DIETREQUIREMENTS).map(value => {
+            if (data['diet'].includes(DIETREQUIREMENTS[value])) {
+                setDiet((oldArray: Char[]) => [...oldArray, DIETREQUIREMENTS[value]])
+            }
+        })
+    }
 }

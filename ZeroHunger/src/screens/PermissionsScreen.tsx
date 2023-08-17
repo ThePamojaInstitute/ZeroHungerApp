@@ -1,22 +1,17 @@
 import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { useState } from "react";
 import styles from "../../styles/screens/permissionsStyleSheet";
 import postalStyles from "../../styles/screens/postFormStyleSheet"
 import loginStyles from "../../styles/screens/loginStyleSheet"
 import { savePreferences } from "../controllers/preferences";
-import { getAccessToken } from "../../config";
 
 export const PermissionsScreen = ({ navigation }) => {
     const [postalCode, setPostalCode] = useState('')
     const [errMsg, setErrMsg] = useState("")
 
     const savePostalCode = async () => {
-        const accessToken = await getAccessToken()
-
-        const res = await savePreferences(postalCode, null, null, null, accessToken)
+        const res = await savePreferences(postalCode, null, null, null)
         if (res.msg === "success") {
             navigation.navigate('HomeScreen')
             return

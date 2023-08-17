@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Image, Dimensions, ActivityIndicator, Pressable } from "react-native"
 import { useIsFocused } from '@react-navigation/native';
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
-import { getAccessToken, setLocalStorageItem, storage } from "../../config";
+import { setLocalStorageItem, storage } from "../../config";
 import { useState, useEffect } from "react";
 import { FlashList } from "@shopify/flash-list";
 import { Ionicons } from '@expo/vector-icons';
@@ -145,9 +145,7 @@ export const NotificationsScreen = ({ navigation }) => {
 
     const handleGetNotifications = async () => {
         if (!route.params['posts'] || !route.params['posts'].length) {
-            const accessToken = await getAccessToken()
-
-            const res = await getNotifications(accessToken, 'notifications')
+            const res = await getNotifications('notifications')
             if (!res.data.length) setIsEmpty(true)
             else setPosts(res.data)
         } else setPosts(route.params['posts'])

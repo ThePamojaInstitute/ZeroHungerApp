@@ -1,4 +1,4 @@
-import { axiosInstance, storage } from "../../config";
+import { axiosInstance, getAccessToken, storage } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Platform } from "react-native"
 import { ENV } from "../../env";
@@ -13,13 +13,13 @@ export async function createUser(user: Object) {
     }
 }
 
-export async function editUser(accessToken: string, editedUser: object) {
+export async function editUser(editedUser: object) {
     try {
         const res = await axiosInstance.put('users/editUser',
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': accessToken,
+                    'Authorization': await getAccessToken(),
                     credentials: 'include'
                 },
                 data: { user: editedUser }
@@ -31,11 +31,11 @@ export async function editUser(accessToken: string, editedUser: object) {
     }
 }
 
-export async function deleteUser(token: string) {
+export async function deleteUser() {
     try {
         const res = await axiosInstance.delete("users/deleteUser", {
             headers: {
-                Authorization: `${token}`
+                Authorization: await getAccessToken()
             },
         })
         if (res.status === 200) {
@@ -108,11 +108,11 @@ export async function logOutUser() {
     }
 }
 
-export const getAccount = async (accessToken: string) => {
+export const getAccount = async () => {
     try {
         const res = await axiosInstance.get('users/editUser', {
             headers: {
-                Authorization: `${accessToken}`
+                Authorization: await getAccessToken()
             }
         })
 
@@ -122,11 +122,11 @@ export const getAccount = async (accessToken: string) => {
     }
 }
 
-export const getNotifications = async (accessToken: string, from: string) => {
+export const getNotifications = async (from: string) => {
     try {
         const res = await axiosInstance.get('/users/getNotifications', {
             headers: {
-                Authorization: accessToken
+                Authorization: await getAccessToken()
             },
             params: {
                 from: from

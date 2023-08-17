@@ -9,7 +9,6 @@ import { useAlert } from "../context/Alert";
 import { DIETREQUIREMENTS, LOGISTICS, getDietType, getLogisticsType, getPreferences, savePreferences } from "../controllers/preferences";
 import { Char } from "../../types";
 import Slider from "@react-native-community/slider";
-import { getAccessToken } from "../../config";
 
 
 export const Preferences = ({ navigation }) => {
@@ -24,14 +23,12 @@ export const Preferences = ({ navigation }) => {
 
     useEffect(() => {
         setIsLoading(true)
-        getAccessToken().then(token => {
-            getPreferences(token).then(data => {
-                setPostalCode(data['postalCode'])
-                setDistance(data['distance'])
-                setDietRequirements(data['diet'])
-                setLogistics(data['logistics'])
-            }).finally(() => setIsLoading(false)).catch(() => setIsLoading(false))
-        })
+        getPreferences().then(data => {
+            setPostalCode(data['postalCode'])
+            setDistance(data['distance'])
+            setDietRequirements(data['diet'])
+            setLogistics(data['logistics'])
+        }).finally(() => setIsLoading(false)).catch(() => setIsLoading(false))
     }, [])
 
     useEffect(() => {
@@ -46,9 +43,7 @@ export const Preferences = ({ navigation }) => {
 
 
     const handleSave = async () => {
-        const accessToken = await getAccessToken()
-
-        const res = await savePreferences(postalCode, distance, dietRequirements, logistics, accessToken)
+        const res = await savePreferences(postalCode, distance, dietRequirements, logistics)
         if (res.msg === "success") {
             alert!({ type: 'open', message: 'Preferences updated successfully!', alertType: 'success' })
             navigation.navigate('HomeScreen', { reload: true })

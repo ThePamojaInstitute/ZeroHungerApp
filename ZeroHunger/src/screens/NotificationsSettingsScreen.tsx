@@ -1,45 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { View, ScrollView, Text, Switch } from "react-native"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
-import { Platform } from "expo-modules-core";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { axiosInstance, storage } from "../../config";
+import { setLocalStorageItem, storage } from "../../config";
 import { ENV } from "../../env";
+import { getNotificationsSettings, updateNotificationsSettings } from "../controllers/notifications";
 
-
-const setLocalStorageItem = async (key: string, value: string) => {
-    if (Platform.OS === 'web') {
-        storage.set(key, value.toString())
-    } else {
-        await AsyncStorage.setItem(key, value.toString())
-    }
-    return
-}
-
-const getAccessToken = async () => {
-    const accessToken = Platform.OS === 'web' ?
-        storage.getString('access_token') : await AsyncStorage.getItem('access_token')
-
-    return accessToken
-}
-
-const getNotificationsSettings = async () => {
-    try {
-        const accessToken = ENV === 'production' ?
-            storage.getString('access_token') :
-            await getAccessToken()
-
-        const res = await axiosInstance.get('/users/getNotificationsSettings', {
-            headers: {
-                Authorization: accessToken
-            }
-        })
-
-        return res.data
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 const getSettings = async (
     setAllowExpiringPosts: React.Dispatch<React.SetStateAction<boolean>>,
@@ -55,29 +20,6 @@ const getSettings = async (
         storage.set('allowExpiringPosts', settings['expiringPosts'])
     } else {
         setLocalStorageItem('allowExpiringPosts', settings['expiringPosts'])
-    }
-}
-
-const updateSettings = async (allowExpiringPosts: boolean, allowNewMessages: boolean) => {
-    const accessToken = ENV === 'production' ?
-        storage.getString('access_token') :
-        await getAccessToken()
-
-    try {
-        await axiosInstance.put('/users/updateNotificationsSettings', {
-            headers: {
-                Authorization: accessToken
-            },
-            data: {
-                'allowExpiringPosts': allowExpiringPosts,
-                'allowNewMessages': allowNewMessages
-            }
-        })
-
-        setLocalStorageItem('allowExpiringPosts', allowExpiringPosts.toString())
-    } catch (error) {
-        console.log(error);
-
     }
 }
 
@@ -109,7 +51,7 @@ export const NotificationsSettingsScreen = ({ navigation }) => {
             if (!mounted()) {
                 if (allowExpiringPosts !== settings['expiringPosts'] ||
                     allowNewMessages !== settings['newMessages']) {
-                    updateSettings(allowExpiringPosts, allowNewMessages)
+                    updateNotificationsSettings(allowExpiringPosts, allowNewMessages)
                 }
             }
         };

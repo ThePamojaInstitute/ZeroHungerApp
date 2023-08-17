@@ -91,16 +91,8 @@ export const HomeScreen = ({ navigation, route }) => {
             : await getItemFromLocalStorage('lastSeen')
         if (lastSeen === new Date().toDateString()) return
 
-        const accessToken = ENV === 'production' ?
-            storage.getString('access_token')
-            : await getItemFromLocalStorage('access_token')
-        if (!accessToken) {
-            handlelogOut()
-            return
-        }
-
         try {
-            const res = await getNotifications(accessToken, 'notifications')
+            const res = await getNotifications('notifications')
 
             if (res.status === 200) {
                 setExpiringPosts(res.data)
@@ -114,16 +106,7 @@ export const HomeScreen = ({ navigation, route }) => {
 
     const initializeFilters = async () => {
         try {
-            const accessToken = ENV === 'production' ?
-                storage.getString('access_token')
-                : await getItemFromLocalStorage('access_token')
-
-            if (!accessToken) {
-                handlelogOut()
-                return
-            }
-
-            const data = await getPreferences(accessToken)
+            const data = await getPreferences()
 
             setDistance(data['distance'])
             setDiet(data['diet'])

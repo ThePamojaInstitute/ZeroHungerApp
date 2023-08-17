@@ -16,13 +16,11 @@ import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
 import { handleImageUpload } from "../controllers/post";
 import Logistics from "../components/Logistics";
-// import AccessNeeds from "../components/AccessNeeds";
 import { intitializePreferences } from "../controllers/preferences";
 import FoodFilters from "../components/FoodFilters";
 import { useTranslation } from "react-i18next";
 import { Char, PostFromData } from "../../types";
 import { Controller, useForm } from "react-hook-form";
-import { getAccessToken } from "../../config";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 
@@ -64,9 +62,7 @@ export const OfferFormScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
-        getAccessToken().then(accessToken => {
-            intitializePreferences(accessToken, setLogistics, setDefaultPostalCode, setDiet)
-        })
+        intitializePreferences(setLogistics, setDefaultPostalCode, setDiet)
     }, [])
 
     useEffect(() => {

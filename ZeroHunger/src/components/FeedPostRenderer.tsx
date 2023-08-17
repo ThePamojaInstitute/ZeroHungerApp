@@ -1,6 +1,5 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import { Text, RefreshControl, ActivityIndicator, View, Pressable, Platform, Dimensions } from "react-native";
-import styles from "../../styles/components/postRendererStyleSheet"
+import { Text, RefreshControl, ActivityIndicator, View, Pressable, Dimensions } from "react-native";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useAlert } from "../context/Alert";
 import { FlashList } from "@shopify/flash-list";
@@ -10,7 +9,6 @@ import { useIsFocused } from '@react-navigation/native';
 import { Post } from "./Post";
 import { PostModel } from "../models/Post";
 import { default as _MyPostModal } from "./MyPostModal";
-import { getAccessToken } from "../../config";
 
 
 const MyPostModal = forwardRef(_MyPostModal)
@@ -134,29 +132,23 @@ export const FeedPostRenderer = ({
     }
 
     const handleDelete = async (postId: Number) => {
-        const accessToken = await getAccessToken()
-
-        deletePost(type, postId, accessToken).then(res => {
-            if (res.msg == "success") {
-                refetch()
-                alert!({ type: 'open', message: res.res, alertType: 'success' })
-            } else {
-                alert!({ type: 'open', message: res.res, alertType: 'error' })
-            }
-        })
+        const res = await deletePost(type, postId)
+        if (res.msg == "success") {
+            refetch()
+            alert!({ type: 'open', message: res.res, alertType: 'success' })
+        } else {
+            alert!({ type: 'open', message: res.res, alertType: 'error' })
+        }
     }
 
     const handleMarkAsFulfilled = async (postId: Number) => {
-        const accessToken = await getAccessToken()
-
-        markAsFulfilled(type, postId, accessToken).then(res => {
-            if (res.msg == "success") {
-                refetch()
-                alert!({ type: 'open', message: res.res, alertType: 'success' })
-            } else {
-                alert!({ type: 'open', message: res.res, alertType: 'error' })
-            }
-        })
+        const res = await markAsFulfilled(type, postId)
+        if (res.msg == "success") {
+            refetch()
+            alert!({ type: 'open', message: res.res, alertType: 'success' })
+        } else {
+            alert!({ type: 'open', message: res.res, alertType: 'error' })
+        }
     }
 
     const renderItem = ({ item }) => {

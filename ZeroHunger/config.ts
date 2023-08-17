@@ -186,3 +186,26 @@ export const getAccessToken = async () => {
 
     return accessToken
 }
+
+export const getItemFromLocalStorage = async (key: string) => {
+    let item: string
+    if (Platform.OS === 'web') {
+        item = storage.getString(key)
+    } else {
+        item = await AsyncStorage.getItem(key)
+    }
+    return item
+}
+
+export const setLocalStorageItem = async (key: string, value: string) => {
+    if (ENV === 'production') {
+        storage.set(key, value.toString())
+    } else {
+        if (Platform.OS === 'web') {
+            storage.set(key, value.toString())
+        } else {
+            await AsyncStorage.setItem(key, value.toString())
+        }
+    }
+    return
+}

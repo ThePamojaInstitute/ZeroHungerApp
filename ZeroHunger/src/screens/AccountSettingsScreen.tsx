@@ -16,7 +16,7 @@ import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useTranslation } from "react-i18next";
 import { Controller, useForm } from "react-hook-form";
 import { AccountSettingsFormData } from "../../types";
-import { getAccessToken, passwordResetURL } from "../../config";
+import { passwordResetURL } from "../../config";
 import Alert from 'react-native-awesome-alerts';
 
 
@@ -47,9 +47,7 @@ export const AccountSettingsScreen = ({ navigation }) => {
   }, [])
 
   const handleDeleteUser = async () => {
-    const accessToken = await getAccessToken()
-
-    const res = await deleteUser(accessToken)
+    const res = await deleteUser()
     if (res === "success") {
       logOutUser().then(() => {
         dispatch({ type: "LOGOUT", payload: null })
@@ -71,9 +69,7 @@ export const AccountSettingsScreen = ({ navigation }) => {
       "email": data['email'].toLowerCase(),
     }
 
-    const accessToken = await getAccessToken()
-
-    const res = await editUser(accessToken, editedUser)
+    const res = await editUser(editedUser)
     if (res.msg === "success") {
       alert!({ type: 'open', message: 'Account modified successfully!', alertType: 'success' })
       navigation.navigate('LoginScreen')
@@ -108,11 +104,9 @@ export const AccountSettingsScreen = ({ navigation }) => {
   }
 
   useEffect(() => {
-    getAccessToken().then(accessToken => {
-      getAccount(accessToken).then(data => {
-        setUsername(data['username'])
-        setEmail(data['email'])
-      })
+    getAccount().then(data => {
+      setUsername(data['username'])
+      setEmail(data['email'])
     })
   }, [])
 

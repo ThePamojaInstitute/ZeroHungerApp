@@ -108,13 +108,13 @@ export const createPost = async (post: {
     }
 }
 
-export const deletePost = async (postType: Char, postId: Number, token: string) => {
+export const deletePost = async (postType: Char, postId: Number) => {
     if (postId === 0) return
 
     try {
         const res = await axiosInstance.delete('/posts/deletePost', {
             headers: {
-                Authorization: token
+                Authorization: await getAccessToken()
             },
             data: {
                 'postType': postType,
@@ -133,13 +133,13 @@ export const deletePost = async (postType: Char, postId: Number, token: string) 
     }
 }
 
-export const markAsFulfilled = async (postType: Char, postId: Number, token: string) => {
+export const markAsFulfilled = async (postType: Char, postId: Number) => {
     if (postId === 0) return
 
     try {
         const res = await axiosInstance.put('/posts/markAsFulfilled', {
             headers: {
-                Authorization: token
+                Authorization: await getAccessToken()
             },
             data: {
                 'postType': postType,
