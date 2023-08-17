@@ -17,8 +17,8 @@ import jwt
 def get_expiring_tomorrow_posts(user):
     tomorrow = datetime.now().date() + timedelta(days=1)
 
-    requests = RequestPost.objects.filter(postedBy__pk=user.pk, expiryDate__date=tomorrow)
-    offers = OfferPost.objects.filter(postedBy__pk=user.pk, expiryDate__date=tomorrow)
+    requests = RequestPost.objects.filter(postedBy__pk=user.pk, expiryDate__date=tomorrow, fulfilled=False)
+    offers = OfferPost.objects.filter(postedBy__pk=user.pk, expiryDate__date=tomorrow, fulfilled=False)
 
     serialized_requests = serialize_posts(requests, "r")
     serialized_offers = serialize_posts(offers, "o")
@@ -222,7 +222,12 @@ class getNotifications(APIView):
         except:
             return Response("Token invalid or not given", 401)
         
-        if(user.allowExpiringPostsNotifications == False):
+        try:
+            from_screen = request.GET.get('from',"")
+        except Exception as e:
+            return Response(e.__str__(), 400) 
+        
+        if((user.allowExpiringPostsNotifications == False and from_screen == 'home')):
             return Response(status=204)
         
         try:

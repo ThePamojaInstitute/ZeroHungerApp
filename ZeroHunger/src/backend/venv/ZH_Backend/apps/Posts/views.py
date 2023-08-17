@@ -91,7 +91,7 @@ def get_filtered_posts(posts_type, categories, diet, logistics, distance, user):
             posts = posts.filter(categories_filter)
 
         if(len(diet) > 0):
-            diet_filter = create_filter(logistics, DIET_PREFERENCES, 'diet')
+            diet_filter = create_filter(diet, DIET_PREFERENCES, 'diet')
             posts = posts.filter(diet_filter)
 
         if(len(logistics) > 0):
