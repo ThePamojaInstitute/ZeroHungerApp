@@ -346,3 +346,41 @@ class deleteExpiredPosts(APIView):
         except Exception as e:
             print(e)
             return Response(e, status=500)
+        
+class extendPostExpiryDate(APIView):
+    def put(self, request):
+        try:
+            decoded_token =  jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except:
+            return Response("Token invalid or not given", 401)
+
+        try:
+            post_type = request.data['data']['postType']
+            post_id =  int(request.data['data']['postId'])
+            new_expiry_date =  request.data['data']['newExpiryDate']
+        except Exception as e:
+            print(e)
+            return Response(e, status=400)
+        
+        try:
+            if(post_type == "r"):
+                post = RequestPost.objects.get(pk=post_id)
+            else:
+                post = OfferPost.objects.get(pk=post_id)
+        except Exception as e:
+            print(e)
+            return Response("Post not found", 404)
+        
+        if(post.postedBy != user):
+            return Response("User is not the owner of the post", 401)
+        
+        try:
+            post.expiryDate = new_expiry_date
+            post.save()
+        except Exception as e:
+            print(e)
+            return Response("Error while updating post expiry date", 500)
+        
+        return Response(status=204)
+        

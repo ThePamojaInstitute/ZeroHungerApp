@@ -107,7 +107,7 @@ class createOfferSerializer (serializers.ModelSerializer):
         return user.username
     
     def get_type(self, obj):
-        return 'r'
+        return 'o'
     
     def get_postId(self, obj):
         if(type(obj) == collections.OrderedDict): # on creation
