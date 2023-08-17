@@ -151,7 +151,7 @@ export const NotificationsScreen = ({ navigation }) => {
         } else setPosts(route.params['posts'])
     }
 
-    const handleExtendExpiryDate = async (postId: Number, postType: "r" | "o") => {
+    const handleExtendExpiryDate = async (postId: number, postType: "r" | "o") => {
         const res = await extendExpiryDate(postId, postType)
 
         if (res.msg === 'success') {

@@ -70,7 +70,7 @@ export const createPost = async (post: {
     postData: {
         title: string
         images: string,
-        postedBy: Number,
+        postedBy: number,
         description: string,
         logistics: Char[],
         postalCode: string,
@@ -108,7 +108,7 @@ export const createPost = async (post: {
     }
 }
 
-export const deletePost = async (postType: Char, postId: Number) => {
+export const deletePost = async (postType: Char, postId: number) => {
     if (postId === 0) return
 
     try {
@@ -133,7 +133,7 @@ export const deletePost = async (postType: Char, postId: Number) => {
     }
 }
 
-export const markAsFulfilled = async (postType: Char, postId: Number) => {
+export const markAsFulfilled = async (postType: Char, postId: number) => {
     if (postId === 0) return
 
     try {
@@ -169,7 +169,7 @@ export const handleImageUpload = async (base64Images: string[]) => {
     return result
 }
 
-export const extendExpiryDate = async (postId: Number, type: "r" | "o") => {
+export const extendExpiryDate = async (postId: number, type: "r" | "o") => {
     const oneWeekLater = moment(new Date()).add(1, 'week')
     const formattedDate = moment(oneWeekLater.toDate(), 'YYYY-MM-DD HH:mm')
 
@@ -302,24 +302,20 @@ export const getDiet = (char: Char) => {
     }
 }
 
-export const handleExpiryDate = (expiryDate: string, postType: "r" | "o") => {
+export const handleExpiryDate = (expiryDate: string, postType: "r" | "o"): [string, number] => {
     const diffInDays = Math.abs(moment().diff(expiryDate, "days"))
 
     if (postType === 'r') {
         if (diffInDays <= 0) {
-            return 'Need today'
-        } else if (diffInDays === 1) {
-            return `Need by tomorrow`
+            return ['Need today', diffInDays]
         } else {
-            return `Need in ${diffInDays} days`
+            return [`Need in ${diffInDays + 1} days`, diffInDays]
         }
     } else {
         if (diffInDays <= 0) {
-            return 'Expires today'
-        } else if (diffInDays === 1) {
-            return `Expires tomorrow`
+            return ['Expires today', diffInDays]
         } else {
-            return `Expires in ${diffInDays} days`
+            return [`Expires in ${diffInDays + 1} days`, diffInDays]
         }
     }
 }

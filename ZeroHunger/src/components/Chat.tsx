@@ -163,10 +163,10 @@ export const Chat = ({ navigation, route }) => {
     const handlePress = (
         title: string,
         imagesLink: string,
-        postedOn: Number,
-        postedBy: Number,
+        postedOn: number,
+        postedBy: number,
         description: string,
-        postId: Number,
+        postId: number,
         username: string,
         expiryDate: string,
         distance: number | null,

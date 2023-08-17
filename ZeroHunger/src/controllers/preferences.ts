@@ -76,7 +76,7 @@ export const getDietType = (type: Char) => {
 
 export const savePreferences = async (
     postalCode: string,
-    distance: Number,
+    distance: number,
     dietRequirements: Char[],
     logistics: Char[]
 ) => {

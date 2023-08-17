@@ -131,7 +131,7 @@ export const FeedPostRenderer = ({
         }
     }
 
-    const handleDelete = async (postId: Number) => {
+    const handleDelete = async (postId: number) => {
         const res = await deletePost(type, postId)
         if (res.msg == "success") {
             refetch()
@@ -141,7 +141,7 @@ export const FeedPostRenderer = ({
         }
     }
 
-    const handleMarkAsFulfilled = async (postId: Number) => {
+    const handleMarkAsFulfilled = async (postId: number) => {
         const res = await markAsFulfilled(type, postId)
         if (res.msg == "success") {
             refetch()

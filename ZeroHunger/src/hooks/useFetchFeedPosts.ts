@@ -11,7 +11,7 @@ export default function useFetchPosts(
     categories: Char[],
     diet: Char[],
     logistics: Char[],
-    distance: Number
+    distance: number
 ) {
     const getPosts = async ({ pageParam = 0 }) => {
         let accessToken: string

@@ -53,7 +53,7 @@ export async function addNotification(user: Object, notification: {
     }
 }
 
-export async function clearNotification(user: Object, timestamp: Number) {
+export async function clearNotification(user: Object, timestamp: number) {
     try {
         const res = await axiosInstance.post("users/clearNotification", { user, timestamp })
         if (res.status === 200) {
