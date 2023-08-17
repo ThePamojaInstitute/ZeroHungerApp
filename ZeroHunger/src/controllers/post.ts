@@ -1,5 +1,5 @@
 import moment from "moment";
-import { axiosInstance } from "../../config";
+import { axiosInstance, getAccessToken } from "../../config";
 import { Char } from "../../types";
 
 interface ILOGISTICSPREFERENCES {
@@ -167,6 +167,33 @@ export const handleImageUpload = async (base64Images: string[]) => {
     console.log('Processing Request');
     console.log("Image Uploaded to: " + result);
     return result
+}
+
+export const extendExpiryDate = async (postId: Number, type: "r" | "o") => {
+    const oneWeekLater = moment(new Date()).add(1, 'week')
+    const formattedDate = moment(oneWeekLater.toDate(), 'YYYY-MM-DD HH:mm')
+
+    try {
+        const res = await axiosInstance.put('/posts/extendPostExpiryDate', {
+            headers: {
+                Authorization: await getAccessToken()
+            },
+            data: {
+                'postType': type,
+                'postId': postId,
+                'newExpiryDate': formattedDate
+            }
+        })
+
+        if (res.status === 204) {
+            return { msg: "success", res: res.data }
+        } else {
+            return { msg: "failure", res: res.data }
+        }
+    } catch (error) {
+        console.log(error);
+        return { msg: "failure", res: 'An error occured' }
+    }
 }
 
 export const getLogisticsType = (char: Char) => {
