@@ -84,7 +84,8 @@ export const FeedPostRenderer = ({
         hasNextPage,
         fetchNextPage,
         refetch,
-        isFetchedAfterMount
+        isFetchedAfterMount,
+        isFetching
     } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, distance)
 
     useEffect(() => {
@@ -103,7 +104,7 @@ export const FeedPostRenderer = ({
         } else return
     }, [isFocused])
 
-    if (isLoading) return <ActivityIndicator animating size="large" color={Colors.primary} />
+    if (isLoading || isFetching) return <ActivityIndicator animating size="large" color={Colors.primary} />
 
     if (isError) return <Text>An error occurred while fetching data</Text>
 
@@ -182,6 +183,7 @@ export const FeedPostRenderer = ({
                 setShowRequests={setShowRequests}
                 from="home"
                 key={item.postId}
+                refetch={refetch}
             />
         )
     }

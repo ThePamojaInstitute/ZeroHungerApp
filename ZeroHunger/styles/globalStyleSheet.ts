@@ -15,6 +15,7 @@ export const Colors = {
     midLight: '#D1D1D1',
     alert: '#F28B53',
     alert2: '#AD5444',
+    alert3: '#F0D2C6',
     accent1: '#CD874A',
     accent2: '#87597B',
     accent2a: '#AFAFD8',

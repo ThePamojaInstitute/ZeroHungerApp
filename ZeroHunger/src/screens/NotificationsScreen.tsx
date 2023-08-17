@@ -16,7 +16,7 @@ import styles from "../../styles/screens/notificationsStyleSheet";
 import { useRoute } from "@react-navigation/native";
 import { ENV } from "../../env";
 import { getNotifications } from "../controllers/auth";
-import { extendExpiryDate } from "../controllers/post";
+import { extendExpiryDate, handleExpiryDate } from "../controllers/post";
 import { useAlert } from "../context/Alert";
 
 
@@ -389,6 +389,8 @@ export const NotificationsScreen = ({ navigation }) => {
     // }
 
     const renderItem = ({ item, index }) => {
+        const [expiryStr, expiryInDays] = handleExpiryDate(item.expiryDate, item.type)
+
         return (
             <View style={index !== 0 ? {
                 borderTopWidth: 1,
@@ -423,19 +425,10 @@ export const NotificationsScreen = ({ navigation }) => {
                         }}>
                             Your {item.type === 'r' ? 'request' : 'offer'} for
                             <Text style={{ fontFamily: Fonts.PublicSans_SemiBold, fontWeight: '600' }}>{` ${item.title} `}</Text>
-                            will expire at the end of today!</Text>
-                        <View
-                            testID="Posts.tag"
-                            style={{
-                                // borderRadius: 4,
-                                // backgroundColor: '#F0D2C6',
-                                // paddingVertical: 4,
-                                // paddingHorizontal: 6,
-                                // alignSelf: 'flex-start',
-                                // marginBottom: 10,
-                                // width: '100%'
-                            }}
-                        >
+                            will expire <Text style={{ fontFamily: Fonts.PublicSans_SemiBold, fontWeight: '600' }}>
+                                {expiryInDays > 0 ? 'in 2 days!' : 'at the end of today!'}
+                            </Text></Text>
+                        <View testID="Posts.tag">
                             {/* Placeholder need by date */}
                             {/* <Text testID="Posts.tagLabel" style={globalStyles.Tag}>Expiring soon</Text> */}
                             <Pressable
