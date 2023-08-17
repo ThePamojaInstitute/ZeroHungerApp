@@ -5,7 +5,6 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
 from django.db.models import Q
-from apps.Chat.models import Conversation
 from .models import BasicUser
 from apps.Posts.models import RequestPost, OfferPost
 from apps.Posts.views import serialize_posts
@@ -14,11 +13,18 @@ from datetime import timedelta, datetime
 import jwt
 
 
-def get_expiring_tomorrow_posts(user):
-    tomorrow = datetime.now().date() + timedelta(days=1)
+def get_expiring_soon_posts(user):
+    in_1_day = datetime.now().date() + timedelta(days=1)
+    in_2_days = datetime.now().date() + timedelta(days=2)
 
-    requests = RequestPost.objects.filter(postedBy__pk=user.pk, expiryDate__date=tomorrow, fulfilled=False)
-    offers = OfferPost.objects.filter(postedBy__pk=user.pk, expiryDate__date=tomorrow, fulfilled=False)
+    requests = RequestPost.objects.filter(
+        Q(postedBy=user) & Q(fulfilled=False) &
+        (Q(expiryDate__date=in_1_day) | Q(expiryDate__date=in_2_days))
+    )
+    offers = OfferPost.objects.filter(
+        Q(postedBy=user) & Q(fulfilled=False) &
+        (Q(expiryDate__date=in_1_day) | Q(expiryDate__date=in_2_days))
+    )
 
     serialized_requests = serialize_posts(requests, "r")
     serialized_offers = serialize_posts(offers, "o")
@@ -231,11 +237,12 @@ class getNotifications(APIView):
             return Response(status=204)
         
         try:
-            expiring_tomorrow_posts = get_expiring_tomorrow_posts(user)
+            expiring_soon_posts = get_expiring_soon_posts(user)
+            print(expiring_soon_posts)
         except Exception as e:
             Response(e, 500)
 
-        return Response(expiring_tomorrow_posts, 200)
+        return Response(expiring_soon_posts, 200)
 
 # class addNotification(APIView):
 #     def post(self, request, format=None):
