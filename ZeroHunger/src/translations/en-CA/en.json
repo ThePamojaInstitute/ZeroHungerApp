@@ -8,6 +8,7 @@
 			"skip":	"Skip",
 			"continue": "Continue",
 			"cancel":"Cancel",
+			"delete": "Delete",
 			"loading":"Loading...",
 			"backToHome": "Back to Home",
 			"clearAll" : "Clear all",
@@ -252,11 +253,22 @@
 	],
 
 	"account": {
+		"fields": {
+			"user.label": "Username",
+			"email.label": "Email address",
+			"display.label": "Display name",
+			"img.label": "Profile picture",
+			"pass.label": "Password",
+			"passConfirm.label": "Confirm password",
+			"passCurrent.label": "Current password",
+			"passNew.label": "New password",
+			"passNewConfirm.label": "Confirm new password"
+		},
 		"signin": {
 			"loading.label":"Loading",
-			"username.label" :"Username",
-			"email.label": "Email address",
-			"pass.label": "Password",
+			"user.label" : "{{ account.fields.user.label }}",
+			"email.label": "{{ account.fields.email.label }}",
+			"pass.label": "{{ account.fields.pass.label }}",
 			"passForgot.label": "Forgot password?",
 			"submit.label": "Sign in",
 			"or": "or",
@@ -269,21 +281,21 @@
 		},
 		"signup": {
 			"loading.label":"Loading",
-			"user.label":	"Username",
+			"user.label":	"{{ account.fields.user.label }}",
 			"user.required": true,
-			"display.label": "Display name",
+			"display.label": "{{ account.fields.display.label }}",
 			"display.required": false,
-			"email.label":	"Email address",
+			"email.label":	"{{ account.fields.email.label }}",
 			"email.required": true,
-			"pass.label": "Password",
+			"pass.label": "{{ account.fields.pass.label }}",
 			"pass.required": true,
 			"pass.desc": "{{ ['Must be at least 6 characters long', 'Must contain an uppercase letter and a lower case letter (A, z)', 'Must contain a number' ] }}",
-			"passConfirm.label": "Confirm Password",
+			"passConfirm.label": "{{ account.fields.passConfirm.label }}",
 			"passConfirm.required": true,
 			"terms" : {
-				"label":	"Terms and conditions",
+				"label": "Terms and conditions",
 				"desc": "Read our",
-				"link":"terms and conditions.",
+				"link": "terms and conditions.",
 				"accept.label": "I accept",
 				"required": true
 			},
@@ -305,7 +317,7 @@
 			"request": {
 				"heading": "Forgot your password",
 				"text": "Please enter the email address you'd like your password reset information to be sent to.",
-				"email.label": "Email address",
+				"email.label": "{{ account.fields.email.label }}",
 				"submit.label": "Request reset link"
 			},
 			"requestConfirm": {
@@ -315,10 +327,10 @@
 			"reset": {
 				"heading": "Reset your password",
 				"text": "Enter a new password to reset the password on your account. We’ll ask for this password whenever you log in.",
-				"pass.label": "New password",
+				"pass.label": "{{ account.fields.passNew.label }}",
 				"pass.desc": "{{ ['Must be at least 6 characters long', 'Must contain an uppercase letter and a lower case letter (A, z)', 'Must contain a number' ] }}",
 				"pass.required": true,
-				"passConfirm.label": "Confirm new password",
+				"passConfirm.label": "{{ account.fields.passNewConfirm.label }}",
 				"passConfirm.required": true,
 				"submit.label": "Reset password"
 			},
@@ -335,6 +347,34 @@
 				"passNum": "Your password must contain a number",
 				"passMatch": "The passwords you have entered do not match."
 			}
+		},
+		"settings": {
+			"heading": "{{ menu.side.account.label }}",
+			"sections": [
+				{
+					"user.label":	"{{ account.fields.user.label }}",
+					"user.required": true,
+					"email.label":	"{{ account.fields.email.label }}",
+					"email.required": true,
+					"display.label": "{{ account.fields.display.label }}",
+					"display.required": false,
+					"img.label": "{{ account.fields.img.label }}",
+					"img.required": false,
+					"img.link.label": "Edit picture"
+				},
+				{
+					"heading": "Change password",
+					"passCurrent.label": "{{ account.fields.passCurrent.label }}",
+					"passNew.label": "{{ account.fields.passNew.label }}",
+					"passNewConfirm.label": "{{ account.fields.passNewConfirm.label }}"
+				},
+				{
+					"heading": "Delete account",
+					"desc": "When you delete your account, all of your data, posts, and chat history will be permanently deleted as well.\n\nAccount deletion is irreversible. You cannot restore your account.\n\nLearn more about how we handle your data in our {{ link.label }}.",
+					"link.label": "privacy policy",
+					"button.label": "Delete my account"
+				}
+			]
 		}
 	},
 
@@ -734,21 +774,21 @@
 				"fields": [
 					{
 						"label": "Postal code",
-						"description": "This will be your default postal code used to show requests and offers near you on your home feed. It will also be used when you make a new offer or request. No one else will see your postal code.",
+						"desc": "This will be your default postal code used to show requests and offers near you on your home feed. It will also be used when you make a new offer or request. No one else will see your postal code.",
 						"placeholder": "{{ app.strings.locationPlaceholder }}"
 					},
 					{
 						"label": "{{ app.location.distance.label }}",
-						"description": "This will be the default radius used to show requests and offers near you on your home feed."
+						"desc": "This will be the default radius used to show requests and offers near you on your home feed."
 					},
 					{
 						"label": "{{ app.diet.label }}",
-						"description": "These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.",
+						"desc": "These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.",
 						"options": "{{ app.diet.options }}"
 					},
 					{
 						"label": "{{ app.delivery.label }}",
-						"description": "These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.",
+						"desc": "These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.",
 						"options": "{{ app.delivery.options }}"
 					},
 					{
@@ -856,6 +896,20 @@
 				"text": "Thanks for your report.\n\nBy submitting a report, you are helping to make the app a safer and more positive environment for everyone.\n\nWe will investigate any issues that are brought to our attention. Thank you for your help in this effort.\n\nIf you have any further concerns, you can contact us at {{ link }}.",
 				"link": "{{ app.contact.email }}"
 			}
+		},
+		"profilePicture": {
+			"heading": "Edit profile picture",
+			"choose.label": "Choose from library",
+			"remove.label": "Remove picture"
+		}
+	},
+
+	"modal": {
+		"deleteAccount": {
+			"heading": "Delete account",
+			"desc": "Are you sure you want to delete your account and all of your data?",
+			"cancel.label": "{{ app.strings.cancel }}",
+			"delete.label": "{{ app.strings.delete }}"
 		}
 	}
 }
