@@ -704,6 +704,24 @@
 				"buttonExtend.label": "Extend by 1 week",
 				"timeStamp": "{{ calculatedNotificationTime }} ago"
 			}
+		},
+		"settings": {
+			"heading": "{{ menu.side.notifications.label }}",
+			"sections": [
+				{
+					"heading": "Notify me about",
+					"options": [
+						{ "label": "Requests and offers expiring in 2 days" }
+					]
+				},
+				{
+					"heading": "Push notifications",
+					"options": [
+						{ "label": "Enable notifications" },
+						{ "label": "New messages" }
+					]
+				}
+			]
 		}
 	},
 
