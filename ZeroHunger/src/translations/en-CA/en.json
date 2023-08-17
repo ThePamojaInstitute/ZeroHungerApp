@@ -10,7 +10,8 @@
 			"cancel":"Cancel",
 			"loading":"Loading...",
 			"backToHome": "Back to Home",
-			"clearAll" : "Clear all"
+			"clearAll" : "Clear all",
+			"locationPlaceholder": "XXX XXX"
 		},
 		"contact.email": "xxx@xxx.com",
 		"sort": {
@@ -135,7 +136,7 @@
 				{
 					"label": "Input postal code",
 					"value": "custom",
-					"placeholder": "XXX XXX"
+					"placeholder": "{{ app.strings.locationPlaceholder }}"
 				}
 			] 
 		},
@@ -343,7 +344,7 @@
 			"text": "We’ll show you requests and offers based on your postal code",
 			"postalCode.label": "Your postal code",
 			"postalCode.desc": "Other people will only see an estimate of how far away your postal code is from theirs (i.e., 5 km away)",
-			"postalCode.placeholder": "XXX XXX",
+			"postalCode.placeholder": "{{ app.strings.locationPlaceholder}}",
 			"error.invalid": "The postal code you entered is not valid.",
 			"submit.label": "Save my postal code",
 			"alt.label": "Not right now"
@@ -723,6 +724,40 @@
 				}
 			]
 		}
+	},
+
+	"preferences": {
+		"heading": "Edit Preferences",
+		"sections": [
+			{
+				"heading": "Location preferences",
+				"fields": [
+					{
+						"label": "Postal code",
+						"description": "This will be your default postal code used to show requests and offers near you on your home feed. It will also be used when you make a new offer or request. No one else will see your postal code.",
+						"placeholder": "{{ app.strings.locationPlaceholder }}"
+					},
+					{
+						"label": "{{ app.location.distance.label }}",
+						"description": "This will be the default radius used to show requests and offers near you on your home feed."
+					},
+					{
+						"label": "{{ app.diet.label }}",
+						"description": "These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.",
+						"options": "{{ app.diet.options }}"
+					},
+					{
+						"label": "{{ app.delivery.label }}",
+						"description": "These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.",
+						"options": "{{ app.delivery.options }}"
+					},
+					{
+						"label": "Blocked Users",
+						"button.label": "Unblock"
+					}
+				]
+			}
+		]
 	},
 
 	"overlay": {
