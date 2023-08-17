@@ -1,8 +1,8 @@
 import React, { forwardRef, useContext, useEffect, useRef, useState } from "react";
-import { Text, ActivityIndicator, RefreshControl } from "react-native"
+import { Text, ActivityIndicator, RefreshControl, View, Dimensions, Pressable } from "react-native"
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
-import { Colors } from "../../styles/globalStyleSheet";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import rendererStyles from "../../styles/components/postRendererStyleSheet";
 import { deletePost, markAsFulfilled } from "../controllers/post";
 import { useAlert } from "../context/Alert";
@@ -14,6 +14,31 @@ import { getAccessToken } from "../../config";
 
 
 const MyPostModal = forwardRef(_MyPostModal)
+
+const NoPosts = ({ type, navigate }) => (
+    <View style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: Dimensions.get('window').height * 0.15,
+        paddingHorizontal: 50,
+    }}>
+        <Text
+            style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
+            No {type === 'r' ? 'requests' : 'offers'} yet
+        </Text>
+        <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
+            You will see your history once you make your first food {type === 'r' ? 'request' : 'offer'}
+        </Text>
+        <Pressable
+            style={[globalStyles.defaultBtn, { width: '90%' }]}
+            onPress={() => navigate(`${type === 'r' ? 'Request' : 'Offer'}FormScreen`)}
+        >
+            <Text style={globalStyles.defaultBtnLabel}>
+                {type === 'r' ? 'Request' : 'Offer'} Food
+            </Text>
+        </Pressable>
+    </View>
+)
 
 export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderByNewest }) => {
     const { user } = useContext(AuthContext);
@@ -51,10 +76,9 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
     const flattenData = data.pages.flatMap((page) => page.data)
 
     if (flattenData.length === 0 && isFetchedAfterMount) {
-        return <Text
-            testID="Posts.noPostsText"
-            style={rendererStyles.noPostsText}
-        >No {type === "r" ? 'requests' : 'offers'} available</Text>
+        return (
+            <NoPosts type={type} navigate={navigation.navigate} />
+        )
     }
 
     const loadNext = () => {

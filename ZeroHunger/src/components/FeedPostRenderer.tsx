@@ -1,7 +1,7 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import { Text, RefreshControl, ActivityIndicator } from "react-native";
+import { Text, RefreshControl, ActivityIndicator, View, Pressable, Platform, Dimensions } from "react-native";
 import styles from "../../styles/components/postRendererStyleSheet"
-import { Colors } from "../../styles/globalStyleSheet";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useAlert } from "../context/Alert";
 import { FlashList } from "@shopify/flash-list";
 import { deletePost, markAsFulfilled } from "../controllers/post";
@@ -15,7 +15,56 @@ import { getAccessToken } from "../../config";
 
 const MyPostModal = forwardRef(_MyPostModal)
 
-export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, categories, diet, logistics, distance, setUpdater }) => {
+const NoPosts = ({ type, filtersAreOn, navigate, clearFilters }) => (
+    <View style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: Dimensions.get('window').height * 0.15,
+        paddingHorizontal: 50,
+    }}>
+        <Text
+            style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
+            {filtersAreOn ?
+                `No ${type === 'r' ? 'requests' : 'offers'} matching your filters`
+                : `No ${type === 'r' ? 'requests' : 'offers'} yet`}
+        </Text>
+        <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
+            {filtersAreOn ?
+                'Try removing some of your filters to get more results'
+                : `Make your first ${type === 'r' ? 'request' : 'offer'}!`}
+        </Text>
+        <Pressable
+            style={[globalStyles.defaultBtn, { width: '90%' }]}
+            onPress={() => {
+                if (filtersAreOn) {
+                    clearFilters()
+                } else {
+                    navigate(`${type === 'r' ? 'Request' : 'Offer'}FormScreen`)
+                }
+            }}
+        >
+            <Text style={globalStyles.defaultBtnLabel}>
+                {filtersAreOn ?
+                    'Clear filters'
+                    : `${type === 'r' ? 'Request' : 'Offer'} Food`}
+            </Text>
+        </Pressable>
+    </View>
+)
+
+export const FeedPostRenderer = ({
+    type,
+    navigation,
+    setShowRequests,
+    sortBy,
+    categories,
+    diet,
+    logistics,
+    distance,
+    setUpdater,
+    clearFilters
+}) => {
+
     const { dispatch: alert } = useAlert()
 
     const [refreshing, setRefreshing] = useState(false)
@@ -63,10 +112,19 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
     const flattenData = data.pages.flatMap((page) => page.data)
 
     if (flattenData.length === 0 && isFetchedAfterMount) {
-        return <Text
-            testID="Posts.noPostsText"
-            style={styles.noPostsText}
-        >No {type === "r" ? 'requests' : 'offers'} available</Text>
+        let filtersAreOn = false
+        if (categories.length || diet.length || logistics.length || distance < 30) {
+            filtersAreOn = true
+        }
+
+        return (
+            <NoPosts
+                type={type}
+                filtersAreOn={filtersAreOn}
+                navigate={navigation.navigate}
+                clearFilters={clearFilters}
+            />
+        )
     }
 
     const loadNext = () => {
