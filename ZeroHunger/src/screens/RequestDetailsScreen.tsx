@@ -61,6 +61,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
     const postalCode = formatPostalCode(route.params?.postalCode)
     const categories = handlePreferences(route.params?.categories?.sort().toString(), getCategory)
     const diet = handlePreferences(route.params?.diet?.sort().toString(), getDiet)
+    const [expiryStr, expiryInDays] = handleExpiryDate(route.params.expiryDate, route.params.type)
 
     // const renderItem = ({ item }) => {
     //     return (
@@ -130,7 +131,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                         </View>
 
                         <View testID="ReqDet.needBy" style={styles.needBy}>
-                            <Text testID="ReqDet.needByTag" style={styles.Tag}>{handleExpiryDate(route.params.expiryDate, route.params.type)}</Text>
+                            <Text testID="ReqDet.needByTag" style={styles.Tag}>{expiryStr}</Text>
                         </View>
                     </View>
 

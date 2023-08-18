@@ -303,16 +303,20 @@ export const getDiet = (char: Char) => {
 }
 
 export const handleExpiryDate = (expiryDate: string, postType: "r" | "o"): [string, number] => {
-    const diffInDays = Math.abs(moment().diff(expiryDate, "days"))
+    const diffInDays = moment(expiryDate).diff(moment(), "days")
 
     if (postType === 'r') {
-        if (diffInDays <= 0) {
+        if (diffInDays < 0) {
+            return ['Expired', diffInDays]
+        } else if (diffInDays === 0) {
             return ['Need today', diffInDays]
         } else {
             return [`Need in ${diffInDays + 1} days`, diffInDays]
         }
     } else {
-        if (diffInDays <= 0) {
+        if (diffInDays < 0) {
+            return ['Expired', diffInDays]
+        } else if (diffInDays === 0) {
             return ['Expires today', diffInDays]
         } else {
             return [`Expires in ${diffInDays + 1} days`, diffInDays]
