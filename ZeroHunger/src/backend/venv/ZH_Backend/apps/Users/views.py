@@ -238,7 +238,6 @@ class getNotifications(APIView):
         
         try:
             expiring_soon_posts = get_expiring_soon_posts(user)
-            print(expiring_soon_posts)
         except Exception as e:
             Response(e, 500)
 
