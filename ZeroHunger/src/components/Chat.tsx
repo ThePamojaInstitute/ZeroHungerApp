@@ -40,6 +40,11 @@ export const Chat = ({ navigation, route }) => {
     const [endReached, setEndReached] = useState(false)
     const [inputHeight, setInputHeight] = useState(0)
     const [initiated, setInitiated] = useState(false)
+    const [initiatedTimeStampForMe, setInitiatedTimeStampForMe] = useState(false)
+    const [initiatedTimeStampForOther, setInitiatedTimeStampForOther] = useState(false)
+
+    let lastFromMeRendered = false
+    let lastFromOtherRendered = false
 
     const namesAlph = [route.params.user1, route.params.user2].sort();
     const conversationName = `${namesAlph[0]}__${namesAlph[1]}`
@@ -297,7 +302,23 @@ export const Chat = ({ navigation, route }) => {
                 return <Post key={item.id} item={item} />
             } catch (error) { }
         }
-        return <Message key={item.id} message={item}></Message>
+        let showTimeStamp = false
+
+        if (item.from_user['username'] === user['username'] && !lastFromMeRendered && !initiatedTimeStampForMe) {
+            setInitiatedTimeStampForMe(true)
+            lastFromMeRendered = true
+            showTimeStamp = true
+        } else if (item.from_user['username'] !== user['username'] && !lastFromOtherRendered && !initiatedTimeStampForOther) {
+            setInitiatedTimeStampForOther(true)
+            lastFromOtherRendered = true
+            showTimeStamp = true
+        }
+
+        return <Message
+            key={item.id}
+            message={item}
+            showTimeStamp={showTimeStamp}
+        />
     }
 
 
