@@ -1,6 +1,4 @@
 import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { useState } from "react";
 import styles from "../../styles/screens/permissionsStyleSheet";
@@ -9,24 +7,21 @@ import loginStyles from "../../styles/screens/loginStyleSheet"
 import { savePreferences } from "../controllers/preferences";
 
 export const PermissionsScreen = ({ navigation }) => {
-    const { accessToken } = useContext(AuthContext);
-
     const [postalCode, setPostalCode] = useState('')
     const [errMsg, setErrMsg] = useState("")
 
     const savePostalCode = async () => {
-        savePreferences(postalCode, null, null, accessToken).then(res => {
-            if (res.msg === "success") {
-                navigation.navigate('HomeScreen')
-                return
-            } else if (res.res) {
-                setErrMsg(res.res)
-                return
-            } else {
-                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                return
-            }
-        })
+        const res = await savePreferences(postalCode, null, null, null)
+        if (res.msg === "success") {
+            navigation.navigate('HomeScreen')
+            return
+        } else if (res.res) {
+            setErrMsg(res.res)
+            return
+        } else {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+            return
+        }
     }
 
     return (

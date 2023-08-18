@@ -1,7 +1,8 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { AuthContext } from "./AuthContext";
-import { WSBaseURL } from "../../config";
+import { storage, WSBaseURL } from "../../config";
+import { ENV } from "../../env";
 
 const DefaultProps = {
     unreadMessageCount: 0,
@@ -29,7 +30,9 @@ export const NotificationContextProvider: React.FC<{ children: ReactNode }> = ({
 
     const { readyState } = useWebSocket(user ? `${WSBaseURL}notifications/` : null, {
         queryParams: {
-            token: user ? accessToken : ""
+            token: user ?
+                ENV === 'production' ? storage.getString('access_token') : accessToken
+                : ""
         },
         onOpen: () => {
             console.log("Connected to Notifications!");

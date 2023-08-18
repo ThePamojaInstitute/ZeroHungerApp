@@ -1,6 +1,6 @@
 LOGISTICS_CHOICES = (('a', 'Pick up'),
               ('b', 'Delivery'),
-              ('c', 'Meet at a public locatio'),
+              ('c', 'Meet at a public location'),
               ('d', 'Wheelchair accessible'))
 
 DIET_REQUIREMENTS = (('a', 'Halal'),

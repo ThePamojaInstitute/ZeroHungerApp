@@ -1,9 +1,7 @@
-import React, { forwardRef, useContext, useEffect, useRef, useState } from "react";
-import { Text, RefreshControl, ActivityIndicator } from "react-native";
-import styles from "../../styles/components/postRendererStyleSheet"
-import { Colors } from "../../styles/globalStyleSheet";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { Text, RefreshControl, ActivityIndicator, View, Pressable, Dimensions } from "react-native";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useAlert } from "../context/Alert";
-import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
 import { deletePost, markAsFulfilled } from "../controllers/post";
 import useFetchFeedPosts from "../hooks/useFetchFeedPosts";
@@ -15,9 +13,57 @@ import { default as _MyPostModal } from "./MyPostModal";
 
 const MyPostModal = forwardRef(_MyPostModal)
 
-export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, categories, diet, logistics, accessNeeds, setUpdater }) => {
+const NoPosts = ({ type, filtersAreOn, navigate, clearFilters }) => (
+    <View style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: Dimensions.get('window').height * 0.15,
+        paddingHorizontal: 50,
+    }}>
+        <Text
+            style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
+            {filtersAreOn ?
+                `No ${type === 'r' ? 'requests' : 'offers'} matching your filters`
+                : `No ${type === 'r' ? 'requests' : 'offers'} yet`}
+        </Text>
+        <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
+            {filtersAreOn ?
+                'Try removing some of your filters to get more results'
+                : `Make your first ${type === 'r' ? 'request' : 'offer'}!`}
+        </Text>
+        <Pressable
+            style={[globalStyles.defaultBtn, { width: '90%' }]}
+            onPress={() => {
+                if (filtersAreOn) {
+                    clearFilters()
+                } else {
+                    navigate(`${type === 'r' ? 'Request' : 'Offer'}FormScreen`)
+                }
+            }}
+        >
+            <Text style={globalStyles.defaultBtnLabel}>
+                {filtersAreOn ?
+                    'Clear filters'
+                    : `${type === 'r' ? 'Request' : 'Offer'} Food`}
+            </Text>
+        </Pressable>
+    </View>
+)
+
+export const FeedPostRenderer = ({
+    type,
+    navigation,
+    setShowRequests,
+    sortBy,
+    categories,
+    diet,
+    logistics,
+    distance,
+    setUpdater,
+    clearFilters
+}) => {
+
     const { dispatch: alert } = useAlert()
-    const { accessToken } = useContext(AuthContext);
 
     const [refreshing, setRefreshing] = useState(false)
 
@@ -37,8 +83,10 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         isError,
         hasNextPage,
         fetchNextPage,
-        refetch
-    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, accessNeeds)
+        refetch,
+        isFetchedAfterMount,
+        isFetching
+    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, distance)
 
     useEffect(() => {
         const updater = () => {
@@ -56,19 +104,26 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         } else return
     }, [isFocused])
 
-    if (!data) return <Text>An error occurred while fetching data</Text>
-
-    if (isLoading) return <ActivityIndicator animating size="large" color={Colors.primary} />
+    if (isLoading || isFetching) return <ActivityIndicator animating size="large" color={Colors.primary} />
 
     if (isError) return <Text>An error occurred while fetching data</Text>
 
     const flattenData = data.pages.flatMap((page) => page.data)
 
-    if (flattenData.length === 0) {
-        return <Text
-            testID="Posts.noPostsText"
-            style={styles.noPostsText}
-        >No {type === "r" ? 'requests' : 'offers'} available</Text>
+    if (flattenData.length === 0 && isFetchedAfterMount) {
+        let filtersAreOn = false
+        if (categories.length || diet.length || logistics.length || distance < 30) {
+            filtersAreOn = true
+        }
+
+        return (
+            <NoPosts
+                type={type}
+                filtersAreOn={filtersAreOn}
+                navigate={navigation.navigate}
+                clearFilters={clearFilters}
+            />
+        )
     }
 
     const loadNext = () => {
@@ -77,26 +132,24 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
         }
     }
 
-    const handleDelete = (postId: Number) => {
-        deletePost(type, postId, accessToken).then(res => {
-            if (res.msg == "success") {
-                refetch()
-                alert!({ type: 'open', message: res.res, alertType: 'success' })
-            } else {
-                alert!({ type: 'open', message: res.res, alertType: 'error' })
-            }
-        })
+    const handleDelete = async (postId: number) => {
+        const res = await deletePost(type, postId)
+        if (res.msg == "success") {
+            refetch()
+            alert!({ type: 'open', message: res.res, alertType: 'success' })
+        } else {
+            alert!({ type: 'open', message: res.res, alertType: 'error' })
+        }
     }
 
-    const handleMarkAsFulfilled = (postId: Number) => {
-        markAsFulfilled(type, postId, accessToken).then(res => {
-            if (res.msg == "success") {
-                refetch()
-                alert!({ type: 'open', message: res.res, alertType: 'success' })
-            } else {
-                alert!({ type: 'open', message: res.res, alertType: 'error' })
-            }
-        })
+    const handleMarkAsFulfilled = async (postId: number) => {
+        const res = await markAsFulfilled(type, postId)
+        if (res.msg == "success") {
+            refetch()
+            alert!({ type: 'open', message: res.res, alertType: 'success' })
+        } else {
+            alert!({ type: 'open', message: res.res, alertType: 'error' })
+        }
     }
 
     const renderItem = ({ item }) => {
@@ -130,26 +183,30 @@ export const FeedPostRenderer = ({ type, navigation, setShowRequests, sortBy, ca
                 setShowRequests={setShowRequests}
                 from="home"
                 key={item.postId}
+                refetch={refetch}
             />
         )
     }
 
     return (
         <>
-            <FlashList
-                ref={listRef}
-                testID="Posts.list"
-                renderItem={renderItem}
-                data={flattenData}
-                onEndReached={loadNext}
-                onEndReachedThreshold={0.3}
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                estimatedItemSize={125}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
-                }
-            />
+            {isFetchedAfterMount ?
+                <FlashList
+                    ref={listRef}
+                    testID="Posts.list"
+                    renderItem={renderItem}
+                    data={flattenData}
+                    onEndReached={loadNext}
+                    onEndReachedThreshold={0.3}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    estimatedItemSize={125}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
+                    }
+                /> :
+                <ActivityIndicator animating size="large" color={Colors.primary} />
+            }
             <MyPostModal
                 ref={modalRef}
                 selectedPost={selectedPost}

@@ -7,6 +7,7 @@ import {
     ScrollView,
     Image,
     Platform,
+    ActivityIndicator
 } from "react-native";
 import styles from "../../styles/screens/homeStyleSheet"
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet"
@@ -16,61 +17,41 @@ import { NotificationContext } from "../context/ChatNotificationContext";
 import FeedPostRenderer from "../components/FeedPostRenderer";
 import { useTranslation } from "react-i18next";
 import { default as _PostsFilters } from "../components/PostsFilters";
-import { getPreferencesLogistics } from "../controllers/preferences";
+import { getPreferences } from "../controllers/preferences";
 import { Char } from "../../types";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { axiosInstance, storage } from "../../config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { logOutUser } from "../controllers/auth";
+import { axiosInstance, getItemFromLocalStorage, setLocalStorageItem, storage } from "../../config";
+import { getNotifications, logOutUser } from "../controllers/auth";
 import { ENV } from "../../env";
+import { useAlert } from "../context/Alert";
 
-
-const getItemFromLocalStorage = async (key: string) => {
-    let item: string
-    if (Platform.OS === 'web') {
-        item = storage.getString(key)
-    } else {
-        item = await AsyncStorage.getItem(key)
-    }
-    return item
-}
-
-const setLocalStorageItem = async (key: string, value: string) => {
-    if (ENV === 'production') {
-        storage.set(key, value.toString())
-    } else {
-        if (Platform.OS === 'web') {
-            storage.set(key, value.toString())
-        } else {
-            await AsyncStorage.setItem(key, value.toString())
-        }
-    }
-    return
-}
 
 const PostsFilters = forwardRef(_PostsFilters)
 
-export const HomeScreen = ({ navigation }) => {
+export const HomeScreen = ({ navigation, route }) => {
     const modalRef = useRef(null)
 
     const openModal = () => {
         modalRef.current.publicHandler()
+        setModalIsOpen(true)
     }
 
     const { user, dispatch } = useContext(AuthContext)
-    const { setChatIsOpen } = useContext(NotificationContext);
+    const { setChatIsOpen } = useContext(NotificationContext)
+    const { dispatch: alert } = useAlert()
 
     const [showRequests, setShowRequests] = useState(true)
     const [sortBy, setSortBy] = useState<'new' | 'old' | 'distance'>('new')
     const [categories, setCategories] = useState<Char[]>([])
     const [diet, setDiet] = useState<Char[]>([])
-    const [prefLogistics, setPrefLogistics] = useState<Char[]>([])
     const [logistics, setLogistics] = useState<Char[]>([])
-    const [accessNeeds, setAccessNeeds] = useState<Char>()
     const [updater, setUpdater] = useState(() => () => { })
     const [showFilter, setShowFilter] = useState<'' | 'sort' | 'category' | 'diet' | 'logistics' | 'location'>('')
-    const [distance, setDistance] = useState(50)
+    const [distance, setDistance] = useState(15)
     const [expiringPosts, setExpiringPosts] = useState<object[]>()
+    const [initialized, setInitialized] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const [modalIsOpen, setModalIsOpen] = useState(false)
 
     // on navigation change
     useFocusEffect(() => {
@@ -80,7 +61,25 @@ export const HomeScreen = ({ navigation }) => {
         setChatIsOpen(false)
     })
 
-    const getNotifications = async () => {
+    const clearFilters = () => {
+        setCategories([])
+        setDiet([])
+        setLogistics([])
+        setDistance(30)
+    }
+
+    const handlelogOut = () => {
+        logOutUser().then(() => {
+            dispatch({ type: "LOGOUT", payload: null })
+        }).then(() => {
+            alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
+            navigation.navigate('LoginScreen')
+        }).catch(() => {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+        })
+    }
+
+    const handleGetNotifications = async () => {
         const allowExpiringPosts = ENV === 'production' ?
             storage.getString('allowExpiringPosts')
             : await getItemFromLocalStorage('allowExpiringPosts')
@@ -92,33 +91,26 @@ export const HomeScreen = ({ navigation }) => {
             : await getItemFromLocalStorage('lastSeen')
         if (lastSeen === new Date().toDateString()) return
 
-        const accessToken = ENV === 'production' ?
-            storage.getString('access_token')
-            : await getItemFromLocalStorage('access_token')
-        if (!accessToken) {
-            logOutUser().then(() => {
-                dispatch({ type: "LOGOUT", payload: null })
-            }).then(() => {
-                alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
-                navigation.navigate('LoginScreen')
-            }).catch(() => {
-                alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-            })
-            return
-        }
-
         try {
-            const res = await axiosInstance.get('/users/getNotifications', {
-                headers: {
-                    Authorization: accessToken
-                }
-            })
+            const res = await getNotifications('notifications')
 
             if (res.status === 200) {
                 setExpiringPosts(res.data)
             } else if (res.status === 204) {
                 setLocalStorageItem('allowExpiringPosts', 'false')
             }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const initializeFilters = async () => {
+        try {
+            const data = await getPreferences()
+
+            setDistance(data['distance'])
+            setDiet(data['diet'])
+            setLogistics(data['logistics'])
         } catch (error) {
             console.log(error);
         }
@@ -137,10 +129,31 @@ export const HomeScreen = ({ navigation }) => {
         } catch (error) {
             console.log(error);
         }
-        getNotifications()
+
+        initializeFilters().finally(() => setInitialized(true)).catch(err => {
+            console.log(err);
+            setInitialized(true)
+        })
+        handleGetNotifications()
 
         setChatIsOpen(false)
     }, [])
+
+    useEffect(() => {
+        if (route.params?.reload) {
+            setIsLoading(true)
+            initializeFilters()
+
+            route.params.reload = false
+        }
+    }, [route.params?.reload])
+
+    useEffect(() => {
+        if (modalIsOpen) return
+
+        updater()
+        setIsLoading(false)
+    }, [distance, diet, logistics])
 
     useEffect(() => {
         navigation.setOptions({
@@ -200,21 +213,6 @@ export const HomeScreen = ({ navigation }) => {
         })
     }, [updater, expiringPosts])
 
-    // useEffect(() => {
-    //     if (unreadMessageCount > 0 && !chatIsOpen) {
-    //         alert!({
-    //             type: 'open', message: `You have ${unreadMessageCount} new ${unreadMessageCount > 1
-    //                 ? 'messages' : 'message'}`, alertType: 'info'
-    //         })
-    //     }
-    // }, [unreadMessageCount])
-
-    useEffect(() => {
-        setLogistics([])
-        setAccessNeeds(null)
-        getPreferencesLogistics(prefLogistics, setAccessNeeds, setLogistics)
-    }, [prefLogistics])
-
     const handleOpen = (item: string) => {
         switch (item) {
             case 'Sort':
@@ -262,7 +260,7 @@ export const HomeScreen = ({ navigation }) => {
         'Sort',
         `Food category${categories.length > 0 ? ` (${categories.length})` : ''}`,
         `Dietary preference${diet.length > 0 ? ` (${diet.length})` : ''}`,
-        `Delivery / Pick up${prefLogistics.length > 0 ? ` (${prefLogistics.length})` : ''}`,
+        `Delivery / Pick up${logistics.length > 0 ? ` (${logistics.length})` : ''}`,
         'Location'
     ]
 
@@ -324,46 +322,59 @@ export const HomeScreen = ({ navigation }) => {
                     })}
                 </ScrollView>
             </View>
-            <PostsFilters
-                ref={modalRef}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                categories={categories}
-                setCategories={setCategories}
-                diet={diet}
-                setDiet={setDiet}
-                logistics={prefLogistics}
-                setLogistics={setPrefLogistics}
-                distance={distance}
-                setDistance={setDistance}
-                updater={updater}
-                showFilter={showFilter}
-                setShowFilter={setShowFilter}
-            />
-            {showRequests &&
-                <FeedPostRenderer
-                    type={"r"}
-                    navigation={navigation}
-                    setShowRequests={setShowRequests}
-                    sortBy={sortBy}
-                    categories={categories}
-                    diet={diet}
-                    logistics={logistics}
-                    accessNeeds={accessNeeds}
-                    setUpdater={setUpdater}
-                />}
-            {!showRequests &&
-                <FeedPostRenderer
-                    type={"o"}
-                    navigation={navigation}
-                    setShowRequests={setShowRequests}
-                    sortBy={sortBy}
-                    categories={categories}
-                    diet={diet}
-                    logistics={logistics}
-                    accessNeeds={accessNeeds}
-                    setUpdater={setUpdater}
-                />}
+            {initialized ?
+                <>
+                    <PostsFilters
+                        ref={modalRef}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        categories={categories}
+                        setCategories={setCategories}
+                        diet={diet}
+                        setDiet={setDiet}
+                        logistics={logistics}
+                        setLogistics={setLogistics}
+                        distance={distance}
+                        setDistance={setDistance}
+                        updater={updater}
+                        showFilter={showFilter}
+                        setShowFilter={setShowFilter}
+                        setModalIsOpen={setModalIsOpen}
+                    />
+                    {!isLoading ?
+                        <>
+                            {showRequests &&
+                                <FeedPostRenderer
+                                    type={"r"}
+                                    navigation={navigation}
+                                    setShowRequests={setShowRequests}
+                                    sortBy={sortBy}
+                                    categories={categories}
+                                    diet={diet}
+                                    logistics={logistics}
+                                    distance={distance}
+                                    setUpdater={setUpdater}
+                                    clearFilters={clearFilters}
+                                />}
+                            {!showRequests &&
+                                <FeedPostRenderer
+                                    type={"o"}
+                                    navigation={navigation}
+                                    setShowRequests={setShowRequests}
+                                    sortBy={sortBy}
+                                    categories={categories}
+                                    diet={diet}
+                                    logistics={logistics}
+                                    distance={distance}
+                                    setUpdater={setUpdater}
+                                    clearFilters={clearFilters}
+                                />}
+                        </> :
+                        <ActivityIndicator animating size="large" color={Colors.primary} />
+                    }
+                </> :
+                <ActivityIndicator animating size="large" color={Colors.primary} />
+            }
         </View>
     )
 }

@@ -1,16 +1,12 @@
 import moment from "moment";
-import { axiosInstance } from "../../config";
+import { axiosInstance, getAccessToken } from "../../config";
 import { Char } from "../../types";
 
 interface ILOGISTICSPREFERENCES {
     PICKUP: Char,
     DELIVERY: Char,
-    PUBLIC: Char
-}
-interface IACCESSNEEDSPREFERENCES {
-    NONE: Char,
-    WHEELCHAIR: Char,
-    DELIVERY: Char
+    PUBLIC: Char,
+    WHEELCHAIR: Char
 }
 interface IFOODCATEGORIES {
     Fruits: Char,
@@ -41,12 +37,8 @@ interface IDIETPREFERENCES {
 export const LOGISTICSPREFERENCES: ILOGISTICSPREFERENCES = {
     PICKUP: 'a',
     DELIVERY: 'b',
-    PUBLIC: 'c'
-}
-export const ACCESSNEEDSPREFERENCES: IACCESSNEEDSPREFERENCES = {
-    NONE: 'a',
-    WHEELCHAIR: 'b',
-    DELIVERY: 'c'
+    PUBLIC: 'c',
+    WHEELCHAIR: 'd'
 }
 export const FOODCATEGORIES: IFOODCATEGORIES = {
     Fruits: 'a',
@@ -78,11 +70,11 @@ export const createPost = async (post: {
     postData: {
         title: string
         images: string,
-        postedBy: Number,
+        postedBy: number,
         description: string,
         logistics: Char[],
         postalCode: string,
-        accessNeeds: Char,
+        accessNeeds: string,
         categories: Char[],
         diet: Char[],
         expiryDate: string,
@@ -116,13 +108,13 @@ export const createPost = async (post: {
     }
 }
 
-export const deletePost = async (postType: Char, postId: Number, token: string) => {
+export const deletePost = async (postType: Char, postId: number) => {
     if (postId === 0) return
 
     try {
         const res = await axiosInstance.delete('/posts/deletePost', {
             headers: {
-                Authorization: token
+                Authorization: await getAccessToken()
             },
             data: {
                 'postType': postType,
@@ -141,13 +133,13 @@ export const deletePost = async (postType: Char, postId: Number, token: string) 
     }
 }
 
-export const markAsFulfilled = async (postType: Char, postId: Number, token: string) => {
+export const markAsFulfilled = async (postType: Char, postId: number) => {
     if (postId === 0) return
 
     try {
         const res = await axiosInstance.put('/posts/markAsFulfilled', {
             headers: {
-                Authorization: token
+                Authorization: await getAccessToken()
             },
             data: {
                 'postType': postType,
@@ -177,6 +169,33 @@ export const handleImageUpload = async (base64Images: string[]) => {
     return result
 }
 
+export const extendExpiryDate = async (postId: number, type: "r" | "o") => {
+    const oneWeekLater = moment(new Date()).add(1, 'week')
+    const formattedDate = moment(oneWeekLater.toDate(), 'YYYY-MM-DD HH:mm')
+
+    try {
+        const res = await axiosInstance.put('/posts/extendPostExpiryDate', {
+            headers: {
+                Authorization: await getAccessToken()
+            },
+            data: {
+                'postType': type,
+                'postId': postId,
+                'newExpiryDate': formattedDate
+            }
+        })
+
+        if (res.status === 204) {
+            return { msg: "success", res: res.data }
+        } else {
+            return { msg: "failure", res: res.data }
+        }
+    } catch (error) {
+        console.log(error);
+        return { msg: "failure", res: 'An error occured' }
+    }
+}
+
 export const getLogisticsType = (char: Char) => {
     switch (char) {
         case LOGISTICSPREFERENCES.PICKUP:
@@ -185,6 +204,8 @@ export const getLogisticsType = (char: Char) => {
             return 'Delivery'
         case LOGISTICSPREFERENCES.PUBLIC:
             return 'Meet at a public location'
+        case LOGISTICSPREFERENCES.WHEELCHAIR:
+            return 'Location must be wheelchair accessible'
         default:
             return ''
     }
@@ -222,26 +243,6 @@ export const formatPostalCode = (postalCode: string) => {
     return postalCode
 }
 
-export const handleAccessNeeds = (char: Char, postType: "r" | "o") => {
-    switch (char) {
-        case ACCESSNEEDSPREFERENCES.NONE:
-            return 'No access needs'
-        case ACCESSNEEDSPREFERENCES.WHEELCHAIR:
-            if (postType === 'r') {
-                return 'Pick up location must be wheelchair accessible'
-            } else if (postType === 'o') {
-                return 'Delivery location must be wheelchair accessible'
-            }
-        case ACCESSNEEDSPREFERENCES.DELIVERY:
-            if (postType === 'r') {
-                return 'Delivery only'
-            } else if (postType === 'o') {
-                return 'Pick up only'
-            }
-        default:
-            return ''
-    }
-}
 
 export const getCategory = (char: Char) => {
     switch (char) {
@@ -301,24 +302,24 @@ export const getDiet = (char: Char) => {
     }
 }
 
-export const handleExpiryDate = (expiryDate: string, postType: "r" | "o") => {
-    const diffInDays = Math.abs(moment().diff(expiryDate, "days"))
+export const handleExpiryDate = (expiryDate: string, postType: "r" | "o"): [string, number] => {
+    const diffInDays = moment(expiryDate).diff(moment(), "days")
 
     if (postType === 'r') {
-        if (diffInDays <= 0) {
-            return 'Need today'
-        } else if (diffInDays === 1) {
-            return `Need by tomorrow`
+        if (diffInDays < 0) {
+            return ['Expired', diffInDays]
+        } else if (diffInDays === 0) {
+            return ['Need today', diffInDays]
         } else {
-            return `Need in ${diffInDays} days`
+            return [`Need in ${diffInDays + 1} days`, diffInDays]
         }
     } else {
-        if (diffInDays <= 0) {
-            return 'Expires today'
-        } else if (diffInDays === 1) {
-            return `Expires tomorrow`
+        if (diffInDays < 0) {
+            return ['Expired', diffInDays]
+        } else if (diffInDays === 0) {
+            return ['Expires today', diffInDays]
         } else {
-            return `Expires in ${diffInDays} days`
+            return [`Expires in ${diffInDays + 1} days`, diffInDays]
         }
     }
 }

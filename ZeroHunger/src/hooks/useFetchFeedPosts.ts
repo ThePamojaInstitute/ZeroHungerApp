@@ -11,7 +11,7 @@ export default function useFetchPosts(
     categories: Char[],
     diet: Char[],
     logistics: Char[],
-    accessNeeds: Char,
+    distance: number
 ) {
     const getPosts = async ({ pageParam = 0 }) => {
         let accessToken: string
@@ -36,9 +36,10 @@ export default function useFetchPosts(
                 'categories': categories,
                 'diet': diet,
                 'logistics': logistics,
-                'accessNeeds': accessNeeds,
+                'distance': distance
             }
         })
+
         return {
             data: res.data,
             nextPage: pageParam + 1,
