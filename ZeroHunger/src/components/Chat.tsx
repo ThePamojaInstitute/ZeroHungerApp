@@ -33,8 +33,8 @@ export const Chat = ({ navigation, route }) => {
 
     const [message, setMessage] = React.useState("");
     const [messageHistory, setMessageHistory] = React.useState<object[]>([]);
-    const [start, setStart] = useState(30)
-    const [end, setEnd] = useState(40)
+    const [start, setStart] = useState(20)
+    const [end, setEnd] = useState(30)
     const [empty, setEmpty] = useState(false)
     const [loading, setLoading] = useState(false)
     const [endReached, setEndReached] = useState(false)
@@ -216,6 +216,8 @@ export const Chat = ({ navigation, route }) => {
     const Post = ({ item }) => {
         const content = JSON.parse(item.content)
 
+        const [expiryStr, expiryInDays] = handleExpiryDate(content.expiryDate, content.type)
+
         return (
             <TouchableOpacity testID='Chat.postPrev' onPress={() => handlePress(
                 content.title,
@@ -234,7 +236,11 @@ export const Chat = ({ navigation, route }) => {
                 content.postalCode,
                 content.type
             )}>
-                <View testID='Chat.postCont' style={user['username'] === item.to_user['username'] ? styles.postMsgContainerIn : styles.postMsgContainerOut}>
+                <View
+                    testID='Chat.postCont'
+                    style={user['username'] === item.to_user['username']
+                        ? styles.postMsgContainerIn : styles.postMsgContainerOut}
+                >
                     <View
                         testID='Chat.postMsg'
                         style={user['username'] === item.to_user['username'] ?
@@ -274,7 +280,7 @@ export const Chat = ({ navigation, route }) => {
                                     </View>
                                 </View>
                                 <View testID='Chat.postMsgNeedBy' style={[styles.postMsgNeedBy]}>
-                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>{handleExpiryDate(content.expiryDate, content.type)}</Text>
+                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>{expiryStr}</Text>
                                 </View>
                             </View>
                         </View>
@@ -288,7 +294,7 @@ export const Chat = ({ navigation, route }) => {
         if (item.content.startsWith('{')) {
             try {
                 JSON.parse(item.content)
-                return <Post item={item} />
+                return <Post key={item.id} item={item} />
             } catch (error) { }
         }
         return <Message key={item.id} message={item}></Message>
@@ -298,7 +304,7 @@ export const Chat = ({ navigation, route }) => {
     return (
         <View testID='Chat.container' style={{ flex: 1, backgroundColor: 'white' }}>
             <Text>The WebSocket is currently {connectionStatus}</Text>
-            {(!empty && messageHistory.length === 0) && <ActivityIndicator animating size="large" color={Colors.dark} />}
+            {/* {(!empty && messageHistory.length === 0) && <ActivityIndicator animating size="large" color={Colors.dark} />} */}
             {empty && !loading && <Text testID='Chat.noMsgs' style={styles.noMsgs}>No Messages</Text>}
             <FlashList
                 renderItem={renderItem}
@@ -306,11 +312,13 @@ export const Chat = ({ navigation, route }) => {
                 onEndReached={loadMessages}
                 onEndReachedThreshold={0.3}
                 inverted={true}
-                estimatedItemSize={100}
+                estimatedItemSize={235}
                 testID='Chat.messagesList'
-                ListFooterComponent={endReached ?
-                    <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 10 }}
-                    >End Reached</Text> : <></>}
+                // ListFooterComponent={endReached ?
+                //     <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 10 }}
+                //     >End Reached</Text> : <ActivityIndicator animating size="large" color={Colors.dark} />}
+                ListFooterComponent={!endReached ?
+                    <ActivityIndicator animating size="large" color={Colors.dark} /> : <></>}
             />
             <View testID='Chat.chatBar' style={[styles.chatBar, inputHeight > 50 ? { height: 69 + (inputHeight - 69 + 25) } : { height: 69 }]}>
                 <Entypo testID='Chat.chatCameraIcon' name="camera" size={26} color="black" style={styles.chatCameraIcon} />
