@@ -193,7 +193,7 @@ const PostsFilters = ({
                     <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
-                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                style={styles.modalItem}
                                 onPress={() => {
                                     if (showFilter === 'sort') setShowFilter('')
                                     else setShowFilter('sort')
@@ -214,7 +214,7 @@ const PostsFilters = ({
                     <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
-                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                style={styles.modalItem}
                                 onPress={() => {
                                     if (showFilter === 'category') setShowFilter('')
                                     else setShowFilter('category')
@@ -239,7 +239,7 @@ const PostsFilters = ({
                     <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
-                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                style={styles.modalItem}
                                 onPress={() => {
                                     if (showFilter === 'diet') setShowFilter('')
                                     else setShowFilter('diet')
@@ -265,7 +265,7 @@ const PostsFilters = ({
                     <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
-                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                style={styles.modalItem}
                                 onPress={() => {
                                     if (showFilter === 'location') setShowFilter('')
                                     else setShowFilter('location')
@@ -287,7 +287,7 @@ const PostsFilters = ({
                     <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
-                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                style={styles.modalItem}
                                 onPress={() => {
                                     if (showFilter === 'logistics') setShowFilter('')
                                     else setShowFilter('logistics')

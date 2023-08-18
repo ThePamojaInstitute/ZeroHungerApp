@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { Colors } from "../globalStyleSheet";
 
 export default StyleSheet.create({
@@ -22,7 +22,8 @@ export default StyleSheet.create({
         alignItems: "flex-start",
         gap: 12,
         marginVertical: 5,
-        marginLeft: 5
+        marginLeft: 5,
+        marginBottom: Platform.OS === 'web' ? 5 : -3
     },
     modalItemBorder: {
         borderBottomWidth: 1,
