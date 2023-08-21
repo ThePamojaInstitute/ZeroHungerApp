@@ -49,7 +49,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                     <View testID="Drawer.usernameCont" style={{ padding: 4 }}>
                         <Text testID="Drawer.username" style={[globalStyles.H2, { marginBottom: 7, marginLeft: 3.5 }]}>{user ? user['username'] : "User"}</Text>
                         <TouchableOpacity testID="Drawer.accSettBtn" onPress={() => props.navigation.navigate("AccountSettingsScreen")}>
-                            <Text testID="Drawer.accSettBtnLabel" style={globalStyles.Body}> {t("menu.account.label")} </Text>
+                            <Text testID="Drawer.accSettBtnLabel" style={globalStyles.Body}> {t("menu.side.account.label")} </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -62,38 +62,38 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
 
             <DrawerItem
                 testID="Drawer.historyBtn"
-                label={() => <Text style={globalStyles.Body}>{t("menu.history.label")}</Text>}
+                label={() => <Text style={globalStyles.Body}>{t("menu.side.history.label")}</Text>}
                 icon={() => <Image source={require('../../assets/History.png')} style={styles.Img} />}
                 onPress={() => props.navigation.navigate("PostsHistory")}
             />
             <DrawerItem
                 testID="Drawer.dietRestBtn"
-                label={() => <Text style={globalStyles.Body}>{t("menu.preferences.label")}</Text>}
+                label={() => <Text style={globalStyles.Body}>{t("menu.side.preferences.label")}</Text>}
                 icon={() => <Image source={require('../../assets/Settings.png')} style={styles.Img} />}
                 onPress={() => props.navigation.navigate("Preferences")}
             />
             <DrawerItem
                 testID="Drawer.notifSettBtn"
-                label={() => <Text style={globalStyles.Body}>{t("menu.notifications.label")}</Text>}
+                label={() => <Text style={globalStyles.Body}>{t("menu.side.notifications.label")}</Text>}
                 icon={() => <Image source={require('../../assets/Notifications_Settings.png')} style={styles.Img} />}
                 onPress={() => { props.navigation.navigate("NotificationsSettingsScreen") }}
             />
             <DrawerItem
                 testID="Drawer.FAQBtn"
-                label={() => <Text style={globalStyles.Body}>{t("menu.faq.label")}</Text>}
+                label={() => <Text style={globalStyles.Body}>{t("menu.side.faq.label")}</Text>}
                 icon={() => <Image source={require('../../assets/Help.png')} style={styles.Img} />}
                 onPress={() => { }}
             />
             <DrawerItem
                 testID="Drawer.termsBtn"
-                label={() => <Text style={globalStyles.Body}>{t("menu.terms.label")}</Text>}
+                label={() => <Text style={globalStyles.Body}>{t("menu.side.terms.label")}</Text>}
                 icon={() => <Image source={require('../../assets/Scroll.png')} style={styles.Img} />}
                 onPress={() => { }}
 
             />
             <DrawerItem
                 testID="Drawer.policyBtn"
-                label={() => <Text style={globalStyles.Body}>{t("menu.privacy.label")}</Text>}
+                label={() => <Text style={globalStyles.Body}>{t("menu.side.privacy.label")}</Text>}
                 icon={() => <Image source={require('../../assets/Privacy.png')} style={styles.Img} />}
                 onPress={() => { }}
             />
@@ -107,7 +107,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                 <Text
                     testID="Drawer.logOutBtnText"
                     style={[globalStyles.Body, { marginLeft: 20 }]}
-                >{t("menu.logout.label")}</Text>
+                >{t("menu.side.logout.label")}</Text>
             </TouchableOpacity>
 
             <DrawerItemList {...props} />
