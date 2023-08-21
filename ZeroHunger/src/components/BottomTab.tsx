@@ -47,7 +47,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     },
                     headerRight: () => (
                         <View style={{ marginRight: 12 }}>
-                            <TouchableOpacity onPress={() => { navigation.navigate("PermissionsScreen1") }}>
+                            <TouchableOpacity onPress={() => { navigation.navigate("PermissionsScreen") }}>
                                 <Text style={globalStyles.Body}>Skip</Text>
                             </TouchableOpacity>
                         </View>
@@ -91,12 +91,6 @@ const HomeStackNavigator = ({ navigation }) => {
                         backgroundColor: Colors.offWhite
                     },
                     contentStyle: { backgroundColor: Colors.Background },
-                    headerLeft: () => (<></>),
-                    headerRight: () => (
-                        <TouchableOpacity onPress={() => { navigation.navigate("LoginScreen") }}>
-                            <Text>Skip</Text>
-                        </TouchableOpacity>
-                    )
                 }}
             />
             <Stack.Screen
@@ -207,7 +201,8 @@ const HomeStackNavigator = ({ navigation }) => {
                 component={Chat}
                 options={{
                     headerShown: true,
-                    title: t("app.messages.label"),
+                    // title: t("app.messages.label"),
+                    title: t("menu.bottom.messages.label"),
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
                     headerStyle: {
@@ -257,7 +252,8 @@ const HomeStackNavigator = ({ navigation }) => {
                 component={PostsHistory}
                 options={{
                     headerShown: true,
-                    title: t("menu.history.label"),
+                    // title: t("menu.history.label"),
+                    title: t("menu.side.history.label"),
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
                     headerStyle: {
@@ -270,7 +266,8 @@ const HomeStackNavigator = ({ navigation }) => {
                 component={Preferences}
                 options={{
                     headerShown: true,
-                    title: t("menu.preferences.label"),
+                    // title: t("menu.preferences.label"),
+                    title: t("menu.side.preferences.label"),
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
@@ -289,7 +286,8 @@ const ChatStackNavigator = () => {
                 component={Conversations}
                 options={{
                     headerShown: true,
-                    title: t("app.messages.label"),
+                    // title: t("messages.heading"),
+                    title: t("menu.bottom.messages.label"),
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
                     headerStyle: {
@@ -303,7 +301,8 @@ const ChatStackNavigator = () => {
                 component={Chat}
                 options={{
                     headerShown: true,
-                    title: t("app.messages.label"),
+                    // title: t("messages.heading"),
+                    title: t("menu.bottom.messages.label"),
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
                     headerStyle: {
@@ -374,7 +373,7 @@ const BottomTab = () => {
     return (
         <Tab.Navigator>
             <Tab.Screen
-                name={t("app.home.label")}
+                name={t("menu.bottom.home.label")}
                 component={HomeStackNavigator}
                 options={({ route }) => ({
                     headerShown: false,
@@ -405,7 +404,7 @@ const BottomTab = () => {
                 })}
             />
             <Tab.Screen
-                name={t("app.post.label")}
+                name={t("menu.bottom.post.label")}
                 component={PostComponent}
                 //Post button + modal
                 options={({ navigation }) => ({
@@ -424,7 +423,7 @@ const BottomTab = () => {
                                     <Text
                                         testID="Bottom.postNavLabel"
                                         style={styles.bottomBarText}
-                                    > {t("app.post.label")} </Text>
+                                    > {t("menu.bottom.post.label")} </Text>
                                 </TouchableOpacity>
                             </View>
                             <View>
@@ -496,7 +495,8 @@ const BottomTab = () => {
                 })}
             />
             <Tab.Screen
-                name={t("app.messages.label")}
+                // name={t("app.messages.label")}
+                name={t("menu.bottom.messages.label")}
                 component={ChatStackNavigator}
                 options={({ route }) => ({
                     tabBarIcon: ({ focused }) => (
