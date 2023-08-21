@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { View, Text, TouchableOpacity, GestureResponderEvent, Image } from "react-native"
 import styles from "../../styles/components/drawerTabStyleSheet"
 import { globalStyles } from "../../styles/globalStyleSheet";
-import { getFocusedRouteNameFromRoute, useIsFocused } from "@react-navigation/native"
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
 import { DrawerActions } from '@react-navigation/native';
 import {
     createDrawerNavigator,
@@ -28,19 +28,20 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
     const status = useDrawerStatus()
 
     const handleLogOut = (e: GestureResponderEvent) => {
-        props.navigation.dispatch(DrawerActions.closeDrawer())
         logOutUser().then(() => {
             dispatch({ type: "LOGOUT", payload: null })
         }).then(() => {
             alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
+            props.navigation.dispatch(DrawerActions.closeDrawer())
             props.navigation.navigate('LoginScreen')
         }).catch(() => {
+            props.navigation.dispatch(DrawerActions.closeDrawer())
             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
         })
     }
     const { t, i18n } = useTranslation();
     return (
-        <DrawerContentScrollView {...props}>
+        <DrawerContentScrollView contentContainerStyle={{ height: '100%' }} {...props}>
             <View testID={`Drawer.${status}`} style={styles.drawerContainer}>
                 {/* Temporary default profile picture */}
                 <View style={{ flexDirection: 'row' }}>
@@ -97,8 +98,16 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                 onPress={() => { }}
             />
 
-            <TouchableOpacity testID="Drawer.logOutBtn" style={[globalStyles.secondaryBtn, { width: '85%', marginLeft: 10 }]} onPress={handleLogOut}>
-                <Text testID="Drawer.logOutBtnText" style={globalStyles.secondaryBtnLabel}>{t("menu.logout.label")}</Text>
+            <TouchableOpacity
+                testID="Drawer.logOutBtn"
+                style={styles.logOutBtn}
+                onPress={handleLogOut}
+            >
+                <Image source={require('../../assets/Logout.png')} style={styles.Img} />
+                <Text
+                    testID="Drawer.logOutBtnText"
+                    style={[globalStyles.Body, { marginLeft: 20 }]}
+                >{t("menu.logout.label")}</Text>
             </TouchableOpacity>
 
             <DrawerItemList {...props} />

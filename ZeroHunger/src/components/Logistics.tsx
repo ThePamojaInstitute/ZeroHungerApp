@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { View, Text } from "react-native"
 import { globalStyles } from "../../styles/globalStyleSheet"
 import { LOGISTICSPREFERENCES } from "../controllers/post"
-import styles from "../../styles/components/accessNeedsStyleSheet"
+import styles from "../../styles/components/logisticsStyleSheet"
 import { Char } from "../../types"
 
 
@@ -53,6 +53,21 @@ const Logistics = ({ logistics, setLogistics }) => {
                     style={styles.icon}
                 />
                 <Text style={globalStyles.Body}>Meet at a public location</Text>
+            </View>
+            <View style={styles.choiceContainer}>
+                <MaterialCommunityIcons
+                    name={logistics.includes(LOGISTICSPREFERENCES.WHEELCHAIR) ? "checkbox-marked" : "checkbox-blank-outline"}
+                    size={22}
+                    onPress={() => {
+                        if (logistics.includes(LOGISTICSPREFERENCES.WHEELCHAIR)) {
+                            setLogistics(logistics.filter((char: Char) => char != LOGISTICSPREFERENCES.WHEELCHAIR))
+                        } else {
+                            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.WHEELCHAIR])
+                        }
+                    }}
+                    style={styles.icon}
+                />
+                <Text style={globalStyles.Body}>Location must be wheelchair accessible</Text>
             </View>
         </View>
     )

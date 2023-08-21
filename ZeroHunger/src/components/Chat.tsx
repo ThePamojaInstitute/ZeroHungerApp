@@ -9,8 +9,9 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import { FlashList } from "@shopify/flash-list";
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { Char } from '../../types';
-import { WSBaseURL } from '../../config';
+import { WSBaseURL, storage } from '../../config';
 import { handleExpiryDate } from '../controllers/post';
+import { ENV } from '../../env';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -32,13 +33,18 @@ export const Chat = ({ navigation, route }) => {
 
     const [message, setMessage] = React.useState("");
     const [messageHistory, setMessageHistory] = React.useState<object[]>([]);
-    const [start, setStart] = useState(30)
-    const [end, setEnd] = useState(40)
+    const [start, setStart] = useState(20)
+    const [end, setEnd] = useState(30)
     const [empty, setEmpty] = useState(false)
     const [loading, setLoading] = useState(false)
     const [endReached, setEndReached] = useState(false)
     const [inputHeight, setInputHeight] = useState(0)
     const [initiated, setInitiated] = useState(false)
+    const [initiatedTimeStampForMe, setInitiatedTimeStampForMe] = useState(false)
+    const [initiatedTimeStampForOther, setInitiatedTimeStampForOther] = useState(false)
+
+    let lastFromMeRendered = false
+    let lastFromOtherRendered = false
 
     const namesAlph = [route.params.user1, route.params.user2].sort();
     const conversationName = `${namesAlph[0]}__${namesAlph[1]}`
@@ -79,7 +85,9 @@ export const Chat = ({ navigation, route }) => {
 
     const { readyState, sendJsonMessage } = useWebSocket(user ? `${WSBaseURL}chats/${conversationName}/` : null, {
         queryParams: {
-            token: user ? accessToken : ""
+            token: user ?
+                ENV === 'production' ? storage.getString('access_token') : accessToken
+                : ""
         },
         onOpen: () => {
             console.log("WebSocket connected!");
@@ -160,17 +168,17 @@ export const Chat = ({ navigation, route }) => {
     const handlePress = (
         title: string,
         imagesLink: string,
-        postedOn: Number,
-        postedBy: Number,
+        postedOn: number,
+        postedBy: number,
         description: string,
-        postId: Number,
+        postId: number,
         username: string,
         expiryDate: string,
         distance: number | null,
         logistics: Char[],
         categories: Char[],
         diet: Char[],
-        accessNeeds: Char,
+        accessNeeds: string,
         postalCode: string,
         type: Char
     ) => {
@@ -213,6 +221,8 @@ export const Chat = ({ navigation, route }) => {
     const Post = ({ item }) => {
         const content = JSON.parse(item.content)
 
+        const [expiryStr, expiryInDays] = handleExpiryDate(content.expiryDate, content.type)
+
         return (
             <TouchableOpacity testID='Chat.postPrev' onPress={() => handlePress(
                 content.title,
@@ -231,7 +241,11 @@ export const Chat = ({ navigation, route }) => {
                 content.postalCode,
                 content.type
             )}>
-                <View testID='Chat.postCont' style={user['username'] === item.to_user['username'] ? styles.postMsgContainerIn : styles.postMsgContainerOut}>
+                <View
+                    testID='Chat.postCont'
+                    style={user['username'] === item.to_user['username']
+                        ? styles.postMsgContainerIn : styles.postMsgContainerOut}
+                >
                     <View
                         testID='Chat.postMsg'
                         style={user['username'] === item.to_user['username'] ?
@@ -271,7 +285,7 @@ export const Chat = ({ navigation, route }) => {
                                     </View>
                                 </View>
                                 <View testID='Chat.postMsgNeedBy' style={[styles.postMsgNeedBy]}>
-                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>{handleExpiryDate(content.expiryDate, content.type)}</Text>
+                                    <Text testID='Chat.postMsgTag' style={globalStyles.Tag}>{expiryStr}</Text>
                                 </View>
                             </View>
                         </View>
@@ -285,17 +299,33 @@ export const Chat = ({ navigation, route }) => {
         if (item.content.startsWith('{')) {
             try {
                 JSON.parse(item.content)
-                return <Post item={item} />
+                return <Post key={item.id} item={item} />
             } catch (error) { }
         }
-        return <Message key={item.id} message={item}></Message>
+        let showTimeStamp = false
+
+        if (item.from_user['username'] === user['username'] && !lastFromMeRendered && !initiatedTimeStampForMe) {
+            setInitiatedTimeStampForMe(true)
+            lastFromMeRendered = true
+            showTimeStamp = true
+        } else if (item.from_user['username'] !== user['username'] && !lastFromOtherRendered && !initiatedTimeStampForOther) {
+            setInitiatedTimeStampForOther(true)
+            lastFromOtherRendered = true
+            showTimeStamp = true
+        }
+
+        return <Message
+            key={item.id}
+            message={item}
+            showTimeStamp={showTimeStamp}
+        />
     }
 
 
     return (
         <View testID='Chat.container' style={{ flex: 1, backgroundColor: 'white' }}>
             <Text>The WebSocket is currently {connectionStatus}</Text>
-            {(!empty && messageHistory.length === 0) && <ActivityIndicator animating size="large" color={Colors.dark} />}
+            {/* {(!empty && messageHistory.length === 0) && <ActivityIndicator animating size="large" color={Colors.dark} />} */}
             {empty && !loading && <Text testID='Chat.noMsgs' style={styles.noMsgs}>No Messages</Text>}
             <FlashList
                 renderItem={renderItem}
@@ -303,11 +333,13 @@ export const Chat = ({ navigation, route }) => {
                 onEndReached={loadMessages}
                 onEndReachedThreshold={0.3}
                 inverted={true}
-                estimatedItemSize={100}
+                estimatedItemSize={235}
                 testID='Chat.messagesList'
-                ListFooterComponent={endReached ?
-                    <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 10 }}
-                    >End Reached</Text> : <></>}
+                // ListFooterComponent={endReached ?
+                //     <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 10 }}
+                //     >End Reached</Text> : <ActivityIndicator animating size="large" color={Colors.dark} />}
+                ListFooterComponent={!endReached ?
+                    <ActivityIndicator animating size="large" color={Colors.dark} /> : <></>}
             />
             <View testID='Chat.chatBar' style={[styles.chatBar, inputHeight > 50 ? { height: 69 + (inputHeight - 69 + 25) } : { height: 69 }]}>
                 <Entypo testID='Chat.chatCameraIcon' name="camera" size={26} color="black" style={styles.chatCameraIcon} />
@@ -323,7 +355,10 @@ export const Chat = ({ navigation, route }) => {
                         maxLength={250}
                         multiline={true}
                         onContentSizeChange={event => {
-                            setInputHeight(event.nativeEvent.contentSize.height);
+                            const height = event.nativeEvent.contentSize.height
+                            if (height === 0) return
+
+                            setInputHeight(height);
                         }}
                         numberOfLines={3}
                     />

@@ -109,14 +109,14 @@ const Location = ({ state, setState }) => {
     return (
         <View style={styles.modalItemContainer}>
             <View>
-                <Text style={globalStyles.H5}>Select maximum distance</Text>
+                <Text style={globalStyles.H5}>Maximum distance away</Text>
                 <View style={{ flexDirection: 'row' }}>
                     <Slider
                         value={state}
                         onValueChange={setState}
                         style={{ width: Dimensions.get('window').width * 0.8, height: 40, maxWidth: 500 }}
                         minimumValue={1}
-                        maximumValue={100}
+                        maximumValue={30}
                         step={1}
                         minimumTrackTintColor={Colors.primary}
                         maximumTrackTintColor="#B8B8B8"
@@ -142,7 +142,8 @@ const PostsFilters = ({
     setDistance,
     updater,
     showFilter,
-    setShowFilter
+    setShowFilter,
+    setModalIsOpen
 }, ref: React.Ref<object>) => {
     const [modalVisible, setModalVisible] = useState(false)
 
@@ -150,27 +151,22 @@ const PostsFilters = ({
 
     useImperativeHandle(ref, () => ({ publicHandler: openMe }), [openMe])
 
+    const handleModalClose = () => {
+        updater()
+        setModalVisible(!modalVisible)
+        setShowFilter('')
+        setModalIsOpen(false)
+    }
+
     return (
         <Modal
             testID="Bottom.postNavModal"
             isVisible={modalVisible}
             animationIn="slideInUp"
             backdropOpacity={0.5}
-            onBackButtonPress={() => {
-                updater()
-                setModalVisible(!modalVisible)
-                setShowFilter('')
-            }}
-            onBackdropPress={() => {
-                updater()
-                setModalVisible(!modalVisible)
-                setShowFilter('')
-            }}
-            onSwipeComplete={() => {
-                updater()
-                setModalVisible(!modalVisible)
-                setShowFilter('')
-            }}
+            onBackButtonPress={handleModalClose}
+            onBackdropPress={handleModalClose}
+            onSwipeComplete={handleModalClose}
             swipeDirection={['down']}
             style={{ margin: 0 }}
         >
@@ -188,11 +184,7 @@ const PostsFilters = ({
                     <TouchableOpacity
                         testID="Bottom.postNavModalClose"
                         style={styles.modalClose}
-                        onPress={() => {
-                            updater()
-                            setModalVisible(!modalVisible)
-                            setShowFilter('')
-                        }}
+                        onPress={handleModalClose}
                     >
                         <Ionicons name="close" size={30} />
                     </TouchableOpacity>
@@ -201,7 +193,7 @@ const PostsFilters = ({
                     <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
-                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                style={styles.modalItem}
                                 onPress={() => {
                                     if (showFilter === 'sort') setShowFilter('')
                                     else setShowFilter('sort')
@@ -222,7 +214,7 @@ const PostsFilters = ({
                     <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
-                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                style={styles.modalItem}
                                 onPress={() => {
                                     if (showFilter === 'category') setShowFilter('')
                                     else setShowFilter('category')
@@ -247,7 +239,7 @@ const PostsFilters = ({
                     <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
-                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                style={styles.modalItem}
                                 onPress={() => {
                                     if (showFilter === 'diet') setShowFilter('')
                                     else setShowFilter('diet')
@@ -273,7 +265,7 @@ const PostsFilters = ({
                     <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
-                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                style={styles.modalItem}
                                 onPress={() => {
                                     if (showFilter === 'location') setShowFilter('')
                                     else setShowFilter('location')
@@ -295,7 +287,7 @@ const PostsFilters = ({
                     <View style={styles.modalItem}>
                         <View style={[styles.modalItemBorder, { width: '99%', alignSelf: 'center' }]}>
                             <TouchableOpacity
-                                style={[styles.modalItem, { marginBottom: -3 }]}
+                                style={styles.modalItem}
                                 onPress={() => {
                                     if (showFilter === 'logistics') setShowFilter('')
                                     else setShowFilter('logistics')

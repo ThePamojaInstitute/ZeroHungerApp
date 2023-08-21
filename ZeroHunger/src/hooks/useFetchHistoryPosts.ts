@@ -6,7 +6,7 @@ import { ENV } from "../../env";
 
 export default function useFetchHistoryPosts(type: "r" | "o", orderByNewest: boolean) {
     const getPosts = async ({ pageParam = 0 }) => {
-        let accessToken
+        let accessToken: string
         if (ENV === 'production') {
             accessToken = storage.getString('access_token')
         } else {
@@ -27,6 +27,7 @@ export default function useFetchHistoryPosts(type: "r" | "o", orderByNewest: boo
                 'page': pageParam,
             }
         })
+
         return {
             data: res.data,
             nextPage: pageParam + 1,

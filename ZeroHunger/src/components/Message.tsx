@@ -6,7 +6,10 @@ import { MessageModel } from "../models/Message";
 import { AuthContext } from "../context/AuthContext";
 
 
-export const Message = ({ message }: { message: MessageModel }) => {
+export const Message = ({ message, showTimeStamp }: {
+    message: MessageModel,
+    showTimeStamp: boolean,
+}) => {
     const { user } = useContext(AuthContext);
 
     const formatMessageTimestamp = (timestamp: string) => {
@@ -35,19 +38,22 @@ export const Message = ({ message }: { message: MessageModel }) => {
                     <Text testID="Message.text" style={[styles.messageText,
                     {
                         color: user['username'] === message.to_user['username']
-                            ? Colors.dark : Colors.white
+                            ? Colors.dark : Colors.white,
+                        marginBottom: showTimeStamp ? 15 : 0
                     }
                     ]}>{message.content}</Text>
-                    <Text
-                        testID="Message.timestamp"
-                        style={[styles.timestamp,
-                        {
-                            color: user['username'] === message.to_user['username']
-                                ? Colors.dark : Colors.white
-                        }]}
-                    >
-                        {formatMessageTimestamp(message.timestamp)}
-                    </Text>
+                    {showTimeStamp &&
+                        <Text
+                            testID="Message.timestamp"
+                            style={[styles.timestamp,
+                            {
+                                color: user['username'] === message.to_user['username']
+                                    ? Colors.dark : Colors.white
+                            }]}
+                        >
+                            {formatMessageTimestamp(message.timestamp)}
+                        </Text>
+                    }
                 </View>
             </View>
         </View>

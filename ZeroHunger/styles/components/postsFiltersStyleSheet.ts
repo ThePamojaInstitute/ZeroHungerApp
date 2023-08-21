@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { Colors } from "../globalStyleSheet";
 
 export default StyleSheet.create({
@@ -22,13 +22,13 @@ export default StyleSheet.create({
         alignItems: "flex-start",
         gap: 12,
         marginVertical: 5,
-        marginLeft: 5
+        marginLeft: 5,
+        marginBottom: Platform.OS === 'web' ? 5 : -3
     },
     modalItemBorder: {
         borderBottomWidth: 1,
         borderStyle: 'solid',
         borderBottomColor: '#D1D1D1',
-        paddingBottom: 10
     },
     modalContent: {
         alignItems: 'center',
@@ -48,8 +48,7 @@ export default StyleSheet.create({
     },
     filtersSelected: {
         color: Colors.primaryDark,
-        marginBottom: -5,
-        marginTop: 7,
+        marginBottom: 5,
         marginLeft: 6
     },
     sortItem: {

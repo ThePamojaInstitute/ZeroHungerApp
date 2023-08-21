@@ -18,13 +18,13 @@ class createRequestSerializer (serializers.ModelSerializer):
     postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
     longitude = serializers.FloatField(required=False, default=None)
     latitude = serializers.FloatField(required=False, default=None)
-    accessNeeds = serializers.CharField(max_length=1)
+    accessNeeds = serializers.CharField(max_length=1024, required=False, allow_blank=True)
     categories = fields.MultipleChoiceField(choices=FOOD_CATEGORIES, required=False)
     diet = fields.MultipleChoiceField(choices=DIET_PREFERENCES, required=False)
     distance = serializers.FloatField(required=False)
     expiryDate = models.DateTimeField()
 
-    # These fields are temporary fileds and won't be save in the database
+    # These fields are temporary fields and won't be saved in the database
     # distance = serializers.SerializerMethodField(method_name='get_distance')
     username = serializers.SerializerMethodField(method_name='get_username')
     type = serializers.SerializerMethodField(method_name='get_type')
@@ -81,7 +81,7 @@ class createOfferSerializer (serializers.ModelSerializer):
     longitude = serializers.FloatField()
     latitude = serializers.FloatField()
     postalCode = serializers.CharField(max_length=7, required=False, allow_blank=True)
-    accessNeeds = serializers.CharField(max_length=1)
+    accessNeeds = serializers.CharField(max_length=1024, required=False, allow_blank=True)
     categories = fields.MultipleChoiceField(choices=FOOD_CATEGORIES, required=False)
     diet = fields.MultipleChoiceField(choices=DIET_PREFERENCES, required=False)
     distance = serializers.FloatField(required=False)
@@ -107,7 +107,7 @@ class createOfferSerializer (serializers.ModelSerializer):
         return user.username
     
     def get_type(self, obj):
-        return 'r'
+        return 'o'
     
     def get_postId(self, obj):
         if(type(obj) == collections.OrderedDict): # on creation
