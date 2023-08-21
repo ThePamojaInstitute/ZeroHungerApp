@@ -14,6 +14,7 @@ export default StyleSheet.create({
     image: {
         height: dim.height * 0.4,
         width: dim.width * 0.75,
+        
     },
     title: {
         paddingTop: 50,
