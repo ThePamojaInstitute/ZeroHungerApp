@@ -403,25 +403,25 @@
 				{
 					"heading": "I will...",
 					"listCheck": [
-						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
-						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
-						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+						{"text": "Clearly describe the food I am offering or requesting"},
+						{"text": "Respond to messages in a timely manner"},
+						{"text": "Be respectful in my interactions with other people on Zero Hunger"}
 					] 
 				},
 				{
 					"heading": "I won't...",
 					"listX": [
-						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
-						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
-						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+						{"text": "Post food that has already expired or gone bad"},
+						{"text": "Share my address, phone number, or other personal information in my public requests or offers"},
+						{"text": "Treat other people using Zero Hunger with disrespect"}
 					] 
 				},
 				{
-					"heading": "Tips and tricks.",
+					"heading": "Tips and tricks",
 					"listCheck": [
-						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
-						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"},
-						{"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+						{"text": "Enable push notifications to know when you receive a new message"},
+						{"text": "Set your default postal code and dietary preferences in the menu"},
+						{"text": "Add pictures to your request and offer posts"}
 					] 
 				}
 		]
