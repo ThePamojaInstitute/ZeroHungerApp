@@ -9,11 +9,14 @@ export default StyleSheet.create({
         alignContent: "center",
         justifyContent: "center",
         marginTop: 24,
-        backgroundColor: Colors.Background
+        backgroundColor: Colors.Background,
+        marginLeft: 48,
+        marginRight: 48
     },
     image: {
         height: dim.height * 0.4,
         width: dim.width * 0.75,
+        
     },
     title: {
         paddingTop: 50,

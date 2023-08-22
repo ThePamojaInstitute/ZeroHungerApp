@@ -9,24 +9,20 @@ export default StyleSheet.create({
         alignContent: "center",
         // justifyContent: "center",
         alignItems: "center",
-        // padding: 24,
-        // backgroundColor: Colors.offWhite
+        padding: 12,
+        marginTop: 24,
+        marginLeft: 12,
+        marginRight: 12,
     },
-    image: {
-        flex: 1,
-        // height: dim.height / 2,
-        // width: dim.width / 2,
-        height: '80%',
-        width: '80%',
-        // marginTop: 24,
-        // paddingBottom: '15%',
-    }, 
     dots: {
         paddingBottom: dim.height * 0.25
     },
-    title: {
-        paddingBottom: 12,
-        paddingTop: 48,
+    icon: {
+        paddingRight: 12,
+    },
+    textView: {
+        flexDirection: "row",
+        paddingTop: 24,
     },
     text: {
         fontFamily: Fonts.PublicSans_Regular,
