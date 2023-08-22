@@ -26,6 +26,8 @@ import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import PermissionsScreen from "../screens/PermissionsScreen";
+import GuidelinesScreen from "../screens/GuidelinesScreen";
+import PermissionsScreen2 from "../screens/PermissionsScreen2";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -91,6 +93,37 @@ const HomeStackNavigator = ({ navigation }) => {
                         backgroundColor: Colors.offWhite
                     },
                     contentStyle: { backgroundColor: Colors.Background },
+                }}
+            />
+            <Stack.Screen
+                name="GuidelinesScreen"
+                component={GuidelinesScreen}
+                options={{
+                    title: t("guidelines.header.text"),
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite
+                    },
+                    headerRight: () => (
+                        <View style={{ marginRight: 12 }}>
+                            <TouchableOpacity onPress={() => { navigation.navigate("PermissionsScreen2") }}>
+                                <Text style={globalStyles.Body}>Skip</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ),
+                    contentStyle: { backgroundColor: Colors.Background },
+                }}
+            />
+            <Stack.Screen
+                name="PermissionsScreen2"
+                component={PermissionsScreen2}
+                options={{
+                    title: t("app.title"),
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                        backgroundColor: Colors.offWhite
+                    },
+                    headerLeft: () => (<></>)
                 }}
             />
             <Stack.Screen
