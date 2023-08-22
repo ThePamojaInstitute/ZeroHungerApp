@@ -13,7 +13,7 @@ export const PermissionsScreen = ({ navigation }) => {
     const savePostalCode = async () => {
         savePreferences(postalCode, null, null, null).then(res => {
             if (res.msg === "success") {
-                navigation.navigate('HomeScreen')
+                navigation.navigate('GuidelinesScreen')
                 return
             } else if (res.res) {
                 setErrMsg(res.res)
