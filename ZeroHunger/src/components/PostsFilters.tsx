@@ -1,7 +1,7 @@
 import { useImperativeHandle, useState } from "react"
 import { View, Dimensions, Text, TouchableOpacity, Pressable } from "react-native"
 import Modal from 'react-native-modal';
-import { Colors, globalStyles } from "../../styles/globalStyleSheet";
+import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
 import styles from "../../styles/components/postsFiltersStyleSheet"
 import { Entypo, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { DIETPREFERENCES, FOODCATEGORIES, getCategory, getDiet, handlePreferences } from "../controllers/post";
@@ -84,11 +84,19 @@ const FoodCategory = ({ state, setState, getType, list }) => {
                     }}>
                     <MaterialCommunityIcons
                         name={state.includes(item) ? "checkbox-marked" : "checkbox-blank-outline"}
+                        color={state.includes(item) ? Colors.primaryDark : Colors.dark}
                         size={22}
                         style={{ position: 'absolute', left: 0 }}
                     />
                 </Pressable>
-                <Text style={[globalStyles.Body, { marginLeft: 30 }]}>{getter(item)}</Text>
+                <Text style={[globalStyles.Body,
+                {
+                    marginLeft: 30,
+                    color: state.includes(item) ? Colors.primaryDark : Colors.dark,
+                    fontFamily: state.includes(item) ? Fonts.PublicSans_SemiBold : Fonts.PublicSans_Regular,
+                    fontWeight: state.includes(item) ? '600' : '400',
+                }]}
+                >{getter(item)}</Text>
             </View>
         )
     }
