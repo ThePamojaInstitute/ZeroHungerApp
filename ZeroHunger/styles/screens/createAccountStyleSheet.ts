@@ -6,7 +6,6 @@ const width = screenWidth > 700 ? 700 : screenWidth
 
 export default StyleSheet.create({
     authContainer: {
-        backgroundColor: "#EFF1F7",
         alignItems: "center",
         justifyContent: "center",
         marginTop: 20
@@ -29,7 +28,7 @@ export default StyleSheet.create({
         padding: 0,
         gap: 9,
         width: "90%",
-        height: 68,
+        // height: 68,
         marginBottom: 10,
         marginTop: 5,
     },
@@ -57,11 +56,11 @@ export default StyleSheet.create({
     },
     errorMsgContainer: {
         width: "90%",
-        marginTop: -5,
-        marginBottom: 5
+        marginTop: 5,
+        // marginBottom: 5
     },
     passwordInputContainer: {
-        flex: 1,
+        height: 41,
         flexDirection: 'row',
         backgroundColor: Colors.white,
         borderWidth: 1,
@@ -100,4 +99,26 @@ export default StyleSheet.create({
         color: Colors.dark,
         marginLeft: 5
     },
+    column: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        width: 200
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        flexWrap: 'wrap',
+        flex: 1
+    },
+    bullet: {
+        width: 10
+    },
+    bulletText: {
+        flex: 1
+    },
+    boldText: {
+        fontWeight: 'bold'
+    },
+    normalText: {
+    }
 })

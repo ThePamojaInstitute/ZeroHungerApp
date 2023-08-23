@@ -145,91 +145,113 @@ export const CreateAccountScreen = ({ navigation }) => {
         <NotificationsTest setExpoToken={setExpoPushToken} />
         {loading &&
           <ActivityIndicator animating size="large" color={Colors.primary} />}
-        <View testID="SignUp.usernameInputContainer" style={styles.inputContainer}>
+        <View testID="SignUp.usernameInputContainer" style={[styles.inputContainer]}>
           <Text testID="SignUp.usernameLabel" style={[styles.inputLabel,
           { color: errors.username ? Colors.alert2 : Colors.dark }]}
           >Username</Text>
-          <Controller
-            defaultValue=""
-            control={control}
-            rules={{
-              required: "Please enter a username",
-              minLength: {
-                value: 5,
-                message: "Username length should be at least 5 characters"
-              },
-              maxLength: {
-                value: 50,
-                message: "Username length should be at most 50 characters"
-              },
-              validate: {
-                containsUnderscore: (str) => /^(?!.*__).*$/.test(str) || "Username shouldn't include \"__\"",
-                NotAlphanum: (str) => /^[a-zA-Z0-9_\.\-]*$/.test(str) || "Username should only include alphanumeric characters, underscores, or periods"
-              }
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                value={value}
-                nativeID="SignUp.usernameInput"
-                testID="SignUp.usernameInput"
-                style={[styles.input,
-                { borderColor: errors.username ? Colors.alert2 : Colors.midLight }]}
-                onChangeText={onChange}
-                onChange={onChange}
-                blurOnSubmit={false}
-                onSubmitEditing={() => email_input.current?.focus()}
-                maxLength={50}
-                onBlur={onBlur}
-              />
-            )}
-            name="username"
-          />
+          {errors.username &&
+            <View testID="SignUp.usernameErrMsgContainer" style={styles.errorMsgContainer}>
+              <Text testID="SignUp.usernameErrMsg" style={styles.errorMsg}>{errors.username.message}</Text>
+            </View>}
+          <View style={{ height: 41 }}>
+            <Controller
+              defaultValue=""
+              control={control}
+              rules={{
+                required: "Please enter a username",
+                minLength: {
+                  value: 5,
+                  message: "Username length should be at least 5 characters"
+                },
+                maxLength: {
+                  value: 50,
+                  message: "Username length should be at most 50 characters"
+                },
+                validate: {
+                  containsUnderscore: (str) => /^(?!.*__).*$/.test(str) || "Username shouldn't include \"__\"",
+                  NotAlphanum: (str) => /^[a-zA-Z0-9_\.\-]*$/.test(str) || "Username should only include alphanumeric characters, underscores, or periods"
+                }
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  value={value}
+                  nativeID="SignUp.usernameInput"
+                  testID="SignUp.usernameInput"
+                  style={[styles.input,
+                  { borderColor: errors.username ? Colors.alert2 : Colors.midLight }]}
+                  onChangeText={onChange}
+                  onChange={onChange}
+                  blurOnSubmit={false}
+                  onSubmitEditing={() => email_input.current?.focus()}
+                  maxLength={50}
+                  onBlur={onBlur}
+                />
+              )}
+              name="username"
+            />
+          </View>
         </View>
-        {errors.username &&
-          <View testID="SignUp.usernameErrMsgContainer" style={styles.errorMsgContainer}>
-            <Text testID="SignUp.usernameErrMsg" style={styles.errorMsg}>{errors.username.message}</Text>
-          </View>}
         <View testID="SignUp.emailInputContainer" style={styles.inputContainer}>
           <Text testID="SignUp.emailLabel" style={[styles.inputLabel,
           { color: errors.email ? Colors.alert2 : Colors.dark }]}
           >Email Address</Text>
-          <Controller
-            defaultValue=""
-            control={control}
-            rules={{
-              required: "Please enter an email",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Please enter a valid email"
-              }
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                value={value}
-                nativeID="SignUp.emailInput"
-                testID="SignUp.emailInput"
-                style={[styles.input, { borderColor: errors.email ? Colors.alert2 : Colors.midLight }]}
-                secureTextEntry={false}
-                onChangeText={onChange}
-                onChange={onChange}
-                ref={email_input}
-                blurOnSubmit={false}
-                onSubmitEditing={() => password_input.current?.focus()}
-                onBlur={onBlur}
-                maxLength={256}
-              />
-            )}
-            name="email"
-          />
+          {errors.email &&
+            <View testID="SignUp.emailErrMsgContainer" style={styles.errorMsgContainer}>
+              <Text testID="SignUp.emailErrMsg" style={styles.errorMsg}>{errors.email.message}</Text>
+            </View>}
+          <View style={{ height: 41 }}>
+            <Controller
+              defaultValue=""
+              control={control}
+              rules={{
+                required: "Please enter an email",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Please enter a valid email"
+                }
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  value={value}
+                  nativeID="SignUp.emailInput"
+                  testID="SignUp.emailInput"
+                  style={[styles.input, { borderColor: errors.email ? Colors.alert2 : Colors.midLight }]}
+                  secureTextEntry={false}
+                  onChangeText={onChange}
+                  onChange={onChange}
+                  ref={email_input}
+                  blurOnSubmit={false}
+                  onSubmitEditing={() => password_input.current?.focus()}
+                  onBlur={onBlur}
+                  maxLength={256}
+                />
+              )}
+              name="email"
+            />
+          </View>
         </View>
-        {errors.email &&
-          <View testID="SignUp.emailErrMsgContainer" style={styles.errorMsgContainer}>
-            <Text testID="SignUp.emailErrMsg" style={styles.errorMsg}>{errors.email.message}</Text>
-          </View>}
         <View testID="SignUp.passwordInputContainer" style={styles.inputContainer}>
           <Text testID="SignUp.passwordLabel" style={[styles.inputLabel,
           { color: errors.password ? Colors.alert2 : Colors.dark }]}
           >Password</Text>
+          <View style={{ marginLeft: 10 }}>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={[globalStyles.Small1, { color: '#656565' }]}>{'\u2022'}  </Text>
+              <Text style={[globalStyles.Small1, { color: '#656565' }]}>Must be at least 6 characters long</Text>
+            </View>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={[globalStyles.Small1, { color: '#656565' }]}>{'\u2022'}  </Text>
+              <Text style={[globalStyles.Small1, { color: '#656565' }]}>Must contain an uppercase letter and a lower case letter (A, z)</Text>
+            </View>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={[globalStyles.Small1, { color: '#656565' }]}>{'\u2022'}  </Text>
+              <Text style={[globalStyles.Small1, { color: '#656565' }]}>Must contain a number</Text>
+            </View>
+          </View>
+          {errors.password &&
+            <View testID="SignUp.passwordErrMsgContainer" style={styles.errorMsgContainer}>
+              <Text testID="SignUp.passwordErrMsg" style={styles.errorMsg}>{errors.password.message}</Text>
+            </View>}
           <View testID="SignUp.innerPasswordInputContainer" style={[styles.passwordInputContainer,
           { borderColor: errors.password ? Colors.alert2 : Colors.midLight }]}>
             <Controller
@@ -238,12 +260,16 @@ export const CreateAccountScreen = ({ navigation }) => {
               rules={{
                 required: "Please enter a password",
                 minLength: {
-                  value: 4,
-                  message: "Password length should be 4 characters or more"
+                  value: 6,
+                  message: "The password you entered is too short"
                 },
                 maxLength: {
                   value: 64,
-                  message: "Password length should be 64 characters or less"
+                  message: "The password you entered is too long"
+                },
+                validate: {
+                  // this regex checks if the password contains an uppercase, a lower case, and a number
+                  meetsRequirements: (str) => /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/.test(str) || "The password you entered does not meet the requirements above",
                 }
               }}
               render={({ field: { onChange, onBlur, value } }) => (
@@ -272,14 +298,14 @@ export const CreateAccountScreen = ({ navigation }) => {
               style={{ padding: 9 }} />
           </View>
         </View>
-        {errors.password &&
-          <View testID="SignUp.passwordErrMsgContainer" style={styles.errorMsgContainer}>
-            <Text testID="SignUp.passwordErrMsg" style={styles.errorMsg}>{errors.password.message}</Text>
-          </View>}
         <View testID="SignUp.confPasswordInputContainer" style={styles.inputContainer}>
           <Text testID="SignUp.confPasswordLabel" style={[styles.inputLabel,
           { color: errors.confPass ? Colors.alert2 : Colors.dark }]}
           >Confirm Password</Text>
+          {errors.confPass &&
+            <View testID="SignUp.confPasswordErrMsgContainer" style={styles.errorMsgContainer}>
+              <Text testID="SignUp.confPasswordErrMsg" style={styles.errorMsg}>{errors.confPass.message}</Text>
+            </View>}
           <View testID="SignUp.innerconfPasswordInputContainer" style={[styles.passwordInputContainer,
           { borderColor: errors.confPass ? Colors.alert2 : Colors.midLight }]}>
             <Controller
@@ -319,12 +345,6 @@ export const CreateAccountScreen = ({ navigation }) => {
               style={{ padding: 9 }} />
           </View>
         </View>
-        {
-          errors.confPass &&
-          <View testID="SignUp.confPasswordErrMsgContainer" style={styles.errorMsgContainer}>
-            <Text testID="SignUp.confPasswordErrMsg" style={styles.errorMsg}>{errors.confPass.message}</Text>
-          </View>
-        }
         <View testID="SignUp.termsAndCondContainer" style={styles.termsAndCondContainer}>
           <Text testID="SignUp.termsInputLabel" style={[styles.inputLabel,
           { color: errMsg ? Colors.alert2 : Colors.dark }]}>Terms and Conditions</Text>
