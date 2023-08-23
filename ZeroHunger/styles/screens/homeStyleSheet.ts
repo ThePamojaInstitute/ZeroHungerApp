@@ -14,6 +14,12 @@ export default StyleSheet.create({
         paddingLeft: 16,
         backgroundColor: Colors.offWhite,
     },
+    webContainer: {
+        flexDirection: 'row',
+        maxWidth: 700,
+        marginHorizontal: 'auto',
+        width: '100%',
+    },
     categoriesContainer: {
         marginTop: 8,
         marginBottom: 4,
@@ -65,5 +71,11 @@ export default StyleSheet.create({
         paddingTop: 5,
         paddingLeft: 20,
         backgroundColor: Colors.offWhite
+    },
+    webFiltersContainer: {
+        maxWidth: 700,
+        alignSelf: 'center',
+        width: '100%',
+        marginLeft: -30
     }
 })

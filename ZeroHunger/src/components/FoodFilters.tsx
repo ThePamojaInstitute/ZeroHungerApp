@@ -56,7 +56,7 @@ const FiltersModal = ({ modalVisible, handleModalClose, state, setState, foodTyp
         onBackdropPress={handleModalClose}
         onSwipeComplete={handleModalClose}
         swipeDirection={['down']}
-        style={{ margin: 0 }}
+        style={styles.modal}
     >
         <View style={[styles.modalContainer,
         { maxHeight: Dimensions.get('window').height * 0.92 }]}>

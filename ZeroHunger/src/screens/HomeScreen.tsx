@@ -10,7 +10,7 @@ import {
     ActivityIndicator
 } from "react-native";
 import styles from "../../styles/screens/homeStyleSheet"
-import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet"
+import { Colors, globalStyles } from "../../styles/globalStyleSheet"
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
@@ -19,11 +19,13 @@ import { useTranslation } from "react-i18next";
 import { default as _PostsFilters } from "../components/PostsFilters";
 import { getPreferences } from "../controllers/preferences";
 import { Char } from "../../types";
-import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
 import { axiosInstance, getItemFromLocalStorage, setLocalStorageItem, storage } from "../../config";
 import { getNotifications, logOutUser } from "../controllers/auth";
 import { ENV } from "../../env";
 import { useAlert } from "../context/Alert";
+import { HomeWebCustomHeader } from "../components/headers/HomeWebCustomHeader";
+import { HomeCustomHeaderRight } from "../components/headers/HomeCustomHeaderRight";
 
 
 const PostsFilters = forwardRef(_PostsFilters)
@@ -156,61 +158,29 @@ export const HomeScreen = ({ navigation, route }) => {
     }, [distance, diet, logistics])
 
     useEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <View style={{ flexDirection: 'row' }}>
-                    {Platform.OS === "web" &&
-                        <MaterialIcons
-                            style={{ padding: Platform.OS === 'web' ? 16 : 0 }}
-                            name="refresh"
-                            size={26}
-                            color="black"
-                            onPress={updater}
-                        />
-                    }
-                    <View>
-                        <Ionicons
-                            style={{ margin: Platform.OS === 'web' ? 16 : 0 }}
-                            name="notifications-sharp"
-                            size={22}
-                            onPress={() => {
-                                navigation.navigate("NotificationsScreen", { posts: expiringPosts })
-                                setExpiringPosts([])
-                            }}
-                            testID="Home.notificationBtn"
-                        />
-                        {!!expiringPosts?.length &&
-                            <View style={{
-                                height: 15,
-                                minWidth: 15,
-                                backgroundColor: Colors.alert2,
-                                borderRadius: 7.5,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                position: 'absolute',
-                                top: Platform.OS === 'web' ? 13 : -4,
-                                right: Platform.OS === 'web' ? 10 : expiringPosts.length > 9 ? -11 : -5,
-                            }}>
-                                <Text style={{
-                                    color: Colors.white,
-                                    fontFamily: Fonts.PublicSans_SemiBold,
-                                    fontWeight: '600',
-                                    fontSize: 11,
-                                    marginHorizontal: 4,
-                                }}>{expiringPosts.length > 9 ? '9+' : expiringPosts.length}</Text>
-                            </View>
-                        }
-                    </View>
-                    {/* <Ionicons
-                        style={{ padding: 16 }}
-                        name="md-search"
-                        size={22}
-                        // onPress={() => { }}
-                        testID="Home.searchBtn"
-                    /> */}
-                </View>
-            )
-        })
+        if (Platform.OS === 'web') {
+            navigation.setOptions({
+                header: () => (
+                    <HomeWebCustomHeader
+                        navigation={navigation}
+                        updater={updater}
+                        expiringPosts={expiringPosts}
+                        setExpiringPosts={setExpiringPosts}
+                        t={t}
+                    />
+                )
+            })
+        } else {
+            navigation.setOptions({
+                headerRight: () => (
+                    <HomeCustomHeaderRight
+                        navigation={navigation}
+                        expiringPosts={expiringPosts}
+                        setExpiringPosts={setExpiringPosts}
+                    />
+                )
+            })
+        }
     }, [updater, expiringPosts])
 
     const handleOpen = (item: string) => {
@@ -268,43 +238,45 @@ export const HomeScreen = ({ navigation, route }) => {
     return (
         <View testID="Home.container" style={styles.container}>
             <View testID="Home.subContainer" style={styles.subContainer}>
-                <View testID="Home.requestsContainer" style={[
-                    {
-                        borderBottomColor: showRequests ?
-                            'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                    },
-                    styles.pressable
-                ]}>
-                    <Pressable
-                        style={styles.pressableText}
-                        onPress={() => setShowRequests(true)}
-                        testID="Home.requestsBtn"
-                    >
-                        <Text testID="Home.requestsLabel" style={globalStyles.H3}>{t("home.requests.label")}</Text>
-                    </Pressable>
-                </View>
-                <View testID="Home.offersContainer" style={[
-                    {
-                        borderBottomColor: !showRequests ?
-                            'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                    },
-                    styles.pressable
-                ]}>
-                    <Pressable
-                        style={styles.pressableText}
-                        onPress={() => setShowRequests(false)}
-                        testID="Home.offersBtn"
-                    >
-                        <Text testID="Home.offersLabel" style={globalStyles.H3}>{t("home.offers.label")}</Text>
-                    </Pressable>
+                <View style={Platform.OS === 'web' ? styles.webContainer : { flexDirection: 'row' }}>
+                    <View testID="Home.requestsContainer" style={[
+                        {
+                            borderBottomColor: showRequests ?
+                                'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                        },
+                        styles.pressable
+                    ]}>
+                        <Pressable
+                            style={styles.pressableText}
+                            onPress={() => setShowRequests(true)}
+                            testID="Home.requestsBtn"
+                        >
+                            <Text testID="Home.requestsLabel" style={globalStyles.H3}>{t("home.requests.label")}</Text>
+                        </Pressable>
+                    </View>
+                    <View testID="Home.offersContainer" style={[
+                        {
+                            borderBottomColor: !showRequests ?
+                                'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                        },
+                        styles.pressable
+                    ]}>
+                        <Pressable
+                            style={styles.pressableText}
+                            onPress={() => setShowRequests(false)}
+                            testID="Home.offersBtn"
+                        >
+                            <Text testID="Home.offersLabel" style={globalStyles.H3}>{t("home.offers.label")}</Text>
+                        </Pressable>
+                    </View>
                 </View>
             </View>
-            <View>
+            <View style={{ backgroundColor: Colors.offWhite }}>
                 <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                     testID="FoodCategories.container"
-                    style={styles.filtersList}
+                    style={[styles.filtersList, Platform.OS === 'web' ? styles.webFiltersContainer : {}]}
                 >
                     <View style={styles.filter}>
                         <TouchableOpacity style={styles.filterBtn} onPress={() => openModal()}>

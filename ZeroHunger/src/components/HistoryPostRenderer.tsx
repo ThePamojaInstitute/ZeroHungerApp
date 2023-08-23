@@ -1,5 +1,5 @@
 import React, { forwardRef, useContext, useEffect, useRef, useState } from "react";
-import { Text, ActivityIndicator, RefreshControl, View, Dimensions, Pressable } from "react-native"
+import { Text, ActivityIndicator, RefreshControl, View, Dimensions, Pressable, Platform } from "react-native"
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
@@ -13,28 +13,37 @@ import { default as _MyPostModal } from "./MyPostModal";
 
 const MyPostModal = forwardRef(_MyPostModal)
 
-const NoPosts = ({ type, navigate }) => (
+const NoPosts = ({ type, navigate, width }) => (
     <View style={{
-        alignItems: 'center',
-        justifyContent: 'center',
         marginTop: Dimensions.get('window').height * 0.15,
-        paddingHorizontal: 50,
     }}>
-        <Text
-            style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
-            No {type === 'r' ? 'requests' : 'offers'} yet
-        </Text>
-        <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
-            You will see your history once you make your first food {type === 'r' ? 'request' : 'offer'}
-        </Text>
-        <Pressable
-            style={[globalStyles.defaultBtn, { width: '90%' }]}
-            onPress={() => navigate(`${type === 'r' ? 'Request' : 'Offer'}FormScreen`)}
-        >
-            <Text style={globalStyles.defaultBtnLabel}>
-                {type === 'r' ? 'Request' : 'Offer'} Food
+        <View style={Platform.OS === 'web' ? {
+            maxWidth: 700,
+            alignSelf: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: width
+        } : {
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 50,
+        }}>
+            <Text
+                style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
+                No {type === 'r' ? 'requests' : 'offers'} yet
             </Text>
-        </Pressable>
+            <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
+                You will see your history once you make your first food {type === 'r' ? 'request' : 'offer'}
+            </Text>
+            <Pressable
+                style={[globalStyles.defaultBtn, { width: '90%' }]}
+                onPress={() => navigate(`${type === 'r' ? 'Request' : 'Offer'}FormScreen`)}
+            >
+                <Text style={globalStyles.defaultBtnLabel}>
+                    {type === 'r' ? 'Request' : 'Offer'} Food
+                </Text>
+            </Pressable>
+        </View>
     </View>
 )
 
@@ -74,8 +83,11 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
     const flattenData = data.pages.flatMap((page) => page.data)
 
     if (flattenData.length === 0 && isFetchedAfterMount) {
+        const screenWidth = Dimensions.get('window').width
+        const width = screenWidth > 700 ? 700 : screenWidth
+
         return (
-            <NoPosts type={type} navigate={navigation.navigate} />
+            <NoPosts type={type} navigate={navigation.navigate} width={width} />
         )
     }
 
@@ -136,6 +148,7 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
                 setShowRequests={setShowRequests}
                 from="history"
                 key={item.postId}
+                refetch={refetch}
             />
         )
     }

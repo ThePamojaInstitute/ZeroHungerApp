@@ -5,8 +5,8 @@ export default StyleSheet.create({
     formContainer: {
         flex: 1,
         padding: 10,
-        backgroundColor: Colors.Background
-
+        maxWidth: 700,
+        alignSelf: 'center'
     },
     formTitleText: {
         fontFamily: Fonts.PublicSans_SemiBold,

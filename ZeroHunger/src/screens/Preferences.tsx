@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, Dimensions, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Dimensions, ActivityIndicator, Platform } from "react-native";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import styles from "../../styles/screens/postFormStyleSheet"
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -9,6 +9,7 @@ import { useAlert } from "../context/Alert";
 import { DIETREQUIREMENTS, LOGISTICS, getDietType, getLogisticsType, getPreferences, savePreferences } from "../controllers/preferences";
 import { Char } from "../../types";
 import Slider from "@react-native-community/slider";
+import { PrefCustomHeader } from "../components/headers/PrefCustomHeader";
 
 
 export const Preferences = ({ navigation }) => {
@@ -32,13 +33,25 @@ export const Preferences = ({ navigation }) => {
     }, [])
 
     useEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <TouchableOpacity onPress={handleSave} testID="Request.createBtn" style={globalStyles.navDefaultBtn}>
-                    <Text testID="Request.createBtnLabel" style={globalStyles.defaultBtnLabel}>Save</Text>
-                </TouchableOpacity>
-            )
-        })
+        if (Platform.OS === 'web') {
+            navigation.setOptions({
+                header: () => (
+                    <PrefCustomHeader
+                        navigation={navigation}
+                        title={"Edit Preferences"}
+                        handleSave={handleSave}
+                    />
+                )
+            })
+        } else {
+            navigation.setOptions({
+                headerRight: () => (
+                    <TouchableOpacity onPress={handleSave} testID="Request.createBtn" style={globalStyles.navDefaultBtn}>
+                        <Text testID="Request.createBtnLabel" style={globalStyles.defaultBtnLabel}>Save</Text>
+                    </TouchableOpacity>
+                )
+            })
+        }
     }, [logistics, postalCode, dietRequirements, distance])
 
 
@@ -78,75 +91,82 @@ export const Preferences = ({ navigation }) => {
     }
 
     return (
-        <ScrollView style={{ padding: 10, flex: 1, backgroundColor: Colors.offWhite }}>
-            {!isLoading ?
-                <>
-                    <Text style={[globalStyles.H3, { marginBottom: 5, color: errMsg ? Colors.alert2 : Colors.dark }]}>Postal code</Text>
-                    <Text
-                        style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: 5 }]}>
-                        This will be your default postal code when you make a new offer or request.{"\n\n"}
-                        It will also be used to show requests and offers near you on your home feed, if you have opted out of using your current location.
-                    </Text>
-                    <View testID="Request.formInputContainer" style={styles.formInputContainer}>
-                        <TextInput
-                            value={postalCode}
-                            nativeID="postalCode"
-                            testID="Request.postalCodeInput"
-                            placeholder="XXX XXX"
-                            placeholderTextColor="#656565"
-                            style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
-                            onChangeText={newText => {
-                                setPostalCode(newText)
-                                setErrMsg("")
-                            }}
-                            onChange={() => setErrMsg("")}
-                            maxLength={7}
-                        />
-                    </View>
-                    {errMsg && <Text style={loginStyles.errorMsg}>{errMsg}</Text>}
-                    <Text style={[globalStyles.H3, { marginBottom: 5 }]}>Maximum distance away</Text>
-                    <Text
-                        style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: 5 }]}>
-                        This will be the default radius used to show requests and offers near you on your home feed.
-                    </Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Slider
-                            value={distance}
-                            onValueChange={setDistance}
-                            style={{ width: Dimensions.get('window').width * 0.8, height: 40, maxWidth: 500 }}
-                            minimumValue={1}
-                            maximumValue={30}
-                            step={1}
-                            minimumTrackTintColor={Colors.primary}
-                            maximumTrackTintColor="#B8B8B8"
-                            thumbTintColor="#ffffff"
-                        />
-                        <Text style={[globalStyles.Body, { marginLeft: 5, marginTop: 8 }]}>{Math.round(distance * 10) / 10} km</Text>
-                    </View>
-                    <Text style={[globalStyles.H3, { marginBottom: 5, marginTop: 10 }]}>Dietary requirements</Text>
-                    <Text
-                        style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: 5 }]}>
-                        These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.
-                    </Text>
-                    <View>
-                        {Object.keys(DIETREQUIREMENTS).map(value => {
-                            return renderItem(DIETREQUIREMENTS[value], dietRequirements, setDietRequirements, getDietType)
-                        })}
-                    </View>
-                    <Text style={[globalStyles.H3, { marginBottom: 5, marginTop: 10 }]}>Pick up / Delivery</Text>
-                    <Text
-                        style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: 5 }]}>
-                        These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.
-                    </Text>
-                    <View style={{ marginBottom: 25 }}>
-                        {Object.keys(LOGISTICS).map(value => {
-                            return renderItem(LOGISTICS[value], logistics, setLogistics, getLogisticsType)
-                        })}
-                    </View>
-                </> :
-                <ActivityIndicator animating size="large" color={Colors.primary} />
-            }
-        </ScrollView>
+        <View style={{ height: '100%', backgroundColor: Colors.offWhite }}>
+            <ScrollView
+                style={[
+                    { padding: 10, flex: 1 },
+                    Platform.OS === 'web' ? { maxWidth: 700, alignSelf: 'center' } : {}]}
+                showsVerticalScrollIndicator={false}
+            >
+                {!isLoading ?
+                    <>
+                        <Text style={[globalStyles.H3, { marginBottom: 5, color: errMsg ? Colors.alert2 : Colors.dark }]}>Postal code</Text>
+                        <Text
+                            style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: 5 }]}>
+                            This will be your default postal code when you make a new offer or request.{"\n\n"}
+                            It will also be used to show requests and offers near you on your home feed, if you have opted out of using your current location.
+                        </Text>
+                        <View testID="Request.formInputContainer" style={styles.formInputContainer}>
+                            <TextInput
+                                value={postalCode}
+                                nativeID="postalCode"
+                                testID="Request.postalCodeInput"
+                                placeholder="XXX XXX"
+                                placeholderTextColor="#656565"
+                                style={[styles.formInput, { borderColor: errMsg ? Colors.alert2 : Colors.midLight }]}
+                                onChangeText={newText => {
+                                    setPostalCode(newText)
+                                    setErrMsg("")
+                                }}
+                                onChange={() => setErrMsg("")}
+                                maxLength={7}
+                            />
+                        </View>
+                        {errMsg && <Text style={loginStyles.errorMsg}>{errMsg}</Text>}
+                        <Text style={[globalStyles.H3, { marginBottom: 5 }]}>Maximum distance away</Text>
+                        <Text
+                            style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: 5 }]}>
+                            This will be the default radius used to show requests and offers near you on your home feed.
+                        </Text>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Slider
+                                value={distance}
+                                onValueChange={setDistance}
+                                style={{ width: Dimensions.get('window').width * 0.8, height: 40, maxWidth: 500 }}
+                                minimumValue={1}
+                                maximumValue={30}
+                                step={1}
+                                minimumTrackTintColor={Colors.primary}
+                                maximumTrackTintColor="#B8B8B8"
+                                thumbTintColor="#ffffff"
+                            />
+                            <Text style={[globalStyles.Body, { marginLeft: 5, marginTop: 8 }]}>{Math.round(distance * 10) / 10} km</Text>
+                        </View>
+                        <Text style={[globalStyles.H3, { marginBottom: 5, marginTop: 10 }]}>Dietary requirements</Text>
+                        <Text
+                            style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: 5 }]}>
+                            These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.
+                        </Text>
+                        <View>
+                            {Object.keys(DIETREQUIREMENTS).map(value => {
+                                return renderItem(DIETREQUIREMENTS[value], dietRequirements, setDietRequirements, getDietType)
+                            })}
+                        </View>
+                        <Text style={[globalStyles.H3, { marginBottom: 5, marginTop: 10 }]}>Pick up / Delivery</Text>
+                        <Text
+                            style={[globalStyles.Small1, { color: Colors.primaryDark, marginBottom: 5 }]}>
+                            These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.
+                        </Text>
+                        <View style={{ marginBottom: 25 }}>
+                            {Object.keys(LOGISTICS).map(value => {
+                                return renderItem(LOGISTICS[value], logistics, setLogistics, getLogisticsType)
+                            })}
+                        </View>
+                    </> :
+                    <ActivityIndicator animating size="large" color={Colors.primary} />
+                }
+            </ScrollView>
+        </View>
     )
 }
 

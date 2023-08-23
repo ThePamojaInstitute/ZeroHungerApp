@@ -1,5 +1,8 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
+
+const screenWidth = Dimensions.get('window').width
+const modalWidth = screenWidth > 700 ? 700 : screenWidth
 
 export default StyleSheet.create({
     modalItem: {
@@ -38,6 +41,11 @@ export default StyleSheet.create({
         borderTopRightRadius: 20,
         marginTop: Dimensions.get('window').height * 0.825
     },
+    modalAlignWidth: Platform.OS === 'web' ? {
+        alignSelf: 'center',
+        width: modalWidth,
+        margin: 0
+    } : { margin: 0 },
     modalContent: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -52,6 +60,17 @@ export default StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.Background,
+    },
+    containerAlignWidth: {
+        maxWidth: 700,
+        marginHorizontal: 'auto',
+        width: '100%'
+    },
+    webContainer: {
+        flexDirection: 'row',
+        maxWidth: 700,
+        marginHorizontal: 'auto',
+        width: '100%',
     },
     subContainer: {
         flexDirection: 'row',

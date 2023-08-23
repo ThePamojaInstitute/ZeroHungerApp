@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, } from 'react'
-import { Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator, Pressable } from 'react-native';
+import { Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator, Pressable, Platform } from 'react-native';
 import styles from "../../styles/components/chatStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { AuthContext } from '../context/AuthContext';
@@ -12,6 +12,7 @@ import { Char } from '../../types';
 import { WSBaseURL, storage } from '../../config';
 import { handleExpiryDate } from '../controllers/post';
 import { ENV } from '../../env';
+import { ChatCustomHeader } from './headers/ChatCustomHeader';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -52,9 +53,20 @@ export const Chat = ({ navigation, route }) => {
         namesAlph[1] : namesAlph[0]
 
     useEffect(() => {
-        navigation.setOptions({
-            title: reciever,
-        })
+        if (Platform.OS === 'web') {
+            navigation.setOptions({
+                header: ({ navigation }) => (
+                    <ChatCustomHeader
+                        navigation={navigation}
+                        username={reciever}
+                    />
+                )
+            })
+        } else {
+            navigation.setOptions({
+                title: reciever,
+            })
+        }
     }, [])
 
     const handleSend = () => {
@@ -324,48 +336,56 @@ export const Chat = ({ navigation, route }) => {
 
     return (
         <View testID='Chat.container' style={{ flex: 1, backgroundColor: 'white' }}>
-            <Text>The WebSocket is currently {connectionStatus}</Text>
-            {/* {(!empty && messageHistory.length === 0) && <ActivityIndicator animating size="large" color={Colors.dark} />} */}
-            {empty && !loading && <Text testID='Chat.noMsgs' style={styles.noMsgs}>No Messages</Text>}
-            <FlashList
-                renderItem={renderItem}
-                data={messageHistory}
-                onEndReached={loadMessages}
-                onEndReachedThreshold={0.3}
-                inverted={true}
-                estimatedItemSize={235}
-                testID='Chat.messagesList'
-                // ListFooterComponent={endReached ?
-                //     <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 10 }}
-                //     >End Reached</Text> : <ActivityIndicator animating size="large" color={Colors.dark} />}
-                ListFooterComponent={!endReached ?
-                    <ActivityIndicator animating size="large" color={Colors.dark} /> : <></>}
-            />
-            <View testID='Chat.chatBar' style={[styles.chatBar, inputHeight > 50 ? { height: 69 + (inputHeight - 69 + 25) } : { height: 69 }]}>
-                <Entypo testID='Chat.chatCameraIcon' name="camera" size={26} color="black" style={styles.chatCameraIcon} />
-                <View testID='Chat.chatInputContainer' style={styles.chatInputContainer}>
-                    <TextInput
-                        testID='Chat.chatInput'
-                        value={message}
-                        style={[styles.chatInput, { height: inputHeight }]}
-                        placeholder="Type a message"
-                        placeholderTextColor="#656565"
-                        onChangeText={setMessage}
-                        onSubmitEditing={handleSend}
-                        maxLength={250}
-                        multiline={true}
-                        onContentSizeChange={event => {
-                            const height = event.nativeEvent.contentSize.height
-                            if (height === 0) return
+            <View style={styles.container}>
+                <Text>The WebSocket is currently {connectionStatus}</Text>
+                {/* {(!empty && messageHistory.length === 0) && <ActivityIndicator animating size="large" color={Colors.dark} />} */}
+                {empty && !loading && <Text testID='Chat.noMsgs' style={styles.noMsgs}>No Messages</Text>}
+                <FlashList
+                    renderItem={renderItem}
+                    data={messageHistory}
+                    onEndReached={loadMessages}
+                    onEndReachedThreshold={0.3}
+                    inverted={true}
+                    estimatedItemSize={235}
+                    testID='Chat.messagesList'
+                    showsVerticalScrollIndicator={false}
+                    // ListFooterComponent={endReached ?
+                    //     <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 10 }}
+                    //     >End Reached</Text> : <ActivityIndicator animating size="large" color={Colors.dark} />}
+                    ListFooterComponent={!endReached ?
+                        <ActivityIndicator animating size="large" color={Colors.primaryDark} /> : <></>}
+                />
+            </View>
+            <View
+                testID='Chat.chatBar'
+                style={[styles.chatBarContainer, inputHeight > 50 ?
+                    { height: 69 + (inputHeight - 69 + 25) } : { height: 69 }]}>
+                <View style={[styles.chatBar, Platform.OS === 'web' ? styles.chatBarAlignWidth : {}]}>
+                    <Entypo testID='Chat.chatCameraIcon' name="camera" size={26} color="black" style={styles.chatCameraIcon} />
+                    <View testID='Chat.chatInputContainer' style={styles.chatInputContainer}>
+                        <TextInput
+                            testID='Chat.chatInput'
+                            value={message}
+                            style={[styles.chatInput, { height: inputHeight }]}
+                            placeholder="Type a message"
+                            placeholderTextColor="#656565"
+                            onChangeText={setMessage}
+                            onSubmitEditing={handleSend}
+                            maxLength={250}
+                            multiline={true}
+                            onContentSizeChange={event => {
+                                const height = event.nativeEvent.contentSize.height
+                                if (height === 0) return
 
-                            setInputHeight(height);
-                        }}
-                        numberOfLines={3}
-                    />
+                                setInputHeight(height);
+                            }}
+                            numberOfLines={3}
+                        />
+                    </View>
+                    <Pressable style={styles.sendBtn} onPress={handleSend}>
+                        <Text style={[globalStyles.Button, { color: Colors.offWhite, marginHorizontal: 10 }]}>Send</Text>
+                    </Pressable>
                 </View>
-                <Pressable style={styles.sendBtn} onPress={handleSend}>
-                    <Text style={[globalStyles.Button, { color: Colors.offWhite, marginHorizontal: 10 }]}>Send</Text>
-                </Pressable>
             </View>
             {/* {Platform.OS != 'web' &&
                 <FlashList

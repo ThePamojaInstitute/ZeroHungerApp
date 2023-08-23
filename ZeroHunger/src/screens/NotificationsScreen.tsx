@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, Dimensions, ActivityIndicator, Pressable } from "react-native"
+import { View, Text, TouchableOpacity, Image, Dimensions, ActivityIndicator, Pressable, Platform } from "react-native"
 import { useIsFocused } from '@react-navigation/native';
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
 import { setLocalStorageItem, storage } from "../../config";
@@ -18,30 +18,40 @@ import { ENV } from "../../env";
 import { getNotifications } from "../controllers/auth";
 import { extendExpiryDate, handleExpiryDate } from "../controllers/post";
 import { useAlert } from "../context/Alert";
+import { NotificationsCustomHeader } from "../components/headers/NotificationsCustomHeader";
 
 
-const NoNotifications = ({ navigate }) => (
+const NoNotifications = ({ navigate, width }) => (
     <View style={{
-        alignItems: 'center',
-        justifyContent: 'center',
         marginTop: Dimensions.get('window').height * 0.15,
-        paddingHorizontal: 50,
     }}>
-        <Text
-            style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
-            No notifications
-        </Text>
-        <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
-            You will be notified when one of your posts is expiring soon
-        </Text>
-        <Pressable
-            style={[globalStyles.defaultBtn, { width: '90%' }]}
-            onPress={() => navigate('HomeScreen')}
-        >
-            <Text style={globalStyles.defaultBtnLabel}>
-                Back to Home
+        <View style={Platform.OS === 'web' ? {
+            maxWidth: 700,
+            alignSelf: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: width
+        } : {
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 50,
+        }}>
+            <Text
+                style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
+                No notifications
             </Text>
-        </Pressable>
+            <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
+                You will be notified when one of your posts is expiring soon
+            </Text>
+            <Pressable
+                style={[globalStyles.defaultBtn, { width: '90%' }]}
+                onPress={() => navigate('HomeScreen')}
+            >
+                <Text style={globalStyles.defaultBtnLabel}>
+                    Back to Home
+                </Text>
+            </Pressable>
+        </View>
     </View>
 )
 
@@ -54,7 +64,9 @@ const NotificationsModal = ({ modalVisible, setModalVisible, height, setHeight, 
         onBackdropPress={() => setModalVisible(!modalVisible)}
         onSwipeComplete={() => setModalVisible(!modalVisible)}
         swipeDirection={['down']}
-        style={[styles.modal, height ? { marginTop: Dimensions.get('window').height - (height + 10) } : {}]}
+        style={[styles.modal, Platform.OS === 'web' ? styles.modalAlignWidth : {},
+        height ? { marginTop: Dimensions.get('window').height - (height + 10) } :
+            {}]}
     >
         <View
             onLayout={(event) => {
@@ -111,21 +123,34 @@ export const NotificationsScreen = ({ navigation }) => {
     const [firstLoad, setFirstLoad] = useState(true)
 
     useEffect(() => {
-        navigation.setOptions({
-            title: "Notifications",
-            headerTitleAlign: 'center',
-            headerShadowVisible: false,
-            headerRight: () => (
-                <View>
-                    <Ionicons
-                        name="ellipsis-horizontal"
-                        size={24}
-                        style={{ paddingRight: 16 }}
-                        onPress={() => { setModalVisible(!modalVisible) }}
+        if (Platform.OS === 'web') {
+            navigation.setOptions({
+                header: () => (
+                    <NotificationsCustomHeader
+                        navigation={navigation}
+                        title={"Notifications"}
+                        modalVisible={modalVisible}
+                        setModalVisible={setModalVisible}
                     />
-                </View>
-            )
-        }, [])
+                )
+            })
+        } else {
+            navigation.setOptions({
+                title: "Notifications",
+                headerTitleAlign: 'center',
+                headerShadowVisible: false,
+                headerRight: () => (
+                    <View>
+                        <Ionicons
+                            name="ellipsis-horizontal"
+                            size={24}
+                            style={{ paddingRight: 16 }}
+                            onPress={() => { setModalVisible(!modalVisible) }}
+                        />
+                    </View>
+                )
+            })
+        }
 
         if (ENV === 'production') {
             storage.set('lastSeen', new Date().toDateString())
@@ -392,12 +417,12 @@ export const NotificationsScreen = ({ navigation }) => {
         const [expiryStr, expiryInDays] = handleExpiryDate(item.expiryDate, item.type)
 
         return (
-            <View style={index !== 0 ? {
+            <View style={[Platform.OS === 'web' ? styles.itemContainer : {}, index !== 0 ? {
                 borderTopWidth: 1,
                 borderStyle: 'solid',
                 borderTopColor: '#D1D1D1',
                 marginHorizontal: 5,
-            } : { marginHorizontal: 5 }}>
+            } : { marginHorizontal: 5 }]}>
                 <View style={{
                     flexDirection: 'row',
                     marginTop: 15,
@@ -449,6 +474,9 @@ export const NotificationsScreen = ({ navigation }) => {
         )
     }
 
+    const screenWidth = Dimensions.get('window').width
+    const width = screenWidth > 700 ? 700 : screenWidth
+
     return (
         <View style={{ height: '100%', backgroundColor: Colors.Background, padding: 5 }}>
             {!isEmpty ?
@@ -463,7 +491,7 @@ export const NotificationsScreen = ({ navigation }) => {
                     :
                     <ActivityIndicator animating size="large" color={Colors.primary} />
                 :
-                <NoNotifications navigate={navigation.navigate} />
+                <NoNotifications navigate={navigation.navigate} width={width} />
             }
             <View>
                 <NotificationsModal
