@@ -5,8 +5,11 @@ import styles from "../../styles/screens/permissionsStyleSheet";
 import postalStyles from "../../styles/screens/postFormStyleSheet"
 import loginStyles from "../../styles/screens/loginStyleSheet"
 import { savePreferences } from "../controllers/preferences";
+import { useAlert } from "../context/Alert";
 
 export const PermissionsScreen = ({ navigation }) => {
+    const { dispatch: alert } = useAlert()
+
     const [postalCode, setPostalCode] = useState('')
     const [errMsg, setErrMsg] = useState("")
 
@@ -29,10 +32,10 @@ export const PermissionsScreen = ({ navigation }) => {
         <View style={{ backgroundColor: Colors.offWhite }}>
             <View style={[styles.view, Platform.OS === 'web' ? styles.alignWidth : {}]}>
                 <Image source={require('../../assets/Permissions.png')} resizeMode="center" style={styles.image} />
-                <Text style={globalStyles.H2}>See food offers and requests in your area</Text>
-                <Text style={[globalStyles.Body, { paddingTop: 12 }]}>We'll show you requests and offers based on your postal code.</Text>
+                <Text style={[globalStyles.H2, { textAlign: 'center' }]}>See food offers and requests in your area</Text>
+                <Text style={[globalStyles.Body, { paddingTop: 12, textAlign: 'center' }]}>We'll show you requests and offers based on your postal code.</Text>
                 <View style={{ paddingTop: 24, paddingLeft: -4, paddingRight: -4 }}>
-                    <Text style={globalStyles.H4}>Your postal code</Text>
+                    <Text style={[globalStyles.H4, { color: !!errMsg ? Colors.alert2 : Colors.dark }]}>Your postal code</Text>
                     <Text style={[globalStyles.Small1, { color: Colors.midDark, paddingTop: 8 }]}>
                         Other people will only see an estimate of how far away your postal code is from theirs {'('}i.e., 5 km away{')'}
                     </Text>

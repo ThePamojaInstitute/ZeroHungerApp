@@ -88,9 +88,9 @@ export const savePreferences = async (
 
     const data = {
         postalCode: postalCode.toUpperCase(),
-        distance: distance,
-        dietRequirements: dietRequirements,
-        logistics: logistics
+        distance: distance ?? 15,
+        dietRequirements: dietRequirements ?? [],
+        logistics: logistics ?? []
     }
 
     try {
