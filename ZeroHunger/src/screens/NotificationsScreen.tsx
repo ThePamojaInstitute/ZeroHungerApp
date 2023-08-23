@@ -176,12 +176,18 @@ export const NotificationsScreen = ({ navigation }) => {
         } else setPosts(route.params['posts'])
     }
 
+    const handleUpdateNotifications = async () => {
+        const res = await getNotifications('notifications')
+        if (!res.data.length) setIsEmpty(true)
+        else setPosts(res.data)
+    }
+
     const handleExtendExpiryDate = async (postId: number, postType: "r" | "o") => {
         const res = await extendExpiryDate(postId, postType)
 
         if (res.msg === 'success') {
             alert!({ type: 'open', message: 'Post updated successfully!', alertType: 'success' })
-            await handleGetNotifications()
+            await handleUpdateNotifications()
         } else {
             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
         }
