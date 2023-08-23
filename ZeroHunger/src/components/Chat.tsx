@@ -337,7 +337,7 @@ export const Chat = ({ navigation, route }) => {
     return (
         <View testID='Chat.container' style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={styles.container}>
-                <Text>The WebSocket is currently {connectionStatus}</Text>
+                {/* <Text>The WebSocket is currently {connectionStatus}</Text> */}
                 {/* {(!empty && messageHistory.length === 0) && <ActivityIndicator animating size="large" color={Colors.dark} />} */}
                 {empty && !loading && <Text testID='Chat.noMsgs' style={styles.noMsgs}>No Messages</Text>}
                 <FlashList

@@ -249,14 +249,14 @@ const HomeStackNavigator = ({ navigation }) => {
                         headerStyle: {
                             backgroundColor: Colors.offWhite,
                         },
-                        headerRight: () => (
-                            <Ionicons
-                                name="ellipsis-horizontal"
-                                size={24}
-                                style={{ paddingRight: 16 }}
-                                onPress={() => { }}
-                            />
-                        )
+                        // headerRight: () => (
+                        //     <Ionicons
+                        //         name="ellipsis-horizontal"
+                        //         size={24}
+                        //         style={{ paddingRight: 16 }}
+                        //         onPress={() => { }}
+                        //     />
+                        // )
                     }}
                 /> :
                 <Stack.Screen
@@ -311,14 +311,14 @@ const HomeStackNavigator = ({ navigation }) => {
                         headerStyle: {
                             backgroundColor: Colors.offWhite,
                         },
-                        headerRight: () => (
-                            <Ionicons
-                                name="ellipsis-horizontal"
-                                size={24}
-                                style={{ paddingRight: 16 }}
-                                onPress={() => { }}
-                            />
-                        )
+                        // headerRight: () => (
+                        //     <Ionicons
+                        //         name="ellipsis-horizontal"
+                        //         size={24}
+                        //         style={{ paddingRight: 16 }}
+                        //         onPress={() => { }}
+                        //     />
+                        // )
                     }}
                 /> :
                 <Stack.Screen
@@ -345,7 +345,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         headerTitleAlign: 'center',
                         headerShadowVisible: false,
                         headerStyle: {
-                            backgroundColor: Colors.Background,
+                            backgroundColor: Colors.offWhite,
                         },
                     }}
                 /> :
@@ -490,33 +490,6 @@ const ChatStackNavigator = () => {
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
                     headerStyle: {
-                        backgroundColor: Colors.Background,
-                    },
-                    contentStyle: { backgroundColor: Colors.Background }
-                }}
-            />
-            <Stack.Screen
-                name="Chat"
-                component={Chat}
-                options={{
-                    headerShown: true,
-                    // title: t("messages.heading"),
-                    title: t("menu.bottom.messages.label"),
-                    headerTitleAlign: 'center',
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.Background,
-                    },
-                }}
-            />
-            <Stack.Screen
-                name="RequestDetailsScreen"
-                component={RequestDetailsScreen}
-                options={{
-                    title: t("request.form.detailsHeading"),
-                    headerTitleAlign: "center",
-                    headerShadowVisible: false,
-                    headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
                     contentStyle: { backgroundColor: Colors.offWhite }
@@ -532,7 +505,7 @@ const ChatStackNavigator = () => {
                         headerTitleAlign: 'center',
                         headerShadowVisible: false,
                         headerStyle: {
-                            backgroundColor: Colors.Background,
+                            backgroundColor: Colors.offWhite,
                         },
                     }}
                 /> :
@@ -560,14 +533,14 @@ const ChatStackNavigator = () => {
                         headerStyle: {
                             backgroundColor: Colors.offWhite,
                         },
-                        headerRight: () => (
-                            <Ionicons
-                                name="ellipsis-horizontal"
-                                size={24}
-                                style={{ paddingRight: 16 }}
-                                onPress={() => { }}
-                            />
-                        )
+                        // headerRight: () => (
+                        //     <Ionicons
+                        //         name="ellipsis-horizontal"
+                        //         size={24}
+                        //         style={{ paddingRight: 16 }}
+                        //         onPress={() => { }}
+                        //     />
+                        // )
                     }}
                 /> :
                 <Stack.Screen
@@ -595,14 +568,14 @@ const ChatStackNavigator = () => {
                         headerStyle: {
                             backgroundColor: Colors.offWhite,
                         },
-                        headerRight: () => (
-                            <Ionicons
-                                name="ellipsis-horizontal"
-                                size={24}
-                                style={{ paddingRight: 16 }}
-                                onPress={() => { }}
-                            />
-                        )
+                        // headerRight: () => (
+                        //     <Ionicons
+                        //         name="ellipsis-horizontal"
+                        //         size={24}
+                        //         style={{ paddingRight: 16 }}
+                        //         onPress={() => { }}
+                        //     />
+                        // )
                     }}
                 /> :
                 <Stack.Screen
