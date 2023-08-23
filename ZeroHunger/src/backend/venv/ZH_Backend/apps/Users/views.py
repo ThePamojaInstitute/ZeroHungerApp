@@ -97,7 +97,7 @@ class edit_account_view(APIView):
             serializer = UpdateUserSerializer(data=request.data)
             if (serializer.is_valid()):
                 serializer.update(instance=user)
-                return Response("Modified User", status=204)
+                return Response(status=204)
             else:
                 print(serializer.errors)
                 return Response(serializer.errors, status = 400)

@@ -1,5 +1,5 @@
 import { useImperativeHandle, useState } from "react"
-import { View, Dimensions, Text, TouchableOpacity, Pressable } from "react-native"
+import { View, Dimensions, Text, TouchableOpacity, Pressable, Platform } from "react-native"
 import Modal from 'react-native-modal';
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
 import styles from "../../styles/components/postsFiltersStyleSheet"
@@ -176,7 +176,7 @@ const PostsFilters = ({
             onBackdropPress={handleModalClose}
             onSwipeComplete={handleModalClose}
             swipeDirection={['down']}
-            style={{ margin: 0 }}
+            style={styles.modal}
         >
             <View style={[styles.modalContainer,
             { maxHeight: Dimensions.get('window').height * 0.92 }]}>

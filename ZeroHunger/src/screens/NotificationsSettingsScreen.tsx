@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { View, ScrollView, Text, Switch } from "react-native"
+import { View, ScrollView, Text, Switch, Platform, Dimensions } from "react-native"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { setLocalStorageItem, storage } from "../../config";
 import { ENV } from "../../env";
@@ -57,10 +57,17 @@ export const NotificationsSettingsScreen = ({ navigation }) => {
         };
     }, [allowExpiringPosts, allowNewMessages, settings])
 
+    const screenWidth = Dimensions.get('window').width
+    const width = screenWidth > 700 ? 700 : screenWidth
+
     return (
-        <ScrollView style={{ padding: 12, backgroundColor: Colors.offWhite }}>
-            {/* Eventual preferences */}
-            {/* <View style={{ flexDirection: "row", paddingBottom: 16 }}>
+        <View style={{ height: '100%', backgroundColor: Colors.offWhite }}>
+            <ScrollView
+                style={[{ padding: 12 }, Platform.OS === 'web' ?
+                    { maxWidth: 700, alignSelf: 'center', width: width } : {}]}
+            >
+                {/* Eventual preferences */}
+                {/* <View style={{ flexDirection: "row", paddingBottom: 16 }}>
                 <Text style={globalStyles.Body}>Community requests that match your offers</Text>
                 <View style={{marginLeft: "auto", paddingLeft: 16}}>
                     <Switch
@@ -71,7 +78,7 @@ export const NotificationsSettingsScreen = ({ navigation }) => {
                     />
                 </View>
             </View> */}
-            {/* <View style={{ flexDirection: "row", paddingBottom: 16 }}>
+                {/* <View style={{ flexDirection: "row", paddingBottom: 16 }}>
                 <Text style={globalStyles.Body}>Community offers that match your requests</Text>
                 <View style={{marginLeft: "auto", paddingLeft: 16}}>
                     <Switch
@@ -82,23 +89,23 @@ export const NotificationsSettingsScreen = ({ navigation }) => {
                     />
                 </View>
             </View> */}
-            <View style={{ marginBottom: 24 }}>
-                <Text style={[globalStyles.H3, { marginBottom: 16 }]}>Preferences</Text>
-                <View style={{ flexDirection: "row", alignItems: 'center' }}>
-                    <Text style={globalStyles.Body}>Post expiring soon</Text>
-                    <View style={{ position: 'absolute', right: 0 }}>
-                        <Switch
-                            trackColor={{ false: Colors.mid, true: Colors.primary }}
-                            thumbColor={Colors.white}
-                            onValueChange={setAllowExpiringPosts}
-                            value={allowExpiringPosts}
-                        />
+                <View style={{ marginBottom: 24 }}>
+                    <Text style={[globalStyles.H3, { marginBottom: 16 }]}>Preferences</Text>
+                    <View style={{ flexDirection: "row", alignItems: 'center' }}>
+                        <Text style={globalStyles.Body}>Post expiring soon</Text>
+                        <View style={{ position: 'absolute', right: 0 }}>
+                            <Switch
+                                trackColor={{ false: Colors.mid, true: Colors.primary }}
+                                thumbColor={Colors.white}
+                                onValueChange={setAllowExpiringPosts}
+                                value={allowExpiringPosts}
+                            />
+                        </View>
                     </View>
                 </View>
-            </View>
-            <View>
-                <Text style={[globalStyles.H3, { marginBottom: 16 }]}>Push Notifications</Text>
-                {/* <View style={{ flexDirection: "row", alignItems: 'center', marginBottom: 20 }}>
+                <View>
+                    <Text style={[globalStyles.H3, { marginBottom: 16 }]}>Push Notifications</Text>
+                    {/* <View style={{ flexDirection: "row", alignItems: 'center', marginBottom: 20 }}>
                     <Text style={globalStyles.Body}>Enable notifications</Text>
                     <View style={{ position: 'absolute', right: 0 }}>
                         <Switch
@@ -109,19 +116,20 @@ export const NotificationsSettingsScreen = ({ navigation }) => {
                         />
                     </View>
                 </View> */}
-                <View style={{ flexDirection: "row", alignItems: 'center', marginBottom: 5 }}>
-                    <Text style={globalStyles.Body}>New messages</Text>
-                    <View style={{ position: 'absolute', right: 0 }}>
-                        <Switch
-                            trackColor={{ false: Colors.mid, true: Colors.primary }}
-                            thumbColor={Colors.white}
-                            onValueChange={setAllowNewMessages}
-                            value={allowNewMessages}
-                        />
+                    <View style={{ flexDirection: "row", alignItems: 'center', marginBottom: 5 }}>
+                        <Text style={globalStyles.Body}>New messages</Text>
+                        <View style={{ position: 'absolute', right: 0 }}>
+                            <Switch
+                                trackColor={{ false: Colors.mid, true: Colors.primary }}
+                                thumbColor={Colors.white}
+                                onValueChange={setAllowNewMessages}
+                                value={allowNewMessages}
+                            />
+                        </View>
                     </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
     )
 }
 

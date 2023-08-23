@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import { Text, RefreshControl, ActivityIndicator, View, Pressable, Dimensions } from "react-native";
+import { Text, RefreshControl, ActivityIndicator, View, Pressable, Dimensions, Platform } from "react-native";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { useAlert } from "../context/Alert";
 import { FlashList } from "@shopify/flash-list";
@@ -13,40 +13,49 @@ import { default as _MyPostModal } from "./MyPostModal";
 
 const MyPostModal = forwardRef(_MyPostModal)
 
-const NoPosts = ({ type, filtersAreOn, navigate, clearFilters }) => (
+const NoPosts = ({ type, filtersAreOn, navigate, clearFilters, width }) => (
     <View style={{
-        alignItems: 'center',
-        justifyContent: 'center',
         marginTop: Dimensions.get('window').height * 0.15,
-        paddingHorizontal: 50,
     }}>
-        <Text
-            style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
-            {filtersAreOn ?
-                `No ${type === 'r' ? 'requests' : 'offers'} matching your filters`
-                : `No ${type === 'r' ? 'requests' : 'offers'} yet`}
-        </Text>
-        <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
-            {filtersAreOn ?
-                'Try removing some of your filters to get more results'
-                : `Make your first ${type === 'r' ? 'request' : 'offer'}!`}
-        </Text>
-        <Pressable
-            style={[globalStyles.defaultBtn, { width: '90%' }]}
-            onPress={() => {
-                if (filtersAreOn) {
-                    clearFilters()
-                } else {
-                    navigate(`${type === 'r' ? 'Request' : 'Offer'}FormScreen`)
-                }
-            }}
-        >
-            <Text style={globalStyles.defaultBtnLabel}>
+        <View style={Platform.OS === 'web' ? {
+            maxWidth: 700,
+            alignSelf: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: width
+        } : {
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 50,
+        }}>
+            <Text
+                style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
                 {filtersAreOn ?
-                    'Clear filters'
-                    : `${type === 'r' ? 'Request' : 'Offer'} Food`}
+                    `No ${type === 'r' ? 'requests' : 'offers'} matching your filters`
+                    : `No ${type === 'r' ? 'requests' : 'offers'} yet`}
             </Text>
-        </Pressable>
+            <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
+                {filtersAreOn ?
+                    'Try removing some of your filters to get more results'
+                    : `Make your first ${type === 'r' ? 'request' : 'offer'}!`}
+            </Text>
+            <Pressable
+                style={[globalStyles.defaultBtn, { width: '90%' }]}
+                onPress={() => {
+                    if (filtersAreOn) {
+                        clearFilters()
+                    } else {
+                        navigate(`${type === 'r' ? 'Request' : 'Offer'}FormScreen`)
+                    }
+                }}
+            >
+                <Text style={globalStyles.defaultBtnLabel}>
+                    {filtersAreOn ?
+                        'Clear filters'
+                        : `${type === 'r' ? 'Request' : 'Offer'} Food`}
+                </Text>
+            </Pressable>
+        </View>
     </View>
 )
 
@@ -116,12 +125,16 @@ export const FeedPostRenderer = ({
             filtersAreOn = true
         }
 
+        const screenWidth = Dimensions.get('window').width
+        const width = screenWidth > 700 ? 700 : screenWidth
+
         return (
             <NoPosts
                 type={type}
                 filtersAreOn={filtersAreOn}
                 navigate={navigation.navigate}
                 clearFilters={clearFilters}
+                width={width}
             />
         )
     }

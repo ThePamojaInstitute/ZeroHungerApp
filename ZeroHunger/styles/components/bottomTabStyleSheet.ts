@@ -1,5 +1,8 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
+
+const screenWidth = Dimensions.get('window').width
+const modalWidth = screenWidth > 700 ? 700 : screenWidth
 
 export default StyleSheet.create({
     bottomBarText: {
@@ -12,6 +15,7 @@ export default StyleSheet.create({
         height: 69,
         backgroundColor: Colors.offWhite,
         borderTopWidth: 0,
+        alignItems: 'center'
     },
     homeButton: {
         flex: 0,
@@ -37,6 +41,11 @@ export default StyleSheet.create({
         borderTopRightRadius: 20,
         marginTop: Dimensions.get('window').height * 0.74
     },
+    modalAlignWidth: Platform.OS === 'web' ? {
+        alignSelf: 'center',
+        width: modalWidth,
+        margin: 0
+    } : { margin: 0 },
     modalContent: {
         alignItems: 'center',
         justifyContent: 'center',

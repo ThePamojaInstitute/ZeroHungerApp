@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, View, Pressable, TouchableOpacity, Dimensions } from "react-native"
+import { Text, View, Pressable, TouchableOpacity, Dimensions, Platform } from "react-native"
 import HistoryPostRenderer from "../components/HistoryPostRenderer";
 import styles from "../../styles/screens/postsHistory";
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
@@ -23,7 +23,9 @@ export const PostsHistory = ({ navigation }) => {
                 onBackdropPress={() => setModalVisible(!modalVisible)}
                 onSwipeComplete={() => setModalVisible(!modalVisible)}
                 swipeDirection={['down']}
-                style={[styles.modal, height ? { marginTop: Dimensions.get('window').height - (height + 30) } : {}]}
+                style={[styles.modal, Platform.OS === 'web' ? styles.modalAlignWidth : {},
+                height ? { marginTop: Dimensions.get('window').height - (height + 30) } :
+                    {}]}
             >
                 <View
                     onLayout={(event) => {
@@ -92,47 +94,51 @@ export const PostsHistory = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View testID="Home.subContainer" style={styles.subContainer}>
-                <View testID="Home.requestsContainer" style={[
-                    {
-                        borderBottomColor: showRequests ?
-                            'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                    },
-                    styles.pressable
-                ]}>
-                    <Pressable
-                        style={styles.pressableText}
-                        onPress={() => setShowRequests(true)}
-                        testID="Home.requestsBtn"
-                    >
-                        <Text testID="Home.requestsLabel" style={globalStyles.H3}>My Requests</Text>
-                    </Pressable>
-                </View>
-                <View testID="Home.offersContainer" style={[
-                    {
-                        borderBottomColor: !showRequests ?
-                            'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
-                    },
-                    styles.pressable
-                ]}>
-                    <Pressable
-                        style={styles.pressableText}
-                        onPress={() => setShowRequests(false)}
-                        testID="Home.offersBtn"
-                    >
-                        <Text testID="Home.offersLabel" style={globalStyles.H3}>My Offers</Text>
-                    </Pressable>
+                <View style={Platform.OS === 'web' ? styles.webContainer : { flexDirection: 'row' }}>
+                    <View testID="Home.requestsContainer" style={[
+                        {
+                            borderBottomColor: showRequests ?
+                                'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                        },
+                        styles.pressable
+                    ]}>
+                        <Pressable
+                            style={styles.pressableText}
+                            onPress={() => setShowRequests(true)}
+                            testID="Home.requestsBtn"
+                        >
+                            <Text testID="Home.requestsLabel" style={globalStyles.H3}>My Requests</Text>
+                        </Pressable>
+                    </View>
+                    <View testID="Home.offersContainer" style={[
+                        {
+                            borderBottomColor: !showRequests ?
+                                'rgba(48, 103, 117, 100)' : 'rgba(48, 103, 117, 0)'
+                        },
+                        styles.pressable
+                    ]}>
+                        <Pressable
+                            style={styles.pressableText}
+                            onPress={() => setShowRequests(false)}
+                            testID="Home.offersBtn"
+                        >
+                            <Text testID="Home.offersLabel" style={globalStyles.H3}>My Offers</Text>
+                        </Pressable>
+                    </View>
                 </View>
             </View>
-            <View style={styles.sortContainer}>
-                <Text style={globalStyles.Small1}>Sorted by: </Text>
-                <Pressable
-                    onPress={() => setModalVisible(true)}
-                    style={styles.sort}>
-                    <Text
-                        style={styles.sortText}
-                    >{orderByNewest ? 'Newest first' : 'Oldest first'}</Text>
-                    <Entypo name="chevron-down" size={18} color={Colors.primaryDark} />
-                </Pressable>
+            <View style={{ backgroundColor: Colors.offWhite }}>
+                <View style={[styles.sortContainer, Platform.OS === 'web' ? styles.containerAlignWidth : {}]}>
+                    <Text style={globalStyles.Small1}>Sorted by: </Text>
+                    <Pressable
+                        onPress={() => setModalVisible(true)}
+                        style={styles.sort}>
+                        <Text
+                            style={styles.sortText}
+                        >{orderByNewest ? 'Newest first' : 'Oldest first'}</Text>
+                        <Entypo name="chevron-down" size={18} color={Colors.primaryDark} />
+                    </Pressable>
+                </View>
             </View>
             {showRequests &&
                 <HistoryPostRenderer

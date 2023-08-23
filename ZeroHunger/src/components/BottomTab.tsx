@@ -28,12 +28,20 @@ import { NotificationContext } from "../context/ChatNotificationContext";
 import PermissionsScreen from "../screens/PermissionsScreen";
 import GuidelinesScreen from "../screens/GuidelinesScreen";
 import PermissionsScreen2 from "../screens/PermissionsScreen2";
+import { HomeCustomHeaderRight } from "./headers/HomeCustomHeaderRight";
+import { HomeWebCustomHeader } from "./headers/HomeWebCustomHeader";
+import { ChatCustomHeader } from "./headers/ChatCustomHeader";
+import { WebCustomHeader } from "./headers/WebCustomHeader";
+import { AccSettingsFormCustomHeader } from "./headers/AccSettingsCustomHeader";
+import { FormCustomHeader } from "./headers/FormCustomHeader";
+import { MainCustomHeader } from "./headers/MainCustomHeader";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
 const HomeStackNavigator = ({ navigation }) => {
     const { t, i18n } = useTranslation();
+
     return (
         <Stack.Navigator>
             {/* <Stack.Screen
@@ -56,33 +64,62 @@ const HomeStackNavigator = ({ navigation }) => {
                     )
                 })}
             /> */}
-            <Stack.Screen
-                name="LoginScreen"
-                component={LoginScreen}
-                options={{
-                    title: t("app.title"),
-                    headerTitleAlign: 'center',
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.Background,
-                    },
-                    headerLeft: () => (<></>),
-                    contentStyle: { backgroundColor: Colors.Background }
-                }}
-            />
-            <Stack.Screen
-                name="CreateAccountScreen"
-                component={CreateAccountScreen}
-                options={{
-                    title: t("app.title"),
-                    headerTitleAlign: 'center',
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.Background
-                    },
-                    contentStyle: { backgroundColor: Colors.Background }
-                }}
-            />
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="LoginScreen"
+                    component={LoginScreen}
+                    options={{
+                        title: t("app.title"),
+                        headerTitleAlign: 'center',
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.Background,
+                        },
+                        headerLeft: () => (<></>),
+                        contentStyle: { backgroundColor: Colors.Background }
+                    }}
+                /> :
+                <Stack.Screen
+                    name="LoginScreen"
+                    component={LoginScreen}
+                    options={{
+                        header: () => (
+                            <MainCustomHeader
+                                title={t("app.title")}
+                            />
+                        ),
+                        contentStyle: { backgroundColor: Colors.Background }
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="CreateAccountScreen"
+                    component={CreateAccountScreen}
+                    options={{
+                        title: t("app.title"),
+                        headerTitleAlign: 'center',
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.Background
+                        },
+                        contentStyle: { backgroundColor: Colors.Background }
+                    }}
+                /> :
+                <Stack.Screen
+                    name="CreateAccountScreen"
+                    component={CreateAccountScreen}
+                    options={{
+                        header: () => (
+                            <WebCustomHeader
+                                navigation={navigation}
+                                title={t("app.title")}
+                            />
+                        ),
+                        contentStyle: { backgroundColor: Colors.Background }
+                    }}
+                />
+            }
             <Stack.Screen
                 name="PermissionsScreen"
                 component={PermissionsScreen}
@@ -126,188 +163,317 @@ const HomeStackNavigator = ({ navigation }) => {
                     headerLeft: () => (<></>)
                 }}
             />
-            <Stack.Screen
-                name="HomeScreen"
-                component={HomeScreen}
-                options={{
-                    title: t("app.title"),
-                    headerTitleAlign: 'left',
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite
-                    },
-                    headerLeft: () => (
-                        <Ionicons
-                            style={{
-                                marginLeft: Platform.OS === 'web' ? 12 : 0,
-                                marginRight: 21
-                            }}
-                            name="menu"
-                            size={24}
-                            onPress={navigation.openDrawer}
-                            testID="Home.drawerBtn"
-                        />
-                    ),
-                    headerRight: () => (
-                        <View style={{ flexDirection: 'row' }}>
-                            {Platform.OS === "web" &&
-                                <MaterialIcons
-                                    style={{ padding: 16 }}
-                                    name="refresh"
-                                    size={26}
-                                    color="black"
-                                />
-                            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="HomeScreen"
+                    component={HomeScreen}
+                    options={{
+                        title: t("app.title"),
+                        headerTitleAlign: 'left',
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite
+                        },
+                        headerLeft: () => (
                             <Ionicons
-                                style={{ padding: 16 }}
-                                name="notifications-sharp"
-                                size={22}
-                                onPress={() => { navigation.navigate("NotificationsScreen") }}
+                                style={{
+                                    marginLeft: Platform.OS === 'web' ? 12 : 0,
+                                    marginRight: 21,
+                                }}
+                                name="menu"
+                                size={24}
+                                onPress={navigation.openDrawer}
+                                testID="Home.drawerBtn"
                             />
-                            {/* <Ionicons
-                                style={{ padding: 16 }}
-                                name="md-search"
-                                size={22}
+                        ),
+                        headerRight: () => (
+                            <HomeCustomHeaderRight
+                                navigation={navigation}
+                                expiringPosts={[]}
+                                setExpiringPosts={() => { }}
+                            />
+                        ),
+                    }}
+                /> :
+                <Stack.Screen
+                    name="HomeScreen"
+                    component={HomeScreen}
+                    options={{
+                        header: () => (
+                            <HomeWebCustomHeader
+                                navigation={navigation}
+                                updater={() => { }}
+                                expiringPosts={[]}
+                                setExpiringPosts={() => { }}
+                                t={t}
+                            />
+                        )
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="RequestFormScreen"
+                    component={RequestFormScreen}
+                    options={{
+                        headerShadowVisible: false,
+                    }}
+                /> :
+                <Stack.Screen
+                    name="RequestFormScreen"
+                    component={RequestFormScreen}
+                    options={{
+                        header: () => (
+                            <FormCustomHeader
+                                navigation={navigation}
+                                title={t("request.form.heading")}
+                                defaultPostalCode={null}
+                                setUseDefaultPostal={() => { }}
+                                useDefaultPostal={false}
+                                handlePress={() => { }}
+                                handleSubmit={() => { }}
+                                setError={() => { }}
+                            />
+                        )
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="RequestDetailsScreen"
+                    component={RequestDetailsScreen}
+                    options={{
+                        title: t("request.form.detailsHeading"),
+                        headerTitleAlign: "center",
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite,
+                        },
+                        headerRight: () => (
+                            <Ionicons
+                                name="ellipsis-horizontal"
+                                size={24}
+                                style={{ paddingRight: 16 }}
                                 onPress={() => { }}
-                                testID="Home.searchBtn"
-                            /> */}
-                        </View>
-                    )
-                }}
-            />
-            <Stack.Screen
-                name="RequestFormScreen"
-                component={RequestFormScreen}
-                options={{
-                    headerShadowVisible: false,
-                }}
-            />
-            <Stack.Screen
-                name="RequestDetailsScreen"
-                component={RequestDetailsScreen}
-                options={{
-                    title: t("request.form.detailsHeading"),
-                    headerTitleAlign: "center",
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite,
-                    },
-                    headerRight: () => (
-                        <Ionicons
-                            name="ellipsis-horizontal"
-                            size={24}
-                            style={{ paddingRight: 16 }}
-                            onPress={() => { }}
-                        />
-                    )
-                }}
-            />
-            <Stack.Screen
-                name="OfferFormScreen"
-                component={OfferFormScreen}
-                options={{
-                    headerShadowVisible: false,
-                }}
-            />
-            <Stack.Screen
-                name="OfferDetailsScreen"
-                component={OfferDetailsScreen}
-                options={{
-                    title: t("offer.form.detailsHeading"),
-                    headerTitleAlign: "center",
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite,
-                    },
-                    headerRight: () => (
-                        <Ionicons
-                            name="ellipsis-horizontal"
-                            size={24}
-                            style={{ paddingRight: 16 }}
-                            onPress={() => { }}
-                        />
-                    )
-                }}
-            />
-            <Stack.Screen
-                name={'Chat'}
-                component={Chat}
-                options={{
-                    headerShown: true,
-                    // title: t("app.messages.label"),
-                    title: t("menu.bottom.messages.label"),
-                    headerTitleAlign: 'center',
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.Background,
-                    },
-                }}
-            />
-            <Stack.Screen
-                name="AccountSettingsScreen"
-                component={AccountSettingsScreen}
-                options={{
-                    title: "Account Settings",
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                        backgroundColor: Colors.Background
-                    },
-                    headerShadowVisible: false,
-                    contentStyle: { backgroundColor: Colors.Background },
-                    headerLeft: () => (
-                        <TouchableOpacity
-                            testID="Request.cancelBtn"
-                            onPress={() => navigation.navigate('HomeScreen')}
-                        >
-                            <Text
-                                testID="Request.cancelBtnLabel"
-                                style={styles.cancelBtn}
-                            >Cancel</Text>
-                        </TouchableOpacity>
-                    ),
-                }}
-            />
-            <Stack.Screen
-                name="NotificationsSettingsScreen"
-                component={NotificationsSettingsScreen}
-                options={{
-                    title: "Notifications Settings",
-                    headerTitleAlign: "center",
-                    headerShadowVisible: false,
-                }}
-            />
-            <Stack.Screen
+                            />
+                        )
+                    }}
+                /> :
+                <Stack.Screen
+                    name="RequestDetailsScreen"
+                    component={RequestDetailsScreen}
+                    options={{
+                        title: t("request.form.detailsHeading"),
+                        header: () => (
+                            <WebCustomHeader
+                                navigation={navigation}
+                                title={t("request.form.detailsHeading")}
+                            />
+                        )
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="OfferFormScreen"
+                    component={OfferFormScreen}
+                    options={{
+                        headerShadowVisible: false,
+                    }}
+                /> :
+                <Stack.Screen
+                    name="OfferFormScreen"
+                    component={OfferFormScreen}
+                    options={{
+                        header: () => (
+                            <FormCustomHeader
+                                navigation={navigation}
+                                title={t("offer.form.heading")}
+                                defaultPostalCode={null}
+                                setUseDefaultPostal={() => { }}
+                                useDefaultPostal={false}
+                                handlePress={() => { }}
+                                handleSubmit={() => { }}
+                                setError={() => { }}
+                            />
+                        )
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="OfferDetailsScreen"
+                    component={OfferDetailsScreen}
+                    options={{
+                        title: t("offer.form.detailsHeading"),
+                        headerTitleAlign: "center",
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite,
+                        },
+                        headerRight: () => (
+                            <Ionicons
+                                name="ellipsis-horizontal"
+                                size={24}
+                                style={{ paddingRight: 16 }}
+                                onPress={() => { }}
+                            />
+                        )
+                    }}
+                /> :
+                <Stack.Screen
+                    name="OfferDetailsScreen"
+                    component={OfferDetailsScreen}
+                    options={{
+                        title: t("offer.form.detailsHeading"),
+                        header: () => (
+                            <WebCustomHeader
+                                navigation={navigation}
+                                title={t("offer.form.detailsHeading")}
+                            />
+                        )
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name={'Chat'}
+                    component={Chat}
+                    options={{
+                        headerShown: true,
+                        title: t("app.messages.label"),
+                        headerTitleAlign: 'center',
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.Background,
+                        },
+                    }}
+                /> :
+                <Stack.Screen
+                    name={'Chat'}
+                    component={Chat}
+                    options={{
+                        header: ({ navigation }) => (
+                            <ChatCustomHeader
+                                navigation={navigation}
+                                username={"user"}
+                            />
+                        )
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="AccountSettingsScreen"
+                    component={AccountSettingsScreen}
+                    options={{
+                        title: "Account Settings",
+                        headerTitleAlign: 'center',
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite
+                        },
+                        headerShadowVisible: false,
+                        contentStyle: { backgroundColor: Colors.offWhite },
+                        headerLeft: () => (
+                            <TouchableOpacity
+                                testID="Request.cancelBtn"
+                                onPress={() => navigation.navigate('HomeScreen')}
+                                style={Platform.OS === 'web' ? { marginLeft: 10 } : {}}
+                            >
+                                <Text
+                                    testID="Request.cancelBtnLabel"
+                                    style={styles.cancelBtn}
+                                >Cancel</Text>
+                            </TouchableOpacity>
+                        ),
+                    }}
+                /> :
+                <Stack.Screen
+                    name="AccountSettingsScreen"
+                    component={AccountSettingsScreen}
+                    options={{
+                        header: () => (
+                            <AccSettingsFormCustomHeader
+                                navigation={navigation}
+                                title={'Account Settings'}
+                                handleModifyUser={() => { }}
+                                handleSubmit={() => { }}
+                            />
+                        )
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="NotificationsSettingsScreen"
+                    component={NotificationsSettingsScreen}
+                    options={{
+                        title: "Notifications Settings",
+                        headerTitleAlign: "center",
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite,
+                        },
+                    }}
+                /> :
+                <Stack.Screen
+                    name="NotificationsSettingsScreen"
+                    component={NotificationsSettingsScreen}
+                    options={{
+                        header: () => (
+                            <WebCustomHeader
+                                navigation={navigation}
+                                title={"Notifications Settings"}
+                            />
+                        )
+                    }}
+                />
+            }
+            < Stack.Screen
                 name="NotificationsScreen"
                 component={NotificationsScreen}
             />
-            <Stack.Screen
-                name="PostsHistory"
-                component={PostsHistory}
-                options={{
-                    headerShown: true,
-                    // title: t("menu.history.label"),
-                    title: t("menu.side.history.label"),
-                    headerTitleAlign: 'center',
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite,
-                    },
-                }}
-            />
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="PostsHistory"
+                    component={PostsHistory}
+                    options={{
+                        headerShown: true,
+                        title: t("menu.history.label"),
+                        headerTitleAlign: 'center',
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite,
+                        },
+                    }}
+                /> :
+                <Stack.Screen
+                    name="PostsHistory"
+                    component={PostsHistory}
+                    options={{
+                        header: () => (
+                            <WebCustomHeader
+                                navigation={navigation}
+                                title={t("menu.history.label")}
+                            />
+                        )
+                    }}
+                />
+            }
             <Stack.Screen
                 name="Preferences"
                 component={Preferences}
                 options={{
                     headerShown: true,
-                    // title: t("menu.preferences.label"),
-                    title: t("menu.side.preferences.label"),
+                    headerShadowVisible: false,
+                    title: t("menu.preferences.label"),
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
                 }}
             />
-        </Stack.Navigator>
+        </Stack.Navigator >
     )
 }
 
@@ -353,36 +519,106 @@ const ChatStackNavigator = () => {
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
                     },
-                    headerRight: () => (
-                        <Ionicons
-                            name="ellipsis-horizontal"
-                            size={24}
-                            style={{ paddingRight: 16 }}
-                            onPress={() => { }}
-                        />
-                    )
+                    contentStyle: { backgroundColor: Colors.offWhite }
                 }}
             />
-            <Stack.Screen
-                name="OfferDetailsScreen"
-                component={OfferDetailsScreen}
-                options={{
-                    title: t("offer.form.detailsHeading"),
-                    headerTitleAlign: "center",
-                    headerShadowVisible: false,
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite,
-                    },
-                    headerRight: () => (
-                        <Ionicons
-                            name="ellipsis-horizontal"
-                            size={24}
-                            style={{ paddingRight: 16 }}
-                            onPress={() => { }}
-                        />
-                    )
-                }}
-            />
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="Chat"
+                    component={Chat}
+                    options={{
+                        headerShown: true,
+                        title: t("app.messages.label"),
+                        headerTitleAlign: 'center',
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.Background,
+                        },
+                    }}
+                /> :
+                <Stack.Screen
+                    name="Chat"
+                    component={Chat}
+                    options={{
+                        header: ({ navigation }) => (
+                            <ChatCustomHeader
+                                navigation={navigation}
+                                username={"user"}
+                            />
+                        )
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="RequestDetailsScreen"
+                    component={RequestDetailsScreen}
+                    options={{
+                        title: t("request.form.detailsHeading"),
+                        headerTitleAlign: "center",
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite,
+                        },
+                        headerRight: () => (
+                            <Ionicons
+                                name="ellipsis-horizontal"
+                                size={24}
+                                style={{ paddingRight: 16 }}
+                                onPress={() => { }}
+                            />
+                        )
+                    }}
+                /> :
+                <Stack.Screen
+                    name="RequestDetailsScreen"
+                    component={RequestDetailsScreen}
+                    options={{
+                        title: t("request.form.detailsHeading"),
+                        header: ({ navigation }) => (
+                            <WebCustomHeader
+                                navigation={navigation}
+                                title={t("request.form.detailsHeading")}
+                            />
+                        )
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="OfferDetailsScreen"
+                    component={OfferDetailsScreen}
+                    options={{
+                        title: t("offer.form.detailsHeading"),
+                        headerTitleAlign: "center",
+                        headerShadowVisible: false,
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite,
+                        },
+                        headerRight: () => (
+                            <Ionicons
+                                name="ellipsis-horizontal"
+                                size={24}
+                                style={{ paddingRight: 16 }}
+                                onPress={() => { }}
+                            />
+                        )
+                    }}
+                /> :
+                <Stack.Screen
+                    name="OfferDetailsScreen"
+                    component={OfferDetailsScreen}
+                    options={{
+                        title: t("offer.form.detailsHeading"),
+                        header: ({ navigation }) => (
+                            <WebCustomHeader
+                                navigation={navigation}
+                                title={t("offer.form.detailsHeading")}
+                            />
+                        )
+                    }}
+                />
+            }
         </Stack.Navigator>
     )
 }
@@ -400,7 +636,9 @@ const BottomTab = () => {
         'CreateAccountScreen',
         'Chat',
         'OnboardingScreen',
-        'PermissionsScreen'
+        'PermissionsScreen',
+        'RequestFormScreen',
+        'OfferFormScreen',
     ]
 
     return (
@@ -410,6 +648,7 @@ const BottomTab = () => {
                 component={HomeStackNavigator}
                 options={({ route }) => ({
                     headerShown: false,
+                    tabBarItemStyle: { marginRight: Platform.OS === 'web' ? 150 : 0 },
                     tabBarIcon: ({ focused }) => (
                         <View testID="Bottom.homeNav" style={styles.homeButton}>
                             {focused
@@ -427,7 +666,6 @@ const BottomTab = () => {
                     tabBarLabelPosition: "below-icon",
                     tabBarLabelStyle: styles.bottomBarText,
                     tabBarStyle: ((route) => {
-
                         const routeName = getFocusedRouteNameFromRoute(route) ?? "LoginScreen"
                         if (bottomTabDisabledScreens.includes(routeName)) {
                             return { display: "none" }
@@ -469,7 +707,9 @@ const BottomTab = () => {
                                     onBackdropPress={() => setModalVisible(!modalVisible)}
                                     onSwipeComplete={() => setModalVisible(!modalVisible)}
                                     swipeDirection={['down']}
-                                    style={[styles.modal, height ? { marginTop: Dimensions.get('window').height - (height + 20) } : {}]}
+                                    style={[styles.modal, Platform.OS === 'web' ? styles.modalAlignWidth : {},
+                                    height ? { marginTop: Dimensions.get('window').height - (height + 20) }
+                                        : {}]}
                                 >
                                     <View
                                         onLayout={(event) => {
@@ -532,6 +772,7 @@ const BottomTab = () => {
                 name={t("menu.bottom.messages.label")}
                 component={ChatStackNavigator}
                 options={({ route }) => ({
+                    tabBarItemStyle: { marginLeft: Platform.OS === 'web' ? 150 : 0 },
                     tabBarIcon: ({ focused }) => (
                         <View
                             testID="Bottom.messagesNav"

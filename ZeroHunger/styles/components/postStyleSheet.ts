@@ -1,5 +1,8 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
+
+const screenWidth = Dimensions.get('window').width
+const postWidth = screenWidth > 700 ? 700 : screenWidth
 
 export default StyleSheet.create({
     container: {
@@ -12,6 +15,8 @@ export default StyleSheet.create({
         borderRadius: 5,
         overflow: 'hidden',
         backgroundColor: Colors.offWhite,
+        width: Platform.OS === 'web' ? postWidth : 'auto',
+        alignSelf: 'center'
     },
     subContainer: {
         flex: 1,

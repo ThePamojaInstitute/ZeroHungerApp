@@ -14,6 +14,7 @@ import { ConversationModel } from "../models/Conversation";
 import { FlashList } from "@shopify/flash-list";
 import moment from 'moment';
 import { useTranslation } from "react-i18next";
+import { Platform } from "expo-modules-core";
 
 const NoMessages = ({ navigate }) => (
     <View style={{
@@ -191,7 +192,9 @@ export const Conversations = ({ navigation }) => {
     };
     const { t, i18n } = useTranslation();
     return (
-        <View testID="Conversations.container" style={{ backgroundColor: Colors.Background }}>
+        <View
+            testID="Conversations.container"
+            style={Platform.OS === 'web' ? styles.container : { backgroundColor: Colors.offWhite }}>
             {empty && <NoMessages navigate={navigation.navigate} />}
             {!empty && <View
                 testID="Conversations.subContainer"

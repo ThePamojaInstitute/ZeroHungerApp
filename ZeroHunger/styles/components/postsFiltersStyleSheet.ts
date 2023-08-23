@@ -1,7 +1,15 @@
-import { Platform, StyleSheet } from "react-native";
+import { Platform, StyleSheet, Dimensions } from "react-native";
 import { Colors } from "../globalStyleSheet";
 
+const screenWidth = Dimensions.get('window').width
+const modalWidth = screenWidth > 700 ? 700 : screenWidth
+
 export default StyleSheet.create({
+    modal: Platform.OS === 'web' ? {
+        alignSelf: 'center',
+        width: modalWidth,
+        margin: 0
+    } : { margin: 0 },
     modalContainer: {
         backgroundColor: Colors.offWhite,
         position: 'absolute',

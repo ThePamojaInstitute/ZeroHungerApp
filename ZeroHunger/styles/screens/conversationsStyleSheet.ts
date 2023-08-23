@@ -1,7 +1,16 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
 
+const screenWidth = Dimensions.get('window').width
+const width = screenWidth > 700 ? 700 : screenWidth
+
 export default StyleSheet.create({
+    container: {
+        backgroundColor: Colors.offWhite,
+        maxWidth: 700,
+        alignSelf: 'center',
+        width: width
+    },
     conversation: {
         alignItems: 'flex-start',
         display: 'flex',

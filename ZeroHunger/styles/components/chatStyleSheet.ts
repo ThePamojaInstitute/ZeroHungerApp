@@ -1,17 +1,33 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
 
+const screenWidth = Dimensions.get('window').width
+const width = screenWidth > 700 ? 700 : screenWidth
+
 export default StyleSheet.create({
-    chatBar: {
+    container: {
+        flex: 1,
+        maxWidth: 700,
+        alignSelf: 'center',
+        width: width
+    },
+    chatBarContainer: {
         backgroundColor: '#f8f9fb',
         borderColor: '#eff1f7',
         borderTopWidth: 1,
         height: 69,
         position: 'relative',
+    },
+    chatBar: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        maxHeight: 100
+        maxHeight: 100,
+    },
+    chatBarAlignWidth: {
+        maxWidth: 700,
+        alignSelf: 'center',
+        width: width
     },
     chatInputContainer: {
         width: '70%',

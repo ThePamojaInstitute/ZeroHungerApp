@@ -1,5 +1,8 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
+
+const screenWidth = Dimensions.get('window').width
+const width = screenWidth > 700 ? 700 : screenWidth
 
 export default StyleSheet.create({
     authContainer: {
@@ -7,6 +10,11 @@ export default StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginTop: 20
+    },
+    alignWidth: {
+        maxWidth: 700,
+        alignSelf: 'center',
+        width: width
     },
     errorMsg: {
         fontFamily: Fonts.PublicSans_Regular,
