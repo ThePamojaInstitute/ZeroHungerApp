@@ -11,7 +11,8 @@ import {
   TextInputSubmitEditingEventData,
   Pressable,
   Keyboard,
-  Platform
+  Platform,
+  ActivityIndicator
 } from "react-native";
 import styles from "../../styles/screens/loginStyleSheet"
 import { useFocusEffect } from '@react-navigation/native';
@@ -122,7 +123,8 @@ export const LoginScreen = ({ navigation }) => {
           testID="Login.container"
           style={[styles.authContainer, Platform.OS === 'web' ? styles.alignWidth : {}]}
         >
-          <Text>{loading && "Loading..."}</Text>
+          {loading &&
+            <ActivityIndicator animating size="large" color={Colors.primary} />}
           {errMsg &&
             <View>
               <Text style={[styles.errorMsg, { fontSize: 16 }]}>{errMsg}</Text>

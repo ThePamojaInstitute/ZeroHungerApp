@@ -8,7 +8,8 @@ import {
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
   Keyboard,
-  Platform
+  Platform,
+  ActivityIndicator
 } from "react-native";
 import styles from "../../styles/screens/createAccountStyleSheet"
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
@@ -142,7 +143,8 @@ export const CreateAccountScreen = ({ navigation }) => {
         style={[styles.authContainer, Platform.OS === 'web' ? styles.alignWidth : {}]}
       >
         <NotificationsTest setExpoToken={setExpoPushToken} />
-        <Text>{loading && t("account.signup.loading.label")}</Text>
+        {loading &&
+          <ActivityIndicator animating size="large" color={Colors.primary} />}
         <View testID="SignUp.usernameInputContainer" style={styles.inputContainer}>
           <Text testID="SignUp.usernameLabel" style={[styles.inputLabel,
           { color: errors.username ? Colors.alert2 : Colors.dark }]}
