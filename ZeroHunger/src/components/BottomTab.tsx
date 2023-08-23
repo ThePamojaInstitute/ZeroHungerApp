@@ -35,6 +35,7 @@ import { WebCustomHeader } from "./headers/WebCustomHeader";
 import { AccSettingsFormCustomHeader } from "./headers/AccSettingsCustomHeader";
 import { FormCustomHeader } from "./headers/FormCustomHeader";
 import { MainCustomHeader } from "./headers/MainCustomHeader";
+import { GuidLinesCustomHeader } from "./headers/GuideLinesCustomHeader";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -86,6 +87,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         header: () => (
                             <MainCustomHeader
                                 title={t("app.title")}
+                                color={Colors.Background}
                             />
                         ),
                         contentStyle: { backgroundColor: Colors.Background }
@@ -120,49 +122,95 @@ const HomeStackNavigator = ({ navigation }) => {
                     }}
                 />
             }
-            <Stack.Screen
-                name="PermissionsScreen"
-                component={PermissionsScreen}
-                options={{
-                    title: t("app.title"),
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite
-                    },
-                    contentStyle: { backgroundColor: Colors.Background },
-                }}
-            />
-            <Stack.Screen
-                name="GuidelinesScreen"
-                component={GuidelinesScreen}
-                options={{
-                    title: t("guidelines.header.text"),
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite
-                    },
-                    headerRight: () => (
-                        <View style={{ marginRight: 12 }}>
-                            <TouchableOpacity onPress={() => { navigation.navigate("PermissionsScreen2") }}>
-                                <Text style={globalStyles.Body}>Skip</Text>
-                            </TouchableOpacity>
-                        </View>
-                    ),
-                    contentStyle: { backgroundColor: Colors.Background },
-                }}
-            />
-            <Stack.Screen
-                name="PermissionsScreen2"
-                component={PermissionsScreen2}
-                options={{
-                    title: t("app.title"),
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                        backgroundColor: Colors.offWhite
-                    },
-                    headerLeft: () => (<></>)
-                }}
-            />
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="PermissionsScreen"
+                    component={PermissionsScreen}
+                    options={{
+                        title: t("app.title"),
+                        headerTitleAlign: 'center',
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite
+                        },
+                        contentStyle: { backgroundColor: Colors.offWhite },
+                    }}
+                /> :
+                <Stack.Screen
+                    name="PermissionsScreen"
+                    component={PermissionsScreen}
+                    options={{
+                        header: () => (
+                            <MainCustomHeader
+                                title={t("app.title")}
+                                color={Colors.offWhite}
+                            />
+                        ),
+                        contentStyle: { backgroundColor: Colors.offWhite },
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="GuidelinesScreen"
+                    component={GuidelinesScreen}
+                    options={{
+                        title: t("guidelines.header.text"),
+                        headerTitleAlign: 'center',
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite
+                        },
+                        headerRight: () => (
+                            <View style={{ marginRight: 12 }}>
+                                <TouchableOpacity onPress={() => { navigation.navigate("PermissionsScreen2") }}>
+                                    <Text style={globalStyles.Body}>Skip</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ),
+                        contentStyle: { backgroundColor: Colors.offWhite },
+                    }}
+                /> :
+                <Stack.Screen
+                    name="GuidelinesScreen"
+                    component={GuidelinesScreen}
+                    options={{
+                        header: () => (
+                            <GuidLinesCustomHeader
+                                navigation={navigation}
+                                title={t("guidelines.header.text")}
+                            />
+                        ),
+                        contentStyle: { backgroundColor: Colors.offWhite },
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
+                    name="PermissionsScreen2"
+                    component={PermissionsScreen2}
+                    options={{
+                        title: t("app.title"),
+                        headerTitleAlign: 'center',
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite
+                        },
+                        headerLeft: () => (<></>),
+                        contentStyle: { backgroundColor: Colors.offWhite },
+                    }}
+                /> :
+                <Stack.Screen
+                    name="PermissionsScreen2"
+                    component={PermissionsScreen2}
+                    options={{
+                        header: () => (
+                            <MainCustomHeader
+                                title={t("app.title")}
+                                color={Colors.offWhite}
+                            />
+                        ),
+                        contentStyle: { backgroundColor: Colors.offWhite },
+                    }}
+                />
+            }
             {Platform.OS !== 'web' ?
                 <Stack.Screen
                     name="HomeScreen"

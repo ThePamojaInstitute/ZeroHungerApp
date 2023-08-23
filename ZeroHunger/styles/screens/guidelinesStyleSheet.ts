@@ -2,17 +2,23 @@ import { StyleSheet, Dimensions } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
 
 const dim = Dimensions.get('window')
+const screenWidth = dim.width
+const width = screenWidth > 700 ? 700 : screenWidth
 
 export default StyleSheet.create({
     view: {
         flex: 1,
         alignContent: "center",
-        // justifyContent: "center",
         alignItems: "center",
         padding: 12,
         marginTop: 24,
         marginLeft: 12,
         marginRight: 12,
+    },
+    alignWidth: {
+        maxWidth: 700,
+        alignSelf: 'center',
+        width: width
     },
     dots: {
         paddingBottom: dim.height * 0.25
@@ -22,7 +28,10 @@ export default StyleSheet.create({
     },
     textView: {
         flexDirection: "row",
+        alignItems: 'flex-start',
+        width: '100%',
         paddingTop: 24,
+        paddingRight: 40
     },
     text: {
         fontFamily: Fonts.PublicSans_Regular,
@@ -39,37 +48,32 @@ export default StyleSheet.create({
         fontFamily: Fonts.PublicSans_SemiBold,
         fontWeight: '600',
         fontSize: 18,
-        paddingLeft: dim.width * 0.15,
+        // paddingLeft: width * 0.15,
         paddingBottom: dim.height * 0.2,
-        color: Colors.primaryDark
+        color: Colors.primaryDark,
+
     },
     nextButton: {
         fontFamily: Fonts.PublicSans_SemiBold,
         fontWeight: '600',
         fontSize: 18,
-        paddingRight: dim.width * 0.15,
+        // paddingRight: width * 0.15,
         paddingBottom: dim.height * 0.2,
         color: Colors.primaryDark
-    },
-    continueButton: {
-        // padding: 12,
-        marginRight: dim.width * 0.09,
-        marginBottom: (dim.height * 0.2) + 18
     },
     defaultBtn: {
         display: "flex",
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: "center",
-        // width: "90%",
-        paddingLeft: 6, 
-        paddingRight: 6,
+        width: 105,
         gap: 10,
         position: 'relative',
         marginTop: 25,
         height: 42,
         borderRadius: 100,
         backgroundColor: Colors.primary,
+        marginBottom: (dim.height * 0.23)
     },
     defaultBtnLabel: {
         fontFamily: Fonts.PublicSans_SemiBold,

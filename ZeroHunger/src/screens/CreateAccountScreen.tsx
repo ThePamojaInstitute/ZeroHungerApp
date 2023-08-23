@@ -104,7 +104,7 @@ export const CreateAccountScreen = ({ navigation }) => {
     }).then(res => {
       if (res.msg === "success") {
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
-        alert!({ type: 'open', message: 'Account created successfully!', alertType: 'success' })
+        // alert!({ type: 'open', message: 'Account created successfully!', alertType: 'success' })
         // navigation.navigate('LoginScreen')
         const credentials = {
           "username": data['username'].toLowerCase(),

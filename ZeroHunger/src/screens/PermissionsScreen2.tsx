@@ -13,18 +13,18 @@ export const PermissionsScreen2 = ({ navigation }) => {
     }
 
     return (
-        <View style={styles.view}>
-            <Image source={require('../../assets/Permissions2.jpg')} resizeMode="center" style={styles.image}/>
+        <View style={styles.view2}>
+            <Image source={require('../../assets/Permissions2.png')} resizeMode="center" style={styles.image2} />
             <Text style={globalStyles.H2}>{t("permissions.notifications.heading")}</Text>
             <Text style={[globalStyles.Body, { paddingTop: 12, textAlign: "center" }]}>{t("permissions.notifications.text")}</Text>
             <View style={{ paddingTop: 24, paddingLeft: -4, paddingRight: -4 }}>
                 <View style={{ marginTop: 48 }}>
-                    <TouchableOpacity style={[globalStyles.defaultBtn, { width: 350, padding: 12 }]}
+                    <TouchableOpacity style={[globalStyles.defaultBtn, { width: 350 }]}
                         onPress={onPress}
                     >
                         <Text style={globalStyles.defaultBtnLabel}>{t("permissions.notifications.submit.label")}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ alignSelf: "center", paddingTop: 24 }} 
+                    <TouchableOpacity style={{ alignSelf: "center", paddingTop: 24 }}
                         onPress={() => navigation.navigate("HomeScreen")}
                     >
                         <Text style={[globalStyles.Button, { color: Colors.primaryDark }]}>{t("permissions.notifications.alt.label")}</Text>
