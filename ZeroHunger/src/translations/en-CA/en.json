@@ -316,7 +316,7 @@
 		"forgotPass": {
 			"request": {
 				"heading": "Forgot your password",
-				"text": "Please enter the email address you'd like your password reset information to be sent to.",
+				"text": "Please enter the email address you want your password reset information to be sent to.",
 				"email.label": "{{ account.fields.email.label }}",
 				"submit.label": "Request reset link"
 			},
@@ -326,7 +326,7 @@
 			},
 			"reset": {
 				"heading": "Reset your password",
-				"text": "Enter a new password to reset the password on your account. We’ll ask for this password whenever you log in.",
+				"text": "Enter a new password to reset the password on your account. We will ask for this password whenever you log in.",
 				"pass.label": "{{ account.fields.passNew.label }}",
 				"pass.desc": "{{ ['Must be at least 6 characters long', 'Must contain an uppercase letter and a lower case letter (A, z)', 'Must contain a number' ] }}",
 				"pass.required": true,
@@ -336,7 +336,7 @@
 			},
 			"resetConfirm": {
 				"heading": "Your password has been reset",
-				"text": "We'll ask for your new password whenever you log in.",
+				"text": "We will ask for your new password whenever you log in.",
 				"button.label": "Take me to Zero Hunger"
 			},
 			"error": {
@@ -409,7 +409,7 @@
 					] 
 				},
 				{
-					"heading": "I won't...",
+					"heading": "I will not...",
 					"listX": [
 						{"text": "Post food that has already expired or gone bad"},
 						{"text": "Share my address, phone number, or other personal information in my public requests or offers"},
@@ -599,7 +599,7 @@
 				{
 					"label": "Quantity",
 					"value": "quantity",
-					"desc": "Please input the desired quantity of the food item you're offering.",
+					"desc": "Please input the desired quantity of the food item you are offering.",
 					"required": false,
 					"measurement": "{{ app.quantity.measurement }}"
 				},
