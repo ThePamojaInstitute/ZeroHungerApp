@@ -9,6 +9,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { Post } from "./Post";
 import { PostModel } from "../models/Post";
 import { default as _MyPostModal } from "./MyPostModal";
+import { getItemFromLocalStorage, setLocalStorageItem, storage } from "../../config";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const MyPostModal = forwardRef(_MyPostModal)
@@ -118,6 +120,14 @@ export const FeedPostRenderer = ({
     if (isError) return <Text>An error occurred while fetching data</Text>
 
     const flattenData = data.pages.flatMap((page) => page.data)
+
+    //Store data in cache as JSON
+    if (Platform.OS === "web") {
+        storage.set("cachedPosts", JSON.stringify(flattenData))
+    }
+    else {
+        AsyncStorage.setItem("cachedPosts", JSON.stringify(flattenData))
+    }
 
     if (flattenData.length === 0 && isFetchedAfterMount) {
         let filtersAreOn = false

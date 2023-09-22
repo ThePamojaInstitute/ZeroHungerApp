@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext, useEffect, useRef, useState } from "react";
+import React, { forwardRef, useContext, useEffect, useRef, useState, useCallback } from "react";
 import {
     Text,
     View,
@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import styles from "../../styles/screens/homeStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet"
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import FeedPostRenderer from "../components/FeedPostRenderer";
@@ -26,6 +26,7 @@ import { ENV } from "../../env";
 import { useAlert } from "../context/Alert";
 import { HomeWebCustomHeader } from "../components/headers/HomeWebCustomHeader";
 import { HomeCustomHeaderRight } from "../components/headers/HomeCustomHeaderRight";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const PostsFilters = forwardRef(_PostsFilters)
@@ -54,6 +55,17 @@ export const HomeScreen = ({ navigation, route }) => {
     const [initialized, setInitialized] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [modalIsOpen, setModalIsOpen] = useState(false)
+
+    //Attempt to read posts from cache
+    useFocusEffect(
+        React.useCallback(() => {
+            let cachedPosts = storage.getString("cachedPost")
+            if (!cachedPosts) return
+            
+            cachedPosts = JSON.parse(cachedPosts)
+            // console.log(cachedPosts)
+        }, [])
+    )
 
     // on navigation change
     useFocusEffect(() => {
