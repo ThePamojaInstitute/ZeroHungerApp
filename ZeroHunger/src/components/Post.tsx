@@ -103,7 +103,7 @@ export const Post: React.FC<Props> = ({ post, navigation, setShowRequests, selec
                             <Text testID="Posts.locationText" style={globalStyles.Small1}>{post.distance !== null ? post.distance.toFixed(1) : 'x'} km away</Text>
                         </View>
                     }
-                    {(user['username'] === post.username) && post.postalCode &&
+                    {(user['username'] === post.username) && post.postalCode !== null &&
                         <View testID="Posts.locationCont" style={styles.locationCont}>
                             <Ionicons testID="Posts.locationIcon" name='location-outline' size={13} style={{ marginRight: 4 }} />
                             <Text testID="Posts.locationText" style={globalStyles.Small1}>{formatPostalCode(post?.postalCode)}</Text>
