@@ -25,6 +25,81 @@ export default function useFetchPosts(
             }
         }
 
+        // //Web caching
+        // var data;
+        // var page;
+        // // storage.delete("cachedPosts")
+        // // storage.delete("pageParam")
+        // if (Platform.OS === "web") {
+        //     data = storage.getString("cachedPosts")
+
+        //     //Call backend to load new posts
+        //     if (!data) {
+        //         const res = await axiosInstance.get(`posts/requestPostsForFeed`, {
+        //             headers: {
+        //                 Authorization: accessToken
+        //             },
+        //             params: {
+        //                 'postsType': type,
+        //                 'page': pageParam,
+        //                 'sortBy': sortBy,
+        //                 'categories': categories,
+        //                 'diet': diet,
+        //                 'logistics': logistics,
+        //                 'distance': distance
+        //             }
+        //         })
+
+        //         console.log("Calling backend")
+
+        //         data = res.data
+        //         page = pageParam + 1
+        //     }
+
+        //     //Parse data and get page counter from cache
+        //     else {
+        //         data = JSON.parse(data)
+        //         page = +(storage.getString("pageParam")) + 1
+        //     }
+        // }
+
+        // //Android and IOS
+        // else {
+        //     data = AsyncStorage.getItem("cachedPosts")
+        //     if (!data) {
+        //         const res = await axiosInstance.get(`posts/requestPostsForFeed`, {
+        //             headers: {
+        //                 Authorization: accessToken
+        //             },
+        //             params: {
+        //                 'postsType': type,
+        //                 'page': pageParam,
+        //                 'sortBy': sortBy,
+        //                 'categories': categories,
+        //                 'diet': diet,
+        //                 'logistics': logistics,
+        //                 'distance': distance
+        //             }
+        //         })
+        //         // console.log(pageParam)
+        //         console.log("Calling backend")
+
+        //         data = res.data
+        //         page = pageParam + 1
+        //     }
+
+        //     //Parse data and get page counter from cache
+        //     else {
+        //         data = JSON.parse(data)
+        //         page = +(AsyncStorage.getItem("pageParam")) + 1
+        //     }
+        // }
+
+        // return {
+        //     data: data,
+        //     nextPage: page
+        // }
+        
         const res = await axiosInstance.get(`posts/requestPostsForFeed`, {
             headers: {
                 Authorization: accessToken
@@ -39,7 +114,7 @@ export default function useFetchPosts(
                 'distance': distance
             }
         })
-
+        console.log("Calling backend")
         return {
             data: res.data,
             nextPage: pageParam + 1,

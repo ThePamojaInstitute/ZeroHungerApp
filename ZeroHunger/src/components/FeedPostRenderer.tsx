@@ -123,10 +123,15 @@ export const FeedPostRenderer = ({
 
     //Store data in cache as JSON
     if (Platform.OS === "web") {
-        storage.set("cachedPosts", JSON.stringify(flattenData))
+        if (!storage.getString("cachedPosts")) {
+            storage.set("cachedPosts", JSON.stringify(flattenData))
+        }
+        console.log(flattenData)
     }
     else {
-        AsyncStorage.setItem("cachedPosts", JSON.stringify(flattenData))
+        if (!AsyncStorage.getItem("cachedPosts")) {
+            AsyncStorage.setItem("cachedPosts", JSON.stringify(flattenData))
+        }
     }
 
     if (flattenData.length === 0 && isFetchedAfterMount) {
@@ -148,6 +153,20 @@ export const FeedPostRenderer = ({
             />
         )
     }
+
+    // on unmount
+    // useEffect(() => {
+    //     return function cleanup() {
+    //         if (Platform.OS === "web") {
+    //             storage.delete("cachedPosts")
+    //             storage.delete("pageParam")
+    //         }
+    //         else {
+    //             AsyncStorage.removeItem("cachedPosts")
+    //             AsyncStorage.removeItem("pageParam")
+    //         }
+    //     }
+    // })
 
     const loadNext = () => {
         if (hasNextPage) {
