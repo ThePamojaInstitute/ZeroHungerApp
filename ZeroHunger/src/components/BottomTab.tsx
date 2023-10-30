@@ -28,6 +28,7 @@ import { NotificationContext } from "../context/ChatNotificationContext";
 import PermissionsScreen from "../screens/PermissionsScreen";
 import GuidelinesScreen from "../screens/GuidelinesScreen";
 import PermissionsScreen2 from "../screens/PermissionsScreen2";
+import TermsAndConditionsScreen from "../screens/TermsAndConditionsScreen";
 import { HomeCustomHeaderRight } from "./headers/HomeCustomHeaderRight";
 import { HomeWebCustomHeader } from "./headers/HomeWebCustomHeader";
 import { ChatCustomHeader } from "./headers/ChatCustomHeader";
@@ -36,6 +37,7 @@ import { AccSettingsFormCustomHeader } from "./headers/AccSettingsCustomHeader";
 import { FormCustomHeader } from "./headers/FormCustomHeader";
 import { MainCustomHeader } from "./headers/MainCustomHeader";
 import { GuidLinesCustomHeader } from "./headers/GuideLinesCustomHeader";
+import { TermsAndConditionsCustomHeader } from "./headers/TermsAndConditionsCustomHeader";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -124,6 +126,40 @@ const HomeStackNavigator = ({ navigation }) => {
             }
             {Platform.OS !== 'web' ?
                 <Stack.Screen
+                    name="TermsAndConditionsScreen"
+                    component={TermsAndConditionsScreen}
+                    options={{
+                        title: "Terms and Conditions", //PLACEHOLDER until en.json updated
+                        headerTitleAlign: 'center',
+                        headerStyle: {
+                            backgroundColor: Colors.offWhite
+                        },
+                        headerRight: () => (
+                            <View style={{ marginRight: 12 }}>
+                                <TouchableOpacity onPress={() => { navigation.navigate("PermissionsScreen") }}>
+                                    <Text style={globalStyles.Body}>Skip</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ),
+                        contentStyle: { backgroundColor: Colors.offWhite },
+                    }}
+                /> :
+                <Stack.Screen
+                    name="TermsAndConditionsScreen"
+                    component={TermsAndConditionsScreen}
+                    options={{
+                        header: () => (
+                            <TermsAndConditionsCustomHeader
+                                navigation={navigation}
+                                title="Terms and Conditions"
+                            />
+                        ),
+                        contentStyle: { backgroundColor: Colors.offWhite },
+                    }}
+                />
+            }
+            {Platform.OS !== 'web' ?
+                <Stack.Screen
                     name="PermissionsScreen"
                     component={PermissionsScreen}
                     options={{
@@ -132,6 +168,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         headerStyle: {
                             backgroundColor: Colors.offWhite
                         },
+                        headerLeft: () => (<></>),
                         contentStyle: { backgroundColor: Colors.offWhite },
                     }}
                 /> :
@@ -140,9 +177,9 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={PermissionsScreen}
                     options={{
                         header: () => (
-                            <MainCustomHeader
-                                title={t("app.title")}
-                                color={Colors.offWhite}
+                            <GuidLinesCustomHeader
+                                navigation={navigation}
+                                title="Terms and Conditions"
                             />
                         ),
                         contentStyle: { backgroundColor: Colors.offWhite },
@@ -159,6 +196,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         headerStyle: {
                             backgroundColor: Colors.offWhite
                         },
+                        headerLeft: () => (<></>),
                         headerRight: () => (
                             <View style={{ marginRight: 12 }}>
                                 <TouchableOpacity onPress={() => { navigation.navigate("PermissionsScreen2") }}>
