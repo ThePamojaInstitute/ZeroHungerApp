@@ -17,13 +17,18 @@ import requests
 import os
 import base64
 
-from azure.identity import EnvironmentCredential
+from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 from azure.storage.blob import BlobClient, generate_account_sas, ResourceTypes, AccountSasPermissions, ContainerClient
-#VAULT_URL = os.environ["VAULT_URL"]
-#envcredential = EnvironmentCredential()
-#client = SecretClient(vault_url=VAULT_URL, credential=envcredential)
-connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+
+keyVaultName = os.environ["KEYVAULT_NAME"]
+vaultURI = f"https://{keyVaultName}.vault.azure.net"
+#credential = DefaultAzureCredential( managed_identity_client_id = os.environ["MANAGED_ID"] )
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=vaultURI, credential=credential)
+connection_string = client.get_secret("BLOB-CONNECTION-STRING").value
+
+
 #https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=npm
 #Install Azurite on your local machine using this ^ guide before trying to use this
 
@@ -320,7 +325,8 @@ class ImageUploader(APIView):
             # expiry=datetime.utcnow() + timedelta(hours=1)
             # )
 
-            connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+            
+            #connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
             container_client = ContainerClient.from_connection_string(conn_str=connection_string, container_name="post-images")
             if not container_client.exists():
                 container_client.create_container()
