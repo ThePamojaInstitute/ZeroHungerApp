@@ -112,7 +112,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           "expo_push_token": expoPushToken
         }
         handleLogin(credentials)
-        navigation.navigate("PermissionsScreen")
+        navigation.navigate("TermsAndConditionsScreen")
       } else {
         if (!res.res['username'] && !res.res['email']) {
           alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })

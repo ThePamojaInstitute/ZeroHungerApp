@@ -21,7 +21,7 @@ export default StyleSheet.create({
         width: width
     },
     dots: {
-        paddingBottom: dim.height * 0.25
+        paddingBottom: dim.height * 0.3,
     },
     icon: {
         paddingRight: 12,
@@ -66,7 +66,7 @@ export default StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: "center",
-        width: 105,
+        width: 150,
         gap: 10,
         position: 'relative',
         marginTop: 25,
