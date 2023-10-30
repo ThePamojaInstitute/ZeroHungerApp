@@ -88,7 +88,7 @@ export default StyleSheet.create({
         padding: 0,
         gap: 9,
         width: "90%",
-        marginTop: "50%",
+        marginTop: "40%",
     },
     termsAndCondText: {
         fontFamily: Fonts.PublicSans_Regular,
