@@ -28,6 +28,7 @@ vaultURI = f"https://{keyVaultName}.vault.azure.net"
 #credential = DefaultAzureCredential( managed_identity_client_id = os.environ["MANAGED_ID"] )
 credential = DefaultAzureCredential()
 client = SecretClient(vault_url=vaultURI, credential=credential)
+azure_redis_password = client.get_secret('REDIS-PASSWORD').value
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -204,36 +205,36 @@ AUTH_USER_MODEL = "Users.BasicUser"
 #     },
 # }
 
-CHANNEL_LAYERS = {
-	"default": {
-        # For production level, don’t use InMemoryChannelLayer use Redis channel instead
-		"BACKEND": "channels.layers.InMemoryChannelLayer"
-	}
-}
-
 # CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [ "rediss://:"+azure_redis_password+"@zhbackendtest.redis.cache.windows.net:6380/0"],
-#         },
-#     },
+# 	"default": {
+#         # For production level, don’t use InMemoryChannelLayer use Redis channel instead
+# 		"BACKEND": "channels.layers.InMemoryChannelLayer"
+# 	}
 # }
 
-# #            f"redis://zhbackendtest.redis.cache.windows.net:6380,password={azure_redis_password},ssl=True,abortConnect=False"
-# CACHES = {
-#         "default": {  
-#             "BACKEND": "django_redis.cache.RedisCache",
-#             "LOCATION": 'rediss://zhbackendtest.redis.cache.windows.net:6380',
-#             "OPTIONS": {
-#                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#                 "PASSWORD": azure_redis_password,
-#                 'SSL': True,
-#                 "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [ "rediss://:"+azure_redis_password+"@zhbackend.redis.cache.windows.net:6380/0"],
+        },
+    },
+}
 
-#             },
-#         }
-#     }  
+#            f"redis://zhbackend.redis.cache.windows.net:6380,password={azure_redis_password},ssl=True,abortConnect=False"
+CACHES = {
+        "default": {  
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": 'rediss://zhbackendtest.redis.cache.windows.net:6380',
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "PASSWORD": azure_redis_password,
+                'SSL': True,
+                "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+
+            },
+        }
+    }  
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
