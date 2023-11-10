@@ -14,5 +14,14 @@ export default StyleSheet.create({
         width: 24,
         height: 24,
         marginRight: -12
+    },
+    logOutBtn: {
+        width: '85%',
+        marginLeft: 20,
+        position: 'absolute',
+        bottom: 0,
+        flexDirection: 'row',
+        marginBottom: 10,
+        alignItems: 'center'
     }
 })

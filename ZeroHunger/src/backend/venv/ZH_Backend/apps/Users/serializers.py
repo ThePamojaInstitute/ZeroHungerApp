@@ -67,16 +67,16 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     #         raise serializers.ValidationError({"username": "This username is already in use."})
     #     return value
 
-    def update(self, instance):
-        #manually validate data
-        usernameFromRequest = self.initial_data['data']['user']['username']
-        emailFromRequest = self.initial_data['data']['user']['email']
-
-        # if BasicUser.objects.exclude(instance.pk).filter(username=usernameFromRequest).exists():
+            # if BasicUser.objects.exclude(instance.pk).filter(username=usernameFromRequest).exists():
         #     print ("Username is already in use")
         # if BasicUser.objects.exclude(instance.pk).filter(email=emailFromRequest).exists():
         #     print ("Email is already in use")
         
+
+    def update(self, instance):
+        #manually validate data
+        usernameFromRequest = self.initial_data['data']['user']['username']
+        emailFromRequest = self.initial_data['data']['user']['email']
         instance.email = emailFromRequest
         instance.username = usernameFromRequest
         instance.save()

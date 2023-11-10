@@ -20,8 +20,8 @@ const mockMMKV = {
 export const storage = ENV === 'production' ? new MMKV() :
     Platform.OS === 'web' ? new MMKV() : mockMMKV
 
-export const HttpBaseURL = 'http://127.0.0.1:8000/'
-export const WSBaseURL = 'ws://127.0.0.1:8000/'
+export const HttpBaseURL = 'https://zh-backend-app.azurewebsites.net'
+export const WSBaseURL = 'ws://zh-backend-app.azurewebsites.net'
 // export const HttpBaseURL = 'https://zh-backend-azure-webapp.azurewebsites.net/'
 // export const WSBaseURL = 'ws://zh-backend-azure-webapp.azurewebsites.net/'
 
@@ -177,4 +177,35 @@ export const setTokens = (data: object) => {
             AsyncStorage.setItem('access_token', data['access'])
         }
     }
+}
+
+export const getAccessToken = async () => {
+    const accessToken = (ENV === 'production' || Platform.OS === 'web') ?
+        storage.getString('access_token') :
+        await AsyncStorage.getItem('access_token')
+
+    return accessToken
+}
+
+export const getItemFromLocalStorage = async (key: string) => {
+    let item: string
+    if (Platform.OS === 'web') {
+        item = storage.getString(key)
+    } else {
+        item = await AsyncStorage.getItem(key)
+    }
+    return item
+}
+
+export const setLocalStorageItem = async (key: string, value: string) => {
+    if (ENV === 'production') {
+        storage.set(key, value.toString())
+    } else {
+        if (Platform.OS === 'web') {
+            storage.set(key, value.toString())
+        } else {
+            await AsyncStorage.setItem(key, value.toString())
+        }
+    }
+    return
 }

@@ -1,50 +1,22 @@
-import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import {
-    useFonts,
-    PublicSans_600SemiBold,
-    PublicSans_500Medium,
-    PublicSans_400Regular
-} from '@expo-google-fonts/public-sans';
+import { View, Text, Image, TouchableOpacity, TextInput, Platform } from "react-native";
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "../../styles/screens/permissionsStyleSheet";
 import postalStyles from "../../styles/screens/postFormStyleSheet"
 import loginStyles from "../../styles/screens/loginStyleSheet"
 import { savePreferences } from "../controllers/preferences";
+import { useAlert } from "../context/Alert";
 
 export const PermissionsScreen = ({ navigation }) => {
-    const [loaded, setLoaded] = useState(false)
-    let [fontsLoaded] = useFonts({
-        PublicSans_400Regular,
-        PublicSans_500Medium,
-        PublicSans_600SemiBold
-    })
-
-    useEffect(() => {
-        setLoaded(fontsLoaded)
-    }, [fontsLoaded])
-
-    useEffect(() => {
-        navigation.getParent()?.setOptions({
-            tabBarStyle: {
-                display: "none"
-            }
-        })
-    })
-
-    const { user, accessToken } = useContext(AuthContext);
+    const { dispatch: alert } = useAlert()
 
     const [postalCode, setPostalCode] = useState('')
     const [errMsg, setErrMsg] = useState("")
 
     const savePostalCode = async () => {
-        savePreferences(postalCode, null, null, accessToken).then(res => {
-            console.log(res)
+        savePreferences(postalCode, null, null, null).then(res => {
             if (res.msg === "success") {
-                navigation.navigate('HomeScreen')
+                navigation.navigate('GuidelinesScreen')
                 return
             } else if (res.res) {
                 setErrMsg(res.res)
@@ -57,18 +29,18 @@ export const PermissionsScreen = ({ navigation }) => {
     }
 
     return (
-        <View>
-            {loaded && <>
-                <View style={styles.view}>
-                    <Image source={require('../../assets/Placeholder.png')} resizeMode="center" style={styles.image}/>
-                    <Text style={[globalStyles.H2, styles.title]}>
-                        Where would you like to exchange food?
+        <View style={{ backgroundColor: Colors.offWhite }}>
+            <View style={[styles.view, Platform.OS === 'web' ? styles.alignWidth : {}]}>
+                <Image source={require('../../assets/Permissions.png')} resizeMode="center" style={styles.image} />
+                <Text style={[globalStyles.H2, { textAlign: 'center' }]}>See food offers and requests in your area</Text>
+                <Text style={[globalStyles.Body, { paddingTop: 12, textAlign: 'center' }]}>We'll show you requests and offers based on your postal code.</Text>
+                <View style={{ paddingTop: 24, paddingLeft: -4, paddingRight: -4 }}>
+                    <Text style={[globalStyles.H4, { color: !!errMsg ? Colors.alert2 : Colors.dark }]}>Your postal code</Text>
+                    <Text style={[globalStyles.Small1, { color: Colors.midDark, paddingTop: 8 }]}>
+                        Other people will only see an estimate of how far away your postal code is from theirs {'('}i.e., 5 km away{')'}
                     </Text>
-                    <Text style={[globalStyles.Body, styles.body]}>
-                        We'll show you requests and offers based on your location. No other users will see your location.
-                    </Text>
-                    
-                    <View testID="Request.formInputContainer" style={[postalStyles.formInputContainer, {paddingTop: 12}]}>
+                    {errMsg && <Text style={[loginStyles.errorMsg, { paddingTop: 8 }]}>{errMsg}</Text>}
+                    <View testID="Request.formInputContainer" style={[postalStyles.formInputContainer, { paddingTop: 12, height: 50 }]}>
                         <TextInput
                             value={postalCode}
                             nativeID="postalCode"
@@ -84,18 +56,19 @@ export const PermissionsScreen = ({ navigation }) => {
                             maxLength={7}
                         />
                     </View>
-                    
                     <View>
-                        <TouchableOpacity 
-                            style={[globalStyles.defaultBtn, {padding: 12}]} 
+                        <TouchableOpacity
+                            style={[globalStyles.defaultBtn, { width: "100%" }]}
                             onPress={savePostalCode}
                         >
-                            <Text style={globalStyles.defaultBtnLabel}>Continue</Text>
+                            <Text style={globalStyles.defaultBtnLabel}>Save my postal code</Text>
                         </TouchableOpacity>
-                        {errMsg && <Text style={loginStyles.errorMsg}>{errMsg}</Text>}
+                        <TouchableOpacity style={{ alignSelf: "center", paddingTop: 24 }} onPress={() => navigation.navigate("GuidelinesScreen")}>
+                            <Text style={[globalStyles.Button, { color: Colors.primaryDark }]}>Not right now</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
-            </>}
+            </View>
         </View>
     )
 }

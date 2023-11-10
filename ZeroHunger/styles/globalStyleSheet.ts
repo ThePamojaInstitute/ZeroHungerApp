@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 export const Colors = {
     primary: '#306775',
@@ -15,6 +15,7 @@ export const Colors = {
     midLight: '#D1D1D1',
     alert: '#F28B53',
     alert2: '#AD5444',
+    alert3: '#F0D2C6',
     accent1: '#CD874A',
     accent2: '#87597B',
     accent2a: '#AFAFD8',
@@ -109,6 +110,7 @@ export const globalStyles = StyleSheet.create({
         paddingVertical: 3.5,
         paddingHorizontal: 13,
         backgroundColor: Colors.primary,
+        marginRight: Platform.OS === 'web' ? 10 : 'auto'
     },
     H1: {
         fontFamily: Fonts.PublicSans_SemiBold,

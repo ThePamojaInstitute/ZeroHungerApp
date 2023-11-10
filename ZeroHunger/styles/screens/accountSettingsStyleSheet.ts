@@ -3,11 +3,14 @@ import { Colors, Fonts } from "../globalStyleSheet";
 
 export default StyleSheet.create({
     container: {
-        backgroundColor: Colors.Background,
         alignItems: "flex-start",
         justifyContent: "center",
         marginTop: 20,
         marginLeft: 10
+    },
+    alignWidth: {
+        maxWidth: 700,
+        alignSelf: 'center',
     },
     inputContainer: {
         display: 'flex',

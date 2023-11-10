@@ -44,7 +44,7 @@ export const OnboardingScreen = ({ navigation }, props: Props) => {
                 display: "none"
             }
         })
-    })
+    }, [])
 
     return (
         <></>

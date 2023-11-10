@@ -1,9 +1,8 @@
 import React, { forwardRef, useContext, useEffect, useRef, useState } from "react";
-import { Text, ActivityIndicator, RefreshControl } from "react-native"
+import { Text, ActivityIndicator, RefreshControl, View, Dimensions, Pressable, Platform } from "react-native"
 import { AuthContext } from "../context/AuthContext";
 import { FlashList } from "@shopify/flash-list";
-import { Colors } from "../../styles/globalStyleSheet";
-import rendererStyles from "../../styles/components/postRendererStyleSheet";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { deletePost, markAsFulfilled } from "../controllers/post";
 import { useAlert } from "../context/Alert";
 import useFetchHistoryPosts from "../hooks/useFetchHistoryPosts";
@@ -14,8 +13,42 @@ import { default as _MyPostModal } from "./MyPostModal";
 
 const MyPostModal = forwardRef(_MyPostModal)
 
+const NoPosts = ({ type, navigate, width }) => (
+    <View style={{
+        marginTop: Dimensions.get('window').height * 0.15,
+    }}>
+        <View style={Platform.OS === 'web' ? {
+            maxWidth: 700,
+            alignSelf: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: width
+        } : {
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 50,
+        }}>
+            <Text
+                style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
+                No {type === 'r' ? 'requests' : 'offers'} yet
+            </Text>
+            <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
+                You will see your history once you make your first food {type === 'r' ? 'request' : 'offer'}
+            </Text>
+            <Pressable
+                style={[globalStyles.defaultBtn, { width: '90%' }]}
+                onPress={() => navigate(`${type === 'r' ? 'Request' : 'Offer'}FormScreen`)}
+            >
+                <Text style={globalStyles.defaultBtnLabel}>
+                    {type === 'r' ? 'Request' : 'Offer'} Food
+                </Text>
+            </Pressable>
+        </View>
+    </View>
+)
+
 export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderByNewest }) => {
-    const { user, accessToken } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const { dispatch: alert } = useAlert()
 
     const [refreshing, setRefreshing] = useState(false)
@@ -33,7 +66,8 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
         isError,
         hasNextPage,
         fetchNextPage,
-        refetch
+        refetch,
+        isFetchedAfterMount
     } = useFetchHistoryPosts(type, orderByNewest)
 
     useEffect(() => {
@@ -48,11 +82,13 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
 
     const flattenData = data.pages.flatMap((page) => page.data)
 
-    if (flattenData.length === 0) {
-        return <Text
-            testID="Posts.noPostsText"
-            style={rendererStyles.noPostsText}
-        >No {type === "r" ? 'requests' : 'offers'} available</Text>
+    if (flattenData.length === 0 && isFetchedAfterMount) {
+        const screenWidth = Dimensions.get('window').width
+        const width = screenWidth > 700 ? 700 : screenWidth
+
+        return (
+            <NoPosts type={type} navigate={navigation.navigate} width={width} />
+        )
     }
 
     const loadNext = () => {
@@ -61,26 +97,24 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
         }
     }
 
-    const handleDelete = (postId: Number) => {
-        deletePost(type, postId, accessToken).then(res => {
-            if (res.msg == "success") {
-                refetch()
-                alert!({ type: 'open', message: res.res, alertType: 'success' })
-            } else {
-                alert!({ type: 'open', message: res.res, alertType: 'error' })
-            }
-        })
+    const handleDelete = async (postId: number) => {
+        const res = await deletePost(type, postId)
+        if (res.msg == "success") {
+            refetch()
+            alert!({ type: 'open', message: res.res, alertType: 'success' })
+        } else {
+            alert!({ type: 'open', message: res.res, alertType: 'error' })
+        }
     }
 
-    const handleMarkAsFulfilled = (postId: Number) => {
-        markAsFulfilled(type, postId, accessToken).then(res => {
-            if (res.msg == "success") {
-                refetch()
-                alert!({ type: 'open', message: res.res, alertType: 'success' })
-            } else {
-                alert!({ type: 'open', message: res.res, alertType: 'error' })
-            }
-        })
+    const handleMarkAsFulfilled = async (postId: number) => {
+        const res = await markAsFulfilled(type, postId)
+        if (res.msg == "success") {
+            refetch()
+            alert!({ type: 'open', message: res.res, alertType: 'success' })
+        } else {
+            alert!({ type: 'open', message: res.res, alertType: 'error' })
+        }
     }
 
     const renderItem = ({ item }) => {
@@ -114,24 +148,28 @@ export const HistoryPostRenderer = ({ navigation, type, setShowRequests, orderBy
                 setShowRequests={setShowRequests}
                 from="history"
                 key={item.postId}
+                refetch={refetch}
             />
         )
     }
 
     return (
         <>
-            <FlashList
-                data={flattenData}
-                renderItem={renderItem}
-                onEndReached={loadNext}
-                onEndReachedThreshold={0.3}
-                estimatedItemSize={125}
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
-                }
-            />
+            {isFetchedAfterMount ?
+                <FlashList
+                    data={flattenData}
+                    renderItem={renderItem}
+                    onEndReached={loadNext}
+                    onEndReachedThreshold={0.3}
+                    estimatedItemSize={125}
+                    showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={refetch} colors={[Colors.primary, Colors.primaryLight]} />
+                    }
+                /> :
+                <ActivityIndicator animating size="large" color={Colors.primary} />
+            }
             <MyPostModal
                 ref={modalRef}
                 selectedPost={selectedPost}

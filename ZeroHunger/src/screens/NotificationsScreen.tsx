@@ -1,8 +1,8 @@
-import { View, ScrollView, Text, TouchableOpacity, Image, RefreshControl, Dimensions, Platform } from "react-native"
+import { View, Text, TouchableOpacity, Image, Dimensions, ActivityIndicator, Pressable, Platform } from "react-native"
+import { useIsFocused } from '@react-navigation/native';
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
-import { axiosInstance, storage } from "../../config";
-import { useContext, useState, useEffect } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { setLocalStorageItem, storage } from "../../config";
+import { useState, useEffect } from "react";
 import { FlashList } from "@shopify/flash-list";
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
@@ -14,8 +14,46 @@ import Modal from 'react-native-modal';
 // import { useAlert } from "../context/Alert";
 import styles from "../../styles/screens/notificationsStyleSheet";
 import { useRoute } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ENV } from "../../env";
+import { getNotifications } from "../controllers/auth";
+import { extendExpiryDate, handleExpiryDate } from "../controllers/post";
+import { useAlert } from "../context/Alert";
+import { NotificationsCustomHeader } from "../components/headers/NotificationsCustomHeader";
+
+
+const NoNotifications = ({ navigate, width }) => (
+    <View style={{
+        marginTop: Dimensions.get('window').height * 0.15,
+    }}>
+        <View style={Platform.OS === 'web' ? {
+            maxWidth: 700,
+            alignSelf: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: width
+        } : {
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 50,
+        }}>
+            <Text
+                style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
+                No notifications
+            </Text>
+            <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
+                You will be notified when one of your posts is expiring soon
+            </Text>
+            <Pressable
+                style={[globalStyles.defaultBtn, { width: '90%' }]}
+                onPress={() => navigate('HomeScreen')}
+            >
+                <Text style={globalStyles.defaultBtnLabel}>
+                    Back to Home
+                </Text>
+            </Pressable>
+        </View>
+    </View>
+)
 
 const NotificationsModal = ({ modalVisible, setModalVisible, height, setHeight, navigate }) => (
     <Modal
@@ -26,7 +64,9 @@ const NotificationsModal = ({ modalVisible, setModalVisible, height, setHeight, 
         onBackdropPress={() => setModalVisible(!modalVisible)}
         onSwipeComplete={() => setModalVisible(!modalVisible)}
         swipeDirection={['down']}
-        style={[styles.modal, height ? { marginTop: Dimensions.get('window').height - (height + 10) } : {}]}
+        style={[styles.modal, Platform.OS === 'web' ? styles.modalAlignWidth : {},
+        height ? { marginTop: Dimensions.get('window').height - (height + 10) } :
+            {}]}
     >
         <View
             onLayout={(event) => {
@@ -71,47 +111,87 @@ const NotificationsModal = ({ modalVisible, setModalVisible, height, setHeight, 
     </Modal>
 )
 
-const setLocalStorage = async (key: string, value: string) => {
-    if (Platform.OS === 'web') {
-        storage.set(key, value)
-    } else {
-        await AsyncStorage.setItem(key, value)
-    }
-    return
-}
-
 export const NotificationsScreen = ({ navigation }) => {
     const route = useRoute()
+    const isFocused = useIsFocused()
+    const { dispatch: alert } = useAlert()
+
     const [modalVisible, setModalVisible] = useState(false)
     const [height, setHeight] = useState(0)
+    const [posts, setPosts] = useState<object[]>()
+    const [isEmpty, setIsEmpty] = useState(false)
+    const [firstLoad, setFirstLoad] = useState(true)
 
     useEffect(() => {
+        if (Platform.OS === 'web') {
+            navigation.setOptions({
+                header: () => (
+                    <NotificationsCustomHeader
+                        navigation={navigation}
+                        title={"Notifications"}
+                        modalVisible={modalVisible}
+                        setModalVisible={setModalVisible}
+                    />
+                )
+            })
+        } else {
+            navigation.setOptions({
+                title: "Notifications",
+                headerTitleAlign: 'center',
+                headerShadowVisible: false,
+                headerRight: () => (
+                    <View>
+                        <Ionicons
+                            name="ellipsis-horizontal"
+                            size={24}
+                            style={{ paddingRight: 16 }}
+                            onPress={() => { setModalVisible(!modalVisible) }}
+                        />
+                    </View>
+                )
+            })
+        }
+
         if (ENV === 'production') {
             storage.set('lastSeen', new Date().toDateString())
         } else {
-            setLocalStorage('lastSeen', new Date().toDateString())
+            setLocalStorageItem('lastSeen', new Date().toDateString())
         }
-    }, [])
 
-    const posts = route.params['posts']
+        setFirstLoad(false)
+        handleGetNotifications()
+    }, [])
 
     useEffect(() => {
-        navigation.setOptions({
-            title: "Notifications",
-            headerTitleAlign: 'center',
-            headerShadowVisible: false,
-            headerRight: () => (
-                <View>
-                    <Ionicons
-                        name="ellipsis-horizontal"
-                        size={24}
-                        style={{ paddingRight: 16 }}
-                        onPress={() => { setModalVisible(!modalVisible) }}
-                    />
-                </View>
-            )
-        })
-    }, [])
+        if (firstLoad || !isFocused) return
+
+        handleGetNotifications()
+    }, [isFocused])
+
+    const handleGetNotifications = async () => {
+        if (!route.params['posts'] || !route.params['posts'].length) {
+            const res = await getNotifications('notifications')
+            if (!res.data.length) setIsEmpty(true)
+            else setPosts(res.data)
+        } else setPosts(route.params['posts'])
+    }
+
+    const handleUpdateNotifications = async () => {
+        const res = await getNotifications('notifications')
+        if (!res.data.length) setIsEmpty(true)
+        else setPosts(res.data)
+    }
+
+    const handleExtendExpiryDate = async (postId: number, postType: "r" | "o") => {
+        const res = await extendExpiryDate(postId, postType)
+
+        if (res.msg === 'success') {
+            alert!({ type: 'open', message: 'Post updated successfully!', alertType: 'success' })
+            await handleUpdateNotifications()
+        } else {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+        }
+    }
 
     // //Time threshold for notifications to become "old"
     // const old_threshold = 3600 * 24 * 2 //2 days
@@ -340,13 +420,15 @@ export const NotificationsScreen = ({ navigation }) => {
     // }
 
     const renderItem = ({ item, index }) => {
+        const [expiryStr, expiryInDays] = handleExpiryDate(item.expiryDate, item.type)
+
         return (
-            <View style={index !== 0 ? {
+            <View style={[Platform.OS === 'web' ? styles.itemContainer : {}, index !== 0 ? {
                 borderTopWidth: 1,
                 borderStyle: 'solid',
                 borderTopColor: '#D1D1D1',
                 marginHorizontal: 5,
-            } : { marginHorizontal: 5 }}>
+            } : { marginHorizontal: 5 }]}>
                 <View style={{
                     flexDirection: 'row',
                     marginTop: 15,
@@ -371,19 +453,26 @@ export const NotificationsScreen = ({ navigation }) => {
                             fontFamily: Fonts.PublicSans_Regular,
                             fontWeight: '400',
                             fontSize: 15,
-                        }}>Your {item.type === 'r' ? 'request' : 'offer'} for <Text style={{ fontFamily: Fonts.PublicSans_SemiBold, fontWeight: '600' }}>{item.title}</Text> will expire at the end of today!</Text>
-                        <View
-                            testID="Posts.tag"
-                            style={{
-                                borderRadius: 4,
-                                backgroundColor: '#F0D2C6',
-                                paddingVertical: 4,
-                                paddingHorizontal: 6,
-                                alignSelf: 'flex-start',
-                                marginBottom: 10,
-                            }}>
+                        }}>
+                            Your {item.type === 'r' ? 'request' : 'offer'} for
+                            <Text style={{ fontFamily: Fonts.PublicSans_SemiBold, fontWeight: '600' }}>{` ${item.title} `}</Text>
+                            will expire <Text style={{ fontFamily: Fonts.PublicSans_SemiBold, fontWeight: '600' }}>
+                                {expiryInDays > 0 ? 'in 2 days!' : 'at the end of today!'}
+                            </Text></Text>
+                        <View testID="Posts.tag">
                             {/* Placeholder need by date */}
-                            <Text testID="Posts.tagLabel" style={globalStyles.Tag}>Expiring soon</Text>
+                            {/* <Text testID="Posts.tagLabel" style={globalStyles.Tag}>Expiring soon</Text> */}
+                            <Pressable
+                                style={[globalStyles.defaultBtn, { height: 20, marginTop: 0, width: 135 }]}
+                                onPress={() => { handleExtendExpiryDate(item.postId, item.type) }}
+                            >
+                                <Image source={require('../../assets/Extend.png')} style={{
+                                    resizeMode: 'cover',
+                                    width: 13,
+                                    height: 13,
+                                }} />
+                                <Text style={[globalStyles.Tag, { color: Colors.white, marginLeft: -5 }]}>Extend by 1 week</Text>
+                            </Pressable>
                         </View>
                     </View>
                 </View>
@@ -391,15 +480,25 @@ export const NotificationsScreen = ({ navigation }) => {
         )
     }
 
+    const screenWidth = Dimensions.get('window').width
+    const width = screenWidth > 700 ? 700 : screenWidth
+
     return (
         <View style={{ height: '100%', backgroundColor: Colors.Background, padding: 5 }}>
-            <FlashList
-                renderItem={renderItem}
-                data={posts}
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                estimatedItemSize={100}
-            />
+            {!isEmpty ?
+                (posts && !!posts.length) ?
+                    <FlashList
+                        renderItem={renderItem}
+                        data={posts}
+                        showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
+                        estimatedItemSize={100}
+                    />
+                    :
+                    <ActivityIndicator animating size="large" color={Colors.primary} />
+                :
+                <NoNotifications navigate={navigation.navigate} width={width} />
+            }
             <View>
                 <NotificationsModal
                     modalVisible={modalVisible}

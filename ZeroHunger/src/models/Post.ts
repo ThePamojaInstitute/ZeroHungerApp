@@ -12,7 +12,7 @@ export interface PostModel {
     type: "r" | "o";
     logistics: Char[];
     postalCode: string;
-    accessNeeds: Char;
+    accessNeeds: string;
     distance: number | null;
     categories: Char[];
     diet: Char[];

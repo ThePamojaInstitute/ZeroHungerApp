@@ -5,7 +5,6 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
 from django.db.models import Q
-from apps.Chat.models import Conversation
 from .models import BasicUser
 from apps.Posts.models import RequestPost, OfferPost
 from apps.Posts.views import serialize_posts
@@ -14,11 +13,18 @@ from datetime import timedelta, datetime
 import jwt
 
 
-def get_expiring_tomorrow_posts(user):
-    tomorrow = datetime.now().date() + timedelta(days=1)
+def get_expiring_soon_posts(user):
+    in_1_day = datetime.now().date() + timedelta(days=1)
+    in_2_days = datetime.now().date() + timedelta(days=2)
 
-    requests = RequestPost.objects.filter(postedBy__pk=user.pk, expiryDate__date=tomorrow)
-    offers = OfferPost.objects.filter(postedBy__pk=user.pk, expiryDate__date=tomorrow)
+    requests = RequestPost.objects.filter(
+        Q(postedBy=user) & Q(fulfilled=False) &
+        (Q(expiryDate__date=in_1_day) | Q(expiryDate__date=in_2_days))
+    )
+    offers = OfferPost.objects.filter(
+        Q(postedBy=user) & Q(fulfilled=False) &
+        (Q(expiryDate__date=in_1_day) | Q(expiryDate__date=in_2_days))
+    )
 
     serialized_requests = serialize_posts(requests, "r")
     serialized_offers = serialize_posts(offers, "o")
@@ -91,7 +97,7 @@ class edit_account_view(APIView):
             serializer = UpdateUserSerializer(data=request.data)
             if (serializer.is_valid()):
                 serializer.update(instance=user)
-                return Response("Modified User", status=204)
+                return Response(status=204)
             else:
                 print(serializer.errors)
                 return Response(serializer.errors, status = 400)
@@ -109,17 +115,8 @@ class deleteUser(APIView):
 
         try:
             user = BasicUser.objects.get(pk=decoded_token['user_id'])
-            username = user.username
             user.delete()
 
-            try:
-                Conversation.objects.filter(
-                    (Q(name__startswith=f"{username}__") | 
-                    Q(name__endswith=f"__{username}"))).delete()
-            except Exception as e:
-                print(e)
-                return Response({"Error while deleting conversations"}, 500)
-            
             return Response({"User deleted"}, 200)
         except:
             return Response(status=404)
@@ -186,6 +183,7 @@ class userPreferences(APIView):
             data['logistics'] = user.get_logistics()
             data['diet'] = user.get_diet()
             data['postalCode'] = user.get_postal_code()
+            data['distance'] = user.get_distance()
 
             return Response(data, 200)
         except Exception as e:
@@ -204,11 +202,11 @@ class userPreferences(APIView):
             return Response("User not found", 404)
         
         data = request.data['data']
-        
         try:  
             user.set_logistics(data['logistics'])
             user.set_diet(data['dietRequirements'])
             user.set_postal_code(data['postalCode'])
+            user.set_distance(data['distance'])
             if(data['postalCode']):
                 user.update_coordinates()
             else:
@@ -231,11 +229,19 @@ class getNotifications(APIView):
             return Response("Token invalid or not given", 401)
         
         try:
-            expiring_tomorrow_posts = get_expiring_tomorrow_posts(user)
+            from_screen = request.GET.get('from',"")
+        except Exception as e:
+            return Response(e.__str__(), 400) 
+        
+        if((user.allowExpiringPostsNotifications == False and from_screen == 'home')):
+            return Response(status=204)
+        
+        try:
+            expiring_soon_posts = get_expiring_soon_posts(user)
         except Exception as e:
             Response(e, 500)
 
-        return Response(expiring_tomorrow_posts, 200)
+        return Response(expiring_soon_posts, 200)
 
 # class addNotification(APIView):
 #     def post(self, request, format=None):

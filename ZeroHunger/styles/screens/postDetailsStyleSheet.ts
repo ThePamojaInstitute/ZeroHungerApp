@@ -1,11 +1,16 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
+
+const screenWidth = Dimensions.get('window').width
+const width = screenWidth > 700 ? 700 : screenWidth
 
 export default StyleSheet.create({
     container: {
         flex: 1,
         padding: 12,
-        backgroundColor: Colors.offWhite
+        maxWidth: 700,
+        alignSelf: 'center',
+        width: width
     },
     inputText: {
         flex: 1,

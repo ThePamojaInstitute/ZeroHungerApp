@@ -126,7 +126,7 @@ async function registerForPushNotificationsAsync() {
     //     return token
     // }
 
-    if (Device.isDevice) {
+    if (Device.isDevice && Platform.OS != 'web') {
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
         if (existingStatus !== 'granted') {
@@ -135,7 +135,7 @@ async function registerForPushNotificationsAsync() {
 
             finalStatus = status;
         }
-        if (finalStatus !== 'granted' && Platform.OS !== 'web') {
+        if (finalStatus !== 'granted') {
             alert('Failed to get push token for push notification!');
             return;
         }

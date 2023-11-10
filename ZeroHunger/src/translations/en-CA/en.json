@@ -8,19 +8,29 @@
 			"skip":	"Skip",
 			"continue": "Continue",
 			"cancel":"Cancel",
-			"loading":"Loading..."
+			"delete": "Delete",
+			"loading":"Loading...",
+			"backToHome": "Back to Home",
+			"clearAll" : "Clear all",
+			"locationPlaceholder": "XXX XXX"
 		},
-		"home":	{
-			"label" : "Home"
-		},
-		"post":	{
-			"label" : "Post",
-			"requestButton":"A Request For Food",
-			"offerButton":"An Offer For Food"
-
-		},
-		"messages":	{
-			"label" : "Messages"
+		"contact.email": "xxx@xxx.com",
+		"sort": {
+			"label": "Sort",
+			"options": [
+				{
+					"label": "Newest first",
+					"value": "newest"
+				},
+				{
+					"label": "Oldest first",
+					"value": "oldest"
+				},
+				{
+					"label": "Distance",
+					"value": "distance"
+				}
+			]
 		},
 		"foodCategory": {
 			"label" : "Food category",
@@ -115,6 +125,43 @@
 				}
 			]
 		},
+		"location": {
+			"label": "Location",
+			"distance.label": "Maximum distance away",
+			"distance.suffix": " km",
+			"options": [
+				{
+					"label": "Use my default postal code",
+					"value": "default"
+				},
+				{
+					"label": "Input postal code",
+					"value": "custom",
+					"placeholder": "{{ app.strings.locationPlaceholder }}"
+				}
+			] 
+		},
+		"delivery": {
+			"label": "Delivery / Pick up",
+			"options": [
+				{
+					"label": "Pick up",
+					"value": "pick_up"
+				},
+				{
+					"label": "Delivery",
+					"value": "delivery"
+				},
+				{
+					"label": "Meet at a public location",
+					"value": "public_location"
+				},
+				{
+					"label": "Wheelchair accessible",
+					"value": "wheelchair"
+				}
+			]
+		},
 		"pickup": {
 			"label": "Pick up or delivery preferences",
 			"options": [
@@ -132,25 +179,9 @@
 				}
 			]
 		},
-		"access": {
-			"label": "Access needs for pick up or delivery",
-			"options": [
-				{
-					"label": "No access needs",
-					"value": "none"
-				},
-				{
-					"label": "Pick up location must be wheelchair accessible",
-					"value": "wheelchair"
-				},
-				{
-					"label": "Delivery only",
-					"value": "delivery_only"
-				}
-			]
-		},
 		"quantity": {
 			"label": "Quantity",
+			"quantity.placeholder": "0",
 			"measurement": {
 				"placeholder": "Measurement",
 				"options": [
@@ -188,35 +219,22 @@
 	},
 
 	"menu": {
-		"account":	{
-			"label": "Account Settings"
+		"bottom": {
+			"home.label": "Home",
+			"post.label": "Post",
+			"messages.label": "Messages" 
 		},
-		"history":	{
-			"label": "Request and Offer History"
-		},
-		"preferences":
-		{
-			"label": "Edit Preferences"
-		},
-		"diet": {
-			"label": "Dietary Preferences"
-		},
-		"notifications": {
-			"label": "Notifications Settings"
-		},
-		"faq":	{
-			"label": "FAQs"
-		},
-		"terms": {
-			"label": "Terms and Conditions"
-		},
-		"privacy":	{
-			"label": "Privacy Policy"
-		},
-		"logout": {
-			"label": "Log Out"
+		"side": {
+			"account.label": "Account Settings",
+			"history.label":	"Request and Offer History",
+			"preferences.label": "Preferences",
+			"notifications.label": "Notifications Settings", 
+			"faq.label": "FAQs",
+			"guidelines.label": "Guidelines",
+			"terms.label": "Terms and Conditions",
+			"privacy.label": "Privacy Policy",
+			"logout.label": "Log out"
 		}
-
 	},
 	
 	"onboarding": [
@@ -235,51 +253,141 @@
 	],
 
 	"account": {
+		"fields": {
+			"user.label": "Username",
+			"email.label": "Email address",
+			"display.label": "Display name",
+			"img.label": "Profile picture",
+			"pass.label": "Password",
+			"passConfirm.label": "Confirm password",
+			"passCurrent.label": "Current password",
+			"passNew.label": "New password",
+			"passNewConfirm.label": "Confirm new password"
+		},
 		"signin": {
 			"loading.label":"Loading",
-			"username.label" :"Username",
-			"email.label": "Email",
-			"pass.label": "Password",
+			"user.label" : "{{ account.fields.user.label }}",
+			"email.label": "{{ account.fields.email.label }}",
+			"pass.label": "{{ account.fields.pass.label }}",
 			"passForgot.label": "Forgot password?",
 			"submit.label": "Sign in",
 			"or": "or",
 			"create": "Create an account",
 			"error": {
 				"incorrect": "The email address or password you have entered is incorrect.",
-				"noUser": "There is no account registered with this email address. Create an account"
+				"noUser": "There is no account registered with this email address. ",
+				"noUser.link": "Create an account"
 			}
 		},
 		"signup": {
 			"loading.label":"Loading",
-			"user.label":	"Username",
-			"display.label": "Display name",
-			"email.label":	"Email Address",
-			"pass.label": "Password",
-			"passConfirm.label": "Confirm Password",
+			"user.label":	"{{ account.fields.user.label }}",
+			"user.required": true,
+			"display.label": "{{ account.fields.display.label }}",
+			"display.required": false,
+			"email.label":	"{{ account.fields.email.label }}",
+			"email.required": true,
+			"pass.label": "{{ account.fields.pass.label }}",
+			"pass.required": true,
+			"pass.desc": "{{ ['Must be at least 6 characters long', 'Must contain an uppercase letter and a lower case letter (A, z)', 'Must contain a number' ] }}",
+			"passConfirm.label": "{{ account.fields.passConfirm.label }}",
+			"passConfirm.required": true,
 			"terms" : {
-				"label":	"Terms and conditions",
+				"label": "Terms and conditions",
 				"desc": "Read our",
-				"link":"terms and conditions.",
-				"accept.label": "I accept"
+				"link": "terms and conditions.",
+				"accept.label": "I accept",
+				"required": true
 			},
 			"submit.label": "Sign up",
 			"error": {
 				"required": "Please fill out all of the required fields.",
+				"requiredField": "This field is required.",
 				"userTaken": "This username is already taken. Please try again.",
+				"emailTaken": "An account already exists with this email address.",
 				"email": "Please enter a valid email address.",
 				"passShort": "The password you entered is too short",
+				"passCase": "Your password must contain an uppercase letter and a lower case letter.",
+				"passNum": "Your password must contain a number",
 				"passMatch": "The passwords you have entered do not match.",
 				"terms": "You must accept the terms and conditions to create an account."
 			}	
+		},
+		"forgotPass": {
+			"request": {
+				"heading": "Forgot your password",
+				"text": "Please enter the email address you want your password reset information to be sent to.",
+				"email.label": "{{ account.fields.email.label }}",
+				"submit.label": "Request reset link"
+			},
+			"requestConfirm": {
+				"heading": "Request sent",
+				"text": "If there is an account associated with the email address you entered, you will receive a password reset link soon."
+			},
+			"reset": {
+				"heading": "Reset your password",
+				"text": "Enter a new password to reset the password on your account. We will ask for this password whenever you log in.",
+				"pass.label": "{{ account.fields.passNew.label }}",
+				"pass.desc": "{{ ['Must be at least 6 characters long', 'Must contain an uppercase letter and a lower case letter (A, z)', 'Must contain a number' ] }}",
+				"pass.required": true,
+				"passConfirm.label": "{{ account.fields.passNewConfirm.label }}",
+				"passConfirm.required": true,
+				"submit.label": "Reset password"
+			},
+			"resetConfirm": {
+				"heading": "Your password has been reset",
+				"text": "We will ask for your new password whenever you log in.",
+				"button.label": "Take me to Zero Hunger"
+			},
+			"error": {
+				"required": "Please fill out all of the required fields.",
+				"requiredField": "This field is required.",
+				"passShort": "The password you entered is too short",
+				"passCase": "Your password must contain an uppercase letter and a lower case letter.",
+				"passNum": "Your password must contain a number",
+				"passMatch": "The passwords you have entered do not match."
+			}
+		},
+		"settings": {
+			"heading": "{{ menu.side.account.label }}",
+			"sections": [
+				{
+					"user.label":	"{{ account.fields.user.label }}",
+					"user.required": true,
+					"email.label":	"{{ account.fields.email.label }}",
+					"email.required": true,
+					"display.label": "{{ account.fields.display.label }}",
+					"display.required": false,
+					"img.label": "{{ account.fields.img.label }}",
+					"img.required": false,
+					"img.link.label": "Edit picture"
+				},
+				{
+					"heading": "Change password",
+					"passCurrent.label": "{{ account.fields.passCurrent.label }}",
+					"passNew.label": "{{ account.fields.passNew.label }}",
+					"passNewConfirm.label": "{{ account.fields.passNewConfirm.label }}"
+				},
+				{
+					"heading": "Delete account",
+					"desc": "When you delete your account, all of your data, posts, and chat history will be permanently deleted as well.\n\nAccount deletion is irreversible. You cannot restore your account.\n\nLearn more about how we handle your data in our {{ link.label }}.",
+					"link.label": "privacy policy",
+					"button.label": "Delete my account"
+				}
+			]
 		}
 	},
 
 	"permissions": {
 		"location": {
 			"heading": "See food offers and requests in your area",
-			"text": "We’ll show you requests and offers based on your location. No other users will see your location.",
-			"submit.label": "Use my current location",
-			"alt.label": "Input postal code"
+			"text": "We’ll show you requests and offers based on your postal code",
+			"postalCode.label": "Your postal code",
+			"postalCode.desc": "Other people will only see an estimate of how far away your postal code is from theirs (i.e., 5 km away)",
+			"postalCode.placeholder": "{{ app.strings.locationPlaceholder}}",
+			"error.invalid": "The postal code you entered is not valid.",
+			"submit.label": "Save my postal code",
+			"alt.label": "Not right now"
 		},
 		"notifications": {
 			"heading": "Never miss a thing",
@@ -289,73 +397,168 @@
 		}
 	},
 
+	"guidelines": {
+		"header.text": "Guidelines",
+		"content": [
+				{
+					"heading": "I will...",
+					"listCheck": [
+						{"text": "Clearly describe the food I am offering or requesting"},
+						{"text": "Respond to messages in a timely manner"},
+						{"text": "Be respectful in my interactions with other people on Zero Hunger"}
+					] 
+				},
+				{
+					"heading": "I will not...",
+					"listX": [
+						{"text": "Post food that has already expired or gone bad"},
+						{"text": "Share my address, phone number, or other personal information in my public requests or offers"},
+						{"text": "Treat other people using Zero Hunger with disrespect"}
+					] 
+				},
+				{
+					"heading": "Tips and tricks",
+					"listCheck": [
+						{"text": "Enable push notifications to know when you receive a new message"},
+						{"text": "Set your default postal code and dietary preferences in the menu"},
+						{"text": "Add pictures to your request and offer posts"}
+					] 
+				}
+		]
+	},
+
 	"home": {
 		"requests.label": "Requests",
 		"offers.label": "Offers",
-		"loading.label":"Loading..."
+		"loading.label":"Loading...",
+		"fallback": {
+			"heading": "No requests matching your filters",
+			"text": "Try removing some of your filters to get more results.",
+			"button.label": "Clear filters"
+		},
+		"filters": "{{ overlay.home.categories }}"
 	},
 	
 	"request": {
 		"form": {
 			"heading": "Request Food",
 			"detailsHeading":"Request",
+			"editHeading": "Edit Request",
 			"fields": [
 				{
 					"label": "Title",
+					"value": "title",
 					"desc": "Create a descriptive title for your request.",
+					"placeholder": "Enter name of food",
 					"required": true
 				},
 				{
 					"label": "Photo(s)",
+					"value": "photos",
 					"desc": "Add photo(s) to help community members understand what you are looking for.",
-					"required": false
-				},
-				{
-					"label": "Description",
-					"desc": "Describe your food request in detail",
+					"placeholder": "Add photos",
 					"required": false
 				},
 				{
 					"label": "Food category",
+					"value": "foodCategory",
 					"desc": "Please select all the food categories that apply.",
 					"required": false,
-					"options": "[ /* see app.foodCategory.options*/ ]"
+					"options": "{{ app.foodCategory.options }}"
 				},
 				{
 					"label": "Dietary preferences",
+					"value": "diet",
 					"desc": "Please indicate any dietary preferences or allergies that need to be respected in your request.",
 					"required": false,
-					"options": "[ /* see app.diet.options*/ ]"
+					"options": "{{ app.diet.options }}"
 				},
 				{
 					"label": "Quantity",
+					"value": "quantity",
 					"desc": "Please input the desired quantity of the food item you need.",
 					"required": false,
-					"measurement": "[ /* see app.quantity.measurement */ ]"
+					"measurement": "{{ app.quantity.measurement }}"
 				},
 				{
 					"label": "Need by date",
-					"desc": "Please select a date you would need this item by. Your request will expire on this date.",
+					"value": "expiry",
+					"desc": "Please select a date you would need this food by. Your request will expire on this date.",
+					"placeholder": "MM/DD/YYYY",
 					"required": false
-				},
-				{
-					"label": "Pick up or delivery preferences",
-					"desc": "Select all that apply",
-					"required": false,
-					"options": "[ /* see app.pickup.options*/ ]"
 				},
 				{
 					"label": "Pick up or delivery location",
-					"desc": "Please indicate the postal code of your desired pick up or delivery location.",
-					"required": false
+					"value": "location",
+					"desc": "Please indicate the postal code of your desired pick up or delivery location. No one else will see your postal code.",
+					"required": true,
+					"options": [
+						{
+							"label": "Use my default postal code",
+							"value": "default",
+							"placeholder": "{{ user.postalCode.default }}"
+						}
+					]
+				},
+				{
+					"label": "Pick up or delivery preferences",
+					"value": "delivery",
+					"desc": "Select all that apply",
+					"required": false,
+					"options": "{{ app.delivery.options }}"
 				},
 				{
 					"label": "Access needs for pick up or delivery",
 					"desc": "Please indicate if you have any access needs for receiving your requested food.",
 					"required": false,
-					"options":"[ /* see app.access.options*/ ]"
+					"placeholder": "Enter access needs"
+				},
+				{
+					"label": "Description",
+					"desc": "Describe your food request in detail",
+					"required": false,
+					"placeholder": "Enter description"
 				}
 			]
+		},
+		"post": {
+			"heading": "Request",
+			"distance": "{{ distanceCalculated }} km away",
+			"expiry.active": "Need in {{ expiryCalculated }} days",
+			"expiry.expired": "Expired",
+			"status": {
+				"fulfilled": "Fulfilled",
+				"unfulfilled": "Not fulfilled"
+			},
+			"message": {
+				"heading": "Send a message",
+				"placeholder": "Hi {{ poster.displayName }}, do you still need this? I have some to share.",
+				"submit.label": "Send"
+			},
+			"description": {
+				"heading": "Description"
+			},
+			"poster": {
+				"heading": "Poster information",
+				"distance": " {{ distanceCalculated }} km away"
+			},
+			"details": {
+				"heading": "Request Details",
+				"fields": [
+					{ "label": "{{ app.foodCategory.label }}" },
+					{ "label": "{{ app.diet.label }}" },
+					{ "label": "{{ app.quantity.label }}" },
+					{ "label": "Need by" }
+				]
+			},
+			"meetup": {
+				"heading": "Meet up preferences",
+				"fields": [
+					{ "label": "{{ app.delivery.label }}" },
+					{ "label": "{{ app.location.label }}" },
+					{ "label": "Access needs" }
+				]
+			}
 		}
 	},
 
@@ -363,58 +566,350 @@
 		"form": {
 			"heading": "Offer Food",
 			"detailsHeading":"Offer",
+			"editHeading": "Edit Offer",
 			"fields": [
 				{
 					"label": "Title",
+					"value": "title",
 					"desc": "Create a descriptive title for your offer.",
+					"placeholder": "Enter name of food",
 					"required": true
 				},
 				{
 					"label": "Photo(s)",
+					"value": "photos",
 					"desc": "Add photo(s) to help community members understand what you are offering.",
-					"required": false
-				},
-				{
-					"label": "Description",
-					"desc": "Describe your food offer in detail",
+					"placeholder": "Add photos",
 					"required": false
 				},
 				{
 					"label": "Food category",
+					"value": "foodCategory",
 					"desc": "Please select all the food categories that apply.",
 					"required": false,
-					"options": "[ /* see app.foodCategory.options*/ ]"
+					"options": "{{ app.foodCategory.options }}"
 				},
 				{
 					"label": "Dietary preferences",
+					"value": "diet",
 					"desc": "Please indicate any dietary preferences or allergies that apply to the food you are offering.",
 					"required": false,
-					"options": "[ /* see app.diet.options*/ ]"
+					"options": "{{ app.diet.options }}"
 				},
 				{
 					"label": "Quantity",
-					"desc": "Please input the quantity of the food item you are offering.",
+					"value": "quantity",
+					"desc": "Please input the desired quantity of the food item you are offering.",
 					"required": false,
-					"measurement": "[ /* see app.quantity.measurement */ ]"
+					"measurement": "{{ app.quantity.measurement }}"
 				},
 				{
-					"label": "Pick up or delivery preferences",
-					"desc": "Select all that apply",
-					"required": false,
-					"options": "[ /* see app.pickup.options*/ ]"
+					"label": "Expiry date",
+					"value": "expiry",
+					"desc": "Please select a date you would need to give away this food by. Your offer will expire on this date.",
+					"placeholder": "MM/DD/YYYY",
+					"required": false
 				},
 				{
 					"label": "Pick up or delivery location",
-					"desc": "Please indicate the postal code of your desired pick up or delivery location.",
-					"required": false
+					"value": "location",
+					"desc": "Please indicate the postal code of your desired pick up or delivery location. No one else will see your postal code.",
+					"required": true,
+					"options": [
+						{
+							"label": "Use my default postal code",
+							"value": "default",
+							"placeholder": "{{ user.postalCode.default }}"
+						}
+					]
+				},
+				{
+					"label": "Pick up or delivery preferences",
+					"value": "delivery",
+					"desc": "Select all that apply",
+					"required": false,
+					"options": "{{ app.delivery.options }}"
 				},
 				{
 					"label": "Access needs for pick up or delivery",
 					"desc": "Please indicate if you have any access needs for sharing the food you are offering.",
 					"required": false,
-					"options": "[ /* see app.access.options*/ ]"
+					"placeholder": "Enter access needs"
+				},
+				{
+					"label": "Description",
+					"desc": "Describe your food request in detail",
+					"required": false,
+					"placeholder": "Enter description"
 				}
 			]
+		},
+		"post": {
+			"heading": "Offer",
+			"distance": "{{ distanceCalculated }} km away",
+			"expiry.active": "Expires in {{ expiryCalculated }} days",
+			"expiry.expired": "Expired",
+			"status": {
+				"fulfilled": "Fulfilled",
+				"unfulfilled": "Not fulfilled"
+			},
+			"message": {
+				"heading": "Send a message",
+				"placeholder": "Hi {{ poster.displayName }}, is this still available?",
+				"submit.label": "Send"
+			},
+			"description": {
+				"heading": "Description"
+			},
+			"poster": {
+				"heading": "Poster information",
+				"distance": " {{ distanceCalculated }} km away"
+			},
+			"details": {
+				"heading": "Offer Details",
+				"fields": [
+					{ "label": "{{ app.foodCategory.label }}" },
+					{ "label": "{{ app.diet.label }}" },
+					{ "label": "{{ app.quantity.label }}" },
+					{ "label": "Expires on " }
+				]
+			},
+			"meetup": {
+				"heading": "Meet up preferences",
+				"fields": [
+					{ "label": "{{ app.delivery.label }}" },
+					{ "label": "{{ app.location.label }}" },
+					{ "label": "Access needs" }
+				]
+			}
+		}	
+	},
+
+	"history": {
+		"heading": "{{ menu.side.history.label }}",
+		"tabs": {
+			"requests.label": "My Requests",
+			"offers.label": "My Offers"
+		},
+		"sort": {
+			"label": "Sorted by",
+			"overlay": "{{ overlay.history}}"
+		},
+		"fallback": {
+			"requests": {
+				"heading": "No requests yet",
+				"text": "You will see your history once you make your first food request.",
+				"button.label": "Request Food"
+			},
+			"offers": {
+				"heading": "No offers yet",
+				"text": "You will see your history once you make your first food offer.",
+				"button.label": "Offer Food"
+			}
+		}
+
+	},
+
+	"messages": {
+		"heading": " {{ menu.bottom.messages.label }}",
+		"search.placeholder": "Search messages",
+		"fallback": {
+			"heading": "No messages yet",
+			"text": "Start a conversation by replying to a food request or offer.",
+			"button.label": "{{ app.strings.backToHome }}"
+		},
+		"chat": {
+			"input.placeholder": "Type a message",
+			"submit.label": "Send",
+			"options": "{{ overlay.chatOptions }}"
+		}
+	},
+
+	"notifications": {
+		"page": {
+			"heading": "Notifications",
+			"fallback": {
+				"heading": "No notifications",
+				"text": "You will be notified when one of your posts is expiring soon",
+				"button.label": "{{ app.strings.backToHome }}"
+			}
+		},
+		"snippet": {
+			"request": {
+				"text": "Your request for {{ requestTitle }} will expire in {{ expiryCalculated }} days",
+				"buttonExtend.label": "Extend by 1 week",
+				"timeStamp": "{{ calculatedNotificationTime }} ago"
+			},
+			"offer": {
+				"text": "Your offer for {{ requestTitle }} will expire in {{ expiryCalculated }} days",
+				"buttonExtend.label": "Extend by 1 week",
+				"timeStamp": "{{ calculatedNotificationTime }} ago"
+			}
+		},
+		"settings": {
+			"heading": "{{ menu.side.notifications.label }}",
+			"sections": [
+				{
+					"heading": "Notify me about",
+					"options": [
+						{ "label": "Requests and offers expiring in 2 days" }
+					]
+				},
+				{
+					"heading": "Push notifications",
+					"options": [
+						{ "label": "Enable notifications" },
+						{ "label": "New messages" }
+					]
+				}
+			]
+		}
+	},
+
+	"preferences": {
+		"heading": "Edit Preferences",
+		"sections": [
+			{
+				"heading": "Location preferences",
+				"fields": [
+					{
+						"label": "Postal code",
+						"desc": "This will be your default postal code used to show requests and offers near you on your home feed. It will also be used when you make a new offer or request. No one else will see your postal code.",
+						"placeholder": "{{ app.strings.locationPlaceholder }}"
+					},
+					{
+						"label": "{{ app.location.distance.label }}",
+						"desc": "This will be the default radius used to show requests and offers near you on your home feed."
+					},
+					{
+						"label": "{{ app.diet.label }}",
+						"desc": "These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.",
+						"options": "{{ app.diet.options }}"
+					},
+					{
+						"label": "{{ app.delivery.label }}",
+						"desc": "These will be applied by as a default filter on your home feed, and as the default settings when you make a new offer or request.",
+						"options": "{{ app.delivery.options }}"
+					},
+					{
+						"label": "Blocked Users",
+						"button.label": "Unblock"
+					}
+				]
+			}
+		]
+	},
+
+	"overlay": {
+		"home": {
+			"heading": "Filter and sort",
+			"categories": [
+				"{{app.sort}}",
+				"{{app.foodCategory}}",
+				"{{app.diet}}",
+				"{{app.location}}",
+				"{{app.delivery}}"
+			]
+		},
+		"postNew": {
+			"heading": "What would you like to post?",
+			"requestButton":"A Request For Food",
+			"offerButton":"An Offer For Food"
+		},
+		"history": {
+			"heading": "Sort",
+			"options": [
+				{
+					"label": "Newest first",
+					"value": "newest"
+				},
+				{
+					"label": "Oldest first",
+					"value": "oldest"
+				}
+			]
+		},
+		"postOptions": {
+			"heading": "Post options",
+			"options": [
+				{
+					"label": "Edit post",
+					"value": "edit"
+				},
+				{
+					"label": "Extend expiry date by one week",
+					"value": "extend"
+				},
+				{
+					"label": "Mark as fulfilled",
+					"value": "fulfilled"
+				},
+				{
+					"label": "Delete post",
+					"value": "delete"
+				}
+			]
+		},
+		"notificationsOptions": {
+			"heading": "Notifications options",
+			"options": [
+				{ "label": "{{ app.strings.clearAll }}" },
+				{ "label": "{{ menu.side.notificationsLabel }}" }
+			]
+		},
+		"chatOptions": {
+			"heading": "Chat options",
+			"options": [
+				{
+					"label": "Block user",
+					"value": "blockUser"
+				},
+				{
+					"label": "Report user",
+					"value": "reportUser"
+				},
+				{
+					"label": "Delete conversation",
+					"value": "deleteChat"
+				}
+			]
+		},
+		"blockUser": {
+			"heading": "Block user",
+			"text": "This user has been blocked.\n\nThey will no longer be able to message you nor see your posts.\n\nWould you like to {{ link.label }}?",
+			"link.label": "submit a report"
+		},
+		"reportUser": {
+			"heading": "Submit a report",
+			"form": {
+				"label": "Please select all applicable violations.",
+				"options": [
+					{ "label": "Inappropriate message" },
+					{ "label": "Harrassment or bullying" },
+					{ "label": "Spam or misleading content" },
+					{ "label": "Inappropriate listing" },
+					{ "label": "Other" }
+				],
+				"submit.label": "Submit"
+			},
+			"confirmation": {
+				"text": "Thanks for your report.\n\nBy submitting a report, you are helping to make the app a safer and more positive environment for everyone.\n\nWe will investigate any issues that are brought to our attention. Thank you for your help in this effort.\n\nIf you have any further concerns, you can contact us at {{ link }}.",
+				"link": "{{ app.contact.email }}"
+			}
+		},
+		"profilePicture": {
+			"heading": "Edit profile picture",
+			"choose.label": "Choose from library",
+			"remove.label": "Remove picture"
+		}
+	},
+
+	"modal": {
+		"deleteAccount": {
+			"heading": "Delete account",
+			"desc": "Are you sure you want to delete your account and all of your data?",
+			"cancel.label": "{{ app.strings.cancel }}",
+			"delete.label": "{{ app.strings.delete }}"
 		}
 	}
 }

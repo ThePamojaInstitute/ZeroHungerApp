@@ -1,5 +1,5 @@
 import { useImperativeHandle, useState } from "react"
-import { View, Dimensions, Text, TouchableOpacity } from "react-native"
+import { View, Dimensions, Text, TouchableOpacity, Platform } from "react-native"
 import Modal from 'react-native-modal';
 import { globalStyles } from "../../styles/globalStyleSheet";
 import styles from "../../styles/components/myPostModalStyleSheet"
@@ -23,7 +23,7 @@ export const MyPostModal = ({ selectedPost, handleDelete, handleMarkAsFulfilled 
                 onBackdropPress={() => setModalVisible(!modalVisible)}
                 onSwipeComplete={() => setModalVisible(!modalVisible)}
                 swipeDirection={['down']}
-                style={[styles.modal,
+                style={[styles.modal, Platform.OS === 'web' ? styles.modalAlignWidth : {},
                 { marginTop: Dimensions.get('window').height * 0.78 }]}
             >
                 <View style={{ marginBottom: 25 }}>

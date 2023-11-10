@@ -6,9 +6,36 @@ import uuid
 class Conversation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=128)
+    user1 = models.ForeignKey(
+        BasicUser, on_delete=models.CASCADE, related_name="user1", blank=True, null=True
+    )
+    user2 = models.ForeignKey(
+        BasicUser, on_delete=models.CASCADE, related_name="user2", blank=True, null=True
+    )
 
     def __str__(self):
         return f"{self.name}"
+    
+    def save(self, *args, **kwargs):
+        usernames = self.name.split("__")
+        users = []
+
+        for username in usernames:
+            try:
+                user = BasicUser.objects.get(username=username)
+                users.append(user)
+            except Exception as e:
+                users.append(None)
+
+        try:
+            self.user1 = users[0]
+            self.user2 = users[1]
+        except Exception as e:
+            print(e)
+            pass
+
+        super(Conversation, self).save(*args, **kwargs)
+
 
 class Message(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -1,25 +1,51 @@
 import { useContext, useEffect, useState } from "react";
 import {
     View, Text, Dimensions, Image,
-    TouchableHighlight, RefreshControl, ActivityIndicator, Platform
+    TouchableHighlight, RefreshControl, ActivityIndicator, Pressable
 } from "react-native";
+import { useIsFocused } from '@react-navigation/native';
 import styles from "../../styles/screens/conversationsStyleSheet"
-import { Colors } from "../../styles/globalStyleSheet";
+import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
-import { axiosInstance, storage } from "../../config";
+import { axiosInstance, getAccessToken } from "../../config";
 import { ConversationModel } from "../models/Conversation";
 import { FlashList } from "@shopify/flash-list";
 import moment from 'moment';
 import { useTranslation } from "react-i18next";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ENV } from "../../env";
+import { Platform } from "expo-modules-core";
+
+const NoMessages = ({ navigate }) => (
+    <View style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: Dimensions.get('window').height * 0.15,
+        paddingHorizontal: 50,
+    }}>
+        <Text
+            style={[globalStyles.H2, { marginBottom: 10, textAlign: 'center' }]}>
+            No messages yet
+        </Text>
+        <Text style={[globalStyles.Body, { textAlign: 'center' }]}>
+            start a conversation by replying to a food request or offer
+        </Text>
+        <Pressable
+            style={[globalStyles.defaultBtn, { width: '90%' }]}
+            onPress={() => navigate('HomeScreen')}
+        >
+            <Text style={globalStyles.defaultBtnLabel}>
+                Back to Home
+            </Text>
+        </Pressable>
+    </View>
+)
 
 export const Conversations = ({ navigation }) => {
     const { user } = useContext(AuthContext);
     const { unreadFromUsers } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
+    const isFocused = useIsFocused()
 
     const [conversations, setActiveConversations] = useState<ConversationModel[]>([]);
     const [empty, setEmpty] = useState(false)
@@ -28,20 +54,9 @@ export const Conversations = ({ navigation }) => {
 
     const getConversations = async () => {
         try {
-            let token: string
-            if (ENV === 'production') {
-                token = storage.getString('access_token')
-            } else {
-                if (Platform.OS == 'web') {
-                    token = storage.getString('access_token')
-                } else {
-                    token = await AsyncStorage.getItem('access_token')
-                }
-            }
-
             const res = await axiosInstance.get("chat/conversations/", {
                 headers: {
-                    Authorization: `${token}`
+                    Authorization: await getAccessToken()
                 }
             });
 
@@ -70,6 +85,13 @@ export const Conversations = ({ navigation }) => {
     useEffect(() => {
         if (conversations.length > 0) setEmpty(false)
     }, [conversations])
+
+    useEffect(() => {
+        if (!isFocused) return
+
+        getConversations();
+        setFirstLoad(false)
+    }, [isFocused])
 
     const navigateToChat = (firstUser: string, secondUser: string) => {
         navigation.navigate('Chat', { user1: firstUser, user2: secondUser })
@@ -170,8 +192,10 @@ export const Conversations = ({ navigation }) => {
     };
     const { t, i18n } = useTranslation();
     return (
-        <View testID="Conversations.container" style={{ backgroundColor: Colors.Background }}>
-            {empty && <Text testID="Conversations.noMsgs" style={styles.noMsgs}>No Messages</Text>}
+        <View
+            testID="Conversations.container"
+            style={Platform.OS === 'web' ? styles.container : { backgroundColor: Colors.offWhite }}>
+            {empty && <NoMessages navigate={navigation.navigate} />}
             {!empty && <View
                 testID="Conversations.subContainer"
                 style={{ height: Dimensions.get('window').height - 130 }}>

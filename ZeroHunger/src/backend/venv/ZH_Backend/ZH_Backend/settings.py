@@ -13,14 +13,27 @@ import os
 from pathlib import Path
 from django.apps import apps as django_apps
 from datetime import timedelta 
+from azure.keyvault.secrets import SecretClient
+from azure.identity import DefaultAzureCredential
 import environ
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+import logging
 
 
 env = environ.Env()
 environ.Env.read_env()
+
+#Sets up azure keyvault to get secrets
+keyVaultName = os.environ["KEYVAULT_NAME"]
+vaultURI = f"https://{keyVaultName}.vault.azure.net"
+#credential = DefaultAzureCredential( managed_identity_client_id = os.environ["MANAGED_ID"] )
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=vaultURI, credential=credential)
+azure_redis_password = client.get_secret('REDIS-PASSWORD').value
+
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -29,8 +42,8 @@ environ.Env.read_env()
 #django_key = client.get_secret("zh-backend-test-djangoKey").value
 # SECRET_KEY = '2g0siigcmxo9%xhb&!gd2aedqyll(!wmsc9qlxi(uz345o)bdq'
 
-MAPBOX_ACCESS_CODE = 'pk.eyJ1IjoiemVyb2h1bmdlcmFwcCIsImEiOiJjbGtiOG83N3QwZTJoM2ZsNWsxOXljdmp1In0.Zpgj3_N26AMBWusOEiELuA' 
-SECRET_KEY = 'django-insecure-v7d71noy%ag1%5e7p(lz@567yn=r%_v0tqo4n#hbu9bcn$d0q!'
+MAPBOX_ACCESS_CODE = client.get_secret('MAPBOX-API-KEY').value
+SECRET_KEY = client.get_secret('DJANGO-KEY').value
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -112,11 +125,11 @@ WSGI_APPLICATION = 'ZH_Backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("DB_NAME"), 
-        'USER': env("USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("HOST"), 
-        'PORT': env("PORT"),
+        'NAME': client.get_secret('DATABASE-NAME').value, 
+        'USER': client.get_secret('DATABASE-USER').value,
+        'PASSWORD': client.get_secret('DATABASE-PASSWORD').value,
+        'HOST': client.get_secret('DATABASE-HOST').value, 
+        'PORT': client.get_secret('DATABASE-PORT').value,
     }
 }
 
@@ -192,36 +205,36 @@ AUTH_USER_MODEL = "Users.BasicUser"
 #     },
 # }
 
-CHANNEL_LAYERS = {
-	"default": {
-        # For production level, don’t use InMemoryChannelLayer use Redis channel instead
-		"BACKEND": "channels.layers.InMemoryChannelLayer"
-	}
-}
-
 # CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [ "rediss://:"+azure_redis_password+"@zhbackendtest.redis.cache.windows.net:6380/0"],
-#         },
-#     },
+# 	"default": {
+#         # For production level, don’t use InMemoryChannelLayer use Redis channel instead
+# 		"BACKEND": "channels.layers.InMemoryChannelLayer"
+# 	}
 # }
 
-# #            f"redis://zhbackendtest.redis.cache.windows.net:6380,password={azure_redis_password},ssl=True,abortConnect=False"
-# CACHES = {
-#         "default": {  
-#             "BACKEND": "django_redis.cache.RedisCache",
-#             "LOCATION": 'rediss://zhbackendtest.redis.cache.windows.net:6380',
-#             "OPTIONS": {
-#                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#                 "PASSWORD": azure_redis_password,
-#                 'SSL': True,
-#                 "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [ "rediss://:"+azure_redis_password+"@zhbackend.redis.cache.windows.net:6380/0"],
+        },
+    },
+}
 
-#             },
-#         }
-#     }  
+#            f"redis://zhbackend.redis.cache.windows.net:6380,password={azure_redis_password},ssl=True,abortConnect=False"
+CACHES = {
+        "default": {  
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": 'rediss://zhbackendtest.redis.cache.windows.net:6380',
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "PASSWORD": azure_redis_password,
+                'SSL': True,
+                "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+
+            },
+        }
+    }  
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -234,6 +247,7 @@ USE_I18N = True
 USE_TZ = True
 
 CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = ['https://zh-backend-app.azurewebsites.net']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

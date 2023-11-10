@@ -5,9 +5,8 @@ export default StyleSheet.create({
     formContainer: {
         flex: 1,
         padding: 10,
-        // marginTop: 20,
-        backgroundColor: Colors.Background
-
+        maxWidth: 700,
+        alignSelf: 'center'
     },
     formTitleText: {
         fontFamily: Fonts.PublicSans_SemiBold,
@@ -88,4 +87,11 @@ export default StyleSheet.create({
         alignSelf: 'flex-start',
         marginBottom: 10
     },
+    choiceContainer: {
+        flexDirection: 'row',
+        marginVertical: 10,
+    },
+    icon: {
+        marginRight: 7
+    }
 })

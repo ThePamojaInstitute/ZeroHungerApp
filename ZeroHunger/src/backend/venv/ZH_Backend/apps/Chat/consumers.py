@@ -79,8 +79,11 @@ class ChatConsumer(JsonWebsocketConsumer):
             )
 
             notification_group_name = self.get_receiver().username + "__notifications"
+            number_of_clients = self.room_connection_counts[self.conversation_name]
+            if(number_of_clients > 2): 
+                number_of_clients = 2
 
-            print(f'Number of clients in {self.conversation_name}: {self.room_connection_counts[self.conversation_name]}')
+            print(f'Number of clients in {self.conversation_name}: {number_of_clients}')
 
             if(self.room_connection_counts[self.conversation_name] <= 1):
                 receiver = BasicUser.objects.get(username=self.get_receiver().username)
@@ -104,9 +107,13 @@ class ChatConsumer(JsonWebsocketConsumer):
 
                 print(f'Push message: {push_message}')
 
-                if(len(receiver.get_expo_push_token()) > 0):
+                if(len(receiver.get_expo_push_token()) > 0 and receiver.allowNewMessagesNotifications == True):
                     try:
-                        res = requests.post('https://exp.host/--/api/v2/push/send', json=push_message, headers={'User-Agent': "python-requests/2.31.0"})
+                        res = requests.post(
+                            'https://exp.host/--/api/v2/push/send',
+                            json=push_message,
+                            headers={'User-Agent': "python-requests/2.31.0"}
+                        )
                         print(res)
                     except Exception as e:
                         print(e)
@@ -123,9 +130,20 @@ class ChatConsumer(JsonWebsocketConsumer):
             unread = Message.objects.filter(to_user=self.get_receiver(), read=False)
             unread_count = unread.count()
             unread_from_users = []
+            unread_count = 0
 
-            for msg in unread.values_list('from_user_id'):
-                user_id = int(msg[0])
+            for msg in unread:
+                try:
+                    # if the message is a post object
+                    json.loads(msg.content)
+                    is_json = True
+                except ValueError as e:
+                    is_json = False
+                
+                if(is_json): continue
+
+                unread_count += 1
+                user_id = int(msg.from_user_id)
                 user = BasicUser.objects.get(pk=user_id)
                 unread_from_users.append(str(user))
             
@@ -147,9 +165,20 @@ class ChatConsumer(JsonWebsocketConsumer):
             # Update the unread message count
             unread = Message.objects.filter(to_user=self.user['user_id'], read=False)
             unread_from_users = []
+            unread_count = 0
 
-            for msg in unread.values_list('from_user_id'):
-                user_id = int(msg[0])
+            for msg in unread:
+                try:
+                    # if the message is a post object
+                    json.loads(msg.content)
+                    is_json = True
+                except ValueError as e:
+                    is_json = False
+                
+                if(is_json): continue
+
+                unread_count += 1
+                user_id = int(msg.from_user_id)
                 user = BasicUser.objects.get(pk=user_id)
                 unread_from_users.append(str(user))
                 
@@ -225,13 +254,24 @@ class NotificationConsumer(JsonWebsocketConsumer):
         # Send count of unread messages
         unread = Message.objects.filter(to_user=self.user['user_id'], read=False)
         unread_from_users = []
+        unread_count = 0
 
-        for msg in unread.values_list('from_user_id'):
-            user_id = int(msg[0])
+        for msg in unread:
+            try:
+                # if the message is a post object
+                json.loads(msg.content)
+                is_json = True
+            except ValueError as e:
+                is_json = False
+            
+            if(is_json): continue
+
+            unread_count+=1
+            user_id = int(msg.from_user_id)
             user = BasicUser.objects.get(pk=user_id)
             unread_from_users.append(str(user))
             
-        unread_count = unread.count()
+        # unread_count = unread.count()
         self.send_json(
             {
                 "type": "unread_count",

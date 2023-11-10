@@ -2,13 +2,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from django.conf import settings
-from django.db.models import FloatField, ExpressionWrapper, F, When, Case, Value
+from django.db.models import FloatField, ExpressionWrapper, F, When, Case, Value, Q
 from django.db.models.lookups import Exact
 from django.db.models.functions import Cos, Sin, Sqrt, Radians, ASin, Round, Power
 from .models import OfferPost, RequestPost
 from .serializers import createOfferSerializer, createRequestSerializer
 from apps.Users.models import BasicUser
 from datetime import datetime
+from apps.Posts.choices import LOGISTICS_CHOICES, DIET_PREFERENCES, FOOD_CATEGORIES
 
 import uuid
 import jwt
@@ -16,17 +17,36 @@ import requests
 import os
 import base64
 
-from azure.identity import EnvironmentCredential
+from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 from azure.storage.blob import BlobClient, generate_account_sas, ResourceTypes, AccountSasPermissions, ContainerClient
-#VAULT_URL = os.environ["VAULT_URL"]
-#envcredential = EnvironmentCredential()
-#client = SecretClient(vault_url=VAULT_URL, credential=envcredential)
-connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+
+keyVaultName = os.environ["KEYVAULT_NAME"]
+vaultURI = f"https://{keyVaultName}.vault.azure.net"
+#credential = DefaultAzureCredential( managed_identity_client_id = os.environ["MANAGED_ID"] )
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=vaultURI, credential=credential)
+connection_string = client.get_secret("BLOB-CONNECTION-STRING").value
+
+
 #https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=npm
 #Install Azurite on your local machine using this ^ guide before trying to use this
 
     
+def create_filter(field, choices, type):
+    field_filter = Q()
+
+    for choice in choices:
+        if(choice[0] in field):
+            if(type == 'logistics'):
+                field_filter &= Q( logistics__contains=choice[0] )
+            elif(type == 'diet'):
+                field_filter &= Q( diet__contains=choice[0] )
+            elif(type == 'categories'):
+                field_filter &= Q( categories__contains=choice[0] )
+
+    return field_filter
+
 def get_user_posts(posts_type, order_by_newest, page, user_id):
     try:
         if(posts_type == "r"):
@@ -64,28 +84,24 @@ def get_post(post_id, post_type):
     except:
         return Response("Post not found", 404)
     
-def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, user):
+def get_filtered_posts(posts_type, categories, diet, logistics, distance, user):
     try:
         if(posts_type == "r"):
             posts = RequestPost.objects.all().filter(fulfilled=False, expiryDate__gte=datetime.now())
         else:
             posts = OfferPost.objects.all().filter(fulfilled=False, expiryDate__gte=datetime.now())
-            
+
         if(len(categories) > 0):
-            categories.sort()
-            str_categories = ",".join(x for x in categories)
-            posts = posts.filter(categories__contains=str_categories)
+            categories_filter = create_filter(categories, FOOD_CATEGORIES, 'categories')
+            posts = posts.filter(categories_filter)
 
         if(len(diet) > 0):
-            diet.sort()
-            str_diet = ",".join(x for x in diet)
-            posts = posts.filter(diet__contains=str_diet)
+            diet_filter = create_filter(diet, DIET_PREFERENCES, 'diet')
+            posts = posts.filter(diet_filter)
 
-        # if(len(logistics) > 0):
-        #     posts = posts.filter(logistics__contains=logistics)
-
-        # if(accessNeeds != 'a'):
-        #     posts = posts.filter(accessNeeds=accessNeeds)
+        if(len(logistics) > 0):
+            logistics_filter = create_filter(logistics, LOGISTICS_CHOICES, 'logistics')
+            posts = posts.filter(logistics_filter)
 
         lat1 = user.latitude
         lng1 = user.longitude
@@ -100,6 +116,11 @@ def get_filtered_posts(posts_type, categories, diet, logistics, accessNeeds, use
                 * Power(Sin((Radians(F('longitude')) - Radians(lng1)) /2), 2))))) * 6371), 5),
             output_field=FloatField())
         ))
+
+        if(distance > 0 and len(user.postalCode) > 0):
+            posts = posts.filter((~Q(postedBy=user) & Q(distance__lte=distance)) | Q(postedBy=user))
+        # else: 
+        #     posts = posts.exclude(postedBy=user)
 
         return posts
     except Exception as e:
@@ -156,10 +177,6 @@ def get_coordinates(postal_code):
 
 class createPost(APIView):
     def post(self, request, format=JSONParser):
-        request.data['postData']['categories'].sort()
-        request.data['postData']['diet'].sort()
-        request.data['postData']['logistics'].sort()
-
         postal_code = request.data['postData']['postalCode']
 
         if(len(postal_code) == 0):
@@ -230,12 +247,12 @@ class requestPostsForFeed(APIView):
             categories = request.GET.getlist('categories[]',"")
             diet = request.GET.getlist('diet[]',"")
             logistics = request.GET.getlist('logistics[]',"")
-            accessNeeds = request.GET.get('accessNeeds',"")
+            distance = request.GET.get('distance',15)
         except Exception as e:
             return Response(e.__str__(), 400) 
 
         try:
-            posts = get_filtered_posts(postsType, categories, diet, logistics, accessNeeds, user)
+            posts = get_filtered_posts(postsType, categories, diet, logistics, int(distance), user)
             posts = sort_posts(posts, sortBy, page)
         except Exception as e:
             return Response(e.__str__(), 500) 
@@ -243,6 +260,7 @@ class requestPostsForFeed(APIView):
         try:
             serializer = serialize_posts(posts, postsType)
         except Exception as e:
+            print(e)
             return Response("Error while serializing posts", 500) 
 
         return Response(serializer.data, status=201)
@@ -307,7 +325,8 @@ class ImageUploader(APIView):
             # expiry=datetime.utcnow() + timedelta(hours=1)
             # )
 
-            connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+            
+            #connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
             container_client = ContainerClient.from_connection_string(conn_str=connection_string, container_name="post-images")
             if not container_client.exists():
                 container_client.create_container()
@@ -333,3 +352,41 @@ class deleteExpiredPosts(APIView):
         except Exception as e:
             print(e)
             return Response(e, status=500)
+        
+class extendPostExpiryDate(APIView):
+    def put(self, request):
+        try:
+            decoded_token =  jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except:
+            return Response("Token invalid or not given", 401)
+
+        try:
+            post_type = request.data['data']['postType']
+            post_id =  int(request.data['data']['postId'])
+            new_expiry_date =  request.data['data']['newExpiryDate']
+        except Exception as e:
+            print(e)
+            return Response(e, status=400)
+        
+        try:
+            if(post_type == "r"):
+                post = RequestPost.objects.get(pk=post_id)
+            else:
+                post = OfferPost.objects.get(pk=post_id)
+        except Exception as e:
+            print(e)
+            return Response("Post not found", 404)
+        
+        if(post.postedBy != user):
+            return Response("User is not the owner of the post", 401)
+        
+        try:
+            post.expiryDate = new_expiry_date
+            post.save()
+        except Exception as e:
+            print(e)
+            return Response("Error while updating post expiry date", 500)
+        
+        return Response(status=204)
+        

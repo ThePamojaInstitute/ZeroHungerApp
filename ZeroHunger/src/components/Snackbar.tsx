@@ -48,6 +48,7 @@ const SnackBar = () => {
                         onPress: closeMe,
                     }}
                     duration={3000}
+                    wrapperStyle={{ maxWidth: 700, alignSelf: 'center' }}
                 >
                     <Text style={{ color: 'white' }}>{!!alert && alert.message}</Text>
                 </Snackbar>

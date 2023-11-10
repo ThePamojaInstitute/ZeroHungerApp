@@ -1,14 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styles from "../../styles/screens/postFormStyleSheet"
-import { ScrollView, TextInput, TouchableOpacity, Text, View } from "react-native";
+import { ScrollView, TextInput, TouchableOpacity, Text, View, Platform } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import Quantity from "../components/Quantity";
 import {
-    ACCESSNEEDSPREFERENCES,
     DIETPREFERENCES,
     FOODCATEGORIES,
-    LOGISTICSPREFERENCES,
     createPost,
     getCategory,
     getDiet
@@ -18,15 +16,17 @@ import { useAlert } from "../context/Alert";
 import { handleImageUpload } from "../controllers/post";
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
 import Logistics from "../components/Logistics";
-import AccessNeeds from "../components/AccessNeeds";
 import { intitializePreferences } from "../controllers/preferences";
 import FoodFilters from "../components/FoodFilters";
 import { useTranslation } from "react-i18next";
 import { Char, PostFromData } from "../../types";
 import { useForm, Controller } from "react-hook-form"
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { FormCustomHeader } from "../components/headers/FormCustomHeader";
+
 
 export const RequestFormScreen = ({ navigation }) => {
-    const { user, accessToken } = useContext(AuthContext)
+    const { user } = useContext(AuthContext)
     const { dispatch: alert } = useAlert()
     const { t, i18n } = useTranslation();
     const {
@@ -35,24 +35,22 @@ export const RequestFormScreen = ({ navigation }) => {
         setValue,
         setError,
         formState: { errors },
+        clearErrors,
     } = useForm<PostFromData>();
-
-    useEffect(() => {
-        intitializePreferences(accessToken, setAccessNeeds, setLogistics, setPostalCode, setDiet)
-    }, [])
 
     const [imagesURIs, setImagesURIs] = useState([])
     const [base64Images, setBase64Images] = useState([])
     const [desc, setDesc] = useState("")
     const [loading, setLoading] = useState(false)
     const [logistics, setLogistics] = useState<Char[]>([])
-    const [postalCode, setPostalCode] = useState('')
-    const [accessNeeds, setAccessNeeds] = useState<Char>()
+    const [defaultPostalCode, setDefaultPostalCode] = useState('')
+    const [useDefaultPostal, setUseDefaultPostal] = useState(false)
+    const [accessNeeds, setAccessNeeds] = useState('')
     const [categories, setCategories] = useState<Char[]>([])
     const [diet, setDiet] = useState<Char[]>([])
     const [needBy, setNeedBy] = useState<string>()
     const [dataSourceCords, setDataSourceCords] = useState([]);
-    const [errField, setErrField] = useState<'' | 'categories' | 'needBy' | 'accessNeeds'>("")
+    const [errField, setErrField] = useState<'' | 'categories' | 'needBy'>("")
 
     const scrollView = useRef(null)
 
@@ -65,10 +63,8 @@ export const RequestFormScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
-        if (postalCode) {
-            setValue("postalCode", postalCode)
-        }
-    }, [postalCode])
+        intitializePreferences(setLogistics, setDefaultPostalCode, setDiet)
+    }, [])
 
     useEffect(() => {
         if (errors.title) scrollTo('title')
@@ -82,48 +78,66 @@ export const RequestFormScreen = ({ navigation }) => {
 
 
     useEffect(() => {
-        navigation.setOptions({
-            title: t("request.form.heading"),
-            headerTitleAlign: 'center',
-            headerStyle: {
-                backgroundColor: Colors.Background
-            },
-            headerLeft: () => (
-                <TouchableOpacity
-                    testID="Request.cancelBtn"
-                    onPress={() => navigation.navigate('HomeScreen')}
-                >
-                    <Text
-                        testID="Request.cancelBtnLabel"
-                        style={styles.formCancelBtn}
-                    >Cancel</Text>
-                </TouchableOpacity>
-            ),
-            headerRight: () => (
-                <TouchableOpacity
-                    onPress={handleSubmit(handlePress)}
-                    testID="Request.createBtn"
-                    style={globalStyles.navDefaultBtn}
-                >
-                    <Text
-                        testID="Request.createBtnLabel"
-                        style={globalStyles.defaultBtnLabel}
-                    >Post</Text>
-                </TouchableOpacity>
-            )
-        })
-    }, [imagesURIs, base64Images, desc, logistics, postalCode, accessNeeds, categories, diet, needBy])
+        if (Platform.OS === 'web') {
+            navigation.setOptions({
+                header: () => (
+                    <FormCustomHeader
+                        navigation={navigation}
+                        title={t("request.form.heading")}
+                        defaultPostalCode={defaultPostalCode}
+                        setUseDefaultPostal={setUseDefaultPostal}
+                        useDefaultPostal={useDefaultPostal}
+                        handlePress={handlePress}
+                        handleSubmit={handleSubmit}
+                        setError={setError}
+                    />
+                )
+            })
+        } else {
+            navigation.setOptions({
+                title: t("request.form.heading"),
+                headerTitleAlign: 'center',
+                headerStyle: {
+                    backgroundColor: Colors.Background
+                },
+                headerLeft: () => (
+                    <TouchableOpacity
+                        testID="Request.cancelBtn"
+                        onPress={() => navigation.navigate('HomeScreen')}
+                        style={Platform.OS === 'web' ? { marginLeft: 10 } : {}}
+                    >
+                        <Text
+                            testID="Request.cancelBtnLabel"
+                            style={styles.formCancelBtn}
+                        >Cancel</Text>
+                    </TouchableOpacity>
+                ),
+                headerRight: () => (
+                    <TouchableOpacity
+                        onPress={() => {
+                            if (useDefaultPostal && !defaultPostalCode) {
+                                setError('postalCode', {
+                                    type: 'validation',
+                                    message: "You don't have a default postal code. Please enter a valid one"
+                                })
+                                setUseDefaultPostal(false)
+                                return
+                            }
 
-    useEffect(() => {
-        if (errField === 'accessNeeds') {
-            setErrField('')
+                            handleSubmit(handlePress)()
+                        }}
+                        testID="Request.createBtn"
+                        style={globalStyles.navDefaultBtn}
+                    >
+                        <Text
+                            testID="Request.createBtnLabel"
+                            style={globalStyles.defaultBtnLabel}
+                        >Post</Text>
+                    </TouchableOpacity>
+                )
+            })
         }
-
-        if (accessNeeds === ACCESSNEEDSPREFERENCES.DELIVERY
-            && !logistics.includes(LOGISTICSPREFERENCES.DELIVERY)) {
-            setLogistics((oldArray: Char[]) => [...oldArray, LOGISTICSPREFERENCES.DELIVERY])
-        }
-    }, [accessNeeds])
+    }, [imagesURIs, base64Images, desc, logistics, defaultPostalCode, useDefaultPostal, accessNeeds, categories, diet, needBy])
 
     useEffect(() => {
         if (errField === 'categories') {
@@ -137,7 +151,19 @@ export const RequestFormScreen = ({ navigation }) => {
         }
     }, [needBy])
 
+    useEffect(() => {
+        if (useDefaultPostal) {
+            setValue('postalCode', defaultPostalCode)
+        } else {
+            setValue('postalCode', '')
+        }
+    }, [useDefaultPostal])
+
     const submitPost = async (data: object) => {
+        logistics.sort()
+        categories.sort()
+        diet.sort()
+
         const imageURL = await handleImageUpload(base64Images)
         const res = await createPost({
             postData: {
@@ -145,11 +171,11 @@ export const RequestFormScreen = ({ navigation }) => {
                 images: imageURL,
                 postedBy: user['user_id'],
                 description: desc,
-                logistics: logistics.sort(),
+                logistics: logistics,
                 postalCode: data['postalCode'],
                 accessNeeds: accessNeeds,
-                categories: categories.sort(),
-                diet: diet.sort(),
+                categories: categories,
+                diet: diet,
                 expiryDate: needBy
             },
             postType: 'r'
@@ -189,10 +215,6 @@ export const RequestFormScreen = ({ navigation }) => {
             setErrField('needBy')
             scrollTo('needBy')
             return
-        } else if (!accessNeeds) {
-            setErrField('accessNeeds')
-            scrollTo('accessNeeds')
-            return
         }
 
         setLoading(true)
@@ -206,190 +228,229 @@ export const RequestFormScreen = ({ navigation }) => {
     }
 
     return (
-        <ScrollView testID="Request.formContainer" style={styles.formContainer} ref={scrollView}>
-            <View>
-                <Text
-                    testID="Request.titleLabel"
-                    style={[styles.formTitleText, { color: errors.title ? Colors.alert2 : Colors.dark }]}
-                >Title <Text style={{ color: Colors.alert2 }}>*</Text>
-                </Text>
-                <Text
-                    testID="Request.titleDesc"
-                    style={styles.formDescText}
-                >Create a descriptive title for your request.</Text>
-            </View>
-            <View
-                testID="Request.formInputContainer"
-                style={styles.formInputContainer}
-                onLayout={() => {
-                    dataSourceCords['title'] = 0;
-                    setDataSourceCords(dataSourceCords);
-                }}
+        <View style={{ height: '100%', backgroundColor: Colors.Background }}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                testID="Request.formContainer"
+                style={styles.formContainer}
+                ref={scrollView}
             >
-                <Controller
-                    defaultValue=""
-                    control={control}
-                    rules={{
-                        required: "Please enter a title to your request",
-                        maxLength: {
-                            value: 100,
-                            message: "Title should be at most 100 characters"
-                        }
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            value={value}
-                            nativeID="title"
-                            testID="Request.titleInput"
-                            placeholder="Enter name of food"
-                            placeholderTextColor="#656565"
-                            style={[styles.formInput,
-                            { borderColor: errors.title ? Colors.alert2 : Colors.midLight }]}
-                            onChangeText={onChange}
-                            onChange={onChange}
-                            maxLength={100}
-                            onBlur={onBlur}
-                        />
-                    )}
-                    name="title"
-                />
-            </View>
-            {errors.title &&
-                <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{errors.title.message}</Text>}
-            <View>
-                <Text testID="Request.photoLabel" style={styles.formTitleText}>Photo</Text>
-                <Text
-                    testID="Request.photoDesc"
-                    style={styles.formDescText}
-                >Add photo(s) to help community members understand what you are looking for.</Text>
-            </View>
-            <ImagePicker imagesURIs={imagesURIs} base64Images={base64Images} setImagesURIs={setImagesURIs} setBase64Images={setBase64Images} />
-            <View
-                onLayout={(event) => {
-                    const layout = event.nativeEvent.layout;
-                    dataSourceCords['categories'] = layout.y;
-                    setDataSourceCords(dataSourceCords);
-                }}
-            >
-                <Text
-                    testID="Request.categoryLabel"
-                    style={[styles.formTitleText, { color: errField === 'categories' ? Colors.alert2 : Colors.dark }]}
-                >Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                <Text
-                    testID="Request.categoryDesc"
-                    style={styles.formDescText}
-                >Please select all the food categories that apply.</Text>
-                <FoodFilters
-                    state={categories}
-                    setState={setCategories}
-                    foodType={FOODCATEGORIES}
-                    getType={getCategory}
-                />
-            </View>
-            <View>
-                <Text
-                    testID="Request.categoryLabel"
-                    style={styles.formTitleText}
-                >Dietary preferences</Text>
-                <Text
-                    testID="Request.categoryDesc"
-                    style={styles.formDescText}
-                >Please indicate any dietary preferences or allergies that need to be respected in your request.</Text>
-                <FoodFilters
-                    state={diet}
-                    setState={setDiet}
-                    foodType={DIETPREFERENCES}
-                    getType={getDiet}
-                />
-            </View>
-            {/* <View style={{ opacity: 0.5 }}>
-                        <Text testID="Request.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                        <Text testID="Request.quantityDesc" style={styles.formDescText}>Please input the desired quantity of the food item you need.</Text>
-                        <Quantity />
-                    </View> */}
-            <View
-                onLayout={(event) => {
-                    const layout = event.nativeEvent.layout;
-                    dataSourceCords['needBy'] = layout.y;
-                    setDataSourceCords(dataSourceCords);
-                }}
-            >
-                <Text
-                    testID="Request.dateLabel"
-                    style={[styles.formTitleText, { color: errField === 'needBy' ? Colors.alert2 : Colors.dark }]}
-                >Need By Date <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                <Text
-                    testID="Request.dateDesc"
-                    style={styles.formDescText}
-                >Please select a date you would need this item by.
+                <View>
                     <Text
-                        style={{ fontFamily: Fonts.PublicSans_SemiBold, fontWeight: '600', color: '#646464' }}
-                    > Your post will expire at the end of this date.</Text>
-                </Text>
-                <DatePicker setNeedBy={setNeedBy} errField={errField} />
-            </View>
-            <View>
-                <Text
-                    testID="Request.dateLabel"
-                    style={styles.formTitleText}
-                >Pick up or delivery preferences</Text>
-                <Text
-                    testID="Request.dateDesc"
-                    style={styles.formDescText}
-                >Select all that apply.</Text>
-                <Logistics logistics={logistics} setLogistics={setLogistics} />
-            </View>
-            <View
-                onLayout={(event) => {
-                    const layout = event.nativeEvent.layout;
-                    dataSourceCords['postalCode'] = layout.y;
-                    setDataSourceCords(dataSourceCords);
-                }}
-            >
-                <Text
-                    testID="Request.dateLabel"
-                    style={[styles.formTitleText, { color: errors.postalCode ? Colors.alert2 : Colors.dark }]}
-                >Pick up or delivery location <Text style={{ color: Colors.alert2 }}>*</Text></Text>
-                <Text
-                    testID="Request.dateDesc"
-                    style={styles.formDescText}
-                >Please indicate the postal code of your desired pick up or delivery location.</Text>
+                        testID="Request.titleLabel"
+                        style={[styles.formTitleText, { color: errors.title ? Colors.alert2 : Colors.dark }]}
+                    >Title <Text style={{ color: Colors.alert2 }}>*</Text>
+                    </Text>
+                    <Text
+                        testID="Request.titleDesc"
+                        style={styles.formDescText}
+                    >Create a descriptive title for your request.</Text>
+                </View>
                 <View
                     testID="Request.formInputContainer"
                     style={styles.formInputContainer}
+                    onLayout={() => {
+                        dataSourceCords['title'] = 0;
+                        setDataSourceCords(dataSourceCords);
+                    }}
                 >
                     <Controller
                         defaultValue=""
                         control={control}
                         rules={{
-                            required: "Please enter a postal code to your request",
-                            pattern: {
-                                value: /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
-                                message: "Please enter a valid postal code"
+                            required: "Please enter a title to your request",
+                            maxLength: {
+                                value: 100,
+                                message: "Title should be at most 100 characters"
                             }
                         }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
                                 value={value}
-                                nativeID="postalCode"
-                                testID="Request.postalCodeInput"
-                                placeholder="XXX XXX"
+                                nativeID="title"
+                                testID="Request.titleInput"
+                                placeholder="Enter name of food"
                                 placeholderTextColor="#656565"
                                 style={[styles.formInput,
-                                { borderColor: errors.postalCode ? Colors.alert2 : Colors.midLight }]}
+                                { borderColor: errors.title ? Colors.alert2 : Colors.midLight }]}
                                 onChangeText={onChange}
                                 onChange={onChange}
-                                maxLength={7}
+                                maxLength={100}
                                 onBlur={onBlur}
                             />
                         )}
-                        name="postalCode"
+                        name="title"
                     />
                 </View>
-            </View>
-            {errors.postalCode &&
-                <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{errors.postalCode.message}</Text>}
-            <View
+                {errors.title &&
+                    <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{errors.title.message}</Text>}
+                <View>
+                    <Text testID="Request.photoLabel" style={styles.formTitleText}>Photo</Text>
+                    <Text
+                        testID="Request.photoDesc"
+                        style={styles.formDescText}
+                    >Add photo(s) to help community members understand what you are looking for.</Text>
+                </View>
+                <ImagePicker imagesURIs={imagesURIs} base64Images={base64Images} setImagesURIs={setImagesURIs} setBase64Images={setBase64Images} />
+                <View
+                    onLayout={(event) => {
+                        const layout = event.nativeEvent.layout;
+                        dataSourceCords['categories'] = layout.y;
+                        setDataSourceCords(dataSourceCords);
+                    }}
+                >
+                    <Text
+                        testID="Request.categoryLabel"
+                        style={[styles.formTitleText, { color: errField === 'categories' ? Colors.alert2 : Colors.dark }]}
+                    >Food Category Type <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                    <Text
+                        testID="Request.categoryDesc"
+                        style={styles.formDescText}
+                    >Please select all the food categories that apply.</Text>
+                    <FoodFilters
+                        state={categories}
+                        setState={setCategories}
+                        foodType={FOODCATEGORIES}
+                        getType={getCategory}
+                        name={'categories'}
+                    />
+                </View>
+                <View>
+                    <Text
+                        testID="Request.categoryLabel"
+                        style={styles.formTitleText}
+                    >Dietary preferences</Text>
+                    <Text
+                        testID="Request.categoryDesc"
+                        style={styles.formDescText}
+                    >Please indicate any dietary preferences or allergies that need to be respected in your request.</Text>
+                    <FoodFilters
+                        state={diet}
+                        setState={setDiet}
+                        foodType={DIETPREFERENCES}
+                        getType={getDiet}
+                        name={'diet'}
+                    />
+                </View>
+                {/* <View style={{ opacity: 0.5 }}>
+                        <Text testID="Request.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                        <Text testID="Request.quantityDesc" style={styles.formDescText}>Please input the desired quantity of the food item you need.</Text>
+                        <Quantity />
+                    </View> */}
+                <View
+                    onLayout={(event) => {
+                        const layout = event.nativeEvent.layout;
+                        dataSourceCords['needBy'] = layout.y;
+                        setDataSourceCords(dataSourceCords);
+                    }}
+                >
+                    <Text
+                        testID="Request.dateLabel"
+                        style={[styles.formTitleText, { color: errField === 'needBy' ? Colors.alert2 : Colors.dark }]}
+                    >Need By Date <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                    <Text
+                        testID="Request.dateDesc"
+                        style={styles.formDescText}
+                    >Please select a date you would need this item by.
+                        <Text
+                            style={{ fontFamily: Fonts.PublicSans_SemiBold, fontWeight: '600', color: '#646464' }}
+                        > Your post will expire at the end of this date.</Text>
+                    </Text>
+                    <DatePicker setNeedBy={setNeedBy} errField={errField} />
+                </View>
+                <View
+                    onLayout={(event) => {
+                        const layout = event.nativeEvent.layout;
+                        dataSourceCords['postalCode'] = layout.y;
+                        setDataSourceCords(dataSourceCords);
+                    }}
+                >
+                    <Text
+                        testID="Request.dateLabel"
+                        style={[styles.formTitleText, { color: errors.postalCode ? Colors.alert2 : Colors.dark }]}
+                    >Pick up or delivery location <Text style={{ color: Colors.alert2 }}>*</Text></Text>
+                    <Text
+                        testID="Request.dateDesc"
+                        style={styles.formDescText}
+                    >Please indicate the postal code of your desired pick up or delivery location. No one else will see your postal code.</Text>
+                    <View style={styles.choiceContainer}>
+                        <MaterialCommunityIcons
+                            name={useDefaultPostal ? "checkbox-marked" : "checkbox-blank-outline"}
+                            size={22}
+                            onPress={() => {
+                                clearErrors('postalCode')
+                                setUseDefaultPostal(!useDefaultPostal)
+                            }}
+                            style={styles.icon}
+                        />
+                        <Text style={globalStyles.Body}>Use my default postal code</Text>
+                    </View>
+                    {!useDefaultPostal &&
+                        <View
+                            testID="Request.formInputContainer"
+                            style={[styles.formInputContainer, { marginBottom: 20 }]}
+                        >
+                            <Controller
+                                defaultValue=""
+                                control={control}
+                                rules={{
+                                    required: "Please enter a postal code to your request",
+                                    pattern: {
+                                        value: /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
+                                        message: "Please enter a valid postal code"
+                                    }
+                                }}
+                                render={({ field: { onChange, onBlur, value } }) => (
+                                    <TextInput
+                                        value={value}
+                                        nativeID="postalCode"
+                                        testID="Request.postalCodeInput"
+                                        placeholder="XXX XXX"
+                                        placeholderTextColor="#656565"
+                                        style={[styles.formInput,
+                                        { borderColor: errors.postalCode ? Colors.alert2 : Colors.midLight }]}
+                                        onChangeText={onChange}
+                                        onChange={onChange}
+                                        maxLength={7}
+                                        onBlur={onBlur}
+                                    />
+                                )}
+                                name="postalCode"
+                            />
+                        </View>
+                    }
+                </View>
+                {errors.postalCode &&
+                    <Text testID="Request.titleErrMsg" style={styles.formErrorMsg}>{errors.postalCode.message}</Text>}
+                <View style={{ marginBottom: 10 }}>
+                    <Text
+                        testID="Request.dateLabel"
+                        style={styles.formTitleText}
+                    >Pick up or delivery preferences</Text>
+                    <Text
+                        testID="Request.dateDesc"
+                        style={styles.formDescText}
+                    >Select all that apply.</Text>
+                    <Logistics logistics={logistics} setLogistics={setLogistics} />
+                </View>
+                <View>
+                    <Text testID="Offer.descTitle" style={styles.formTitleText}>Access needs for pick up or delivery</Text>
+                    <Text testID="Offer.descDesc" style={styles.formDescText}>Please indicate if you have any access needs for receiving your requested food.</Text>
+                </View>
+                <View style={styles.formDescInputView}>
+                    <TextInput
+                        value={accessNeeds}
+                        nativeID="desc"
+                        testID="Offer.descInput"
+                        placeholder="Enter access needs"
+                        placeholderTextColor="#656565"
+                        style={styles.formInputText}
+                        multiline={true}
+                        onChangeText={setAccessNeeds}
+                        maxLength={128}
+                    />
+                </View>
+                {/* <View
                 onLayout={(event) => {
                     const layout = event.nativeEvent.layout;
                     dataSourceCords['accessNeeds'] = layout.y;
@@ -405,33 +466,32 @@ export const RequestFormScreen = ({ navigation }) => {
                     style={styles.formDescText}
                 >Please indicate if you have any access needs for receiving your requested food.</Text>
                 <AccessNeeds accessNeeds={accessNeeds} setAccessNeeds={setAccessNeeds} postType={"r"} />
-            </View>
-            <View>
-                <Text
-                    testID="Request.descTitle"
-                    style={styles.formTitleText}
-                >Description</Text>
-                <Text
-                    testID="Request.descDesc"
-                    style={styles.formDescText}
-                >Describe your food request in detail.</Text>
-            </View>
-            <View style={styles.formDescInputView}>
-                <TextInput
-                    value={desc}
-                    nativeID="desc"
-                    testID="Request.descInput"
-                    placeholder="Enter Description"
-                    placeholderTextColor="#656565"
-                    style={styles.formInputText}
-                    multiline={true}
-                    onChangeText={newText => {
-                        setDesc(newText)
-                    }}
-                    maxLength={1024}
-                />
-            </View>
-        </ScrollView>
+            </View> */}
+                <View>
+                    <Text
+                        testID="Request.descTitle"
+                        style={styles.formTitleText}
+                    >Description</Text>
+                    <Text
+                        testID="Request.descDesc"
+                        style={styles.formDescText}
+                    >Describe your food request in detail.</Text>
+                </View>
+                <View style={styles.formDescInputView}>
+                    <TextInput
+                        value={desc}
+                        nativeID="desc"
+                        testID="Request.descInput"
+                        placeholder="Enter Description"
+                        placeholderTextColor="#656565"
+                        style={styles.formInputText}
+                        multiline={true}
+                        onChangeText={setDesc}
+                        maxLength={1024}
+                    />
+                </View>
+            </ScrollView>
+        </View>
     )
 }
 export default RequestFormScreen
