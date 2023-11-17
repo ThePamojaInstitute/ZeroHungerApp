@@ -3,7 +3,7 @@ import { View } from "react-native";
 import ReactDatePicker from "react-datepicker";
 import moment from "moment";
 import { Colors } from "../../styles/globalStyleSheet";
-import "react-datepicker/dist/react-datepicker.css";
+//import "react-datepicker/dist/react-datepicker.css";
 
 
 const DatePicker = ({ setNeedBy, errField }) => {

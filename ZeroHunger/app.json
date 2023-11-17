@@ -10,6 +10,7 @@
       "image": "./assets/Loading.png",
       "backgroundColor": "#F8F9FC"
     },
+    
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -28,7 +29,8 @@
       "useNextNotificationsApi": true
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "extra": {
       "eas": {
