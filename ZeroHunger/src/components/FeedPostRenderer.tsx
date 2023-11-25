@@ -68,6 +68,7 @@ export const FeedPostRenderer = ({
     diet,
     logistics,
     distance,
+    searchQuery,
     setUpdater,
     clearFilters
 }) => {
@@ -95,7 +96,7 @@ export const FeedPostRenderer = ({
         refetch,
         isFetchedAfterMount,
         isFetching
-    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, distance)
+    } = useFetchFeedPosts(type, sortBy, categories, diet, logistics, distance, searchQuery)
 
     useEffect(() => {
         const updater = () => {
