@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styles from "../../styles/screens/postFormStyleSheet"
-import { ScrollView, TextInput, TouchableOpacity, Text, View, Platform } from "react-native";
+import { ScrollView, TextInput, TouchableOpacity, Text, View, Platform, KeyboardAvoidingView } from "react-native";
 import ImagePicker from "../components/ImagePicker";
 import DatePicker from "../components/DatePicker"
 import Quantity from "../components/Quantity";
@@ -228,7 +228,7 @@ export const RequestFormScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={{ height: '100%', backgroundColor: Colors.Background }}>
+        <KeyboardAvoidingView style={{ height: '100%', backgroundColor: Colors.Background }}>
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 testID="Request.formContainer"
@@ -491,7 +491,7 @@ export const RequestFormScreen = ({ navigation }) => {
                     />
                 </View>
             </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 export default RequestFormScreen
