@@ -26,6 +26,7 @@ import { ENV } from "../../env";
 import { useAlert } from "../context/Alert";
 import { HomeWebCustomHeader } from "../components/headers/HomeWebCustomHeader";
 import { HomeCustomHeaderRight } from "../components/headers/HomeCustomHeaderRight";
+import { Searchbar } from "react-native-paper";
 
 
 const PostsFilters = forwardRef(_PostsFilters)
@@ -54,6 +55,8 @@ export const HomeScreen = ({ navigation, route }) => {
     const [initialized, setInitialized] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [showSearch, setShowSearch] = useState(false)
 
     // on navigation change
     useFocusEffect(() => {
@@ -166,6 +169,7 @@ export const HomeScreen = ({ navigation, route }) => {
                         updater={updater}
                         expiringPosts={expiringPosts}
                         setExpiringPosts={setExpiringPosts}
+                        setShowSearch={setShowSearch}
                         t={t}
                     />
                 )
@@ -234,9 +238,25 @@ export const HomeScreen = ({ navigation, route }) => {
         'Location'
     ]
 
+    const onChangeSearch = query => setSearchQuery(query)
+
     const { t, i18n } = useTranslation();
     return (
         <View testID="Home.container" style={styles.container}>
+            <Pressable onPress={() => setShowSearch(!showSearch)}>
+                <Text>Open search</Text>
+            </Pressable>
+            {showSearch ? 
+                <Searchbar
+                    placeholder="Search"
+                    onChangeText={onChangeSearch}
+                    value={searchQuery}
+                    onIconPress={() => updater()} //Search button
+                    onSubmitEditing={() => updater()} //Enter button
+                    style={styles.webContainer}
+                />
+                : <></>
+            }
             <View testID="Home.subContainer" style={styles.subContainer}>
                 <View style={Platform.OS === 'web' ? styles.webContainer : { flexDirection: 'row' }}>
                     <View testID="Home.requestsContainer" style={[
@@ -325,6 +345,7 @@ export const HomeScreen = ({ navigation, route }) => {
                                     diet={diet}
                                     logistics={logistics}
                                     distance={distance}
+                                    searchQuery={searchQuery}
                                     setUpdater={setUpdater}
                                     clearFilters={clearFilters}
                                 />}
@@ -338,6 +359,7 @@ export const HomeScreen = ({ navigation, route }) => {
                                     diet={diet}
                                     logistics={logistics}
                                     distance={distance}
+                                    searchQuery={searchQuery}
                                     setUpdater={setUpdater}
                                     clearFilters={clearFilters}
                                 />}

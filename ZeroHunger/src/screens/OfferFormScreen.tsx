@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { ScrollView, TextInput, TouchableOpacity, Text, View, Platform } from "react-native";
+import { ScrollView, TextInput, TouchableOpacity, Text, View, Platform, KeyboardAvoidingView } from "react-native";
 import styles from "../../styles/screens/postFormStyleSheet"
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
 import ImagePicker from "../components/ImagePicker";
@@ -217,7 +217,7 @@ export const OfferFormScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={{ height: '100%', backgroundColor: Colors.Background }}>
+        <KeyboardAvoidingView style={{ height: '100%', backgroundColor: Colors.Background }}>
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 testID="Offer.formContainer"
@@ -470,7 +470,7 @@ export const OfferFormScreen = ({ navigation }) => {
                     />
                 </View>
             </ScrollView >
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 

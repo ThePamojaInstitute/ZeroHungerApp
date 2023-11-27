@@ -197,7 +197,7 @@ CHANNEL_LAYERS = {
 CACHES = {
         "default": {  
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": 'rediss://zhbackendtest.redis.cache.windows.net:6380',
+            "LOCATION": 'rediss://zhbackend.redis.cache.windows.net:6380',
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "PASSWORD": azure_redis_password,
