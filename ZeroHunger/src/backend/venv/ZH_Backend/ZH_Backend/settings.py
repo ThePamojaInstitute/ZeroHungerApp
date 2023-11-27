@@ -18,7 +18,6 @@ from azure.identity import DefaultAzureCredential
 import environ
 import logging
 
-
 env = environ.Env()
 environ.Env.read_env()
 
@@ -30,7 +29,6 @@ credential = DefaultAzureCredential()
 client = SecretClient(vault_url=vaultURI, credential=credential)
 azure_redis_password = client.get_secret('REDIS-PASSWORD').value
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -39,16 +37,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#django_key = client.get_secret("zh-backend-test-djangoKey").value
-# SECRET_KEY = '2g0siigcmxo9%xhb&!gd2aedqyll(!wmsc9qlxi(uz345o)bdq'
-
 MAPBOX_ACCESS_CODE = client.get_secret('MAPBOX-API-KEY').value
 SECRET_KEY = client.get_secret('DJANGO-KEY').value
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*'] #Testing on Noah personal azure
 
 
 # Application definition
@@ -115,12 +110,6 @@ WSGI_APPLICATION = 'ZH_Backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME':os.path.join(BASE_DIR, 'database.db'),
-#     }
-# }
 
 DATABASES = {
     'default': {
@@ -196,22 +185,6 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = "Users.BasicUser"
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#         },
-#     },
-# }
-
-# CHANNEL_LAYERS = {
-# 	"default": {
-#         # For production level, don’t use InMemoryChannelLayer use Redis channel instead
-# 		"BACKEND": "channels.layers.InMemoryChannelLayer"
-# 	}
-# }
-
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -221,7 +194,6 @@ CHANNEL_LAYERS = {
     },
 }
 
-#            f"redis://zhbackend.redis.cache.windows.net:6380,password={azure_redis_password},ssl=True,abortConnect=False"
 CACHES = {
         "default": {  
             "BACKEND": "django_redis.cache.RedisCache",
@@ -235,6 +207,7 @@ CACHES = {
             },
         }
     }  
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -247,7 +220,6 @@ USE_I18N = True
 USE_TZ = True
 
 CORS_ORIGIN_ALLOW_ALL = True
-CSRF_TRUSTED_ORIGINS = ['https://zh-backend-app.azurewebsites.net']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -272,3 +244,8 @@ MEDIA_URL = '/media/'
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'SentMail/')
+
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.sendgrid.net"
+# EMAIL_HOST_USER = "apikey"
+# EMAIL_HOST_PASSWORD = client.get_secret('EMAIL-APIKEY').value
