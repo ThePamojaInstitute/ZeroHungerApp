@@ -225,7 +225,7 @@ CHANNEL_LAYERS = {
 CACHES = {
         "default": {  
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": 'rediss://zhbackendtest.redis.cache.windows.net:6380',
+            "LOCATION": 'rediss://zhbackend.redis.cache.windows.net:6380',
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "PASSWORD": azure_redis_password,
@@ -270,5 +270,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'SentMail/')
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = client.get_secret('EMAIL-APIKEY').value
+#EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'SentMail/')
