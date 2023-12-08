@@ -243,9 +243,9 @@ export const HomeScreen = ({ navigation, route }) => {
     const { t, i18n } = useTranslation();
     return (
         <View testID="Home.container" style={styles.container}>
-            <Pressable onPress={() => setShowSearch(!showSearch)}>
+            {/* <Pressable onPress={() => setShowSearch(!showSearch)}>
                 <Text>Open search</Text>
-            </Pressable>
+            </Pressable> */}
             {showSearch ? 
                 <Searchbar
                     placeholder="Search"
