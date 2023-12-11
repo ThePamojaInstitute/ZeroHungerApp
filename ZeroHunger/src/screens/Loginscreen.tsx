@@ -12,7 +12,8 @@ import {
   Pressable,
   Keyboard,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
+  KeyboardAvoidingView
 } from "react-native";
 import styles from "../../styles/screens/loginStyleSheet"
 import { useFocusEffect } from '@react-navigation/native';
@@ -118,7 +119,7 @@ export const LoginScreen = ({ navigation }) => {
 
   return (
     <Suspense>
-      <View style={{ backgroundColor: Colors.Background }}>
+      <KeyboardAvoidingView style={{ backgroundColor: Colors.Background }}>
         <View
           testID="Login.container"
           style={[styles.authContainer, Platform.OS === 'web' ? styles.alignWidth : {}]}
@@ -231,7 +232,7 @@ export const LoginScreen = ({ navigation }) => {
         Show Snackbar
       </Button> */}
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Suspense>
   );
 }

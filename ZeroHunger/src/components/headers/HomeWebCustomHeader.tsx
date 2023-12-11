@@ -3,7 +3,7 @@ import { Colors, Fonts, globalStyles } from "../../../styles/globalStyleSheet"
 import { Ionicons, MaterialIcons } from "@expo/vector-icons"
 
 
-export const HomeWebCustomHeader = ({ navigation, updater, expiringPosts, setExpiringPosts, t }) => (
+export const HomeWebCustomHeader = ({ navigation, updater, expiringPosts, setExpiringPosts, setShowSearch, t }) => (
     <View style={{ backgroundColor: Colors.offWhite }}>
         <View style={{ maxWidth: 700, marginHorizontal: 'auto', width: '100%', marginVertical: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start' }}>
@@ -19,6 +19,13 @@ export const HomeWebCustomHeader = ({ navigation, updater, expiringPosts, setExp
                 <Text style={globalStyles.H4}>{t("app.title")}</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end' }}>
+                <Ionicons
+                    style={{ paddingHorizontal: 10 }}
+                    name="md-search"
+                    size={26}
+                    onPress={setShowSearch}
+                    testID="Home.searchBtn"
+                />
                 <MaterialIcons
                     style={{ paddingHorizontal: 10 }}
                     name="refresh"

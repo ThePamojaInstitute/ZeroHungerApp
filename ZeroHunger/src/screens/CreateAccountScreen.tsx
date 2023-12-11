@@ -9,7 +9,8 @@ import {
   TextInputSubmitEditingEventData,
   Keyboard,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
+  KeyboardAvoidingView
 } from "react-native";
 import styles from "../../styles/screens/createAccountStyleSheet"
 import { Colors, Fonts, globalStyles } from "../../styles/globalStyleSheet";
@@ -137,7 +138,7 @@ export const CreateAccountScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={{ backgroundColor: Colors.Background }}>
+    <KeyboardAvoidingView style={{ backgroundColor: Colors.Background }}>
       <View
         testID="SignUp.container"
         style={[styles.authContainer, Platform.OS === 'web' ? styles.alignWidth : {}]}
@@ -373,7 +374,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           <Text style={globalStyles.defaultBtnLabel}>Sign Up</Text>
         </TouchableOpacity>
       </View >
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
