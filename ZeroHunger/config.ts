@@ -25,7 +25,7 @@ export const WSBaseURL = 'ws://zh-backend-app.azurewebsites.net'
 // export const HttpBaseURL = 'https://zh-backend-azure-webapp.azurewebsites.net/'
 // export const WSBaseURL = 'ws://zh-backend-azure-webapp.azurewebsites.net/'
 
-export const passwordResetURL = `${HttpBaseURL}users/reset_password`
+export const passwordResetURL = `${HttpBaseURL}/users/reset_password`
 
 export const axiosInstance = axios.create({
     baseURL: HttpBaseURL,

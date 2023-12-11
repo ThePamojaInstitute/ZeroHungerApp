@@ -11,6 +11,7 @@ from apps.Posts.views import serialize_posts
 from .serializers import RegistrationSerializer, LoginSerializer, UpdateUserSerializer
 from datetime import timedelta, datetime
 import jwt
+from django.core.mail import send_mail
 
 
 def get_expiring_soon_posts(user):
@@ -49,15 +50,10 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class createUser(APIView):
     def post(self, request, format=None): #POST a new user to the database\
         serializer = RegistrationSerializer(data=request.data)
+        
         if (serializer.is_valid()):
             serializer.save()
-           # send_mail(
-            #"Zero Hunger Project - New User",
-            #"Welcome to the zero hunger project!",
-            #"noahglassford@gmail.com",
-            #["noah@pamojainstitute.org"],
-            # fail_silently=False, 
-            #)
+            send_mail( "Zero Hunger Project - New User", "Welcome to the zero hunger project!", "noah@pamojainstitute.org", [serializer.data['email']], fail_silently=False)
             return Response(serializer.data, status=201)
         else:
             return Response(serializer.errors, status=400)
