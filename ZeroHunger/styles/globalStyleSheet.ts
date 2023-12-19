@@ -24,6 +24,16 @@ export const Colors = {
     accent4a: '#536841',
     accent5: '#F0C72F',
     accent6: '#DBB364',
+    requests: '#7F4479',
+    requestsMid: '#A4C2C9',
+    requestsLight: '#D0DEE2',
+    requestsLightest: '#F5F0F5',
+    requestsDark: '#5D3259',
+    offers: '#306775',
+    offersMid: '#A4C2C9',
+    offersLight: '#D0DEE2',
+    offersLightest: '#F5F7ED',
+    offersDark: '899735',
 }
 
 export const Fonts = {
