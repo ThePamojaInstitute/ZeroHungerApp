@@ -45,7 +45,7 @@ const HomeStackNavigator = ({ navigation }) => {
 
     return (
         <Stack.Navigator>
-            {/* <Stack.Screen
+            <Stack.Screen
                 name="OnboardingScreen"
                 component={OnboardingScreen}
                 options={({ route }) => ({
@@ -64,7 +64,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         </View>
                     )
                 })}
-            /> */}
+            />
             {Platform.OS !== 'web' ?
                 <Stack.Screen
                     name="LoginScreen"
@@ -253,6 +253,7 @@ const HomeStackNavigator = ({ navigation }) => {
                                 updater={() => { }}
                                 expiringPosts={[]}
                                 setExpiringPosts={() => { }}
+                                setShowSearch={() => { }}
                                 t={t}
                             />
                         )

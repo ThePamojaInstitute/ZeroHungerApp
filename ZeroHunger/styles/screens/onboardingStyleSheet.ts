@@ -2,27 +2,36 @@ import { StyleSheet, Dimensions } from "react-native";
 import { Colors, Fonts } from "../globalStyleSheet";
 
 const dim = Dimensions.get('window')
+const screenWidth = dim.width
+const width = screenWidth > 700 ? 700 : screenWidth
 
 export default StyleSheet.create({
+    container: {
+        alignItems: "center",
+        alignSelf: "center",
+        justifyContent: "center",
+        marginTop: 20,
+        marginLeft: 10
+    },
     view: {
         flex: 1,
         alignContent: "center",
-        // justifyContent: "center",
         alignItems: "center",
-        // padding: 24,
-        // backgroundColor: Colors.offWhite
+        maxWidth: 700,
+        alignSelf: 'center',
+        width: width
     },
     image: {
-        flex: 1,
+        // flex: 1,
         // height: dim.height / 2,
         // width: dim.width / 2,
-        height: '80%',
-        width: '80%',
+        height: '50%',
+        width: '50%',
         // marginTop: 24,
         // paddingBottom: '15%',
     }, 
     dots: {
-        paddingBottom: dim.height * 0.25
+        paddingBottom: dim.height * 0.3
     },
     title: {
         paddingBottom: 12,
@@ -43,7 +52,7 @@ export default StyleSheet.create({
         fontFamily: Fonts.PublicSans_SemiBold,
         fontWeight: '600',
         fontSize: 18,
-        paddingLeft: dim.width * 0.15,
+        paddingLeft: dim.width * 0.35,
         paddingBottom: dim.height * 0.2,
         color: Colors.primaryDark
     },
@@ -51,13 +60,13 @@ export default StyleSheet.create({
         fontFamily: Fonts.PublicSans_SemiBold,
         fontWeight: '600',
         fontSize: 18,
-        paddingRight: dim.width * 0.15,
+        paddingRight: dim.width * 0.35,
         paddingBottom: dim.height * 0.2,
         color: Colors.primaryDark
     },
     continueButton: {
         // padding: 12,
-        marginRight: dim.width * 0.09,
+        marginRight: dim.width * 0.33,
         marginBottom: (dim.height * 0.2) + 18
     },
     defaultBtn: {
