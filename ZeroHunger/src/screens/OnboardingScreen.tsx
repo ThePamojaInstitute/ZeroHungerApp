@@ -22,7 +22,7 @@ export const OnboardingScreen = ({ navigation }, props: Props) => {
                     storage.set("appLaunched", "false")
                 }
                 else {
-                    navigation.navigate("LoginScreen")
+                    navigation.navigate("SignInUpScreen")
                 }
             }
             else {
@@ -31,7 +31,7 @@ export const OnboardingScreen = ({ navigation }, props: Props) => {
                     AsyncStorage.setItem("appLaunched", "false")
                 }
                 else {
-                    navigation.navigate("LoginScreen")
+                    navigation.navigate("SignInUpScreen")
                 }
             }
         }
