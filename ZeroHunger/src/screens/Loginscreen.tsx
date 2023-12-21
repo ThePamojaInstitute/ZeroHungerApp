@@ -130,9 +130,9 @@ export const LoginScreen = ({ navigation }) => {
             <View>
               <Text style={[styles.errorMsg, { fontSize: 16 }]}>{errMsg}</Text>
             </View>}
-          <View testID="Login.usernameInputContainer" style={styles.inputContainer}>
+          <View testID="Login.usernameInputContainer" style={[styles.inputContainer, { marginBottom: 32 }]}>
             <Text testID="Login.usernameLabel" style={[styles.inputLabel,
-            { color: errors.username ? Colors.alert2 : Colors.dark }]}>Username</Text>
+            { color: errors.username ? Colors.alert2 : Colors.dark }]}>Email</Text>
             <Controller
               defaultValue=""
               control={control}
@@ -144,6 +144,8 @@ export const LoginScreen = ({ navigation }) => {
                   nativeID="Login.usernameInput"
                   testID="Login.usernameInput"
                   value={value}
+                  placeholder={'Enter your email'}
+                  placeholderTextColor={Colors.midDark}
                   style={[styles.input,
                   { borderColor: errors.username ? Colors.alert2 : Colors.midLight }]}
                   onChangeText={onChange}
@@ -176,6 +178,8 @@ export const LoginScreen = ({ navigation }) => {
                     nativeID="Login.passwordInput"
                     testID="Login.passwordInput"
                     value={value}
+                    placeholder={'Enter your password'}
+                  placeholderTextColor={Colors.midDark}
                     style={styles.passwordInput}
                     secureTextEntry={hidePass}
                     onChangeText={onChange}
@@ -203,9 +207,9 @@ export const LoginScreen = ({ navigation }) => {
             <Text testID="Login.forgotPassword" style={styles.forgotPassword}> {t("account.signin.passForgot.label")} </Text>
           </Pressable>
           <TouchableOpacity testID="Login.Button" style={globalStyles.defaultBtn} onPress={handleSubmit(handleLogin)}>
-            <Text testID="Login.ButtonLabel" style={globalStyles.defaultBtnLabel}>Login</Text>
+            <Text testID="Login.ButtonLabel" style={globalStyles.defaultBtnLabel}>Sign In</Text>
           </TouchableOpacity>
-          <View testID="divider" style={styles.divider}>
+          {/* <View testID="divider" style={styles.divider}>
             <View testID="dividerLine1" style={styles.dividerLine} />
             <View>
               <Text testID="dividerText" style={styles.dividerText}> {t("account.signin.or")} </Text>
@@ -217,7 +221,7 @@ export const LoginScreen = ({ navigation }) => {
             navigation.navigate("CreateAccountScreen")
           }}>
             <Text testID="SignUp.ButtonLabel" style={globalStyles.outlineBtnLabel}> Sign up </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {/* <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add a Request</Text>
           </TouchableOpacity>

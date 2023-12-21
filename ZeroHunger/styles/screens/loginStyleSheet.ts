@@ -29,7 +29,7 @@ export default StyleSheet.create({
         gap: 9,
         width: "90%",
         height: 68,
-        marginBottom: 10,
+        marginBottom: 12,
         marginTop: 5,
     },
     inputLabel: {
