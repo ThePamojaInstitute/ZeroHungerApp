@@ -134,7 +134,7 @@ export const LoginScreen = ({ navigation, route }) => {
             <Text testID="Login.usernameLabel" style={[styles.inputLabel,
             { color: errors.username ? Colors.alert2 : Colors.dark }]}>Email</Text>
             <Controller
-              defaultValue={route.params.email}
+              defaultValue={route.params?.email}
               control={control}
               rules={{
                 required: "Please enter your email",

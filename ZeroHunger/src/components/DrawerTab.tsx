@@ -33,7 +33,7 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
         }).then(() => {
             alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
             props.navigation.dispatch(DrawerActions.closeDrawer())
-            props.navigation.navigate('LoginScreen')
+            props.navigation.navigate('SignInUpScreen')
         }).catch(() => {
             props.navigation.dispatch(DrawerActions.closeDrawer())
             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
