@@ -16,7 +16,7 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import styles from "../../styles/screens/loginStyleSheet"
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { logInUser } from "../controllers/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useAlert } from "../context/Alert";
@@ -30,7 +30,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Controller, useForm } from "react-hook-form";
 import { LoginUserFormData } from "../../types";
 
-export const LoginScreen = ({ navigation }) => {
+export const LoginScreen = ({ navigation, route }) => {
   const password_input = useRef<TextInput | null>(null)
   const { user, loading, dispatch } = useContext(AuthContext)
   const { dispatch: alert } = useAlert()
@@ -130,14 +130,14 @@ export const LoginScreen = ({ navigation }) => {
             <View>
               <Text style={[styles.errorMsg, { fontSize: 16 }]}>{errMsg}</Text>
             </View>}
-          <View testID="Login.usernameInputContainer" style={[styles.inputContainer, { marginBottom: 32 }]}>
+          <View testID="Login.usernameInputContainer" style={[styles.inputContainer]}>
             <Text testID="Login.usernameLabel" style={[styles.inputLabel,
             { color: errors.username ? Colors.alert2 : Colors.dark }]}>Email</Text>
             <Controller
-              defaultValue=""
+              defaultValue={route.params.email}
               control={control}
               rules={{
-                required: "Please enter a username",
+                required: "Please enter your email",
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
@@ -162,6 +162,7 @@ export const LoginScreen = ({ navigation }) => {
             <View testID="Login.usernameErrMsgContainer" style={styles.errorMsgContainer}>
               <Text testID="Login.usernameErrMsg" style={styles.errorMsg}>{errors.username.message}</Text>
             </View>}
+          <View style={{ marginBottom: 32 }}></View>
           <View testID="Login.passwordInputContainer" style={styles.inputContainer}>
             <Text testID="Login.passwordLabel" style={[styles.inputLabel,
             { color: errors.password ? Colors.alert2 : Colors.dark }]}>Password</Text>
@@ -171,7 +172,7 @@ export const LoginScreen = ({ navigation }) => {
                 defaultValue=""
                 control={control}
                 rules={{
-                  required: "Please enter a password",
+                  required: "Please enter your password",
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput

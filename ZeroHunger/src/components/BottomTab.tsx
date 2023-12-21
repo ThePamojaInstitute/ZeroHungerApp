@@ -4,6 +4,7 @@ import styles from "../../styles/components/bottomTabStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native"
+import SignInUpScreen from '../screens/SignInUpScreen';
 import LoginScreen from '../screens/Loginscreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen'
 import HomeScreen from '../screens/HomeScreen';
@@ -36,6 +37,7 @@ import { AccSettingsFormCustomHeader } from "./headers/AccSettingsCustomHeader";
 import { FormCustomHeader } from "./headers/FormCustomHeader";
 import { MainCustomHeader } from "./headers/MainCustomHeader";
 import { GuidLinesCustomHeader } from "./headers/GuideLinesCustomHeader";
+import { SignInUpCustomHeader } from "./headers/SignInUpCustomHeader";
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -50,9 +52,9 @@ const HomeStackNavigator = ({ navigation }) => {
                 component={OnboardingScreen}
                 options={({ route }) => ({
                     title: t("app.title"),
-                    // headerTitleStyle: globalStyles.H4,
+                    headerTitleStyle: globalStyles.H4,
                     headerTitleAlign: 'center',
-                    headerShadowVisible: false,
+                    headerShadowVisible: true,
                     headerStyle: {
                         backgroundColor: Colors.offWhite
                     },
@@ -65,12 +67,28 @@ const HomeStackNavigator = ({ navigation }) => {
                     )
                 })}
             />
+            <Stack.Screen
+                name="SignInUpScreen"
+                component={SignInUpScreen}
+                options={{
+                    title: t("app.title"),
+                    headerTitleStyle: globalStyles.H4,
+                    headerTitleAlign: 'center',
+                    headerShadowVisible: true,
+                    headerStyle: {
+                        backgroundColor: Colors.Background,
+                    },
+                    headerLeft: () => (<></>),
+                }}
+            />
             {Platform.OS !== 'web' ?
                 <Stack.Screen
                     name="LoginScreen"
                     component={LoginScreen}
                     options={{
-                        title: t("app.title"),
+                        // title: t("app.title"),
+                        title: "Sign In",
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: 'center',
                         headerShadowVisible: false,
                         headerStyle: {
@@ -85,9 +103,11 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={LoginScreen}
                     options={{
                         header: () => (
-                            <MainCustomHeader
-                                title={t("app.title")}
+                            <SignInUpCustomHeader
+                                // title={t("app.title")}
+                                title={"Sign In"}
                                 color={Colors.Background}
+                                navigation={navigation}
                             />
                         ),
                         contentStyle: { backgroundColor: Colors.Background }
@@ -100,6 +120,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={CreateAccountScreen}
                     options={{
                         title: t("app.title"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: 'center',
                         headerShadowVisible: false,
                         headerStyle: {
@@ -128,6 +149,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={PermissionsScreen}
                     options={{
                         title: t("app.title"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: 'center',
                         headerStyle: {
                             backgroundColor: Colors.offWhite
@@ -155,6 +177,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={GuidelinesScreen}
                     options={{
                         title: t("guidelines.header.text"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: 'center',
                         headerStyle: {
                             backgroundColor: Colors.offWhite
@@ -190,6 +213,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     options={{
                         title: t("app.title"),
                         headerTitleAlign: 'center',
+                        headerTitleStyle: globalStyles.H4,
                         headerStyle: {
                             backgroundColor: Colors.offWhite
                         },
@@ -217,6 +241,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={HomeScreen}
                     options={{
                         title: t("app.title"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: 'left',
                         headerShadowVisible: false,
                         headerStyle: {
@@ -293,6 +318,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={RequestDetailsScreen}
                     options={{
                         title: t("request.form.detailsHeading"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: "center",
                         headerShadowVisible: false,
                         headerStyle: {
@@ -355,6 +381,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={OfferDetailsScreen}
                     options={{
                         title: t("offer.form.detailsHeading"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: "center",
                         headerShadowVisible: false,
                         headerStyle: {
@@ -391,6 +418,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     options={{
                         headerShown: true,
                         title: t("app.messages.label"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: 'center',
                         headerShadowVisible: false,
                         headerStyle: {
@@ -417,6 +445,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={AccountSettingsScreen}
                     options={{
                         title: "Account Settings",
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: 'center',
                         headerStyle: {
                             backgroundColor: Colors.offWhite
@@ -458,6 +487,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={NotificationsSettingsScreen}
                     options={{
                         title: "Notifications Settings",
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: "center",
                         headerShadowVisible: false,
                         headerStyle: {
@@ -489,6 +519,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     options={{
                         headerShown: true,
                         title: t("menu.history.label"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: 'center',
                         headerShadowVisible: false,
                         headerStyle: {
@@ -516,6 +547,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     headerShown: true,
                     headerShadowVisible: false,
                     title: t("menu.preferences.label"),
+                    headerTitleStyle: globalStyles.H4,
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.offWhite,
@@ -536,6 +568,7 @@ const ChatStackNavigator = () => {
                     headerShown: true,
                     // title: t("messages.heading"),
                     title: t("menu.bottom.messages.label"),
+                    headerTitleStyle: globalStyles.H4,
                     headerTitleAlign: 'center',
                     headerShadowVisible: false,
                     headerStyle: {
@@ -551,6 +584,7 @@ const ChatStackNavigator = () => {
                     options={{
                         headerShown: true,
                         title: t("app.messages.label"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: 'center',
                         headerShadowVisible: false,
                         headerStyle: {
@@ -577,6 +611,7 @@ const ChatStackNavigator = () => {
                     component={RequestDetailsScreen}
                     options={{
                         title: t("request.form.detailsHeading"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: "center",
                         headerShadowVisible: false,
                         headerStyle: {
@@ -597,6 +632,7 @@ const ChatStackNavigator = () => {
                     component={RequestDetailsScreen}
                     options={{
                         title: t("request.form.detailsHeading"),
+                        headerTitleStyle: globalStyles.H4,
                         header: ({ navigation }) => (
                             <WebCustomHeader
                                 navigation={navigation}
@@ -612,6 +648,7 @@ const ChatStackNavigator = () => {
                     component={OfferDetailsScreen}
                     options={{
                         title: t("offer.form.detailsHeading"),
+                        headerTitleStyle: globalStyles.H4,
                         headerTitleAlign: "center",
                         headerShadowVisible: false,
                         headerStyle: {

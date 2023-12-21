@@ -112,4 +112,8 @@ export default StyleSheet.create({
         alignItems: 'center',
         color: Colors.dark
     },
+    termsAndConditionsContainer: {
+        alignContent: 'center',
+        marginTop: '70%',
+    },
 })
