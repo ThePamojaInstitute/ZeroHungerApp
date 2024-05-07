@@ -16,16 +16,20 @@ import jwt
 import requests
 import os
 import base64
+import environ
 
-from azure.identity import DefaultAzureCredential
+from azure.identity import ManagedIdentityCredential
 from azure.keyvault.secrets import SecretClient
 from azure.storage.blob import BlobClient, generate_account_sas, ResourceTypes, AccountSasPermissions, ContainerClient
 
+#Sets up azure keyvault to get secrets
+env = environ.Env()
+environ.Env.read_env()
 keyVaultName = os.environ["KEYVAULT_NAME"]
-vaultURI = f"https://{keyVaultName}.vault.azure.net"
-#credential = DefaultAzureCredential( managed_identity_client_id = os.environ["MANAGED_ID"] )
-credential = DefaultAzureCredential()
-client = SecretClient(vault_url=vaultURI, credential=credential)
+
+credential = ManagedIdentityCredential(client_id = os.environ["MI_CLIENT_ID"], additionally_allowed_tenants=['*']) #logs in to azure for keyvault
+
+client = SecretClient(vault_url=keyVaultName, credential=credential)
 connection_string = client.get_secret("BLOB-CONNECTION-STRING").value
 
 
@@ -317,17 +321,7 @@ class ImageUploader(APIView):
             upload_file_path = os.path.join(local_path, local_file_name)
             file = open(file=upload_file_path, mode='r')
             file_upload_name = str(uuid.uuid4())
-
-            # sas_token = generate_account_sas(
-            # account_name="devstoreaccount1",                                                                        #These keys need to be replaced with azure keyvault for production
-            # account_key="Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==>", #these are the already well-known azurite keys, do not need to be hidden
-            # resource_types=ResourceTypes(service=True),
-            # permission=AccountSasPermissions(read=True),
-            # expiry=datetime.utcnow() + timedelta(hours=1)
-            # )
-
             
-            #connection_string = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
             container_client = ContainerClient.from_connection_string(conn_str=connection_string, container_name="post-images")
             if not container_client.exists():
                 container_client.create_container()

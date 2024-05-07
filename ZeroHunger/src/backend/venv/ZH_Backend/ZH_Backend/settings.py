@@ -14,20 +14,19 @@ from pathlib import Path
 from django.apps import apps as django_apps
 from datetime import timedelta 
 from azure.keyvault.secrets import SecretClient
-from azure.identity import DefaultAzureCredential
+from azure.identity import ManagedIdentityCredential
 import environ
 import logging
 
 env = environ.Env()
 environ.Env.read_env()
-
 #Sets up azure keyvault to get secrets
 keyVaultName = os.environ["KEYVAULT_NAME"]
-vaultURI = f"https://{keyVaultName}.vault.azure.net"
-#credential = DefaultAzureCredential( managed_identity_client_id = os.environ["MANAGED_ID"] )
-credential = DefaultAzureCredential()
-client = SecretClient(vault_url=vaultURI, credential=credential)
-azure_redis_password = client.get_secret('REDIS-PASSWORD').value
+
+credential = ManagedIdentityCredential(client_id = os.environ["MI_CLIENT_ID"], additionally_allowed_tenants=['*']) #logs in to azure for keyvault
+
+client = SecretClient(vault_url=keyVaultName, credential=credential)
+azure_redis_password = client.get_secret('REDIS-PASSWORD').value 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
