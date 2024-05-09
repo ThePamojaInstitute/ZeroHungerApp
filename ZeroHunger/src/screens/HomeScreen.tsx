@@ -26,7 +26,8 @@ import { ENV } from "../../env";
 import { useAlert } from "../context/Alert";
 import { HomeWebCustomHeader } from "../components/headers/HomeWebCustomHeader";
 import { HomeCustomHeaderRight } from "../components/headers/HomeCustomHeaderRight";
-import { Searchbar } from "react-native-paper";
+import { Button, Searchbar } from "react-native-paper";
+import {Alert, Modal} from 'react-native';
 
 
 const PostsFilters = forwardRef(_PostsFilters)
@@ -44,6 +45,7 @@ export const HomeScreen = ({ navigation, route }) => {
     const { dispatch: alert } = useAlert()
 
     const [showRequests, setShowRequests] = useState(true)
+    const [modalVisible, setModalVisible] = useState(false);
     const [sortBy, setSortBy] = useState<'new' | 'old' | 'distance'>('new')
     const [categories, setCategories] = useState<Char[]>([])
     const [diet, setDiet] = useState<Char[]>([])
@@ -243,6 +245,26 @@ export const HomeScreen = ({ navigation, route }) => {
     const { t, i18n } = useTranslation();
     return (
         <View testID="Home.container" style={styles.container}>
+            <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.container}>
+          <View style={styles.container}>
+            <Text style={styles.pressableText}>Hello World!</Text>
+            <Pressable
+              style={[styles.pressable, styles.pressable]}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.pressableText}>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
             {/* <Pressable onPress={() => setShowSearch(!showSearch)}>
                 <Text>Open search</Text>
             </Pressable> */}
@@ -259,6 +281,9 @@ export const HomeScreen = ({ navigation, route }) => {
             }
             <View testID="Home.subContainer" style={styles.subContainer}>
                 <View style={Platform.OS === 'web' ? styles.webContainer : { flexDirection: 'row' }}>
+                <Pressable style={styles.pressableText} onPress={() => setModalVisible(true)}>  <Text style={globalStyles.H3}> {"Test Popup"} </Text> </Pressable>
+                
+
                     <View testID="Home.requestsContainer" style={[
                         {
                             borderBottomColor: showRequests ?
