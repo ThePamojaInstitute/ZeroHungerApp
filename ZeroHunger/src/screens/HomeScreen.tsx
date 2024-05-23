@@ -28,18 +28,24 @@ import { HomeWebCustomHeader } from "../components/headers/HomeWebCustomHeader";
 import { HomeCustomHeaderRight } from "../components/headers/HomeCustomHeaderRight";
 import { Button, Searchbar } from "react-native-paper";
 import {Alert, Modal} from 'react-native';
+import SurveyModal, { default as _SurveyModal } from "../components/SurveyModal";
 
 
+const ThisSurveyModal = forwardRef(_SurveyModal)
 const PostsFilters = forwardRef(_PostsFilters)
 
 export const HomeScreen = ({ navigation, route }) => {
     const modalRef = useRef(null)
+    const surveyRef = useRef(null)
 
     const openModal = () => {
         modalRef.current.publicHandler()
-        setModalIsOpen(true)
+       
     }
 
+    const openSurvey = () => {
+        surveyRef.current.publicHandler()
+    }
     const { user, dispatch } = useContext(AuthContext)
     const { setChatIsOpen } = useContext(NotificationContext)
     const { dispatch: alert } = useAlert()
@@ -59,6 +65,7 @@ export const HomeScreen = ({ navigation, route }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [showSearch, setShowSearch] = useState(false)
+
 
     // on navigation change
     useFocusEffect(() => {
@@ -242,28 +249,15 @@ export const HomeScreen = ({ navigation, route }) => {
 
     const onChangeSearch = query => setSearchQuery(query)
 
+   
+
     const { t, i18n } = useTranslation();
     return (
         <View testID="Home.container" style={styles.container}>
-            <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.container}>
-          <View style={styles.container}>
-            <Text style={styles.pressableText}>Hello World!</Text>
-            <Pressable
-              style={[styles.pressable, styles.pressable]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.pressableText}>Hide Modal</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+            
+
+           
+
 
             {/* <Pressable onPress={() => setShowSearch(!showSearch)}>
                 <Text>Open search</Text>
@@ -281,7 +275,10 @@ export const HomeScreen = ({ navigation, route }) => {
             }
             <View testID="Home.subContainer" style={styles.subContainer}>
                 <View style={Platform.OS === 'web' ? styles.webContainer : { flexDirection: 'row' }}>
-                <Pressable style={styles.pressableText} onPress={() => setModalVisible(true)}>  <Text style={globalStyles.H3}> {"Test Popup"} </Text> </Pressable>
+                <Pressable 
+                style={styles.pressableText} 
+                onPress={() => openSurvey()}>  
+                <Text style={globalStyles.H3}> {"Test Popup"} </Text> </Pressable>
                 
 
                     <View testID="Home.requestsContainer" style={[
@@ -317,6 +314,7 @@ export const HomeScreen = ({ navigation, route }) => {
                 </View>
             </View>
             <View style={{ backgroundColor: Colors.offWhite }}>
+                <ThisSurveyModal ref = {surveyRef} />
                 <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}

@@ -36,9 +36,9 @@ export default StyleSheet.create({
         position: 'relative',
     },
     modalClose: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
+       // position: 'absolute',
+       alignItems: 'center',
+        justifyContent: 'center',
         marginRight: 10
     }
 })
