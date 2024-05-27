@@ -82,3 +82,10 @@ class BasicUser(AbstractBaseUser, PermissionsMixin):
 
         self.longitude = float(longitude)
         self.latitude = float(latitude)
+
+class UserSurveyResponse(models.Model):
+    didInteractOutsideApp = models.BooleanField(default=False)
+    responseBy = models.ForeignKey(BasicUser, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title

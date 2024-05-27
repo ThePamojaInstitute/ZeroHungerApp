@@ -3,7 +3,7 @@ from rest_framework_jwt.settings import api_settings
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
-from .models import BasicUser
+from .models import BasicUser, UserSurveyResponse
 import pprint
 
 class RegistrationSerializer (serializers.ModelSerializer):
@@ -86,3 +86,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicUser
         fields = ["username"]
+
+class SurveySerializer(serializers.ModelSerializer):
+    didInteractOutsideApp = serializers.BooleanField()
+    class Meta:
+        model = UserSurveyResponse
+        fields = ["didInteractOutsideApp"]

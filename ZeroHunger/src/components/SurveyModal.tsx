@@ -20,11 +20,12 @@ import { globalStyles } from "../../styles/globalStyleSheet";
 import { Button } from "react-native-paper";
 import { Switch } from "react-native-gesture-handler";
 import DropDownPicker from "react-native-dropdown-picker";
+import { axiosInstance } from "../../config";
 
 export const SurveyModal = ({}, ref: React.Ref<object>) => 
     {
         const [modalVisible, setModalVisible] = useState(false)
-        const [firstSurveyOption, setFirstAnswer] = useState(false)
+        const [didInteractOutsideApp, setInteractOutsideApp] = useState(false)
         const [open, setOpen] = useState(false);
         const [value, setValue] = useState(null);
         const [items, setItems] = useState([
@@ -32,7 +33,30 @@ export const SurveyModal = ({}, ref: React.Ref<object>) =>
           {label: 'Banana', value: 'banana'}
         ]);
 
+     
+      const submitSurvey = async (surveyData: 
+      {
+        stillInteractsOutsideApp: Boolean
+        userID: Number
+      }
+      ) => 
+      {
+      try {  
+        const res = await axiosInstance.post('/users/submitSurvey', surveyData);
 
+        if (res.status === 201) {
+          return { msg: "success", res: res.data }
+      } else {
+          return { msg: "failure", res: res.data }
+      }
+    
+  } catch (error) {
+      if (error.response.data === 'invalid postal code') {
+          return { msg: "Please enter a valid postal code", res: null }
+      }
+      return { msg: "failure", res: error }
+  }
+      }
 
       const openMe = () => setModalVisible(true)
 
@@ -65,8 +89,8 @@ export const SurveyModal = ({}, ref: React.Ref<object>) =>
                             </Text>   
                   <Switch
                         testID="Bottom.postNavModalClose"
-                        onValueChange={() => setFirstAnswer(!firstSurveyOption)}
-                        value={firstSurveyOption}> 
+                        onValueChange={() => setInteractOutsideApp(!didInteractOutsideApp)}
+                        value={didInteractOutsideApp}> 
                              
                     </Switch>  
                   </View>      
@@ -76,12 +100,16 @@ export const SurveyModal = ({}, ref: React.Ref<object>) =>
                                 testID="Bottom.postNavModalLabel"
                                 style={[globalStyles.Body, { alignSelf: 'center' }]}>
                                Example Other Question
+                
                             </Text>   
+               {/*  
                   <Switch
                         testID="Bottom.postNavModalClose"
                         onValueChange={() => setFirstAnswer(!firstSurveyOption)}
                         value={firstSurveyOption}>    
-                    </Switch>  
+                    </Switch> 
+                    
+              */ } 
                   </View>      
 
                 <View style={surveyModalStyleSheet.modalViewRow}> 
