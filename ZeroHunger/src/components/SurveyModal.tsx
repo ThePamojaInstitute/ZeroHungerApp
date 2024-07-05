@@ -21,6 +21,7 @@ import { Button } from "react-native-paper";
 import { Switch } from "react-native-gesture-handler";
 import DropDownPicker from "react-native-dropdown-picker";
 import { axiosInstance } from "../../config";
+import { AuthContext } from "../context/AuthContext";
 
 export const SurveyModal = ({}, ref: React.Ref<object>) => 
     {
@@ -33,16 +34,20 @@ export const SurveyModal = ({}, ref: React.Ref<object>) =>
           {label: 'Banana', value: 'banana'}
         ]);
 
+      const { user } = useContext(AuthContext)
+
      
-      const submitSurvey = async (surveyData: 
-      {
-        stillInteractsOutsideApp: Boolean
-        userID: Number
-      }
+
+      const submitSurvey = async (survey: {
+        surveyData: {
+            stillInteractsOutsideApp: Boolean
+            responseBy: number
+        }}
       ) => 
       {
       try {  
-        const res = await axiosInstance.post('/users/submitSurvey', surveyData);
+        
+        const res = await axiosInstance.post('users/submitSurvey', survey);
 
         if (res.status === 201) {
           return { msg: "success", res: res.data }
@@ -132,10 +137,14 @@ export const SurveyModal = ({}, ref: React.Ref<object>) =>
                      <Pressable
                         testID="Bottom.postNavModalClose"
                          style={globalStyles.defaultBtn}
-                        onPress={() => setModalVisible(!modalVisible)} > 
+                        onPress={() => { setModalVisible(!modalVisible); submitSurvey({surveyData:{
+                            stillInteractsOutsideApp: true,
+                            responseBy: user['user_id']
+                        }}); console.log(user['user_id']);  }} > 
                              <Text
                                 testID="Bottom.postNavModalLabel"
-                                style={[globalStyles.H3, { alignSelf: 'center' }]}>Submit
+                                style={[globalStyles.H3, { alignSelf: 'center' }]}>
+                                Submit
                             </Text>
                     </Pressable>  
             
@@ -143,7 +152,7 @@ export const SurveyModal = ({}, ref: React.Ref<object>) =>
                     <Pressable
                         testID="Bottom.postNavModalClose"
                         style={globalStyles.defaultBtn}
-                        onPress={() => setModalVisible(!modalVisible)} > 
+                        onPress={() =>  setModalVisible(!modalVisible) } > 
                         <Text
                             testID="Bottom.postNavModalLabel"
                             style={[globalStyles.H3, { alignSelf: 'center' }]}>Skip Survey</Text>

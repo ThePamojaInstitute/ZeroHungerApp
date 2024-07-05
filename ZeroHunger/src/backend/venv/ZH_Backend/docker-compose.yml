@@ -1,8 +1,21 @@
 version: '3.9'
 
 services: 
-  django:
-    image: zh-backend-testing:0.0.1
-    build: .
+  django_gunicorn:
+    volumes:
+      - static:/static
+    build:
+      context: .
+    ports: 
+      - "8080:8080"
+  nginx:
+    build: ./nginx
+    volumes:
+    - static:/static
     ports:
-     - 8080:8080
+    - "80:80"
+    depends_on:
+      - django_gunicorn
+
+volumes:
+  static:

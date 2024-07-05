@@ -275,11 +275,12 @@ export const HomeScreen = ({ navigation, route }) => {
             }
             <View testID="Home.subContainer" style={styles.subContainer}>
                 <View style={Platform.OS === 'web' ? styles.webContainer : { flexDirection: 'row' }}>
+
                 <Pressable 
                 style={styles.pressableText} 
                 onPress={() => openSurvey()}>  
                 <Text style={globalStyles.H3}> {"Test Popup"} </Text> </Pressable>
-                
+
 
                     <View testID="Home.requestsContainer" style={[
                         {

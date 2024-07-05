@@ -38,10 +38,12 @@ from .views import (
     userPreferences,
     edit_account_view,
     getNotificationsSettings,
-    updateNotificationsSettings
+    updateNotificationsSettings,
+    submitUserSurvey
 )
 
 urlpatterns = [
+    path('submitSurvey', submitUserSurvey.as_view()),
     path('createUser', createUser.as_view()),
     path('deleteUser', deleteUser.as_view()),
     path('editUser', edit_account_view.as_view()), 

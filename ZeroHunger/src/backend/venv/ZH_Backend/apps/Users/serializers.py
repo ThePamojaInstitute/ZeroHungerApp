@@ -3,6 +3,7 @@ from rest_framework_jwt.settings import api_settings
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
+from django.db import models
 from .models import BasicUser, UserSurveyResponse
 import pprint
 
@@ -45,7 +46,7 @@ class LoginSerializer (serializers.ModelSerializer):
 #         model=BasicUser
 #         fields = ['username','email','password']
 #     def editUser(self):
-#         user=BasicUser(username="fuckingtest")
+#         user=BasicUser(username="test")
 #         user.save()
 
 class UpdateUserSerializer(serializers.ModelSerializer):
@@ -88,7 +89,13 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["username"]
 
 class SurveySerializer(serializers.ModelSerializer):
-    didInteractOutsideApp = serializers.BooleanField()
+    stillInteractsOutsideApp = serializers.BooleanField(required=False)
+    responseBy = serializers.models.IntegerField( blank=True )
+    def save(self):
+        firstAnswerFromRequest = self.initial_data['surveyData']['stillInteractsOutsideApp']
+        responseUserID = self.initial_data['surveyData']['responseBy']
+        surveyresult=UserSurveyResponse(stillInteractsOutsideApp=firstAnswerFromRequest , responseBy = responseUserID)
+        surveyresult.save()
     class Meta:
         model = UserSurveyResponse
-        fields = ["didInteractOutsideApp"]
+        fields = ["stillInteractsOutsideApp", "responseBy"]
