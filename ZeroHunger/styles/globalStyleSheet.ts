@@ -148,6 +148,12 @@ export const globalStyles = StyleSheet.create({
         fontSize: 16,
         color: Colors.dark
     },
+    BodyLarge: {
+        fontFamily: Fonts.PublicSans_Regular,
+        fontWeight: '400',
+        fontSize: 25,
+        color: Colors.dark
+    },
     Small1: {
         fontFamily: Fonts.PublicSans_Regular,
         fontWeight: '400',

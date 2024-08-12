@@ -47,6 +47,7 @@ export const OfferFormScreen = ({ navigation }) => {
     const [useDefaultPostal, setUseDefaultPostal] = useState(false)
     const [accessNeeds, setAccessNeeds] = useState('')
     const [categories, setCategories] = useState<Char[]>([])
+    const [defaultDietPref, setUseDefaultDietPref] = useState(false)
     const [diet, setDiet] = useState<Char[]>([])
     const [expiryDate, setExpiryDate] = useState<string>()
     const [dataSourceCords, setDataSourceCords] = useState([]);
@@ -75,6 +76,14 @@ export const OfferFormScreen = ({ navigation }) => {
             scrollTo('postalCode')
         }
     }, [errors.postalCode])
+
+    useEffect(() => {
+        if (defaultDietPref) {
+            setDiet(diet)
+        } else {
+            setDiet([])
+        }
+    }, [defaultDietPref])
 
     useEffect(() => {
         if (Platform.OS === 'web') {
@@ -280,6 +289,7 @@ export const OfferFormScreen = ({ navigation }) => {
                     >Add photo(s) to help community members understand what you are offering.</Text>
                 </View>
                 <ImagePicker imagesURIs={imagesURIs} base64Images={base64Images} setImagesURIs={setImagesURIs} setBase64Images={setBase64Images} />
+                
                 <View
                     onLayout={(event) => {
                         const layout = event.nativeEvent.layout;
@@ -312,6 +322,19 @@ export const OfferFormScreen = ({ navigation }) => {
                         testID="Request.categoryDesc"
                         style={styles.formDescText}
                     >Please indicate any dietary preferences or allergies that apply to the food you are offering.</Text>
+                     <View style={styles.choiceContainer}>
+                        <MaterialCommunityIcons
+                            name={defaultDietPref ? "checkbox-marked" : "checkbox-blank-outline"}
+                            size={22}
+                            onPress={() => {
+                                //clearErrors('postalCode')
+                                setUseDefaultDietPref(!defaultDietPref)
+                            }}
+                            style={styles.icon}
+                        />
+                        <Text style={globalStyles.Body}>Use my default dietary preferences.</Text>
+                    </View>
+                    {!defaultDietPref &&
                     <FoodFilters
                         state={diet}
                         setState={setDiet}
@@ -319,6 +342,7 @@ export const OfferFormScreen = ({ navigation }) => {
                         getType={getDiet}
                         name={'diet'}
                     />
+                    }
                 </View>
                 {/* <View style={{ opacity: 0.5 }}>
                         <Text testID="Offer.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>

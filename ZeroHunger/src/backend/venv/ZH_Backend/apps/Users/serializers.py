@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from django.db import models
 from .models import BasicUser, UserSurveyResponse
+from .models import BasicUser
 import pprint
 
 class RegistrationSerializer (serializers.ModelSerializer):
@@ -88,6 +89,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = BasicUser
         fields = ["username"]
 
+
 class SurveySerializer(serializers.ModelSerializer):
     stillInteractsOutsideApp = serializers.BooleanField(required=False)
     responseBy = serializers.models.IntegerField( blank=True )
@@ -99,3 +101,4 @@ class SurveySerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSurveyResponse
         fields = ["stillInteractsOutsideApp", "responseBy"]
+

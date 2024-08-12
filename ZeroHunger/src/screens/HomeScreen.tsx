@@ -49,6 +49,7 @@ export const HomeScreen = ({ navigation, route }) => {
     const { user, dispatch } = useContext(AuthContext)
     const { setChatIsOpen } = useContext(NotificationContext)
     const { dispatch: alert } = useAlert()
+    const { t, i18n } = useTranslation();
 
     const [showRequests, setShowRequests] = useState(true)
     const [modalVisible, setModalVisible] = useState(false);
@@ -251,7 +252,7 @@ export const HomeScreen = ({ navigation, route }) => {
 
    
 
-    const { t, i18n } = useTranslation();
+
     return (
         <View testID="Home.container" style={styles.container}>
             
@@ -276,10 +277,10 @@ export const HomeScreen = ({ navigation, route }) => {
             <View testID="Home.subContainer" style={styles.subContainer}>
                 <View style={Platform.OS === 'web' ? styles.webContainer : { flexDirection: 'row' }}>
 
-                <Pressable 
+              { /*  <Pressable 
                 style={styles.pressableText} 
                 onPress={() => openSurvey()}>  
-                <Text style={globalStyles.H3}> {"Test Popup"} </Text> </Pressable>
+                <Text style={globalStyles.H3}> {"Test Popup"} </Text> </Pressable> */}
 
 
                     <View testID="Home.requestsContainer" style={[
@@ -297,6 +298,7 @@ export const HomeScreen = ({ navigation, route }) => {
                             <Text testID="Home.requestsLabel" style={globalStyles.H3}>{t("home.requests.label")}</Text>
                         </Pressable>
                     </View>
+                    
                     <View testID="Home.offersContainer" style={[
                         {
                             borderBottomColor: !showRequests ?

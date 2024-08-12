@@ -253,6 +253,7 @@ const HomeStackNavigator = ({ navigation }) => {
                                 updater={() => { }}
                                 expiringPosts={[]}
                                 setExpiringPosts={() => { }}
+                                setShowSearch={() => {}}
                                 t={t}
                             />
                         )
@@ -487,9 +488,9 @@ const HomeStackNavigator = ({ navigation }) => {
                     component={PostsHistory}
                     options={{
                         headerShown: true,
-                        title: t("menu.history.label"),
                         headerTitleAlign: 'center',
                         headerShadowVisible: false,
+                        title: "Request and Offer History",
                         headerStyle: {
                             backgroundColor: Colors.offWhite,
                         },
@@ -502,7 +503,7 @@ const HomeStackNavigator = ({ navigation }) => {
                         header: () => (
                             <WebCustomHeader
                                 navigation={navigation}
-                                title={t("menu.history.label")}
+                                title={"Request and Offer History"}
                             />
                         )
                     }}
@@ -514,7 +515,7 @@ const HomeStackNavigator = ({ navigation }) => {
                 options={{
                     headerShown: true,
                     headerShadowVisible: false,
-                    title: t("menu.preferences.label"),
+                    title: t("menu.side.preferences.label"),
                     headerTitleAlign: 'center',
                     headerStyle: {
                         backgroundColor: Colors.offWhite,

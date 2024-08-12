@@ -143,4 +143,5 @@ export const intitializePreferences = async (
             }
         })
     }
+        
 }

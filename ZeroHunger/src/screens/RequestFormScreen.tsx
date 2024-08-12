@@ -48,6 +48,7 @@ export const RequestFormScreen = ({ navigation }) => {
     const [accessNeeds, setAccessNeeds] = useState('')
     const [categories, setCategories] = useState<Char[]>([])
     const [diet, setDiet] = useState<Char[]>([])
+    const [defaultDietPref, setUseDefaultDietPref] = useState(false)
     const [needBy, setNeedBy] = useState<string>()
     const [dataSourceCords, setDataSourceCords] = useState([]);
     const [errField, setErrField] = useState<'' | 'categories' | 'needBy'>("")
@@ -61,7 +62,7 @@ export const RequestFormScreen = ({ navigation }) => {
             animated: true,
         })
     }
-
+// change the auto apply setting here
     useEffect(() => {
         intitializePreferences(setLogistics, setDefaultPostalCode, setDiet)
     }, [])
@@ -158,6 +159,16 @@ export const RequestFormScreen = ({ navigation }) => {
             setValue('postalCode', '')
         }
     }, [useDefaultPostal])
+
+    useEffect(() => {
+        if (defaultDietPref) {
+            setDiet(diet)
+        } else {
+            setDiet([])
+        }
+    }, [defaultDietPref])
+
+
 
     const submitPost = async (data: object) => {
         logistics.sort()
@@ -324,6 +335,19 @@ export const RequestFormScreen = ({ navigation }) => {
                         testID="Request.categoryDesc"
                         style={styles.formDescText}
                     >Please indicate any dietary preferences or allergies that need to be respected in your request.</Text>
+                                   <View style={styles.choiceContainer}>
+                        <MaterialCommunityIcons
+                            name={defaultDietPref ? "checkbox-marked" : "checkbox-blank-outline"}
+                            size={22}
+                            onPress={() => {
+                                //clearErrors('postalCode')
+                                setUseDefaultDietPref(!defaultDietPref)
+                            }}
+                            style={styles.icon}
+                        />
+                        <Text style={globalStyles.Body}>Use my default dietary preferences.</Text>
+                    </View>
+                    {!defaultDietPref &&
                     <FoodFilters
                         state={diet}
                         setState={setDiet}
@@ -331,7 +355,11 @@ export const RequestFormScreen = ({ navigation }) => {
                         getType={getDiet}
                         name={'diet'}
                     />
+                    }
                 </View>
+
+
+
                 {/* <View style={{ opacity: 0.5 }}>
                         <Text testID="Request.quantityLabel" style={styles.formTitleText}>Quantity <Text style={{ color: Colors.alert2 }}>*</Text></Text>
                         <Text testID="Request.quantityDesc" style={styles.formDescText}>Please input the desired quantity of the food item you need.</Text>

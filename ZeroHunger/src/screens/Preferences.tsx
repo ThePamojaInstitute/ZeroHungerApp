@@ -76,7 +76,7 @@ export const Preferences = ({ navigation }) => {
                 <Text style={globalStyles.Body}>{getter(item)}</Text>
                 <MaterialCommunityIcons
                     name={state.includes(item) ? "checkbox-marked" : "checkbox-blank-outline"}
-                    size={22}
+                    size={32}
                     onPress={() => {
                         if (state.includes(item)) {
                             setState(state.filter((char: Char) => char != item))
