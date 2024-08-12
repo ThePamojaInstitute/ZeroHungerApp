@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 4.1.2"
+    "version": ">= 4.1.2",
+    "requireCommit": true
   },
   "build": {
     "development": {
@@ -31,4 +32,5 @@
   "submit": {
     "production": {}
   }
+  
 }
