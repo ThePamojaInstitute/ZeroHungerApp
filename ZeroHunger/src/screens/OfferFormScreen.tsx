@@ -48,6 +48,7 @@ export const OfferFormScreen = ({ navigation }) => {
     const [accessNeeds, setAccessNeeds] = useState('')
     const [categories, setCategories] = useState<Char[]>([])
     const [defaultDietPref, setUseDefaultDietPref] = useState(false)
+    const [dietDefault, setDietDefault] = useState<Char[]>([])
     const [diet, setDiet] = useState<Char[]>([])
     const [expiryDate, setExpiryDate] = useState<string>()
     const [dataSourceCords, setDataSourceCords] = useState([]);
@@ -64,7 +65,7 @@ export const OfferFormScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
-        intitializePreferences(setLogistics, setDefaultPostalCode, setDiet)
+        intitializePreferences(setLogistics, setDefaultPostalCode, setDietDefault)
     }, [])
 
     useEffect(() => {
@@ -163,35 +164,73 @@ export const OfferFormScreen = ({ navigation }) => {
 
     const submitPost = async (data: object) => {
         const imageURL = await handleImageUpload(base64Images)
-        const res = await createPost({
-            postData: {
-                title: data['title'],
-                images: imageURL,
-                postedBy: user['user_id'],
-                description: desc,
-                logistics: logistics.sort(),
-                postalCode: data['postalCode'],
-                accessNeeds: accessNeeds,
-                categories: categories.sort(),
-                diet: diet.sort(),
-                expiryDate: expiryDate
-            },
-            postType: 'o'
-        })
+               if (defaultDietPref == true)
+        {
+            console.log("Using default diet preferences");
+            const res = await createPost({
+                postData: {
+                    title: data['title'],
+                    images: imageURL,
+                    postedBy: user['user_id'],
+                    description: desc,
+                    logistics: logistics,
+                    postalCode: data['postalCode'],
+                    accessNeeds: accessNeeds,
+                    categories: categories,
+                    diet: dietDefault,
+                    expiryDate: expiryDate
+                },
+                postType: 'o'
+            })
 
-        if (res.msg === "success") {
-            alert!({ type: 'open', message: 'Offer posted successfully!', alertType: 'success' })
-            navigation.navigate('HomeScreen')
-        } else if (res.msg === "failure") {
-            alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
-        } else {
-            if (res.msg === 'Please enter a valid postal code') {
-                setError('postalCode', {
-                    type: "server",
-                    message: res.msg
-                })
+            if (res.msg === "success") {
+                alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
+                navigation.navigate('HomeScreen')
+            } else if (res.msg === "failure") {
+                alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
             } else {
-                alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                if (res.msg === 'Please enter a valid postal code') {
+                    setError('postalCode', {
+                        type: "server",
+                        message: res.msg
+                    })
+                } else {
+                    alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                }
+            }
+        }
+        else
+        {
+            const res = await createPost({
+                postData: {
+                    title: data['title'],
+                    images: imageURL,
+                    postedBy: user['user_id'],
+                    description: desc,
+                    logistics: logistics,
+                    postalCode: data['postalCode'],
+                    accessNeeds: accessNeeds,
+                    categories: categories,
+                    diet: diet,
+                    expiryDate: expiryDate
+                },
+                postType: 'o'
+            })
+
+            if (res.msg === "success") {
+                alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
+                navigation.navigate('HomeScreen')
+            } else if (res.msg === "failure") {
+                alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+            } else {
+                if (res.msg === 'Please enter a valid postal code') {
+                    setError('postalCode', {
+                        type: "server",
+                        message: res.msg
+                    })
+                } else {
+                    alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                }
             }
         }
     }

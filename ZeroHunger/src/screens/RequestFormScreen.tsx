@@ -47,6 +47,7 @@ export const RequestFormScreen = ({ navigation }) => {
     const [useDefaultPostal, setUseDefaultPostal] = useState(false)
     const [accessNeeds, setAccessNeeds] = useState('')
     const [categories, setCategories] = useState<Char[]>([])
+    const [dietDefault, setDietDefault] = useState<Char[]>([])
     const [diet, setDiet] = useState<Char[]>([])
     const [defaultDietPref, setUseDefaultDietPref] = useState(false)
     const [needBy, setNeedBy] = useState<string>()
@@ -64,7 +65,7 @@ export const RequestFormScreen = ({ navigation }) => {
     }
 // change the auto apply setting here
     useEffect(() => {
-        intitializePreferences(setLogistics, setDefaultPostalCode, setDiet)
+        intitializePreferences(setLogistics, setDefaultPostalCode, setDietDefault)
     }, [])
 
     useEffect(() => {
@@ -160,13 +161,13 @@ export const RequestFormScreen = ({ navigation }) => {
         }
     }, [useDefaultPostal])
 
-    useEffect(() => {
-        if (defaultDietPref) {
-            setDiet(diet)
-        } else {
-            setDiet([])
-        }
-    }, [defaultDietPref])
+    // useEffect(() => {
+    //     if (defaultDietPref) {
+    //         setDiet(diet)
+    //     } else {
+    //         setDiet([])
+    //     }
+    // }, [defaultDietPref])
 
 
 
@@ -174,39 +175,83 @@ export const RequestFormScreen = ({ navigation }) => {
         logistics.sort()
         categories.sort()
         diet.sort()
-
+      
+       
         const imageURL = await handleImageUpload(base64Images)
-        const res = await createPost({
-            postData: {
-                title: data['title'],
-                images: imageURL,
-                postedBy: user['user_id'],
-                description: desc,
-                logistics: logistics,
-                postalCode: data['postalCode'],
-                accessNeeds: accessNeeds,
-                categories: categories,
-                diet: diet,
-                expiryDate: needBy
-            },
-            postType: 'r'
-        })
 
-        if (res.msg === "success") {
-            alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
-            navigation.navigate('HomeScreen')
-        } else if (res.msg === "failure") {
-            alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
-        } else {
-            if (res.msg === 'Please enter a valid postal code') {
-                setError('postalCode', {
-                    type: "server",
-                    message: res.msg
-                })
+        if (defaultDietPref == true)
+        {
+            console.log("Using default diet preferences");
+            const res = await createPost({
+                postData: {
+                    title: data['title'],
+                    images: imageURL,
+                    postedBy: user['user_id'],
+                    description: desc,
+                    logistics: logistics,
+                    postalCode: data['postalCode'],
+                    accessNeeds: accessNeeds,
+                    categories: categories,
+                    diet: dietDefault,
+                    expiryDate: needBy
+                },
+                postType: 'r'
+            })
+
+            if (res.msg === "success") {
+                alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
+                navigation.navigate('HomeScreen')
+            } else if (res.msg === "failure") {
+                alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
             } else {
-                alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                if (res.msg === 'Please enter a valid postal code') {
+                    setError('postalCode', {
+                        type: "server",
+                        message: res.msg
+                    })
+                } else {
+                    alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                }
             }
         }
+        else
+        {
+            const res = await createPost({
+                postData: {
+                    title: data['title'],
+                    images: imageURL,
+                    postedBy: user['user_id'],
+                    description: desc,
+                    logistics: logistics,
+                    postalCode: data['postalCode'],
+                    accessNeeds: accessNeeds,
+                    categories: categories,
+                    diet: diet,
+                    expiryDate: needBy
+                },
+                postType: 'r'
+            })
+
+            if (res.msg === "success") {
+                alert!({ type: 'open', message: 'Request posted successfully!', alertType: 'success' })
+                navigation.navigate('HomeScreen')
+            } else if (res.msg === "failure") {
+                alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+            } else {
+                if (res.msg === 'Please enter a valid postal code') {
+                    setError('postalCode', {
+                        type: "server",
+                        message: res.msg
+                    })
+                } else {
+                    alert!({ type: 'open', message: res.msg ? res.msg : 'An error occured!', alertType: 'error' })
+                }
+            }
+        }
+
+       
+
+       
     }
 
     const handlePress = async (data: object) => {
