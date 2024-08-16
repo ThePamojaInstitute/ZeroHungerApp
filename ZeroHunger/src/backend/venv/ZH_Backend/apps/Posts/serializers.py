@@ -5,6 +5,7 @@ from .choices import LOGISTICS_CHOICES, FOOD_CATEGORIES, DIET_PREFERENCES
 from apps.Users.models import BasicUser
 from django.db import models
 from datetime import datetime 
+import json
 
 
 class createRequestSerializer (serializers.ModelSerializer):
@@ -40,8 +41,10 @@ class createRequestSerializer (serializers.ModelSerializer):
     def get_username(self, obj):
         if(type(obj) == collections.OrderedDict): # on creation
             return None
-
+       # obj.postedBy
+       
         user = obj.postedBy
+        print(user)
         return user.username
     
     def get_type(self, obj):
