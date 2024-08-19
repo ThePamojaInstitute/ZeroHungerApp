@@ -42,7 +42,7 @@ class createRequestSerializer (serializers.ModelSerializer):
         if(type(obj) == collections.OrderedDict): # on creation
             return None
        # obj.postedBy
-       
+       #log object type
         user = obj.postedBy
         print(user)
         return user.username
