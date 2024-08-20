@@ -20,10 +20,10 @@ const mockMMKV = {
 export const storage = ENV === 'production' ? new MMKV() :
     Platform.OS === 'web' ? new MMKV() : mockMMKV
 
-export const HttpBaseURL = 'http://127.0.0.1:8000/'
-export const WSBaseURL = 'ws://http://127.0.0.1:8000/'
-// export const HttpBaseURL = 'https://zh-backend-azure-webapp.azurewebsites.net/'
-// export const WSBaseURL = 'ws://zh-backend-azure-webapp.azurewebsites.net/'
+//export const HttpBaseURL = 'http://127.0.0.1:8000/'
+//export const WSBaseURL = 'ws://http://127.0.0.1:8000/'
+ export const HttpBaseURL = 'https://zh-backend-azure-webapp.azurewebsites.net/'
+ export const WSBaseURL = 'ws://zh-backend-azure-webapp.azurewebsites.net/'
 
 export const passwordResetURL = `${HttpBaseURL}/users/reset_password`
 
