@@ -134,7 +134,7 @@ class createOfferSerializer (serializers.ModelSerializer):
             return None
 
         if (type(obj) == dict):
-            post = RequestPost.objects.get(title=obj['title'] ,postedOn=obj['postedOn'])
+            post = OfferPost.objects.get(title=obj['title'] ,postedOn=obj['postedOn'])
             return post.pk
         else:
             return obj.pk
