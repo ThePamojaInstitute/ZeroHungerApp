@@ -21,12 +21,12 @@ import logging
 env = environ.Env()
 environ.Env.read_env()
 #Sets up azure keyvault to get secrets
-# keyVaultName = os.environ["KEYVAULT_NAME"]
+keyVaultName = os.environ["KEYVAULT_NAME"]
 
-# credential = ManagedIdentityCredential(client_id = os.environ["MI_CLIENT_ID"], additionally_allowed_tenants=['*']) #logs in to azure for keyvault
+credential = ManagedIdentityCredential(client_id = os.environ["MI_CLIENT_ID"], additionally_allowed_tenants=['*']) #logs in to azure for keyvault
 
-# client = SecretClient(vault_url=keyVaultName, credential=credential)
-azure_redis_password = '###'
+client = SecretClient(vault_url=keyVaultName, credential=credential)
+azure_redis_password = client.get_secret('REDIS-PASSWORD').value
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,13 +36,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-MAPBOX_ACCESS_CODE = '###'
-SECRET_KEY = '###'
+MAPBOX_ACCESS_CODE = client.get_secret('MAPBOX-API-KEY').value
+SECRET_KEY = client.get_secret('DJANGO-KEY').value
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1'] #Testing on Noah personal azure
+ALLOWED_HOSTS = ['zh-backend-app.azurewebsites.net'] 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Application definition
@@ -113,11 +113,11 @@ WSGI_APPLICATION = 'ZH_Backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '###', 
-        'USER': '###',
-        'PASSWORD': '###',
-        'HOST': '###', 
-        'PORT': '5432',
+        'NAME': client.get_secret('DATABASE-NAME').value, 
+        'USER': client.get_secret('DATABASE-USER').value,
+        'PASSWORD': client.get_secret('DATABASE-PASSWORD').value,
+        'HOST': client.get_secret('DATABASE-HOST').value, 
+        'PORT': client.get_secret('DATABASE-PORT').value,
     }
 }
 
@@ -247,5 +247,5 @@ MEDIA_URL = '/media/'
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = '###'
-DEFAULT_FROM_EMAIL = '###'
+EMAIL_HOST_PASSWORD = client.get_secret('EMAIL-APIKEY').value
+DEFAULT_FROM_EMAIL = client.get_secret('EMAIL-FROM-ADDRESS').value

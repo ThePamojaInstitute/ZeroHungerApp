@@ -43,8 +43,11 @@ class createRequestSerializer (serializers.ModelSerializer):
             return None
        # obj.postedBy
        #log object type
-        user = obj.postedBy
-        print(user)
+        if (type(obj) == dict ):
+             user = obj['postedBy']
+        else:
+            user = obj.postedBy
+
         return user.username
     
     def get_type(self, obj):
@@ -53,8 +56,18 @@ class createRequestSerializer (serializers.ModelSerializer):
     def get_postId(self, obj):
         if(type(obj) == collections.OrderedDict): # on creation
             return None
+       # print (self)
+        #get obj type
+        #if dict get the post from database for pk before calling obj.pk
+        #if not obj.pk is fine
+        if (type(obj) == dict):
+            post = RequestPost.objects.get(title=obj['title'] ,postedOn=obj['postedOn'])
+            return post.pk
+        else:
+            return obj.pk
+        
+      
 
-        return obj.pk
 
     def save(self):
         post=RequestPost(title=self.validated_data['title'],
@@ -105,8 +118,12 @@ class createOfferSerializer (serializers.ModelSerializer):
     def get_username(self, obj):
         if(type(obj) == collections.OrderedDict): # on creation
             return None
+        
+        if (type(obj) == dict ):
+             user = obj['postedBy']
+        else:
+            user = obj.postedBy
 
-        user = obj.postedBy
         return user.username
     
     def get_type(self, obj):
@@ -116,7 +133,11 @@ class createOfferSerializer (serializers.ModelSerializer):
         if(type(obj) == collections.OrderedDict): # on creation
             return None
 
-        return obj.pk
+        if (type(obj) == dict):
+            post = RequestPost.objects.get(title=obj['title'] ,postedOn=obj['postedOn'])
+            return post.pk
+        else:
+            return obj.pk
 
     def save(self):
         post=OfferPost(title=self.validated_data['title'],
