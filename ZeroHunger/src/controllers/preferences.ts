@@ -85,6 +85,10 @@ export const savePreferences = async (
     if (postalCode.length > 0 && !postalCode.match(canadianPostalCodeRegex)) {
         return { msg: "failure", res: "Please enter a valid postal code" }
     }
+    else if (postalCode.length == 0 && !postalCode.match(canadianPostalCodeRegex))
+    {
+        return { msg: "failure", res: "Please enter a valid postal code" }
+    }
 
     const data = {
         postalCode: postalCode.toUpperCase(),

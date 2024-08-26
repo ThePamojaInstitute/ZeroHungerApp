@@ -71,6 +71,7 @@ export const HomeScreen = ({ navigation, route }) => {
     // on navigation change
     useFocusEffect(() => {
         if (!user) {
+            console.log("No user, returning to login")
             navigation.navigate('LoginScreen')
         }
         setChatIsOpen(false)
@@ -134,6 +135,7 @@ export const HomeScreen = ({ navigation, route }) => {
     // on mount
     useEffect(() => {
         if (!user) {
+            console.log("No user, returning to login")
             navigation.navigate('LoginScreen')
             return
         }

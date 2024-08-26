@@ -88,7 +88,10 @@ export const createPost = async (post: {
         return { msg: "Title should be at most 100 characters", res: null }
     } else if (post.postData.categories.length === 0) {
         return { msg: "Please select a food category", res: null }
-    } else if (post.postData.postalCode.length > 0 && !post.postData.postalCode.match(canadianPostalCodeRegex)) {
+    } else if (post.postData.postalCode.length > 0 && !post.postData.postalCode.match(canadianPostalCodeRegex) ) {
+        return { msg: "Please enter a valid postal code", res: null }
+    }
+    else if (post.postData.postalCode.length == 0 && !post.postData.postalCode.match(canadianPostalCodeRegex) ) {
         return { msg: "Please enter a valid postal code", res: null }
     }
 

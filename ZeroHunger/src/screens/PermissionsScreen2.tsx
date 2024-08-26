@@ -1,14 +1,50 @@
-import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, Image, TouchableOpacity, TextInput, Platform } from "react-native";
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import styles from "../../styles/screens/permissionsStyleSheet";
 import { updateNotificationsSettings } from "../controllers/notifications";
 import { useTranslation } from "react-i18next";
+import { storage } from "../../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { savePreferences } from "../controllers/preferences";
+
 
 export const PermissionsScreen2 = ({ navigation }) => {
     const { t, i18n } = useTranslation();
 
-    const onPress = () => {
-        updateNotificationsSettings(true, true)
+    const onPress = async () => {
+
+        if (Platform.OS === "web") {
+            const appData = storage.getString("appLaunched")
+
+                storage.set("appLaunched", "true")
+                updateNotificationsSettings(true, true)
+                navigation.navigate("HomeScreen")
+
+        }
+        else {
+            const appData = await AsyncStorage.getItem("appLaunched")
+
+                AsyncStorage.setItem("appLaunched", "true")
+                updateNotificationsSettings(true, true)
+                navigation.navigate("HomeScreen")
+        }
+    }
+    const onSkipPress = async () => {
+        
+        if (Platform.OS === "web") {
+            const appData = storage.getString("appLaunched")
+
+                storage.set("appLaunched", "true")
+                navigation.navigate("HomeScreen")
+
+        }
+        else {
+            const appData = await AsyncStorage.getItem("appLaunched")
+
+                AsyncStorage.setItem("appLaunched", "true")
+                navigation.navigate("HomeScreen")
+        }
+            
         navigation.navigate("HomeScreen")
     }
 
@@ -25,7 +61,7 @@ export const PermissionsScreen2 = ({ navigation }) => {
                         <Text style={globalStyles.defaultBtnLabel}>{t("permissions.notifications.submit.label")}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={{ alignSelf: "center", paddingTop: 24 }}
-                        onPress={() => navigation.navigate("HomeScreen")}
+                        onPress={onSkipPress}
                     >
                         <Text style={[globalStyles.Button, { color: Colors.primaryDark }]}>{t("permissions.notifications.alt.label")}</Text>
                     </TouchableOpacity>
