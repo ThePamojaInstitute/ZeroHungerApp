@@ -10,7 +10,6 @@
       "image": "./assets/Loading.png",
       "backgroundColor": "#F8F9FC"
     },
-    
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -36,6 +35,7 @@
       "eas": {
         "projectId": "9a256bfa-fa6b-46dc-8bd0-b8952a213cd7"
       }
-    }
+    },
+    "owner": "thepamojainstitute"
   }
 }
