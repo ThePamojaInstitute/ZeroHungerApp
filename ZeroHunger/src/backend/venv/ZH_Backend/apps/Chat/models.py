@@ -51,6 +51,19 @@ class Message(models.Model):
     content = models.CharField(max_length=512)
     timestamp = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['timestamp']
 
     def __str__(self):
         return f"From {self.from_user.username} to {self.to_user.username}: {self.content} [{self.timestamp}]"
+    
+    @property
+    def from_user_profile(self):
+        from_user_profile = BasicUser.objects.get(username = self.from_user)
+        return from_user_profile
+    
+    @property
+    def to_user_profile(self):
+        to_user_profile = BasicUser.objects.get(username = self.to_user)
+        return to_user_profile

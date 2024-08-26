@@ -23,14 +23,14 @@ from azure.keyvault.secrets import SecretClient
 from azure.storage.blob import BlobClient, generate_account_sas, ResourceTypes, AccountSasPermissions, ContainerClient
 
 #Sets up azure keyvault to get secrets
-# env = environ.Env()
-# environ.Env.read_env()
-# keyVaultName = os.environ["KEYVAULT_NAME"]
+env = environ.Env()
+environ.Env.read_env()
+keyVaultName = os.environ["KEYVAULT_NAME"]
 
-#credential = ManagedIdentityCredential(client_id = os.environ["MI_CLIENT_ID"], additionally_allowed_tenants=['*']) #logs in to azure for keyvault
+credential = ManagedIdentityCredential(client_id = os.environ["MI_CLIENT_ID"], additionally_allowed_tenants=['*']) #logs in to azure for keyvault
 
-#client = SecretClient(vault_url=keyVaultName, credential=credential)
-connection_string = '###'
+client = SecretClient(vault_url=keyVaultName, credential=credential)
+connection_string = client.get_secret('BLOB-CONNECTION-STRING').value 
 #https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=npm
 #Install Azurite on your local machine using this ^ guide before trying to use this
 

@@ -1,4 +1,4 @@
-from channels.generic.websocket import JsonWebsocketConsumer
+from channels.generic.websocket import JsonWebsocketConsumer, AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 from .models import Conversation, Message
 from apps.Chat.serializers import MessageSerializer
@@ -291,3 +291,9 @@ class NotificationConsumer(JsonWebsocketConsumer):
 
     def unread_count(self, event):
         self.send_json(event)
+        
+
+class PersonalChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        print("TESTING CONNECTION AND REDIS")
+        await self.accept()

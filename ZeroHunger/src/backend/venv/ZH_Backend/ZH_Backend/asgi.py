@@ -23,7 +23,7 @@ django_asgi_app = get_asgi_application()
 
 websocket_urlpatterns = [
     path("chats/<conversation_name>/" , ChatConsumer.as_asgi()),
-    path("notifications/" , NotificationConsumer.as_asgi()),
+    path("notifications" , NotificationConsumer.as_asgi()),
 ]
 
 application = ProtocolTypeRouter({

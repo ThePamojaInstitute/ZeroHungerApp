@@ -17,7 +17,7 @@
     ],
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)|@react-native-async-storage/async-storage"
-    ] 
+    ]
   },
   "dependencies": {
     "@azure/identity": "^3.2.3",
@@ -40,7 +40,7 @@
     "expo": "^49.0.7",
     "expo-app-loading": "^2.1.1",
     "expo-constants": "~14.4.2",
-    "expo-dev-client": "~2.4.12",
+    "expo-dev-client": "~2.4.13",
     "expo-device": "~5.4.0",
     "expo-font": "~11.4.0",
     "expo-image-manipulator": "~11.3.0",
@@ -50,18 +50,18 @@
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
     "i18next": "^23.2.11",
-    "i18next-browser-languagedetector": "^7.1.0", 
+    "i18next-browser-languagedetector": "^7.1.0",
     "i18next-http-backend": "^2.2.1",
     "jest-expo": "~49.0.0",
     "jwt-decode": "^3.1.2",
-    "moment": "^2.29.4", 
+    "moment": "^2.29.4",
     "npm": "^9.4.2",
     "react": "18.2.0",
     "react-datepicker": "^4.11.0",
     "react-dom": "18.2.0",
     "react-hook-form": "7.34.2",
     "react-i18next": "^13.0.2",
-    "react-native": "0.72.6",
+    "react-native": "0.72.10",
     "react-native-awesome-alerts": "^2.0.0",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-gesture-handler": "~2.12.0",

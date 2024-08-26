@@ -28,7 +28,7 @@ export const NotificationContextProvider: React.FC<{ children: ReactNode }> = ({
     const [chatIsOpen, setChatIsOpen] = useState(false)
     const [unreadFromUsers, setUnreadFromUsers] = useState<string[]>([])
 
-    const { readyState } = useWebSocket(user ? `${WSBaseURL}notifications/` : null, {
+    const { readyState } = useWebSocket(user ? `${WSBaseURL}notifications` : null, {
         queryParams: {
             token: user ?
                 ENV === 'production' ? storage.getString('access_token') : accessToken
