@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "ZeroHunger",
+    "slug": "ZeroHunger",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/Loading.png",
+      "backgroundColor": "#F8F9FC"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "ios.infoPlist.UIBackgroundModes": "remote-notification",
+      "bundleIdentifier": "com.noahg.ZeroHunger"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.noahg.ZeroHunger",
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9a256bfa-fa6b-46dc-8bd0-b8952a213cd7"
+      }
+    },
+    "owner": "thepamojainstitute"
+  }
+}

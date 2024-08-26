@@ -63,7 +63,7 @@ export const PermissionsScreen = ({ navigation }) => {
                         >
                             <Text style={globalStyles.defaultBtnLabel}>Save my postal code</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ alignSelf: "center", paddingTop: 24 }} onPress={() => navigation.navigate("GuidelinesScreen")}>
+                        <TouchableOpacity style={{ alignSelf: "center", paddingTop: 24 }} onPress={() => {savePreferences(null,null,null,null),  navigation.navigate("GuidelinesScreen")}}>
                             <Text style={[globalStyles.Button, { color: Colors.primaryDark }]}>Not right now</Text>
                         </TouchableOpacity>
                     </View>

@@ -30,7 +30,7 @@ keyVaultName = os.environ["KEYVAULT_NAME"]
 credential = ManagedIdentityCredential(client_id = os.environ["MI_CLIENT_ID"], additionally_allowed_tenants=['*']) #logs in to azure for keyvault
 
 client = SecretClient(vault_url=keyVaultName, credential=credential)
-connection_string = client.get_secret('BLOB-CONNECTION-STRING').value 
+connection_string = client.get_secret("BLOB-CONNECTION-STRING").value
 #https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=npm
 #Install Azurite on your local machine using this ^ guide before trying to use this
 
