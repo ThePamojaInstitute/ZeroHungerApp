@@ -178,32 +178,3 @@ class messageHistory(APIView):
         
         return Response(serializer.data, status = 200)
             
-# class postsHistory(APIView):
-#     def get(self, request):
-#         try:
-#             decoded_token =  jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
-#         except:
-#             return Response("Token invalid or not given", 401)
-
-#         try:
-#             postsType = request.GET.get('postsType',"r")
-#             orderByNewest = request.GET.get('orderByNewest',True)
-#             page = int(request.GET.get('page',0))
-#         except Exception as e:
-#             return Response(e.__str__(), 400) 
-
-#         try:
-#             posts = get_user_posts(postsType, orderByNewest, page, decoded_token['user_id'])
-#             serializer = serialize_posts(posts, postsType)
-#         except Exception as e:
-#             return Response(e.__str__(), 500) 
-        
-#         return Response(serializer.data, status=200)
-# class getConversation(APIview):
-#     def get(self, request):
-#         try:
-#             decoded_token =  jwt.decode(request.headers['Authorization'], settings.SECRET_KEY)
-#         except:
-#             return Response("Token invalid or not given", 401)
-        
-        

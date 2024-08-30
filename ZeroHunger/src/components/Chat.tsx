@@ -12,10 +12,14 @@ import { Char } from '../../types';
 import { WSBaseURL, storage } from '../../config';
 // import { storage } from '../../config'
 import { handleExpiryDate } from '../controllers/post';
+import { encryptMessage, decryptMessage } from '../controllers/message';
 import { ENV } from '../../env';
 import { ChatCustomHeader } from './headers/ChatCustomHeader';
 import { axiosInstance, getAccessToken } from "../../config";
 import { MessageModel } from "../models/Message";
+import nacl from "tweetnacl"
+import { encodeBase64, decodeBase64, decodeUTF8, encodeUTF8 } from "tweetnacl-util"
+// import { addPublicKey } from '../controllers/publickey';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -47,6 +51,25 @@ export const Chat = ({ navigation, route }) => {
     const [initiated, setInitiated] = useState(false)
     const [initiatedTimeStampForMe, setInitiatedTimeStampForMe] = useState(false)
     const [initiatedTimeStampForOther, setInitiatedTimeStampForOther] = useState(false)
+
+    const addPublicKey = async () => {
+        const { user, accessToken } = React.useContext(AuthContext)
+        try {
+            const res = await axiosInstance.post('users/addPublicKey', {
+                data: {
+                    user: user['username'],
+                    publickey: storage.getString('pubkey'),
+                    username: user['username'],
+                },
+                headers: {
+                    Authorization: await getAccessToken()
+                }
+            });
+            console.log(res)
+        } catch(error) {
+            console.log(error)
+        }
+    }
 
     const getMessages = async () => {
         try {
@@ -114,6 +137,57 @@ export const Chat = ({ navigation, route }) => {
             })
         }
     }, [])
+    //////////////////////////////////////////////////////////////////////////////////////
+    useEffect(() => {
+        if(!endReached) {
+            if(storage.getString('pubkey') && storage.getString('privkey')) {
+                console.log(`Here are the keys! priv:${storage.getString('privkey')} and pub:${storage.getString('pubkey')}`)
+                // addPublicKey()
+                
+            } else {
+                const keyPair = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
+                storage.set('pubkey', encodeBase64(keyPair.publicKey))
+                storage.set('privkey', encodeBase64(keyPair.secretKey))
+                addPublicKey()
+            }
+
+            console.log(`Receiver: ${receiver}`)
+
+            let newtest = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
+
+            let origmes = "Hello World!"
+
+            let nonce = encodeBase64(nacl.randomBytes(nacl.box.nonceLength))
+
+            // let testmes = encryptMessage(storage.getString('privkey'), encodeBase64(newtest.publicKey), origmes)
+            let testmes = encryptMessage(storage.getString('privkey'), route.params.other_pub, origmes, nonce)
+            console.log(`WE TEST HERE (ENCRYPTED): ${testmes}`)
+            // let decmes = decryptMessage(storage.getString('privkey'), encodeBase64(newtest.publicKey), testmes)
+            let decmes = decryptMessage(storage.getString('privkey'), route.params.other_pub, testmes, nonce)
+            console.log(`WE TEST HERE (DECRYPTED): ${decmes}`)
+        }
+    }, [endReached])
+
+    const getPublicKeys = async () => {
+        try {
+            const res = await axiosInstance.get(`users/getPublicKey`, {
+                headers: {
+                    Authorization: await getAccessToken()
+                },
+                params: {
+                    'user': receiver
+                }
+            });
+
+            
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
+    
+
+    //////////////////////////////////////////////////////////////////////////////////////
 
     // 
     const handleSend = () => {
@@ -121,7 +195,7 @@ export const Chat = ({ navigation, route }) => {
             sendJsonMessage({
                 // axiosInstance
                 type: "chat_message",
-                message,
+                message: message,//encryptMessage(storage.getString('privkey'), route.params.other_pub, message),
                 name: user['username']
             });
             setMessage("");
@@ -230,6 +304,7 @@ export const Chat = ({ navigation, route }) => {
                     break;
                 case "last_30_messages":
                     setInitiated(true)
+                    const otherUser = axiosInstance.get('')
                     if (data.messages.length === 0) {
                         setEmpty(true)
                     } else setMessageHistory(data.messages);
@@ -268,6 +343,7 @@ export const Chat = ({ navigation, route }) => {
         }
 
         if (connectionStatus === "Open" && route.params.msg) {
+            // let nonce = 
             if (route.params.post) {
                 sendJsonMessage({
                     type: "chat_message",
@@ -429,19 +505,21 @@ export const Chat = ({ navigation, route }) => {
                 return <Post key={item.id} item={item} />
             } catch (error) { }
         }
-        let showTimeStamp = true // was: let showTimeStamp = false
-        // console.log(item)
+        let showTimeStamp = false // was: let showTimeStamp = false
         if (item.from_username === user['username'] && !lastFromMeRendered && !initiatedTimeStampForMe) {
             setInitiatedTimeStampForMe(true)
             lastFromMeRendered = true
             showTimeStamp = true
-            console.log("item is owned by user!")
+            // console.log("item is owned by user!")
         } else if (item.from_username !== user['username'] && !lastFromOtherRendered && !initiatedTimeStampForOther) {
             setInitiatedTimeStampForOther(true)
             lastFromOtherRendered = true
             showTimeStamp = true
-            console.log("item is not owned by user!")
+            // console.log("item is not owned by user!")
         }
+
+        // console.log(`CONTENT HERE! ${item.content}`)
+        // item.content = decryptMessage(storage.getString('privkey'), route.params.other_pub, item.content)
 
         return <Message
             key={item.id}

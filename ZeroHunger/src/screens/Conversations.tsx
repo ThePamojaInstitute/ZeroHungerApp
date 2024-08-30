@@ -9,12 +9,15 @@ import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
 import { useAlert } from "../context/Alert";
-import { axiosInstance, getAccessToken } from "../../config";
+import { axiosInstance, getAccessToken, storage } from "../../config";
 import { ConversationModel } from "../models/Conversation";
+import { PublicKeyModel } from "../models/PublicKey";
 import { FlashList } from "@shopify/flash-list";
 import moment from 'moment';
 import { useTranslation } from "react-i18next";
 import { Platform } from "expo-modules-core";
+import nacl from "tweetnacl"
+import { encodeBase64, decodeBase64, encodeUTF8, decodeUTF8 } from "tweetnacl-util"
 
 const NoMessages = ({ navigate }) => (
     <View style={{
@@ -48,13 +51,14 @@ export const Conversations = ({ navigation }) => {
     const isFocused = useIsFocused()
 
     const [conversations, setActiveConversations] = useState<ConversationModel[]>([]);
+    const [publickeys, setPublicKeys] = useState<PublicKeyModel[]>([]);
     const [empty, setEmpty] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
     const [firstLoad, setFirstLoad] = useState(true)
 
     const getConversations = async () => {
         try {
-            const res = await axiosInstance.get("chat/conversations/", {
+            let res = await axiosInstance.get("chat/conversations/", {
                 headers: {
                     Authorization: await getAccessToken()
                 }
@@ -70,6 +74,38 @@ export const Conversations = ({ navigation }) => {
 
                     return bTime.getTime() - aTime.getTime()
                 })
+                // console.log(`got conversations`)
+                let usernames = orderedConversations.map(a => a.other_user.username)
+                // console.log(`Conversations: ${usernames}`)
+                // console.log(`List: ${[1, 2 , 3, 4]}`)
+                // console.log(`Convo 1: ${usernames[0]}`)
+                // console.log(`Manipulating content: ${orderedConversations.map(a => a.last_message.content = "Hello world")}`)
+                // console.log(`Usernames: ${usernames}`)
+                try {
+                    const keyres = await axiosInstance.get("users/getPublicKeys", {
+                        data: {
+                            users: usernames
+                        },
+                        headers: {
+                            Authorization: await getAccessToken()
+                        }
+                    })
+                    const publickeys: PublicKeyModel[] = keyres.data
+                    // console.log(`${JSON.stringify(keyres.data)}`)
+                    setPublicKeys(keyres.data)
+                    // orderedConversations.map(a => a.last_message.content = decryptMessage(storage.getString('privkey'), findArrayByUser(keyres.data, a.other_user.username)['publickey'], a.last_message.content))
+                    // decryptMessage(self_privatekey, other_user_publickey, content)
+                    // console.log(`${JSON.stringify(findArrayByUser(keyres.data, 'nickellee'))}`)
+                    // console.log(`Nickellee key: ${findArrayByUser(keyres.data, 'nickellee')['publickey']}`)
+                    // console.log(`Saved private key: ${storage.getString('pubkey')}, obtained publickey: ${findArrayByUser(keyres.data, user['username'])['publickey']}`)
+                    // console.log(`Is ${findArrayByUser(keyres.data, 'nickellee')['publickey']}`)
+                    // console.log(`Public keys: ${publickeys}`)
+
+                } catch (error) {
+                    console.log(error)
+                }
+                // orderedConversations.map(a => a.last_message.content)
+                //const values = conversations.map(a => a.other_user.username)
                 setActiveConversations(orderedConversations);
             }
         } catch (error) {
@@ -77,14 +113,36 @@ export const Conversations = ({ navigation }) => {
         }
     }
 
+    function findArrayByUser(array, username) {
+        return array.find((element) => {
+            return element.username == username
+        })
+    }
+    // const getPublicKeys = async () => {
+    //     let res = await axiosInstance.get("chat/conversations/");
+    //     console.log(res)
+    // }
+
     useEffect(() => {
+        // getPublicKeys()
         getConversations();
         setFirstLoad(false)
     }, [user, unreadFromUsers]);
 
     useEffect(() => {
-        if (conversations.length > 0) setEmpty(false)
+        // console.log(`Length?: ${conversations.length}`)
+        if (conversations.length > 0) {
+            setEmpty(false)
+            const values = conversations.map(a => a.other_user.username)
+            // setPublicKeys(conversations.map(a => a.other_user.username))
+            // console.log(`Public keys: ${publickeys}`)
+            // console.log(`Values: ${values.toString()}`)
+        }
     }, [conversations])
+
+    useEffect(() => {
+        // console.log(`publickeys: ${publickeys}`)
+    }, [publickeys])
 
     useEffect(() => {
         if (!isFocused) return
@@ -93,12 +151,24 @@ export const Conversations = ({ navigation }) => {
         setFirstLoad(false)
     }, [isFocused])
 
-    const navigateToChat = (firstUser: string, secondUser: string) => {
-        navigation.navigate('Chat', { user1: firstUser, user2: secondUser })
+    const navigateToChat = (firstUser: string, secondUser: string, otherPub: string) => {
+        navigation.navigate('Chat', { user1: firstUser, user2: secondUser, other_pub: otherPub })
     }
 
     const refresh = () => {
         getConversations()
+    }
+
+    function decryptMessage(self_privatekey, other_user_publickey, content) {
+        let self_priv = decodeBase64(self_privatekey)
+        let other_pub = decodeBase64(other_user_publickey)
+        let nonce = new Uint8Array(24).fill(0)
+        content = decodeUTF8(content)
+        console.log(`ORDER IN THE COURT: CONTENT: ${content}, NONCE: ${nonce}, OTHER KEY: ${other_pub}, SELF KEY: ${self_priv}`)
+        const decryptedMessage = nacl.box.open(content, nonce, other_pub, self_priv)
+        console.log(`DECRYPTED MESSAGE HERE ${decryptedMessage}`)
+        // return new TextDecoder().decode(decryptedMessage)
+        return encodeUTF8(decryptedMessage)
     }
 
     const renderItem = ({ item }) => {
@@ -109,8 +179,20 @@ export const Conversations = ({ navigation }) => {
             console.log(error);
             return
         }
+        // console.log(findArrayByUser(publickeys, item.other_user))
+        // try{
+        //     if (findArrayByUser(publickeys, item.other_user)['publickey']) {
+        //         item.last_message.content = decryptMessage(storage.getString('privkey'), findArrayByUser(publickeys, item.other_user)['publickey'].toString(), item.last_message.content)
+        //     }
+        //     // item.last_message.content = decryptMessage(storage.getString('privkey'), findArrayByUser(publickeys, item.other_user)['publickey'].toString(), item.last_message.content)
+        //     // console.log(`Nickellee key: ${findArrayByUser(keyres.data, 'nickellee')['publickey']}`)
+        // } catch (error) {
+        //     console.log(error)
+        //     return
+        // }
 
         const now = moment.utc().local()
+        // console.log(item)
         let timestamp = item.last_message ?
             moment.utc(item.last_message.timestamp).local().startOf('seconds').fromNow()
             : ""
@@ -149,7 +231,7 @@ export const Conversations = ({ navigation }) => {
 
         return (
             <TouchableHighlight
-                onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}
+                onPress={() => navigateToChat(namesAlph[0], namesAlph[1], findArrayByUser(publickeys, item.other_user.username)['publickey'])}
                 testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}`}
             >
                 <View
