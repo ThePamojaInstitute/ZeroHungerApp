@@ -6,14 +6,61 @@ import postalStyles from "../../styles/screens/postFormStyleSheet"
 import loginStyles from "../../styles/screens/loginStyleSheet"
 import { savePreferences } from "../controllers/preferences";
 import { useAlert } from "../context/Alert";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 
 export const PermissionsScreen = ({ navigation }) => {
     const { dispatch: alert } = useAlert()
-
+    
     const [postalCode, setPostalCode] = useState('')
     const [errMsg, setErrMsg] = useState("")
+    const { user, dispatch } = useContext(AuthContext)
+    const delay = ms => new Promise(res => setTimeout(res, ms));
 
     const savePostalCode = async () => {
+        dispatch;
+        //add loading icon here
+        if (!user)
+        {
+            console.log("Delaying")
+            await delay(5000)
+            if (!user)
+            {
+                await delay(5000)
+                savePreferences(postalCode, null, null, null).then(res => {
+                    if (res.msg === "success") {
+                        navigation.navigate('GuidelinesScreen')
+                        return
+                    } else if (res.res) {
+                        setErrMsg(res.res)
+                        return
+                    } else {
+                        alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+                        return
+                    }
+                })
+            }
+            else
+            {
+                savePreferences(postalCode, null, null, null).then(res => {
+                    if (res.msg === "success") {
+                        navigation.navigate('GuidelinesScreen')
+                        return
+                    } else if (res.res) {
+                        setErrMsg(res.res)
+                        return
+                    } else {
+                        alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+                        return
+                    }
+                })
+            }
+            console.log("finished delaying, trying again")
+           
+            
+        }
+        else
+        {
         savePreferences(postalCode, null, null, null).then(res => {
             if (res.msg === "success") {
                 navigation.navigate('GuidelinesScreen')
@@ -26,6 +73,7 @@ export const PermissionsScreen = ({ navigation }) => {
                 return
             }
         })
+    }
     }
 
     return (
@@ -63,7 +111,7 @@ export const PermissionsScreen = ({ navigation }) => {
                         >
                             <Text style={globalStyles.defaultBtnLabel}>Save my postal code</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ alignSelf: "center", paddingTop: 24 }} onPress={() => {savePreferences(null,null,null,null),  navigation.navigate("GuidelinesScreen")}}>
+                        <TouchableOpacity style={{ alignSelf: "center", paddingTop: 24 }} onPress={() => {navigation.navigate("GuidelinesScreen")}}>
                             <Text style={[globalStyles.Button, { color: Colors.primaryDark }]}>Not right now</Text>
                         </TouchableOpacity>
                     </View>

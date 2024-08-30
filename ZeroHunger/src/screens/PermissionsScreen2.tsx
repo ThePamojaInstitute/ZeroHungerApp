@@ -6,19 +6,34 @@ import { useTranslation } from "react-i18next";
 import { storage } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { savePreferences } from "../controllers/preferences";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 
 
 export const PermissionsScreen2 = ({ navigation }) => {
     const { t, i18n } = useTranslation();
+    const { user, dispatch } = useContext(AuthContext)
+    const delay = ms => new Promise(res => setTimeout(res, ms));
 
     const onPress = async () => {
-
+                //check user here
         if (Platform.OS === "web") {
             const appData = storage.getString("appLaunched")
 
                 storage.set("appLaunched", "true")
+
                 updateNotificationsSettings(true, true)
-                navigation.navigate("HomeScreen")
+              
+                if (user)
+                    {
+                        navigation.navigate("HomeScreen")
+                    }
+                    else
+                    {
+                        await delay(5000)
+                        navigation.navigate("HomeScreen")
+                    }
+                    
 
         }
         else {
@@ -26,7 +41,15 @@ export const PermissionsScreen2 = ({ navigation }) => {
 
                 AsyncStorage.setItem("appLaunched", "true")
                 updateNotificationsSettings(true, true)
-                navigation.navigate("HomeScreen")
+                if (user)
+                    {
+                        navigation.navigate("HomeScreen")
+                    }
+                    else
+                    {
+                        await delay(5000)
+                        navigation.navigate("HomeScreen")
+                    }
         }
     }
     const onSkipPress = async () => {
@@ -35,17 +58,42 @@ export const PermissionsScreen2 = ({ navigation }) => {
             const appData = storage.getString("appLaunched")
 
                 storage.set("appLaunched", "true")
-                navigation.navigate("HomeScreen")
-
+               //fix delays here
+               if (user)
+                {
+                    navigation.navigate("HomeScreen")
+                }
+                else
+                {
+                    await delay(5000)
+                    navigation.navigate("HomeScreen")
+                }
+                
         }
         else {
             const appData = await AsyncStorage.getItem("appLaunched")
 
                 AsyncStorage.setItem("appLaunched", "true")
-                navigation.navigate("HomeScreen")
+                if (user)
+                    {
+                        navigation.navigate("HomeScreen")
+                    }
+                    else
+                    {
+                        await delay(5000)
+                        navigation.navigate("HomeScreen")
+                    }
         }
-            
-        navigation.navigate("HomeScreen")
+      
+        if (user)
+            {
+                navigation.navigate("HomeScreen")
+            }
+            else
+            {
+                await delay(5000)
+                navigation.navigate("HomeScreen")
+            }
     }
 
     return (

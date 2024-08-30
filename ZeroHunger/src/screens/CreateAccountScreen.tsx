@@ -65,6 +65,7 @@ export const CreateAccountScreen = ({ navigation }) => {
     })
       .then(async res => {
         if (res.msg === "success") {
+          
           await axiosInstance.post("users/token/",
             { "username": credentials['username'], "password": credentials['password'] })
             .then(resp => {
@@ -77,7 +78,8 @@ export const CreateAccountScreen = ({ navigation }) => {
 
               setTokens(resp.data)
             }).then(() => {
-              navigation.navigate('PermissionsScreen')
+              
+                
             })
         } else {
           dispatch({ type: "LOGIN_FAILURE", payload: res.res })
@@ -104,6 +106,7 @@ export const CreateAccountScreen = ({ navigation }) => {
       "confPassword": data['confPass']
     }).then(res => {
       if (res.msg === "success") {
+        navigation.navigate("PermissionsScreen")
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
         // alert!({ type: 'open', message: 'Account created successfully!', alertType: 'success' })
         // navigation.navigate('LoginScreen')
@@ -113,7 +116,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           "expo_push_token": expoPushToken
         }
         handleLogin(credentials)
-        navigation.navigate("PermissionsScreen")
+        
       } else {
         if (!res.res['username'] && !res.res['email']) {
           alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
