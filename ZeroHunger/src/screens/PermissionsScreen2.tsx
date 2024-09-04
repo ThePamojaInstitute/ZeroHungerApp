@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, TextInput, Platform } from "react-native";
+import { View, Text, Image, TouchableOpacity, TextInput, Platform, ActivityIndicator } from "react-native";
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import styles from "../../styles/screens/permissionsStyleSheet";
 import { updateNotificationsSettings } from "../controllers/notifications";
@@ -12,7 +12,7 @@ import { useContext } from "react";
 
 export const PermissionsScreen2 = ({ navigation }) => {
     const { t, i18n } = useTranslation();
-    const { user, dispatch } = useContext(AuthContext)
+    const { user, loading, dispatch } = useContext(AuthContext)
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
     async function waitForUserSkip(totalTime, increment, currentTime)
@@ -161,21 +161,31 @@ export const PermissionsScreen2 = ({ navigation }) => {
 
     return (
         <View style={styles.view2}>
+            
             <Image source={require('../../assets/Permissions2.png')} resizeMode="center" style={styles.image2} />
             <Text style={globalStyles.H2}>{t("permissions.notifications.heading")}</Text>
             <Text style={[globalStyles.Body, { paddingTop: 12, textAlign: "center" }]}>{t("permissions.notifications.text")}</Text>
             <View style={{ paddingTop: 24, paddingLeft: -4, paddingRight: -4 }}>
                 <View style={{ marginTop: 48 }}>
+                {loading &&
+                            <><ActivityIndicator animating size="large" color={Colors.primary} />
+                        <Text style={[globalStyles.Small1, { color: '#656565' }]}> Please wait a moment, we're getting things ready </Text></>
+                        }   
+                
+                {!loading &&
                     <TouchableOpacity style={[globalStyles.defaultBtn, { width: 350 }]}
                         onPress={onPress}
                     >
                         <Text style={globalStyles.defaultBtnLabel}>{t("permissions.notifications.submit.label")}</Text>
                     </TouchableOpacity>
+                }
+                {!loading &&
                     <TouchableOpacity style={{ alignSelf: "center", paddingTop: 24 }}
-                        onPress={onSkipPress}
+                    onPress={onSkipPress}
                     >
                         <Text style={[globalStyles.Button, { color: Colors.primaryDark }]}>{t("permissions.notifications.alt.label")}</Text>
                     </TouchableOpacity>
+                }   
                 </View>
             </View>
         </View>
