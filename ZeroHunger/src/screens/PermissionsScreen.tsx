@@ -15,49 +15,103 @@ export const PermissionsScreen = ({ navigation }) => {
     const [postalCode, setPostalCode] = useState('')
     const [errMsg, setErrMsg] = useState("")
     const { user, dispatch } = useContext(AuthContext)
+
     const delay = ms => new Promise(res => setTimeout(res, ms));
+
+    async function waitForUser(totalTime, increment, currentTime)
+    {
+        console.log("delaying until user")
+        dispatch;
+        if (!user)
+        {
+            await delay(increment);
+            currentTime += increment;
+            if (totalTime >= currentTime)
+            {
+            waitForUser(totalTime, increment, currentTime)
+            }
+            else
+            {
+                console.log("Done delaying, user now exists properly")
+                savePreferences(postalCode, null, null, null).then(res => {
+                    if (res.msg === "success") {
+                        navigation.navigate('GuidelinesScreen')
+                        return
+                    } else if (res.res) {
+                        setErrMsg(res.res)
+                        return
+                    } else {
+                        alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+                        return
+                    }
+                })
+                return;
+            }
+        }
+        else
+        {
+            console.log("no delay, user already exists")
+            savePreferences(postalCode, null, null, null).then(res => {
+                if (res.msg === "success") {
+                    navigation.navigate('GuidelinesScreen')
+                    return
+                } else if (res.res) {
+                    setErrMsg(res.res)
+                    return
+                } else {
+                    alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+                    return
+                }
+            })
+            return;
+        }
+
+
+    }
 
     const savePostalCode = async () => {
         dispatch;
         //add loading icon here
         if (!user)
         {
-            console.log("Delaying")
-            await delay(5000)
-            if (!user)
-            {
-                await delay(5000)
-                savePreferences(postalCode, null, null, null).then(res => {
-                    if (res.msg === "success") {
-                        navigation.navigate('GuidelinesScreen')
-                        return
-                    } else if (res.res) {
-                        setErrMsg(res.res)
-                        return
-                    } else {
-                        alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                        return
-                    }
-                })
-            }
-            else
-            {
-                savePreferences(postalCode, null, null, null).then(res => {
-                    if (res.msg === "success") {
-                        navigation.navigate('GuidelinesScreen')
-                        return
-                    } else if (res.res) {
-                        setErrMsg(res.res)
-                        return
-                    } else {
-                        alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                        return
-                    }
-                })
-            }
-            console.log("finished delaying, trying again")
-           
+            console.log("Starting Delay)")
+            await waitForUser(15000,100,0);
             
+
+            // console.log("Delaying")
+            // await delay(5000)
+            // if (!user)
+            // {
+            //     await delay(5000)
+            //     savePreferences(postalCode, null, null, null).then(res => {
+            //         if (res.msg === "success") {
+            //             navigation.navigate('GuidelinesScreen')
+            //             return
+            //         } else if (res.res) {
+            //             setErrMsg(res.res)
+            //             return
+            //         } else {
+            //             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+            //             return
+            //         }
+            //     })
+            // }
+            // else
+            // {
+            //     savePreferences(postalCode, null, null, null).then(res => {
+            //         if (res.msg === "success") {
+            //             navigation.navigate('GuidelinesScreen')
+            //             return
+            //         } else if (res.res) {
+            //             setErrMsg(res.res)
+            //             return
+            //         } else {
+            //             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+            //             return
+            //         }
+            //     })
+            // }
+            // console.log("finished delaying, trying again")
         }
         else
         {
