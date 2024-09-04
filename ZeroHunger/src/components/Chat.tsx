@@ -10,9 +10,16 @@ import { FlashList } from "@shopify/flash-list";
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { Char } from '../../types';
 import { WSBaseURL, storage } from '../../config';
+// import { storage } from '../../config'
 import { handleExpiryDate } from '../controllers/post';
+import { encryptMessage, decryptMessage } from '../controllers/message';
 import { ENV } from '../../env';
 import { ChatCustomHeader } from './headers/ChatCustomHeader';
+import { axiosInstance, getAccessToken } from "../../config";
+import { MessageModel } from "../models/Message";
+import nacl from "tweetnacl"
+import { encodeBase64, decodeBase64, decodeUTF8, encodeUTF8 } from "tweetnacl-util"
+// import { addPublicKey } from '../controllers/publickey';
 
 
 export const Chat = ({ navigation, route }) => {
@@ -33,6 +40,7 @@ export const Chat = ({ navigation, route }) => {
     }, [])
 
     const [message, setMessage] = React.useState("");
+    const [refreshing, setRefreshing] = React.useState(false)
     const [messageHistory, setMessageHistory] = React.useState<object[]>([]);
     const [start, setStart] = useState(20)
     const [end, setEnd] = useState(30)
@@ -44,12 +52,73 @@ export const Chat = ({ navigation, route }) => {
     const [initiatedTimeStampForMe, setInitiatedTimeStampForMe] = useState(false)
     const [initiatedTimeStampForOther, setInitiatedTimeStampForOther] = useState(false)
 
+    const addPublicKey = async () => {
+        const { user, accessToken } = React.useContext(AuthContext)
+        try {
+            const res = await axiosInstance.post('users/addPublicKey', {
+                data: {
+                    user: user['username'],
+                    publickey: storage.getString('pubkey'),
+                    username: user['username'],
+                },
+                headers: {
+                    Authorization: await getAccessToken()
+                }
+            });
+            console.log(res)
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
+    const getMessages = async () => {
+        try {
+            const res = await axiosInstance.get(`chat/messageHistory`, {
+                headers: {
+                    Authorization: await getAccessToken()
+                },
+                params: {
+                    'conversation': conversationName
+                }
+            });
+            // console.log("got this far")
+            if (res.data.length === 0) {
+                setEmpty(true)
+            } else {
+                const orderedMessages: MessageModel[] = res.data
+                // orderedMessages.sort((a, b) => {
+                //     const aTime = new Date(a.timestamp)
+                //     const bTime = new Date(b.timestamp)
+
+                //     return bTime.getTime() - aTime.getTime()
+                // })
+                setMessageHistory(orderedMessages)
+                setLoading(false)
+                setEndReached(true)
+            }
+        } catch (error) {
+            alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+        }
+    }
+
+    // useEffect(() => {
+    //     setRefreshing(true)
+    //     let interval = setInterval(() => {
+    //         getMessages()
+    //     }, 1000)
+    //     return () => {
+    //         clearInterval(interval)
+    //         setRefreshing(false)
+    //     }
+    //     // setRefreshing(false)
+    // }, [])
+
     let lastFromMeRendered = false
     let lastFromOtherRendered = false
 
     const namesAlph = [route.params.user1, route.params.user2].sort();
     const conversationName = `${namesAlph[0]}__${namesAlph[1]}`
-    const reciever = namesAlph[0] === user['username'] ?
+    const receiver = namesAlph[0] === user['username'] ?
         namesAlph[1] : namesAlph[0]
 
     useEffect(() => {
@@ -58,22 +127,75 @@ export const Chat = ({ navigation, route }) => {
                 header: ({ navigation }) => (
                     <ChatCustomHeader
                         navigation={navigation}
-                        username={reciever}
+                        username={receiver}
                     />
                 )
             })
         } else {
             navigation.setOptions({
-                title: reciever,
+                title: receiver,
             })
         }
     }, [])
+    //////////////////////////////////////////////////////////////////////////////////////
+    useEffect(() => {
+        if(!endReached) {
+            if(storage.getString('pubkey') && storage.getString('privkey')) {
+                console.log(`Here are the keys! priv:${storage.getString('privkey')} and pub:${storage.getString('pubkey')}`)
+                // addPublicKey()
+                
+            } else {
+                const keyPair = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
+                storage.set('pubkey', encodeBase64(keyPair.publicKey))
+                storage.set('privkey', encodeBase64(keyPair.secretKey))
+                addPublicKey()
+            }
 
+            console.log(`Receiver: ${receiver}`)
+
+            let newtest = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
+
+            let origmes = "Hello World!"
+
+            let nonce = encodeBase64(nacl.randomBytes(nacl.box.nonceLength))
+
+            // let testmes = encryptMessage(storage.getString('privkey'), encodeBase64(newtest.publicKey), origmes)
+            let testmes = encryptMessage(storage.getString('privkey'), route.params.other_pub, origmes, nonce)
+            console.log(`WE TEST HERE (ENCRYPTED): ${testmes}`)
+            // let decmes = decryptMessage(storage.getString('privkey'), encodeBase64(newtest.publicKey), testmes)
+            let decmes = decryptMessage(storage.getString('privkey'), route.params.other_pub, testmes, nonce)
+            console.log(`WE TEST HERE (DECRYPTED): ${decmes}`)
+        }
+    }, [endReached])
+
+    const getPublicKeys = async () => {
+        try {
+            const res = await axiosInstance.get(`users/getPublicKey`, {
+                headers: {
+                    Authorization: await getAccessToken()
+                },
+                params: {
+                    'user': receiver
+                }
+            });
+
+            
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
+    
+
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    // 
     const handleSend = () => {
         if (message) {
             sendJsonMessage({
+                // axiosInstance
                 type: "chat_message",
-                message,
+                message: message,//encryptMessage(storage.getString('privkey'), route.params.other_pub, message),
                 name: user['username']
             });
             setMessage("");
@@ -95,7 +217,73 @@ export const Chat = ({ navigation, route }) => {
         } else console.log("end!!");
     }
 
+    const sendMessage = async(post: {
+        postData: {
+            // conversation: string,
+            from_user: string,
+            to_user: string,
+            content: string,
+            // timestamp: string, //unsure
+            // read: boolean
+        }
+    }) => {
+        try {
+            // const res = await axiosInstance.post('/posts/createPost', post)
+            const res = await axiosInstance.post('/chat/sendMessage', post)
+    
+            if (res.status === 201) {
+                return { msg: "success", res: res.data }
+            } else {
+                return { msg: "message failure", res: res.data }
+            }
+        } catch (error) {
+            return { msg: "message failure", res: error }
+        }
+    }
+
+    const submitMessage = async (data: object) => {
+        const res = await sendMessage({
+            postData: {
+                to_user: receiver,
+                from_user: user['username'],
+                content: message,
+            }
+        })
+        // Error handling here
+    }
+
+    const handleMessage = async(data:object) => {
+        if (!user || !user['user_id']) {
+            alert!({ type: 'open', message: 'You are not logged in!', alertType: 'error' })
+            navigation.navigate('LoginScreen')
+            return
+        } else if (loading) {
+            return
+        }
+        if (message) { //message is not empty
+            try{
+                await submitMessage(data)
+                setMessage("");
+                setInputHeight(30)
+            } catch(error) {
+                alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+            }
+        }
+
+        // setLoading(true)
+        // try{
+        //     await submitMessage(data)
+        //     setLoading(false)
+        // } catch(error) {
+        //     setLoading(false)
+        //     alert!({ type: 'open', message: 'An error occured!', alertType: 'error' })
+        // }
+    }
+    
+
+    // rewrite with axiosInstance
     const { readyState, sendJsonMessage } = useWebSocket(user ? `${WSBaseURL}chats/${conversationName}/` : null, {
+        // axiosInstance instead of useWebSocket here
         queryParams: {
             token: user ?
                 ENV === 'production' ? storage.getString('access_token') : accessToken
@@ -116,6 +304,7 @@ export const Chat = ({ navigation, route }) => {
                     break;
                 case "last_30_messages":
                     setInitiated(true)
+                    const otherUser = axiosInstance.get('')
                     if (data.messages.length === 0) {
                         setEmpty(true)
                     } else setMessageHistory(data.messages);
@@ -154,6 +343,7 @@ export const Chat = ({ navigation, route }) => {
         }
 
         if (connectionStatus === "Open" && route.params.msg) {
+            // let nonce = 
             if (route.params.post) {
                 sendJsonMessage({
                     type: "chat_message",
@@ -230,6 +420,7 @@ export const Chat = ({ navigation, route }) => {
             })
     }
 
+    // IMPORTANT TO NOTE THIS WAS NOT UPDATED TO REFLECT DIFFERENT RESPONSE RECEIVED FROM API
     const Post = ({ item }) => {
         const content = JSON.parse(item.content)
 
@@ -314,17 +505,21 @@ export const Chat = ({ navigation, route }) => {
                 return <Post key={item.id} item={item} />
             } catch (error) { }
         }
-        let showTimeStamp = false
-
-        if (item.from_user['username'] === user['username'] && !lastFromMeRendered && !initiatedTimeStampForMe) {
+        let showTimeStamp = false // was: let showTimeStamp = false
+        if (item.from_username === user['username'] && !lastFromMeRendered && !initiatedTimeStampForMe) {
             setInitiatedTimeStampForMe(true)
             lastFromMeRendered = true
             showTimeStamp = true
-        } else if (item.from_user['username'] !== user['username'] && !lastFromOtherRendered && !initiatedTimeStampForOther) {
+            // console.log("item is owned by user!")
+        } else if (item.from_username !== user['username'] && !lastFromOtherRendered && !initiatedTimeStampForOther) {
             setInitiatedTimeStampForOther(true)
             lastFromOtherRendered = true
             showTimeStamp = true
+            // console.log("item is not owned by user!")
         }
+
+        // console.log(`CONTENT HERE! ${item.content}`)
+        // item.content = decryptMessage(storage.getString('privkey'), route.params.other_pub, item.content)
 
         return <Message
             key={item.id}

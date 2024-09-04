@@ -97,6 +97,7 @@ export const createPost = async (post: {
 
     try {
         const res = await axiosInstance.post('/posts/createPost', post)
+        // const res = await axiosInstance.post('/chat/sendMessage', post)
 
         if (res.status === 201) {
             return { msg: "success", res: res.data }

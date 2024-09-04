@@ -1,7 +1,6 @@
 {
   "cli": {
-    "version": ">= 4.1.2",
-    "requireCommit": true
+    "version": ">= 4.1.2"
   },
   "build": {
     "development": {
