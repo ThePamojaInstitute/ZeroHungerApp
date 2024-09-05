@@ -42,7 +42,7 @@ SECRET_KEY = client.get_secret('DJANGO-KEY').value
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['zh-backend-app-staging.azurewebsites.net'] #Testing on Noah personal azure
+ALLOWED_HOSTS = ['zh-backend-app.azurewebsites.net'] #Testing on Noah personal azure
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Application definition
