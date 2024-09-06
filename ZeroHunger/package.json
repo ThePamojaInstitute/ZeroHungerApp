@@ -74,10 +74,8 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "~0.19.6",
     "react-native-web-swiper": "^2.2.4",
-    "react-router-dom": "^5.2.0",
-    "react-use-websocket": "^4.3.1",
-    "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "^0.15.1"
+    "react-router-dom": "^5.2.0"
+
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
