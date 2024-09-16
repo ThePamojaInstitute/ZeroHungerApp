@@ -18,6 +18,7 @@ class ConversationViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     def get_queryset(self):
         try:
             decoded_token = jwt.decode(self.request.headers['Authorization'], settings.SECRET_KEY)
+            print(self.request)
         except:
             return ""
 

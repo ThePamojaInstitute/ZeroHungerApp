@@ -4,13 +4,17 @@ import styles from "../../styles/components/messageStyleSheet"
 import { Colors } from "../../styles/globalStyleSheet";
 import { MessageModel } from "../models/Message";
 import { AuthContext } from "../context/AuthContext";
+import { encryptMessageWithoutNonce, decryptMessageWithoutNonce } from "../controllers/message";
+import { WSBaseURL, storage } from '../../config';
+import { getPrivateKey } from "../controllers/publickey";
 
 
-export const Message = ({ message, showTimeStamp }: {
+export const Message = ({ message, showTimeStamp, otherkey }: {
     message: MessageModel,
     showTimeStamp: boolean,
+    otherkey: String
 }) => {
-    const { user } = useContext(AuthContext);
+    const { user, privkey } = useContext(AuthContext);
 
     const formatMessageTimestamp = (timestamp: string) => {
         let date = new Date(timestamp).toLocaleTimeString()
@@ -41,7 +45,7 @@ export const Message = ({ message, showTimeStamp }: {
                             ? Colors.dark : Colors.white,
                         marginBottom: showTimeStamp ? 15 : 0
                     }
-                    ]}>{message.content}</Text>
+                    ]}>{decryptMessageWithoutNonce(privkey, otherkey, message.content)}</Text>
                     {showTimeStamp &&
                         <Text
                             testID="Message.timestamp"

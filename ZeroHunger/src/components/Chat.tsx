@@ -12,18 +12,20 @@ import { Char } from '../../types';
 import { WSBaseURL, storage } from '../../config';
 // import { storage } from '../../config'
 import { handleExpiryDate } from '../controllers/post';
-import { encryptMessage, decryptMessage } from '../controllers/message';
+import { encryptMessage, decryptMessage, encryptMessageWithoutNonce, decryptMessageWithoutNonce } from '../controllers/message';
 import { ENV } from '../../env';
 import { ChatCustomHeader } from './headers/ChatCustomHeader';
 import { axiosInstance, getAccessToken } from "../../config";
 import { MessageModel } from "../models/Message";
 import nacl from "tweetnacl"
 import { encodeBase64, decodeBase64, decodeUTF8, encodeUTF8 } from "tweetnacl-util"
+import { getPrivateKey } from '../controllers/publickey';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { addPublicKey } from '../controllers/publickey';
 
 
 export const Chat = ({ navigation, route }) => {
-    const { user, accessToken } = React.useContext(AuthContext)
+    const { user, accessToken, privkey } = React.useContext(AuthContext)
     const { setChatIsOpen } = useContext(NotificationContext);
 
     useEffect(() => {
@@ -41,6 +43,7 @@ export const Chat = ({ navigation, route }) => {
 
     const [message, setMessage] = React.useState("");
     const [refreshing, setRefreshing] = React.useState(false)
+    // const [selfkey, setSelfKey] = useState("")
     const [messageHistory, setMessageHistory] = React.useState<object[]>([]);
     const [start, setStart] = useState(20)
     const [end, setEnd] = useState(30)
@@ -53,7 +56,7 @@ export const Chat = ({ navigation, route }) => {
     const [initiatedTimeStampForOther, setInitiatedTimeStampForOther] = useState(false)
 
     const addPublicKey = async () => {
-        const { user, accessToken } = React.useContext(AuthContext)
+        const { user, accessToken, privkey } = React.useContext(AuthContext)
         try {
             const res = await axiosInstance.post('users/addPublicKey', {
                 data: {
@@ -67,6 +70,22 @@ export const Chat = ({ navigation, route }) => {
             });
             console.log(res)
         } catch(error) {
+            console.log(error)
+        }
+    }
+
+    const getKeys = async () => {
+        try {
+            const res = await axiosInstance.get("users/getPublicKeys", {
+                headers: {
+                    Authorization: await getAccessToken()
+                },
+                data: {
+                    users: [receiver]
+                },
+            })
+            console.log(res.data)
+        } catch (error) {
             console.log(error)
         }
     }
@@ -140,31 +159,21 @@ export const Chat = ({ navigation, route }) => {
     //////////////////////////////////////////////////////////////////////////////////////
     useEffect(() => {
         if(!endReached) {
-            if(storage.getString('pubkey') && storage.getString('privkey')) {
-                console.log(`Here are the keys! priv:${storage.getString('privkey')} and pub:${storage.getString('pubkey')}`)
-                // addPublicKey()
-                
-            } else {
-                const keyPair = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
-                storage.set('pubkey', encodeBase64(keyPair.publicKey))
-                storage.set('privkey', encodeBase64(keyPair.secretKey))
-                addPublicKey()
-            }
-
             console.log(`Receiver: ${receiver}`)
 
-            let newtest = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
+            // let newtest = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
 
-            let origmes = "Hello World!"
+            // let origmes = "Hello World!"
 
-            let nonce = encodeBase64(nacl.randomBytes(nacl.box.nonceLength))
+            // let nonce = encodeBase64(nacl.randomBytes(nacl.box.nonceLength))
 
             // let testmes = encryptMessage(storage.getString('privkey'), encodeBase64(newtest.publicKey), origmes)
-            let testmes = encryptMessage(storage.getString('privkey'), route.params.other_pub, origmes, nonce)
-            console.log(`WE TEST HERE (ENCRYPTED): ${testmes}`)
-            // let decmes = decryptMessage(storage.getString('privkey'), encodeBase64(newtest.publicKey), testmes)
-            let decmes = decryptMessage(storage.getString('privkey'), route.params.other_pub, testmes, nonce)
-            console.log(`WE TEST HERE (DECRYPTED): ${decmes}`)
+            // let testmes = encryptMessage(storage.getString('privkey'), route.params.other_pub, origmes, nonce)
+            // let testmes = encryptMessageWithoutNonce(storage.getString(user['username'] + 'privkey'), route.params.other_pub, origmes)
+            // console.log(`WE TEST HERE (ENCRYPTED): ${testmes}`)
+            // // let decmes = decryptMessage(storage.getString('privkey'), encodeBase64(newtest.publicKey), testmes)
+            // let decmes = decryptMessageWithoutNonce(storage.getString(user['username'] + 'privkey'), route.params.other_pub, testmes)
+            // console.log(`WE TEST HERE (DECRYPTED): ${decmes}`)
         }
     }, [endReached])
 
@@ -189,13 +198,22 @@ export const Chat = ({ navigation, route }) => {
 
     //////////////////////////////////////////////////////////////////////////////////////
 
-    // 
+    
     const handleSend = () => {
         if (message) {
+            // console.log(`UBER OMEGA TESTING: ${getPrivateKey()}`)
+            // let newmes = encryptMessageWithoutNonce(storage.getString(user['username'] + 'privkey'), route.params.other_pub, message)
+            // try {
+            //     console.log(`obtained private key @ sending: ${getPrivateKey()}`)
+            // } catch(error) {
+            //     console.log(`error encountered @ sending: ${error}`)
+            // }
+
             sendJsonMessage({
                 // axiosInstance
                 type: "chat_message",
-                message: message,//encryptMessage(storage.getString('privkey'), route.params.other_pub, message),
+                // message: message,//encryptMessage(storage.getString('privkey'), route.params.other_pub, message),
+                message: encryptMessageWithoutNonce(privkey, route.params.other_pub, message),
                 name: user['username']
             });
             setMessage("");
@@ -207,6 +225,14 @@ export const Chat = ({ navigation, route }) => {
         if (!initiated) return
 
         if (end) {
+            // if (Platform.OS === 'web') {
+            //     setSelfKey(storage.getString(user['username'] + 'privkey'))
+            // } else {
+            //     AsyncStorage.getItem(user['username'] + 'privkey').then((key) => {
+            //         setSelfKey(key)
+            //     })
+            // }
+            // console.log(`key during load messages: ${selfkey}`)
             setLoading(true)
             sendJsonMessage({
                 type: `render__${start}_${end}`,
@@ -297,14 +323,24 @@ export const Chat = ({ navigation, route }) => {
         },
         onMessage: (e) => {
             const data = JSON.parse(e.data);
+            // console.log(`DATA IS FOUND HERE: ${JSON.stringify(data.message.content)}`)
+            // console.log(`MESSAGE IS FOUND HERE: ${JSON.stringify(data.content)}`)
+            // console.log(`selfkey at onmessage: ${selfkey}`)
+
+            // try {
+            //     console.log(`obtained private key @ onmessage: ${getPrivateKey()}`)
+            // } catch(error) {
+            //     console.log(`error encountered @ onmessage: ${error}`)
+            // }
             switch (data.type) {
                 case 'chat_message_echo':
+                    // console.log(`ECHO DATA IS FOUND HERE: ${data.message.content}`)
+                    // console.log(`ATTEMPTING TO DO STUFF: ${decryptMessageWithoutNonce(storage.getString(user['username'] + 'privkey'), route.params.other_pub, data.message.content)}`)
                     setMessageHistory([data.message, ...messageHistory]);
                     sendJsonMessage({ type: "read_messages" });
                     break;
                 case "last_30_messages":
                     setInitiated(true)
-                    const otherUser = axiosInstance.get('')
                     if (data.messages.length === 0) {
                         setEmpty(true)
                     } else setMessageHistory(data.messages);
@@ -353,10 +389,13 @@ export const Chat = ({ navigation, route }) => {
                 route.params.post = ''
             }
 
+            console.log(`WE'RE NOW AT CHAT, HERE'S THE PRIVATEKEY123: ${privkey}`)
+            //testing right here
             const msg = route.params.msg
             sendJsonMessage({
                 type: "chat_message",
-                message: msg,
+                message: encryptMessageWithoutNonce(privkey, route.params.other_pub, msg),
+                // message: msg,
                 name: user['username']
             });
             route.params.msg = ''
@@ -520,11 +559,13 @@ export const Chat = ({ navigation, route }) => {
 
         // console.log(`CONTENT HERE! ${item.content}`)
         // item.content = decryptMessage(storage.getString('privkey'), route.params.other_pub, item.content)
+        // item.content = decryptMessageWithoutNonce(storage.getString(user['username'] + 'privkey'), route.params.other_pub, item.content)
 
         return <Message
             key={item.id}
             message={item}
             showTimeStamp={showTimeStamp}
+            otherkey = {route.params.other_pub}
         />
     }
 

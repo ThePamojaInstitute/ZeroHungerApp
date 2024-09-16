@@ -168,6 +168,7 @@ export const FeedPostRenderer = ({
 
     const renderItem = ({ item }) => {
         if (!item || !item.postId) return
+        // console.log(item)
 
         const post: PostModel = {
             title: item.title,

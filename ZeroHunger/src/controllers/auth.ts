@@ -2,6 +2,7 @@ import { axiosInstance, getAccessToken, storage } from "../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Platform } from "react-native"
 import { ENV } from "../../env";
+import { handleNewKeys } from "./publickey";
 
 
 export async function createUser(user: Object) {
@@ -66,11 +67,47 @@ export async function logInUser(user: Object) {
         if (res.data == undefined) {
             return { msg: "failure", res: res['response'] }
         }
+        // let username = user["username"]
+        // if (Platform.OS === 'web') {
+        //     if (!storage.getString(username + 'privkey')) {
+        //         console.log(`WEB KEY DOES NOT EXIST!`)
+        //         handleNewKeys(username)
+        //     } else {
+        //         console.log(`WEB KEY DOES EXIST!`)
+        //     }
+        // } else {
+        //     AsyncStorage.getItem(username + 'privkey').then(key => {
+        //         if (!key) {
+        //             console.log(`MOBILE KEY DOES NOT EXIST!`)
+        //             handleNewKeys(username)
+        //         } else {
+        //             console.log(`MOBILE KEY DOES EXIST!`)
+        //         }
+        //     })
+        // }
+
         return { msg: "success", res: res.data }
     } catch (error) {
         return { msg: "failure", res: error.response }
     }
 }
+
+// let username = credentials['username']
+//               if (Platform.OS === 'web') {
+//                 if (!storage.getString) {
+
+//                 } else {
+                  
+//                 }
+//               } else {
+//                 let key = AsyncStorage.getItem(username + 'privkey').then(() => {
+//                   if(!key) {
+
+//                   } else {
+
+//                   }
+//                 })
+//               }
 
 export async function logOutUser() {
     try {

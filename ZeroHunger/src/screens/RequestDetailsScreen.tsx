@@ -8,6 +8,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PostModel } from "../models/Post";
 import { formatPostalCode, getCategory, getDiet, getLogisticsType, handleExpiryDate, handlePreferences } from "../controllers/post";
+import { axiosInstance } from "../../config";
 
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state'])
 
@@ -51,10 +52,35 @@ export const RequestDetailsScreen = ({ navigation }) => {
             postalCode: route.params?.postalCode,
             type: "r"
         }
-        navigation.navigate('Chat', {
-            user1: user['username'],
-            user2: route.params.username, msg: message, post: JSON.stringify(post)
-        })
+
+        try {
+            axiosInstance.get("users/getPublicKeys", {
+                params: {
+                    users: [route.params.username]
+                },
+            }).then((response) => {
+                if (response.status === 200 || response.status === 201) {
+                    navigation.navigate('Chat', {
+                        user1: user['username'],
+                        user2: route.params.username, msg: message, post: JSON.stringify(post),
+                        other_pub: response.data[0]['publickey']
+                    })
+                } else {
+                    console.log(`ENCOUNTERED A ${response.status} ERROR`)
+                    setAlertMsg("Error obtaining receiver information")
+                }
+                // console.log(`RESPONSE FOUND HERE: ${JSON.stringify(response.data[0])}`)
+                // console.log(`RESPONSE DATA FOUND HERE: ${response.data[0]['publickey']}`)
+            })
+        } catch (error) {
+            console.log(`ENCOUNTERED AN ERROR: ${error}`)
+            setAlertMsg("Error obtaining receiver information")
+        }
+
+        // navigation.navigate('Chat', {
+        //     user1: user['username'],
+        //     user2: route.params.username, msg: message, post: JSON.stringify(post),
+        // })
     }
 
     const logistics = handlePreferences(route.params?.logistics?.sort().toString(), getLogisticsType)

@@ -26,6 +26,7 @@ import { CreateUserFormData } from "../../types";
 import { axiosInstance, setTokens } from "../../config";
 import jwt_decode from "jwt-decode";
 import NotificationsTest from "./NotificationsTest";
+import { handleNewKeys, getPrivateKey1 } from "../controllers/publickey";
 
 export const CreateAccountScreen = ({ navigation }) => {
   const email_input = useRef<TextInput | null>(null)
@@ -65,19 +66,50 @@ export const CreateAccountScreen = ({ navigation }) => {
     })
       .then(async res => {
         if (res.msg === "success") {
+          console.log(`TESTING SPACE 1`)
           await axiosInstance.post("users/token/",
             { "username": credentials['username'], "password": credentials['password'] })
             .then(resp => {
+              // handleNewKeys(credentials['username'].toLowerCase())
+              console.log(`TESTING SPACE 2`)
               dispatch({
                 type: "LOGIN_SUCCESS", payload: {
                   "user": jwt_decode(resp.data['access']),
                   "token": resp.data
                 }
               })
+              console.log(`TESTING SPACE 3`)
 
               setTokens(resp.data)
+
+              console.log(`TESTING SPACE 4`)
+
+              handleNewKeys(credentials['username'].toLowerCase(), resp.data['access']).then(() => {
+                console.log(`TESTING SPACE 5`)
+
+                console.log(`CREATING ACCOUNT WITH KEY: ${getPrivateKey1(credentials['username'].toLowerCase())}`)
+
+                dispatch({
+                  type: "PRIVATEKEY", payload: {
+                    "privkey": getPrivateKey1(credentials['username'].toLowerCase())
+                  }
+                })
+              })
+
+              // console.log(`TESTING SPACE 5`)
+
+
+              // console.log(`CREATING ACCOUNT WITH KEY: ${getPrivateKey1(credentials['username'].toLowerCase())}`)
+
+              // dispatch({
+              //   type: "PRIVATEKEY", payload: {
+              //     "privkey": getPrivateKey1(credentials['username'].toLowerCase())
+              //   }
+              // })
             }).then(() => {
-              navigation.navigate('PermissionsScreen')
+              // navigation.navigate('PermissionsScreen')
+              // handleNewKeys(credentials['username'])
+                
             })
         } else {
           dispatch({ type: "LOGIN_FAILURE", payload: res.res })
@@ -104,6 +136,8 @@ export const CreateAccountScreen = ({ navigation }) => {
       "confPassword": data['confPass']
     }).then(res => {
       if (res.msg === "success") {
+        // handleNewKeys(data['username'].toLowerCase())
+        navigation.navigate("PermissionsScreen")
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
         // alert!({ type: 'open', message: 'Account created successfully!', alertType: 'success' })
         // navigation.navigate('LoginScreen')
@@ -112,6 +146,7 @@ export const CreateAccountScreen = ({ navigation }) => {
           "password": data['password'],
           "expo_push_token": expoPushToken
         }
+        console.log(`TESTING SPACE 7`)
         handleLogin(credentials)
         navigation.navigate("PermissionsScreen")
       } else {

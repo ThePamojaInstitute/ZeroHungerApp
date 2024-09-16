@@ -29,6 +29,8 @@ import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Controller, useForm } from "react-hook-form";
 import { LoginUserFormData } from "../../types";
+import { getPrivateKey1, handleNewKeys } from "../controllers/publickey";
+import { getUptimeAsync } from "expo-device";
 
 export const LoginScreen = ({ navigation }) => {
   const password_input = useRef<TextInput | null>(null)
@@ -81,16 +83,30 @@ export const LoginScreen = ({ navigation }) => {
           await axiosInstance.post("users/token/",
             { "username": data['username'], "password": data['password'] })
             .then(resp => {
+              // handleNewKeys(data['username'].toLowerCase())
+              console.log(data['username'])
+              // console.log(`DOES KEY WORK IN LOGIN ${getPrivateKey1(data['username'])}`)
               dispatch({
                 type: "LOGIN_SUCCESS", payload: {
                   "user": jwt_decode(resp.data['access']),
-                  "token": resp.data
+                  "token": resp.data,
+                  // "privateKey": getPrivateKey1(data['username'].toLowerCase())
                 }
               })
 
               setTokens(resp.data)
+
+              // console.log(`logging in, with access key: ${resp.data['access']} of type: ${typeof(resp.data['access'])}`)
+              handleNewKeys(data['username'].toLowerCase(), resp.data['access'])
+
+              dispatch({
+                type: "PRIVATEKEY", payload: {
+                  "privkey": getPrivateKey1(data['username'].toLowerCase())
+                }
+              })
             }).then(() => {
               // alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
+              // handleNewKeys(data['username'])
               navigation.navigate('HomeScreen')
             })
         } else if (res.msg === "failure") {

@@ -66,5 +66,5 @@ urlpatterns = [
     path('reset_password_complete', auth_views.PasswordResetCompleteView.as_view(template_name="password_reset/password_reset_complete.html"), name="password_reset_complete"),
     path('userPreferences', userPreferences.as_view()),
     path('addPublicKey', addPublicKey.as_view()),
-    path('getPublicKeys', getPublicKeys.as_view())
+    path('getPublicKeys', getPublicKeys.as_view(), name="get_public_keys")
 ]

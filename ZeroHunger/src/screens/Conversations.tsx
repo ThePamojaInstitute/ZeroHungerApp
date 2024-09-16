@@ -18,6 +18,8 @@ import { useTranslation } from "react-i18next";
 import { Platform } from "expo-modules-core";
 import nacl from "tweetnacl"
 import { encodeBase64, decodeBase64, encodeUTF8, decodeUTF8 } from "tweetnacl-util"
+import { encryptMessage, decryptMessage, encryptMessageWithoutNonce, decryptMessageWithoutNonce } from "../controllers/message";
+import { getPrivateKey } from "../controllers/publickey";
 
 const NoMessages = ({ navigate }) => (
     <View style={{
@@ -45,7 +47,7 @@ const NoMessages = ({ navigate }) => (
 )
 
 export const Conversations = ({ navigation }) => {
-    const { user } = useContext(AuthContext);
+    const { user, privkey } = useContext(AuthContext);
     const { unreadFromUsers } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
     const isFocused = useIsFocused()
@@ -57,6 +59,15 @@ export const Conversations = ({ navigation }) => {
     const [firstLoad, setFirstLoad] = useState(true)
 
     const getConversations = async () => {
+        console.log(`GETTING CONVERSATIONS, authprivkey: ${privkey}, real: ${storage.getString(user['username'] + 'privkey')}`)
+        // storage.delete('enctest1privkey')
+        // storage.delete('enctest1pubkey')
+        // storage.delete('enctest2privkey')
+        // storage.delete('enctest2pubkey')
+        // storage.delete('enctest3privkey')
+        // storage.delete('enctest3pubkey')
+        // storage.delete('enctest4privkey')
+        // storage.delete('enctest4pubkey')
         try {
             let res = await axiosInstance.get("chat/conversations/", {
                 headers: {
@@ -82,16 +93,24 @@ export const Conversations = ({ navigation }) => {
                 // console.log(`Manipulating content: ${orderedConversations.map(a => a.last_message.content = "Hello world")}`)
                 // console.log(`Usernames: ${usernames}`)
                 try {
-                    const keyres = await axiosInstance.get("users/getPublicKeys", {
-                        data: {
-                            users: usernames
-                        },
+                    // console.log(`STRINGIFY USERNAMES: ${JSON.stringify(usernames)}`)
+                    let keyres = await axiosInstance.get("users/getPublicKeys", {
                         headers: {
                             Authorization: await getAccessToken()
-                        }
-                    })
+                        },
+                        params: {
+                            users: usernames
+                            // users: ["nicktest"]
+                        },
+                    });
+
+                    // let res = await axiosInstance.get("users/getPublicKeys", {
+                    //     data: "test"
+                    // });
+
+                    // console.log(`TESTING RESPONSE HERE HELLO ${res.data}`)
                     const publickeys: PublicKeyModel[] = keyres.data
-                    // console.log(`${JSON.stringify(keyres.data)}`)
+                    console.log(`${JSON.stringify(keyres.data)}`)
                     setPublicKeys(keyres.data)
                     // orderedConversations.map(a => a.last_message.content = decryptMessage(storage.getString('privkey'), findArrayByUser(keyres.data, a.other_user.username)['publickey'], a.last_message.content))
                     // decryptMessage(self_privatekey, other_user_publickey, content)
@@ -100,6 +119,16 @@ export const Conversations = ({ navigation }) => {
                     // console.log(`Saved private key: ${storage.getString('pubkey')}, obtained publickey: ${findArrayByUser(keyres.data, user['username'])['publickey']}`)
                     // console.log(`Is ${findArrayByUser(keyres.data, 'nickellee')['publickey']}`)
                     // console.log(`Public keys: ${publickeys}`)
+
+                    const keyPair1 = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
+                    const keyPair2 = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
+
+                    let enc = encryptMessageWithoutNonce(encodeBase64(keyPair1.secretKey), encodeBase64(keyPair2.publicKey), "Hello world")
+                    let dec1 = decryptMessageWithoutNonce(encodeBase64(keyPair2.secretKey), encodeBase64(keyPair1.publicKey), enc)
+                    let dec2 = decryptMessageWithoutNonce(encodeBase64(keyPair1.secretKey), encodeBase64(keyPair2.publicKey), enc)
+
+                    console.log(`DECRYPT FOR OTHER USER: ${dec1}`)
+                    console.log(`DECRYPT WITH SELF USER: ${dec2}`)
 
                 } catch (error) {
                     console.log(error)
@@ -159,18 +188,6 @@ export const Conversations = ({ navigation }) => {
         getConversations()
     }
 
-    function decryptMessage(self_privatekey, other_user_publickey, content) {
-        let self_priv = decodeBase64(self_privatekey)
-        let other_pub = decodeBase64(other_user_publickey)
-        let nonce = new Uint8Array(24).fill(0)
-        content = decodeUTF8(content)
-        console.log(`ORDER IN THE COURT: CONTENT: ${content}, NONCE: ${nonce}, OTHER KEY: ${other_pub}, SELF KEY: ${self_priv}`)
-        const decryptedMessage = nacl.box.open(content, nonce, other_pub, self_priv)
-        console.log(`DECRYPTED MESSAGE HERE ${decryptedMessage}`)
-        // return new TextDecoder().decode(decryptedMessage)
-        return encodeUTF8(decryptedMessage)
-    }
-
     const renderItem = ({ item }) => {
         let namesAlph: string[]
         try {
@@ -179,7 +196,12 @@ export const Conversations = ({ navigation }) => {
             console.log(error);
             return
         }
-        // console.log(findArrayByUser(publickeys, item.other_user))
+        console.log(`FOUND KEY?: ${findArrayByUser(publickeys, item.other_user.username)}`)
+        if(findArrayByUser(publickeys, item.other_user.username)) {
+            console.log(`HERE IS ${item.other_user.username}'s KEY: ${findArrayByUser(publickeys, item.other_user.username)['publickey']}`)
+        }
+        // console.log(item)
+        // console.log(findArrayByUser(publickeys, item.other_user).toString())
         // try{
         //     if (findArrayByUser(publickeys, item.other_user)['publickey']) {
         //         item.last_message.content = decryptMessage(storage.getString('privkey'), findArrayByUser(publickeys, item.other_user)['publickey'].toString(), item.last_message.content)
@@ -190,6 +212,12 @@ export const Conversations = ({ navigation }) => {
         //     console.log(error)
         //     return
         // }
+        if (item.last_message) {
+            // item.last_message.content = decryptMessageWithoutNonce(storage.getString(user['username'] + 'privkey'), findArrayByUser(publickeys, item.other_user.username)['publickey'], item.last_message.content)
+            // console.log(`PUBLIC KEYS: ${JSON.stringify(publickeys[0])}`)
+            console.log(`PUBLIC KEYS AGAIN: ${findArrayByUser(publickeys, item.other_user.username)['publickey']}`)
+            console.log(`LAST MESSAGE: ${item.last_message.content}`)
+        }
 
         const now = moment.utc().local()
         // console.log(item)
@@ -229,9 +257,21 @@ export const Conversations = ({ navigation }) => {
 
         const isUnread = unreadFromUsers.includes(item.other_user.username)
 
+        console.log(`DOES AUTH CONTEXT WORK: ${privkey}`)
+
+        // try {
+        //     console.log(`got private key ${getPrivateKey()}`)
+        // } catch (error) {
+        //     console.log(`found error ${error}`)
+        // }
+
         return (
             <TouchableHighlight
-                onPress={() => navigateToChat(namesAlph[0], namesAlph[1], findArrayByUser(publickeys, item.other_user.username)['publickey'])}
+                onPress={() => {
+                    // item.last_message.content = encryptMessageWithoutNonce(storage.getString(user['username'] + 'privkey'), findArrayByUser(publickeys, item.other_user.username)['publickey'], item.last_message.content)
+                    // styles.content = decryptMessageWithoutNonce()
+                    navigateToChat(namesAlph[0], namesAlph[1], findArrayByUser(publickeys, item.other_user.username)['publickey'])
+                }}
                 testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}`}
             >
                 <View
@@ -255,7 +295,7 @@ export const Conversations = ({ navigation }) => {
                                 ellipsizeMode="tail"
                                 numberOfLines={2}
                                 style={isUnread ? styles.lastMessageUnread : styles.lastMessage}
-                            >{item?.last_message?.content}</Text>
+                            >{decryptMessageWithoutNonce(privkey, findArrayByUser(publickeys, item.other_user.username)['publickey'], item.last_message.content)}</Text>
                         </View>
                     </View>
                     <View>
