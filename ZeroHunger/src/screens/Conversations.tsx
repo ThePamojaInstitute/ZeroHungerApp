@@ -65,11 +65,13 @@ export const Conversations = ({ navigation }) => {
             } else {
                 const orderedConversations: ConversationModel[] = res.data
                 orderedConversations.sort((a, b) => {
+                    console.log(`CHECKPOINT HERE lmasdomasd!!`)
                     const aTime = new Date(a.last_message.timestamp)
                     const bTime = new Date(b.last_message.timestamp)
 
                     return bTime.getTime() - aTime.getTime()
                 })
+                // console.log(`CHECKPOINT HERE!!`)
                 setActiveConversations(orderedConversations);
             }
         } catch (error) {

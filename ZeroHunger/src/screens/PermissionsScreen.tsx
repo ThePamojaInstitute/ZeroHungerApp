@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, TextInput, Platform } from "react-native";
+import { View, Text, Image, TouchableOpacity, TextInput, Platform, ActivityIndicator } from "react-native";
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { useState } from "react";
 import styles from "../../styles/screens/permissionsStyleSheet";
@@ -14,50 +14,104 @@ export const PermissionsScreen = ({ navigation }) => {
     
     const [postalCode, setPostalCode] = useState('')
     const [errMsg, setErrMsg] = useState("")
-    const { user, dispatch } = useContext(AuthContext)
+    const { user, loading, dispatch } = useContext(AuthContext)
+
     const delay = ms => new Promise(res => setTimeout(res, ms));
+
+    async function waitForUser(totalTime, increment, currentTime)
+    {
+        console.log("delaying until user")
+      //  dispatch;
+        if (!user)
+        {
+            await delay(increment);
+            currentTime += increment;
+            if (totalTime >= currentTime)
+            {
+            waitForUser(totalTime, increment, currentTime)
+            }
+            else
+            {
+                console.log("Done delaying, user now exists properly")
+                savePreferences(postalCode, null, null, null).then(res => {
+                    if (res.msg === "success") {
+                        navigation.navigate('GuidelinesScreen')
+                        return
+                    } else if (res.res) {
+                        setErrMsg(res.res)
+                        return
+                    } else {
+                        alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+                        return
+                    }
+                })
+                return;
+            }
+        }
+        else
+        {
+            console.log("no delay, user already exists")
+            savePreferences(postalCode, null, null, null).then(res => {
+                if (res.msg === "success") {
+                    navigation.navigate('GuidelinesScreen')
+                    return
+                } else if (res.res) {
+                    setErrMsg(res.res)
+                    return
+                } else {
+                    alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+                    return
+                }
+            })
+            return;
+        }
+
+
+    }
 
     const savePostalCode = async () => {
         dispatch;
         //add loading icon here
         if (!user)
         {
-            console.log("Delaying")
-            await delay(5000)
-            if (!user)
-            {
-                await delay(5000)
-                savePreferences(postalCode, null, null, null).then(res => {
-                    if (res.msg === "success") {
-                        navigation.navigate('GuidelinesScreen')
-                        return
-                    } else if (res.res) {
-                        setErrMsg(res.res)
-                        return
-                    } else {
-                        alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                        return
-                    }
-                })
-            }
-            else
-            {
-                savePreferences(postalCode, null, null, null).then(res => {
-                    if (res.msg === "success") {
-                        navigation.navigate('GuidelinesScreen')
-                        return
-                    } else if (res.res) {
-                        setErrMsg(res.res)
-                        return
-                    } else {
-                        alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
-                        return
-                    }
-                })
-            }
-            console.log("finished delaying, trying again")
-           
+            console.log("Starting Delay)")
+            await waitForUser(15000,100,0);
             
+
+            // console.log("Delaying")
+            // await delay(5000)
+            // if (!user)
+            // {
+            //     await delay(5000)
+            //     savePreferences(postalCode, null, null, null).then(res => {
+            //         if (res.msg === "success") {
+            //             navigation.navigate('GuidelinesScreen')
+            //             return
+            //         } else if (res.res) {
+            //             setErrMsg(res.res)
+            //             return
+            //         } else {
+            //             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+            //             return
+            //         }
+            //     })
+            // }
+            // else
+            // {
+            //     savePreferences(postalCode, null, null, null).then(res => {
+            //         if (res.msg === "success") {
+            //             navigation.navigate('GuidelinesScreen')
+            //             return
+            //         } else if (res.res) {
+            //             setErrMsg(res.res)
+            //             return
+            //         } else {
+            //             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+            //             return
+            //         }
+            //     })
+            // }
+            // console.log("finished delaying, trying again")
         }
         else
         {
@@ -79,6 +133,7 @@ export const PermissionsScreen = ({ navigation }) => {
     return (
         <View style={{ backgroundColor: Colors.offWhite }}>
             <View style={[styles.view, Platform.OS === 'web' ? styles.alignWidth : {}]}>
+           
                 <Image source={require('../../assets/Permissions.png')} resizeMode="center" style={styles.image} />
                 <Text style={[globalStyles.H2, { textAlign: 'center' }]}>See food offers and requests in your area</Text>
                 <Text style={[globalStyles.Body, { paddingTop: 12, textAlign: 'center' }]}>We'll show you requests and offers based on your postal code.</Text>
@@ -105,12 +160,19 @@ export const PermissionsScreen = ({ navigation }) => {
                         />
                     </View>
                     <View>
+                        
+                        {loading &&
+                            <><ActivityIndicator animating size="large" color={Colors.primary} />
+                        <Text style={[globalStyles.Small1, { color: '#656565' }]}> Please wait a moment, we're getting things ready </Text></>
+                        }   
+
+                        {!loading &&
                         <TouchableOpacity
                             style={[globalStyles.defaultBtn, { width: "100%" }]}
                             onPress={savePostalCode}
                         >
                             <Text style={globalStyles.defaultBtnLabel}>Save my postal code</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity>}
                         <TouchableOpacity style={{ alignSelf: "center", paddingTop: 24 }} onPress={() => {navigation.navigate("GuidelinesScreen")}}>
                             <Text style={[globalStyles.Button, { color: Colors.primaryDark }]}>Not right now</Text>
                         </TouchableOpacity>
