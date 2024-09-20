@@ -23,7 +23,7 @@ export const storage = ENV === 'production' ? new MMKV() :
 // export const HttpBaseURL = 'http://127.0.0.1:8000/'
 // export const WSBaseURL = 'ws://http://127.0.0.1:8000/'
 export const HttpBaseURL = 'https://zh-backend-app.azurewebsites.net'
-export const WSBaseURL = 'wss://zh-backend-app.azurewebsites/'
+export const WSBaseURL = 'wss://zh-backend-app.azurewebsites.net/'
 // export const HttpBaseURL = 'https://zh-backend-app-staging.azurewebsites.net'
 // export const WSBaseURL = 'wss://zh-backend-app-staging.azurewebsites.net/'
 
