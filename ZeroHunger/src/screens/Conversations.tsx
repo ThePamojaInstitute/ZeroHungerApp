@@ -15,6 +15,8 @@ import { FlashList } from "@shopify/flash-list";
 import moment from 'moment';
 import { useTranslation } from "react-i18next";
 import { Platform } from "expo-modules-core";
+import { PublicKeyModel } from "../models/PublicKey";
+import { decryptMessage1 } from "../controllers/message";
 
 const NoMessages = ({ navigate }) => (
     <View style={{
@@ -42,12 +44,13 @@ const NoMessages = ({ navigate }) => (
 )
 
 export const Conversations = ({ navigation }) => {
-    const { user } = useContext(AuthContext);
+    const { user, privateKey } = useContext(AuthContext);
     const { unreadFromUsers } = useContext(NotificationContext);
     const { dispatch: alert } = useAlert()
     const isFocused = useIsFocused()
 
     const [conversations, setActiveConversations] = useState<ConversationModel[]>([]);
+    const [publickeys, setPublicKeys] = useState<PublicKeyModel[]>([]);
     const [empty, setEmpty] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
     const [firstLoad, setFirstLoad] = useState(true)
@@ -70,12 +73,37 @@ export const Conversations = ({ navigation }) => {
 
                     return bTime.getTime() - aTime.getTime()
                 })
+
+                let usernames = orderedConversations.map(a => a.other_user.username)
+
+                try {
+                    let keyres = await axiosInstance.get("users/getPublicKeys", {
+                        headers: {
+                            Authorization: await getAccessToken()
+                        }, 
+                        params: {
+                            users: usernames
+                        }
+                    })
+
+                    setPublicKeys(keyres.data)
+                    console.log(`SETTING PUBLIC KEYS TO: ${JSON.stringify(keyres.data)}`)
+
+                } catch (error) {
+                    console.log(`Encountered an error trying to get public keys: ${error}`)
+                }
                 // console.log(`CHECKPOINT HERE!!`)
                 setActiveConversations(orderedConversations);
             }
         } catch (error) {
             alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
         }
+    }
+
+    function findArrayByUser(array, username: String) {
+        return array.find((element) => {
+            return element.username == username
+        })
     }
 
     useEffect(() => {
@@ -94,8 +122,8 @@ export const Conversations = ({ navigation }) => {
         setFirstLoad(false)
     }, [isFocused])
 
-    const navigateToChat = (firstUser: string, secondUser: string) => {
-        navigation.navigate('Chat', { user1: firstUser, user2: secondUser })
+    const navigateToChat = (firstUser: string, secondUser: string, otherPub: string) => {
+        navigation.navigate('Chat', { user1: firstUser, user2: secondUser, otherPub: otherPub })
     }
 
     const refresh = () => {
@@ -110,6 +138,16 @@ export const Conversations = ({ navigation }) => {
             console.log(error);
             return
         }
+
+        let otherPub
+        try {
+            otherPub = findArrayByUser(publickeys, item.other_user.username)['publickey']
+            console.log(`Found array by user: ${otherPub}\nSelf private key: ${privateKey}\nItem content: ${item.last_message.content}`)
+
+        } catch (error) {
+            otherPub = "undefined"
+        }
+        // const otherPub = findArrayByUser(publickeys, item.other_user.username)['publickey']
 
         const now = moment.utc().local()
         let timestamp = item.last_message ?
@@ -150,7 +188,7 @@ export const Conversations = ({ navigation }) => {
 
         return (
             <TouchableHighlight
-                onPress={() => navigateToChat(namesAlph[0], namesAlph[1])}
+                onPress={() => navigateToChat(namesAlph[0], namesAlph[1], otherPub)}
                 testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}`}
             >
                 <View
@@ -174,7 +212,7 @@ export const Conversations = ({ navigation }) => {
                                 ellipsizeMode="tail"
                                 numberOfLines={2}
                                 style={isUnread ? styles.lastMessageUnread : styles.lastMessage}
-                            >{item?.last_message?.content}</Text>
+                            >{(otherPub == "undefined") ? item?.last_message?.content : decryptMessage1(privateKey, otherPub, item.last_message.content)}</Text>
                         </View>
                     </View>
                     <View>

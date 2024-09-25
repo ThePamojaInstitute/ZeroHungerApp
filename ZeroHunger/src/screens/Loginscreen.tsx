@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Controller, useForm } from "react-hook-form";
 import { LoginUserFormData } from "../../types";
+import { getPrivateKey1, handleNewKeys } from "../controllers/publickey";
 
 export const LoginScreen = ({ navigation }) => {
   const password_input = useRef<TextInput | null>(null)
@@ -89,6 +90,15 @@ export const LoginScreen = ({ navigation }) => {
               })
 
               setTokens(resp.data)
+
+              handleNewKeys(data['username'].toLowerCase(), resp.data['access'])
+
+              dispatch({
+                type: "PRIVATEKEY", payload: {
+                  "privateKey": getPrivateKey1(data['username'].toLowerCase())
+                }
+              })
+
             }).then(() => {
               // alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })
               navigation.navigate('HomeScreen')

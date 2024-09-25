@@ -13,10 +13,11 @@ import { WSBaseURL, storage } from '../../config';
 import { handleExpiryDate } from '../controllers/post';
 import { ENV } from '../../env';
 import { ChatCustomHeader } from './headers/ChatCustomHeader';
+import { encryptMessage1 } from '../controllers/message';
 
 
 export const Chat = ({ navigation, route }) => {
-    const { user, accessToken } = React.useContext(AuthContext)
+    const { user, accessToken, privateKey } = React.useContext(AuthContext)
     const { setChatIsOpen } = useContext(NotificationContext);
 
     useEffect(() => {
@@ -73,7 +74,7 @@ export const Chat = ({ navigation, route }) => {
         if (message) {
             sendJsonMessage({
                 type: "chat_message",
-                message,
+                message: encryptMessage1(privateKey, route.params.otherPub, message), //message,
                 name: user['username']
             });
             setMessage("");
@@ -166,7 +167,7 @@ export const Chat = ({ navigation, route }) => {
             const msg = route.params.msg
             sendJsonMessage({
                 type: "chat_message",
-                message: msg,
+                message: encryptMessage1(privateKey, route.params.otherPub, msg),//msg, 
                 name: user['username']
             });
             route.params.msg = ''
@@ -330,6 +331,7 @@ export const Chat = ({ navigation, route }) => {
             key={item.id}
             message={item}
             showTimeStamp={showTimeStamp}
+            otherKey = {route.params.otherPub}
         />
     }
 

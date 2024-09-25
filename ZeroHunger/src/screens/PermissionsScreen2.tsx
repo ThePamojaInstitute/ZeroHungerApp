@@ -8,6 +8,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { savePreferences } from "../controllers/preferences";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
+import { DrawerActions } from '@react-navigation/native';
+import { logOutUser } from "../controllers/auth";
 
 
 export const PermissionsScreen2 = ({ navigation }) => {
@@ -30,14 +32,36 @@ export const PermissionsScreen2 = ({ navigation }) => {
             else
             {
                 console.log("Done delaying, user now exists properly")
+                // logOutUser().then(() => {
+                //     dispatch({ type: "LOGOUT", payload: null })
+                //     navigation.navigate('LoginScreen')
+                // })
+                // const handleLogOut = (e: GestureResponderEvent) => {
+                //     logOutUser().then(() => {
+                //         dispatch({ type: "LOGOUT", payload: null })
+                //     }).then(() => {
+                //         alert!({ type: 'open', message: 'Logged out successfully!', alertType: 'success' })
+                //         props.navigation.dispatch(DrawerActions.closeDrawer())
+                //         props.navigation.navigate('LoginScreen')
+                //     }).catch(() => {
+                //         props.navigation.dispatch(DrawerActions.closeDrawer())
+                //         alert!({ type: 'open', message: 'An error occured', alertType: 'error' })
+                //     })
+                // }
                 navigation.navigate("HomeScreen")
+                // DrawerActions.openDrawer()
                 return;
             }
         }
         else
         {
             console.log("no delay, user already exists")
+            // logOutUser().then(() => {
+            //     dispatch({ type: "LOGOUT", payload: null })
+            //     navigation.navigate('LoginScreen')
+            // })
             navigation.navigate("HomeScreen")
+            // DrawerActions.openDrawer()
             return;
         }
 

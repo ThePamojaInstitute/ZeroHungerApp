@@ -26,6 +26,7 @@ import { CreateUserFormData } from "../../types";
 import { axiosInstance, setTokens } from "../../config";
 import jwt_decode from "jwt-decode";
 import NotificationsTest from "./NotificationsTest";
+import { handleNewKeys, getPrivateKey1 } from "../controllers/publickey";
 
 export const CreateAccountScreen = ({ navigation }) => {
   const email_input = useRef<TextInput | null>(null)
@@ -77,6 +78,18 @@ export const CreateAccountScreen = ({ navigation }) => {
               })
 
               setTokens(resp.data)
+
+              handleNewKeys(credentials['username'].toLowerCase(), resp.data['access']).then(() => {
+
+                console.log(`CREATING ACCOUNT WITH KEY: ${getPrivateKey1(credentials['username'].toLowerCase())}`)
+
+                dispatch({
+                  type: "PRIVATEKEY", payload: {
+                    "privateKey": getPrivateKey1(credentials['username'].toLowerCase())
+                  }
+                })
+
+              })
             }).then(() => {
               
                 

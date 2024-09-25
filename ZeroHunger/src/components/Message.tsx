@@ -4,13 +4,15 @@ import styles from "../../styles/components/messageStyleSheet"
 import { Colors } from "../../styles/globalStyleSheet";
 import { MessageModel } from "../models/Message";
 import { AuthContext } from "../context/AuthContext";
+import { decryptMessage1 } from "../controllers/message";
 
 
-export const Message = ({ message, showTimeStamp }: {
+export const Message = ({ message, showTimeStamp, otherKey }: {
     message: MessageModel,
     showTimeStamp: boolean,
+    otherKey: string
 }) => {
-    const { user } = useContext(AuthContext);
+    const { user, privateKey } = useContext(AuthContext);
 
     const formatMessageTimestamp = (timestamp: string) => {
         let date = new Date(timestamp).toLocaleTimeString()
@@ -41,7 +43,7 @@ export const Message = ({ message, showTimeStamp }: {
                             ? Colors.dark : Colors.white,
                         marginBottom: showTimeStamp ? 15 : 0
                     }
-                    ]}>{message.content}</Text>
+                    ]}>{decryptMessage1(privateKey, otherKey, message.content)}</Text>
                     {showTimeStamp &&
                         <Text
                             testID="Message.timestamp"
