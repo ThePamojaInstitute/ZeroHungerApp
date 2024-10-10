@@ -66,14 +66,14 @@ export const RequestDetailsScreen = ({ navigation }) => {
                         otherPub: response.data[0]['publickey']
                     })
                 } else {
-                    console.log(`ENCOUNTERED A ${response.status} ERROR`)
+                    // console.log(`ENCOUNTERED A ${response.status} ERROR`)
                     setAlertMsg("Error obtaining receiver information")
                 }
                 // console.log(`RESPONSE FOUND HERE: ${JSON.stringify(response.data[0])}`)
                 // console.log(`RESPONSE DATA FOUND HERE: ${response.data[0]['publickey']}`)
             })
         } catch (error) {
-            console.log(`ENCOUNTERED AN ERROR: ${error}`)
+            // console.log(`ENCOUNTERED AN ERROR: ${error}`)
             setAlertMsg("Error obtaining receiver information")
         }
         // navigation.navigate('Chat', {

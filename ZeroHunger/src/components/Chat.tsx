@@ -14,7 +14,7 @@ import { handleExpiryDate } from '../controllers/post';
 import { ENV } from '../../env';
 import { ChatCustomHeader } from './headers/ChatCustomHeader';
 import { encryptMessage1 } from '../controllers/message';
-
+import nacl from "tweetnacl"
 
 export const Chat = ({ navigation, route }) => {
     const { user, accessToken, privateKey } = React.useContext(AuthContext)
@@ -124,6 +124,12 @@ export const Chat = ({ navigation, route }) => {
                 case "render_x_to_y_messages":
                     setMessageHistory([...messageHistory, ...data.messages]);
                     setLoading(false)
+                    // try {
+                    //     let test = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
+                    //     alert!({ type: 'open', message: 'cond1: ' + JSON.stringify(test), alertType: 'success' })
+                    // } catch {
+                    //     alert!({ type: 'open', message: 'cond2 occurred', alertType: 'error' })
+                    // }
                     break
                 case "limit_reached":
                     setLoading(false)

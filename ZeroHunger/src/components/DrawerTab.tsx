@@ -133,11 +133,11 @@ const DrawerTab = () => {
                 name="BottomTab"
                 component={BottomTab}
                 options={({ route }) => {
-                    const routeName = getFocusedRouteNameFromRoute(route) ?? ("LoginScreen" || "PermissionsScreen2")
-                    console.log(`WE ARE LOOKING AT ROUTE RIGHT HERE: ${JSON.stringify(route)}`)
-                    console.log(`WHAT ABOUT NOW?: ${getFocusedRouteNameFromRoute(route)}`)
+                    const routeName = getFocusedRouteNameFromRoute(route) ?? ("LoginScreen")
+                    // console.log(`WE ARE LOOKING AT ROUTE RIGHT HERE: ${JSON.stringify(route)}`)
+                    // console.log(`WHAT ABOUT NOW?: ${getFocusedRouteNameFromRoute(route)}`)
                     if (!drawerTabEnabledScreens.includes(routeName))
-                        console.log(`HOW DO WE FEEL ABOUT THIS CONDITION CHAT`)
+                        // console.log(`HOW DO WE FEEL ABOUT THIS CONDITION CHAT`)
                         return ({ swipeEnabled: false, headerShown: false, })
                 }}
             />

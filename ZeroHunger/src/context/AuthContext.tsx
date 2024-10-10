@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as RootNavigation from '../../RootNavigation';
 import store from "../../store";
 import { ENV } from "../../env";
-import { getPrivateKey, getPrivateKey1 } from "../controllers/publickey";
+import { getPrivateKey, getPrivateKey2 } from "../controllers/publickey";
 
 const setItem = (key, value) => {
     if (ENV === 'production') storage.set(key, value)
@@ -121,18 +121,16 @@ const AuthReducer = (state: Object, action: { type: string; payload: Object }) =
             return {
                 ...state,
                 user: action.payload['user'],
-                accessToken: action.payload['access'],
-                privateKey: getPrivateKey1(action.payload['user'].username)
+                accessToken: action.payload['access']
             }
         case "UPDATE_REFRESH":
             return {
                 ...state,
                 user: action.payload['user'],
-                refreshToken: action.payload['access'],
-                privateKey: getPrivateKey1(action.payload['user'].username)
+                refreshToken: action.payload['access']
             }
         case "PRIVATEKEY":
-            console.log(`AUTHCONTEXT RECEIVED: ${action.payload['privateKey']} AS PRIVATE KEY`)
+            // console.log(`AUTHCONTEXT RECEIVED: ${action.payload['privateKey']} AS PRIVATE KEY`)
             return {
                 ...state,
                 privateKey: action.payload['privateKey']
@@ -203,7 +201,8 @@ export const AuthContextProvider = ({ children }) => {
                     state['refreshToken'] = response.data['refresh']
                     state['accessToken'] = response.data['access']
                     state['user'] = jwt_decode(state['accessToken'])
-                    state['privateKey'] = getPrivateKey1(state['user'].username)
+                    // state['privateKey'] = getPrivateKey1(state['user'].username)
+                    state['privateKey'] = await getPrivateKey2(state['user'].username)
 
                     setToken("access", state['accessToken'])
                     setToken("refresh", state['refreshToken'])
@@ -226,6 +225,7 @@ export const AuthContextProvider = ({ children }) => {
                 state['refreshToken'] = response.data['refresh']
                 state['accessToken'] = response.data['access']
                 state['user'] = jwt_decode(state['accessToken'])
+                state['privateKey'] = await getPrivateKey2(state['user'].username)
 
                 setToken("access", state['accessToken'])
                 setToken("refresh", state['refreshToken'])

@@ -29,6 +29,7 @@ import { HomeCustomHeaderRight } from "../components/headers/HomeCustomHeaderRig
 import { Button, Searchbar } from "react-native-paper";
 import {Alert, Modal} from 'react-native';
 import SurveyModal, { default as _SurveyModal } from "../components/SurveyModal";
+import { getPrivateKey2 } from "../controllers/publickey";
 
 
 const ThisSurveyModal = forwardRef(_SurveyModal)

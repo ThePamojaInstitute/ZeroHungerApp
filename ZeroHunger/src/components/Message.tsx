@@ -43,7 +43,7 @@ export const Message = ({ message, showTimeStamp, otherKey }: {
                             ? Colors.dark : Colors.white,
                         marginBottom: showTimeStamp ? 15 : 0
                     }
-                    ]}>{decryptMessage1(privateKey, otherKey, message.content)}</Text>
+                    ]}>{ decryptMessage1(privateKey, otherKey, message.content)/*message.content*/}</Text>
                     {showTimeStamp &&
                         <Text
                             testID="Message.timestamp"
@@ -61,5 +61,6 @@ export const Message = ({ message, showTimeStamp, otherKey }: {
         </View>
     );
 }
+// decryptMessage1(privateKey, otherPub, item.last_message.content)
 
 export default Message
