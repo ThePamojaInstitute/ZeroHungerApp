@@ -4,8 +4,8 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from django.db import models
-from .models import BasicUser, UserSurveyResponse
-from .models import BasicUser
+import collections
+from .models import BasicUser, UserSurveyResponse, PublicKey
 import pprint
 
 class RegistrationSerializer (serializers.ModelSerializer):
@@ -101,4 +101,30 @@ class SurveySerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSurveyResponse
         fields = ["stillInteractsOutsideApp", "responseBy"]
+        
+class PublicKeySerializer(serializers.ModelSerializer):
+    user = serializers.models.OneToOneField(BasicUser, on_delete=models.CASCADE, validators=[UniqueValidator(queryset=BasicUser.objects.all(), message="User already has publickey")])
+    publickey = serializers.CharField(allow_blank = False)
+    
+    username = serializers.SerializerMethodField(method_name='get_username')
+    
+    class Meta:
+        model=PublicKey
+        fields = ['user', 'publickey', 'username']
+        
+    
+    def get_username(self, obj):
+        if(type(obj) == collections.OrderedDict): # on creation
+            return None
+
+        if (type(obj) == dict ):
+             user = obj['user']
+        else:
+            user = obj.user
+        return user.username
+        
+    def save(self):
+        publickey = PublicKey(user = self.validated_data['user'],
+                              publickey = self.validated_data['publickey'])
+        publickey.save()
 

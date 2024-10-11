@@ -17,7 +17,7 @@ export const OfferDetailsScreen = ({ navigation }) => {
         params: PostModel
     }> = useRoute()
 
-    const { user } = useContext(AuthContext);
+    const { user, privateKey } = useContext(AuthContext);
 
     const [message, setMessage] = useState("Hi " + route.params.username + ", is this still available?")
     const [inputHeight, setInputHeight] = useState(0)
@@ -58,12 +58,16 @@ export const OfferDetailsScreen = ({ navigation }) => {
                     users: [route.params.username]
                 },
             }).then((response) => {
-                if (response.status === 200 || response.status === 201) {
-                    navigation.navigate('Chat', {
-                        user1: user['username'],
-                        user2: route.params.username, msg: message, post: JSON.stringify(post),
-                        otherPub: response.data[0]['publickey']
-                    })
+                if ((response.status === 200 || response.status === 201) && response.data[0]['publickey']) { //True if success status and publickeyexists
+                    if (privateKey && privateKey != "notInitialized") { //True if privatekey exists and privatekey is initialized
+                        navigation.navigate('Chat', {
+                            user1: user['username'],
+                            user2: route.params.username, msg: message, post: JSON.stringify(post),
+                            otherPub: response.data[0]['publickey']
+                        })
+                    } else {
+                        setAlertMsg("Error retrieving your information, try relogging and trying again")
+                    }
                 } else {
                     // console.log(`ENCOUNTERED A ${response.status} ERROR`)
                     setAlertMsg("Error obtaining receiver information")

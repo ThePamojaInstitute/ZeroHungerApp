@@ -23,8 +23,10 @@ export function encryptMessage(self_privatekey, other_user_publickey, content, n
 
         return encodeBase64(encrypted_content)
     } catch (error) {
+        return null
+        // Error with encrypting message
         // console.log(`Encountered an error: ${error}`)
-        alert!({ type: 'open', message: 'enc err: ' + JSON.stringify(error), alertType: 'error' })
+        // alert!({ type: 'open', message: 'enc err: ' + JSON.stringify(error), alertType: 'error' })
         // return content
     }
 }
@@ -58,8 +60,9 @@ export function decryptMessage(self_privatekey, other_user_publickey, encrypted_
         // console.log(`DECRYPTED MESSAGE HERE ${decryptedMessage}`)
         return decodeUTF8(decryptedMessage)
     } catch (error) {
+        // Unable to decrypt message
         // console.log(`Encountered an error: ${error}`)
-        alert!({ type: 'open', message: 'enc err: ' + JSON.stringify(error), alertType: 'error' })
+        // alert!({ type: 'open', message: 'enc err: ' + JSON.stringify(error), alertType: 'error' })
         return encrypted_content
     }
 }

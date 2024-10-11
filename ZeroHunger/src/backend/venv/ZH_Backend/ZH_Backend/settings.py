@@ -26,7 +26,7 @@ keyVaultName = os.environ["KEYVAULT_NAME"]
 credential = ManagedIdentityCredential(client_id = os.environ["MI_CLIENT_ID"], additionally_allowed_tenants=['*']) #logs in to azure for keyvault
 
 client = SecretClient(vault_url=keyVaultName, credential=credential)
-azure_redis_password = client.get_secret('REDIS-PASSWORD').value
+azure_redis_password = client.get_secret('REDIS-PASSWORD').value 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,7 +42,7 @@ SECRET_KEY = client.get_secret('DJANGO-KEY').value
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['zh-backend-app.azurewebsites.net'] 
+ALLOWED_HOSTS = ['zh-backend-app.azurewebsites.net'] #Testing on Noah personal azure
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Application definition
@@ -109,6 +109,13 @@ WSGI_APPLICATION = 'ZH_Backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / "db.sqlite3",
+#     }
+# }
 
 DATABASES = {
     'default': {

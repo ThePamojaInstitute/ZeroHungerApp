@@ -3,12 +3,13 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.parsers import JSONParser
 from django.conf import settings
 from django.db.models import Q
-from .models import BasicUser
+from .models import BasicUser, PublicKey
 from apps.Posts.models import RequestPost, OfferPost
 from apps.Posts.views import serialize_posts
-from .serializers import RegistrationSerializer, LoginSerializer, UpdateUserSerializer, SurveySerializer
+from .serializers import RegistrationSerializer, LoginSerializer, UpdateUserSerializer, SurveySerializer, PublicKeySerializer
 from datetime import timedelta, datetime
 import jwt
 from django.core.mail import send_mail
@@ -339,3 +340,66 @@ class submitUserSurvey(APIView):
             return Response(serializer.data, status=201)
         else:
             return Response(serializer.errors, status=400)
+
+class addPublicKey(APIView):
+    def post(self, request, format=None):
+        try:
+            decoded_token = jwt.decode(request.data['headers']['Authorization'], settings.SECRET_KEY)
+        except:
+            return Response("Token invalid or not given", 401)
+        
+        try:
+            user = BasicUser.objects.get(pk=decoded_token['user_id'])
+        except Exception:
+            return Response("User not found", 401)
+        
+        # print(f'Info: {request.data}')
+        
+        # print(f"{request.data['user']}, {decoded_token['username']}")
+        
+        if not (request.data['data']['user'] == decoded_token['username']):
+            return Response("Incorrect user or not given", 401)
+        # print("past condition")
+        
+        request.data['data']['user'] = BasicUser.objects.get(username = decoded_token['username']).pk
+
+        serializer = PublicKeySerializer(data = request.data['data'])
+        # serializer.user = request.data['user']
+        # serializer.publickey = request.data['publickey']
+        # serializer.data.user = 
+        # print(serializer)   
+        if (serializer.is_valid()):
+            serializer.save()
+            return Response(serializer.data, status=201)
+        else:
+            print(serializer.is_valid())
+            print(serializer.errors)
+            return Response(serializer.errors, status=401)
+
+class getPublicKeys(APIView):
+    def get(self, request, format=JSONParser):
+        try:
+            # print(request.headers)
+            users = request.GET.getlist('users[]')
+            # print(f'TYPE: {type(users[0])}')
+            # print(f'users here?: {users}')
+            # print(f'{users[0]}')
+            
+        except Exception as e:
+            return Response(e.__str__(), 400)
+        
+        try:
+            # publicKeys = PublicKey.objects.filter(username__in=request.data['data']['users'])
+            userlist = BasicUser.objects.filter(Q(username__in = users))
+            # print(f'USER LIST HERE: {userlist}')
+            publicKeys = PublicKey.objects.filter(Q(user__in = userlist))
+            # publicKeys = PublicKey.objects.filter(Q(username__in = users))
+            # print(f'PUBLIC KEYS: {publicKeys}')
+            # serializer = PublicKeySerializer(PublicKey.objects.all(), many=True)
+            serializer = PublicKeySerializer(publicKeys, many=True)
+            
+            # serializer.data['username'] = PublicKey.objects.all().
+            return Response(serializer.data, status=200)
+        except Exception as e:
+            return Response(e, status=500)
+

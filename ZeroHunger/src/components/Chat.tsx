@@ -72,13 +72,25 @@ export const Chat = ({ navigation, route }) => {
 
     const handleSend = () => {
         if (message) {
-            sendJsonMessage({
-                type: "chat_message",
-                message: encryptMessage1(privateKey, route.params.otherPub, message), //message,
-                name: user['username']
-            });
-            setMessage("");
-            setInputHeight(30)
+            let encryptedmessage = encryptMessage1(privateKey, route.params.otherPub, message) //message,
+            if (encryptedmessage) {
+                sendJsonMessage({
+                    type: "chat_message",
+                    message: encryptedmessage,
+                    name: user['username']
+                });
+                setMessage("");
+                setInputHeight(30)
+            } else {
+                alert!({ type: 'open', message: 'Error trying to send message, try relogging', alertType: 'error' })
+            }
+            // sendJsonMessage({
+            //     type: "chat_message",
+            //     message: encryptedmessage,
+            //     name: user['username']
+            // });
+            // setMessage("");
+            // setInputHeight(30)
         }
     }
 
