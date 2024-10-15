@@ -14,13 +14,13 @@ type Props = {
 }
 
 export const GuidelinesScreen = ({ navigation }, props: Props) => {
-    useEffect(() => {
-        navigation.getParent()?.setOptions({
-            tabBarStyle: {
-                display: "none"
-            }
-        })
-    })
+    // useEffect(() => {
+    //     navigation.getParent()?.setOptions({
+    //         tabBarStyle: {
+    //             display: "none"
+    //         }
+    //     })
+    // })
 
     const { t, i18n } = useTranslation();
 
