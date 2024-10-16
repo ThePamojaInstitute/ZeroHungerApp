@@ -101,3 +101,12 @@ class PublicKey(models.Model):
     def __str__(self):
         return f'{self.user}: {self.publickey}'
 
+class PublicKey(models.Model):
+    user = models.OneToOneField(
+        BasicUser, on_delete=models.CASCADE, related_name="user"
+    )
+    
+    publickey = models.CharField(default="", blank=True)
+    
+    def __str__(self):
+        return f'{self.user}: {self.publickey}'

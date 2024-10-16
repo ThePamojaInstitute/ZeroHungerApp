@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from django.db import models
 import collections
 from .models import BasicUser, UserSurveyResponse, PublicKey
-# from .models import BasicUser
 import pprint
 
 class RegistrationSerializer (serializers.ModelSerializer):

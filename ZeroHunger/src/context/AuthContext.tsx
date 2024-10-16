@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as RootNavigation from '../../RootNavigation';
 import store from "../../store";
 import { ENV } from "../../env";
+import { getPrivateKey, getPrivateKey2 } from "../controllers/publickey";
 
 const setItem = (key, value) => {
     if (ENV === 'production') storage.set(key, value)
@@ -38,6 +39,7 @@ interface IINITIAL_STATE {
     refreshToken: string,
     loading: boolean,
     error: Object,
+    privateKey: string,
     dispatch: Dispatch<{ type: string, payload: Object }>
 }
 
@@ -47,6 +49,7 @@ const INITIAL_STATE = {
     refreshToken: "notInitialized",
     loading: false,
     error: null,
+    privateKey: "notInitialized",
     dispatch: () => { }
 }
 
@@ -61,7 +64,8 @@ const AuthReducer = (state: Object, action: { type: string; payload: Object }) =
                 accessToken: null,
                 refreshToken: null,
                 loading: true,
-                error: null
+                error: null,
+                privateKey: null
             }
         case "LOGIN_SUCCESS":
             return {
@@ -79,7 +83,8 @@ const AuthReducer = (state: Object, action: { type: string; payload: Object }) =
                 accessToken: null,
                 refreshToken: null,
                 loading: false,
-                error: action.payload
+                error: action.payload,
+                privateKey: null
             }
         case "LOGOUT":
             return {
@@ -88,7 +93,8 @@ const AuthReducer = (state: Object, action: { type: string; payload: Object }) =
                 accessToken: null,
                 refreshToken: null,
                 loading: false,
-                error: null
+                error: null,
+                privateKey: null
             }
         case "SIGNUP_START":
             return {
@@ -115,13 +121,19 @@ const AuthReducer = (state: Object, action: { type: string; payload: Object }) =
             return {
                 ...state,
                 user: action.payload['user'],
-                accessToken: action.payload['access'],
+                accessToken: action.payload['access']
             }
         case "UPDATE_REFRESH":
             return {
                 ...state,
                 user: action.payload['user'],
-                refreshToken: action.payload['access'],
+                refreshToken: action.payload['access']
+            }
+        case "PRIVATEKEY":
+            // console.log(`AUTHCONTEXT RECEIVED: ${action.payload['privateKey']} AS PRIVATE KEY`)
+            return {
+                ...state,
+                privateKey: action.payload['privateKey']
             }
         default:
             return state
@@ -189,6 +201,8 @@ export const AuthContextProvider = ({ children }) => {
                     state['refreshToken'] = response.data['refresh']
                     state['accessToken'] = response.data['access']
                     state['user'] = jwt_decode(state['accessToken'])
+                    // state['privateKey'] = getPrivateKey1(state['user'].username)
+                    state['privateKey'] = await getPrivateKey2(state['user'].username)
 
                     setToken("access", state['accessToken'])
                     setToken("refresh", state['refreshToken'])
@@ -211,6 +225,7 @@ export const AuthContextProvider = ({ children }) => {
                 state['refreshToken'] = response.data['refresh']
                 state['accessToken'] = response.data['access']
                 state['user'] = jwt_decode(state['accessToken'])
+                state['privateKey'] = await getPrivateKey2(state['user'].username)
 
                 setToken("access", state['accessToken'])
                 setToken("refresh", state['refreshToken'])
@@ -243,9 +258,17 @@ export const AuthContextProvider = ({ children }) => {
 
     }, [state['refreshToken'], state['accessToken'], firstLoad])
 
+    useEffect(() => {
+        try {
+            console.log(`Privatekey changed to: ${state['privateKey']}`)
+        } catch(error) {
+            console.log(`Error encountered at authcontext: ${error}`)
+        }
+    }, [state['privateKey']])
+
     return (
         <AuthContext.Provider value={
-            { user: state['user'], accessToken: state['accessToken'], refreshToken: state['refreshToken'], loading: state['loading'], error: state['error'], dispatch }}>
+            { user: state['user'], accessToken: state['accessToken'], refreshToken: state['refreshToken'], loading: state['loading'], error: state['error'], privateKey: state['privateKey'],dispatch }}>
             {firstLoad ? null : children}
         </AuthContext.Provider>
     )

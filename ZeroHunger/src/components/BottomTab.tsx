@@ -661,6 +661,8 @@ const BottomTab = () => {
         'PermissionsScreen',
         'RequestFormScreen',
         'OfferFormScreen',
+        'GuidelinesScreen',
+        'PermissionsScreen2',
     ]
 
     return (
@@ -690,8 +692,10 @@ const BottomTab = () => {
                     tabBarStyle: ((route) => {
                         const routeName = getFocusedRouteNameFromRoute(route) ?? "LoginScreen"
                         if (bottomTabDisabledScreens.includes(routeName)) {
+                            // console.log(`disabled screens do include routename: ${routeName}`)
                             return { display: "none" }
-                        }
+                        } 
+                        // console.log(`disabled screens does not include routename: ${routeName}`)
                         return styles.bottomBarTab
                     })(route),
                 })}
