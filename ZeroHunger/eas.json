@@ -27,8 +27,7 @@
         "resourceClass": "m1-medium"
       },
       "android": {
-        "buildType": "apk",
-        "gradleCommand": "--stacktrace"
+        "buildType": "apk"
       }
     }
   },

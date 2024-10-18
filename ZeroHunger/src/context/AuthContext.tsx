@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as RootNavigation from '../../RootNavigation';
 import store from "../../store";
 import { ENV } from "../../env";
-import { getPrivateKey, getPrivateKey2 } from "../controllers/publickey";
+import { getPrivateKey2 } from "../controllers/publickey";
 
 const setItem = (key, value) => {
     if (ENV === 'production') storage.set(key, value)

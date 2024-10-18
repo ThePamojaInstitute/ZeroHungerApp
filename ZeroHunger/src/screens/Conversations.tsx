@@ -17,9 +17,6 @@ import { useTranslation } from "react-i18next";
 import { Platform } from "expo-modules-core";
 import { PublicKeyModel } from "../models/PublicKey";
 import { decryptMessage1 } from "../controllers/message";
-import nacl from "tweetnacl"
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { encode as encodeBase64 } from "@stablelib/base64";
 
 const NoMessages = ({ navigate }) => (
     <View style={{
@@ -68,23 +65,6 @@ export const Conversations = ({ navigation }) => {
 
             if (res.data.length === 0) {
                 setEmpty(true)
-                // let enctest = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
-                // AsyncStorage.setItem('tester', encodeBase64(enctest.secretKey)).then(() => {
-                //     AsyncStorage.getItem('tester').then(key => {
-                //         alert!({ type: 'open', message: JSON.stringify(key), alertType: 'success' })
-                //     })
-                // })
-                // AsyncStorage.getItem('tester').then(testkey => {
-                //     alert!({ type: 'open', message: JSON.stringify(testkey), alertType: 'error' })
-                // })
-                // AsyncStorage.getItem(user['username'] + 'privkey').then(key => {
-                //     alert!({ type: 'open', message: `selfkey: ${JSON.stringify(key)}`, alertType: 'success' })
-                // })
-                // AsyncStorage.setItem(user['username'].toLowerCase() + 'privkey', encodeBase64(enctest.secretKey)).then(() => {
-                //     AsyncStorage.getItem(user['username'].toLowerCase() + 'privkey').then(key => {
-                //         alert!({ type: 'open', message: JSON.stringify(key), alertType: 'success' })
-                //     })
-                // })
             } else {
                 const orderedConversations: ConversationModel[] = res.data
                 orderedConversations.sort((a, b) => {
@@ -107,13 +87,6 @@ export const Conversations = ({ navigation }) => {
                     })
 
                     setPublicKeys(keyres.data)
-                    // console.log(`SETTING PUBLIC KEYS TO: ${JSON.stringify(keyres.data)}`)
-                    // console.log(`${JSON.stringify(crypto.subtle.generateKey)}`)
-                    // alert!({ type: 'open', message: 'Testing: ' + JSON.stringify(nacl.randomBytes(nacl.box.secretKeyLength)), alertType: 'success' })
-                    // alert!({ type: 'open', message: 'Testing: ' + privateKey, alertType: 'success' })
-                    // user['username']
-                    // alert!({ type: 'open', message: 'Testing: ' + getPrivateKey1(user['username']), alertType: 'success' })
-                    
 
                 } catch (error) {
                     console.log(`Encountered an error trying to get public keys: ${error}`)
@@ -168,12 +141,10 @@ export const Conversations = ({ navigation }) => {
         let otherPub
         try {
             otherPub = findArrayByUser(publickeys, item.other_user.username)['publickey']
-            // console.log(`Found array by user: ${otherPub}\nSelf private key: ${privateKey}\nItem content: ${item.last_message.content}`)
 
         } catch (error) {
             otherPub = "undefined"
         }
-        // const otherPub = findArrayByUser(publickeys, item.other_user.username)['publickey']
 
         const now = moment.utc().local()
         let timestamp = item.last_message ?

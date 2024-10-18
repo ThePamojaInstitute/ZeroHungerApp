@@ -27,7 +27,6 @@ import { axiosInstance, setTokens } from "../../config";
 import jwt_decode from "jwt-decode";
 import NotificationsTest from "./NotificationsTest";
 import { handleNewKeys, getPrivateKey2 } from "../controllers/publickey";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const CreateAccountScreen = ({ navigation }) => {
   const email_input = useRef<TextInput | null>(null)
@@ -93,28 +92,7 @@ export const CreateAccountScreen = ({ navigation }) => {
               } catch(error) {
                 console.log(`New key handler error`)
               }
-              // handleNewKeys(credentials['username'].toLowerCase(), resp.data['access']).then(() => {
 
-              //   console.log(`CREATING ACCOUNT WITH KEY: ${getPrivateKey1(credentials['username'].toLowerCase())}`)
-
-              // dispatch({
-              //   type: "PRIVATEKEY", payload: {
-              //     "privateKey": getPrivateKey1(credentials['username'].toLowerCase())
-              //   }
-              // })
-              // try {
-              //   if (Platform.OS === 'web') {
-                  
-              //   } else {
-              //     AsyncStorage.getItem(credentials['username'].toLowerCase() + 'privkey').then((item) => {
-              //       alert!({ type: 'open', message: "Found: " + JSON.stringify(item), alertType: 'success' })
-              //     })
-              //   }
-              //   alert!({ type: 'open', message: "worked?", alertType: 'success' })
-              // } catch(error) {
-              //   alert!({ type: 'open', message: error, alertType: 'error' })
-              // }
-              // })
             }).then(() => {
               
                 
@@ -146,8 +124,6 @@ export const CreateAccountScreen = ({ navigation }) => {
       if (res.msg === "success") {
         navigation.navigate("PermissionsScreen")
         dispatch({ type: "SIGNUP_SUCCESS", payload: res.res })
-        // alert!({ type: 'open', message: 'Account created successfully!', alertType: 'success' })
-        // navigation.navigate('LoginScreen')
         const credentials = {
           "username": data['username'].toLowerCase(),
           "password": data['password'],

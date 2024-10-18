@@ -6,6 +6,9 @@ import { Platform } from "react-native";
 import nacl from "tweetnacl"
 import { encode as encodeBase64 } from "@stablelib/base64"
 
+//
+// Checks if user has a stored key, if not tries to send a public key to server, and saves private key if successful
+//
 export async function handleNewKeys(user: string, accesstoken: string) {
     // console.log(`TOKENS RECEIVED IN HANDLENEWKEYS: ${accesstoken}`)
     let keystatus
@@ -87,6 +90,9 @@ export function getPrivateKey1(user: string) {
     }
 }
 
+//
+// Async function to get private key from storage
+//
 export const getPrivateKey2 = async (user: string) => {
     let key: string
     if (Platform.OS === 'web') {

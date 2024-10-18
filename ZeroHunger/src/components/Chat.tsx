@@ -14,7 +14,6 @@ import { handleExpiryDate } from '../controllers/post';
 import { ENV } from '../../env';
 import { ChatCustomHeader } from './headers/ChatCustomHeader';
 import { encryptMessage1 } from '../controllers/message';
-import nacl from "tweetnacl"
 
 export const Chat = ({ navigation, route }) => {
     const { user, accessToken, privateKey } = React.useContext(AuthContext)

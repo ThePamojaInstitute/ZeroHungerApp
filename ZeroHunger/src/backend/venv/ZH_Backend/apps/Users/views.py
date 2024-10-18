@@ -353,21 +353,12 @@ class addPublicKey(APIView):
         except Exception:
             return Response("User not found", 401)
         
-        # print(f'Info: {request.data}')
-        
-        # print(f"{request.data['user']}, {decoded_token['username']}")
-        
         if not (request.data['data']['user'] == decoded_token['username']):
             return Response("Incorrect user or not given", 401)
-        # print("past condition")
         
         request.data['data']['user'] = BasicUser.objects.get(username = decoded_token['username']).pk
-
         serializer = PublicKeySerializer(data = request.data['data'])
-        # serializer.user = request.data['user']
-        # serializer.publickey = request.data['publickey']
-        # serializer.data.user = 
-        # print(serializer)   
+        
         if (serializer.is_valid()):
             serializer.save()
             return Response(serializer.data, status=201)
@@ -379,26 +370,16 @@ class addPublicKey(APIView):
 class getPublicKeys(APIView):
     def get(self, request, format=JSONParser):
         try:
-            # print(request.headers)
             users = request.GET.getlist('users[]')
-            # print(f'TYPE: {type(users[0])}')
-            # print(f'users here?: {users}')
-            # print(f'{users[0]}')
             
         except Exception as e:
             return Response(e.__str__(), 400)
         
         try:
-            # publicKeys = PublicKey.objects.filter(username__in=request.data['data']['users'])
             userlist = BasicUser.objects.filter(Q(username__in = users))
-            # print(f'USER LIST HERE: {userlist}')
             publicKeys = PublicKey.objects.filter(Q(user__in = userlist))
-            # publicKeys = PublicKey.objects.filter(Q(username__in = users))
-            # print(f'PUBLIC KEYS: {publicKeys}')
-            # serializer = PublicKeySerializer(PublicKey.objects.all(), many=True)
             serializer = PublicKeySerializer(publicKeys, many=True)
             
-            # serializer.data['username'] = PublicKey.objects.all().
             return Response(serializer.data, status=200)
         except Exception as e:
             return Response(e, status=500)

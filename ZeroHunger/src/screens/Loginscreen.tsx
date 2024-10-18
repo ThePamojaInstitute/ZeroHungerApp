@@ -26,12 +26,9 @@ import jwt_decode from "jwt-decode";
 import { Ionicons } from '@expo/vector-icons';
 import NotificationsTest from "./NotificationsTest";
 import { useTranslation } from "react-i18next";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Controller, useForm } from "react-hook-form";
 import { LoginUserFormData } from "../../types";
 import { getPrivateKey2, handleNewKeys } from "../controllers/publickey";
-import nacl from "tweetnacl"
-import { decode as decode64, encode as encode64 } from "@stablelib/base64";
 
 export const LoginScreen = ({ navigation }) => {
   const password_input = useRef<TextInput | null>(null)
@@ -93,10 +90,7 @@ export const LoginScreen = ({ navigation }) => {
 
               setTokens(resp.data)
 
-              // handleNewKeys(data['username'].toLowerCase(), resp.data['access'])
-              // alert!({ type: 'open', message: "hello world?", alertType: 'success' })
               try {
-                // alert!({ type: 'open', message: "page runs with tweetnacl?", alertType: 'success' })
                 handleNewKeys(data['username'].toLowerCase(), resp.data['access']).then(() => {
                   getPrivateKey2(data['username'].toLowerCase()).then(key => {
                     dispatch({
@@ -106,66 +100,10 @@ export const LoginScreen = ({ navigation }) => {
                     })
                   })
                 })
-                // dispatch({
-                  //   type: "PRIVATEKEY", payload: {
-                  //     "privateKey": (data['username'].toLowerCase())
-                  //   }
-                  // })
-                // if (Platform.OS === 'web') {
 
-                  // } else {
-                  //   AsyncStorage.getItem(data['username'].toLowerCase() + 'privkey').then((item) => {
-                  //     alert!({ type: 'open', message: 'cond1: ' + item, alertType: 'success' })
-                  //   })
-                  // }
-                // const keyPair = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
-                // nacl.box.secretKeyLength
-                // crypto.
-                // alert!({ type: 'open', message: "page runs with keypair creation?" + JSON.stringify(nacl.box.secretKeyLength), alertType: 'success' })
-                // try {
-                //   let test = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
-                //   alert!({ type: 'open', message: 'cond1: ' + JSON.stringify(encode64(test.publicKey)), alertType: 'success' })
-                // } catch {
-                //   alert!({ type: 'open', message: 'cond2 occurred', alertType: 'error' })
-                // }
-                  // dispatch({
-                  //   type: "PRIVATEKEY", payload: {
-                  //     "privateKey": getPrivateKey1(data['username'].toLowerCase())
-                  //   }
-                  // })
-                //   alert!({ type: 'open', message: "successfully did key things", alertType: 'success' })
-                // })
-                // if (Platform.OS === 'web') {
-                  // alert!({ type: 'open', message: "page runs with tweetnacl?", alertType: 'success' })
-
-                  // const keyPair = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
-                  // alert!({ type: 'open', message: "Successfully made key", alertType: 'success' })
-                // } else {
-                //   AsyncStorage.getItem(data['username'].toLowerCase() + 'privkey').then((item) => {
-                //     alert!({ type: 'open', message: "Found: " + JSON.stringify(item), alertType: 'success' })
-                //   })
-                // }
-                // alert!({ type: 'open', message: "worked?", alertType: 'success' })
-                // if (Platform.OS === 'web') {
-                //   // return storage.getString(user + 'privkey')
-                // } else {
-                //     AsyncStorage.getItem(data['username'].toLowerCase() + 'privkey').then((item) => {
-                //       alert!({ type: 'open', message: item, alertType: 'success' })
-                //     }).catch((error) => {
-                //         alert!({ type: 'open', message: "something went wrong in login " + error, alertType: 'error' })
-                //         // return "undefined"
-                //     })
-                //     // testingfunc()
-                // }
-                // testingfunc3()
               } catch(error) {
                 alert!({ type: 'open', message: error, alertType: 'error' })
               }
-              // dispatch({
-              //   type: "PRIVATEKEY", payload: {
-              //     "privateKey": getPrivateKey1(data['username'].toLowerCase())
-              //   }
-              // })
 
             }).then(() => {
               // alert!({ type: 'open', message: 'You are logged in!', alertType: 'success' })

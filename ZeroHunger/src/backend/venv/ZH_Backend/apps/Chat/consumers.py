@@ -292,8 +292,3 @@ class NotificationConsumer(JsonWebsocketConsumer):
     def unread_count(self, event):
         self.send_json(event)
         
-
-class PersonalChatConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        print("TESTING CONNECTION AND REDIS")
-        await self.accept()

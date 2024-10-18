@@ -61,6 +61,5 @@ export const Message = ({ message, showTimeStamp, otherKey }: {
         </View>
     );
 }
-// decryptMessage1(privateKey, otherPub, item.last_message.content)
 
 export default Message

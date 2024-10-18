@@ -59,7 +59,7 @@ export const RequestDetailsScreen = ({ navigation }) => {
                     users: [route.params.username]
                 },
             }).then((response) => {
-                if (response.status === 200 || response.status === 201) {
+                if ((response.status === 200 || response.status === 201) && response.data[0]['publickey']) {
                     if (privateKey && privateKey != "notInitialized") { //True if privatekey exists and privatekey is initialized
                         navigation.navigate('Chat', {
                             user1: user['username'],
