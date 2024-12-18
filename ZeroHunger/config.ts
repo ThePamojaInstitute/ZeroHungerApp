@@ -20,7 +20,7 @@ const mockMMKV = {
 export const storage = ENV === 'production' ? new MMKV() :
     Platform.OS === 'web' ? new MMKV() : mockMMKV
 
-// export const HttpBaseURL = 'http://127.0.0.1:8000/'
+// export const HttpBaseURL = 'http://127.0.0.1:8000'
 // export const WSBaseURL = 'ws://127.0.0.1:8000/'
 export const HttpBaseURL = 'https://zh-backend-app.azurewebsites.net'
 export const WSBaseURL = 'wss://zh-backend-app.azurewebsites.net/'

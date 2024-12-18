@@ -43,7 +43,7 @@ export async function handleNewKeys(user: string, accesstoken: string) {
                     storage.set(user + 'privkey', priv)
                 } else {
                     await AsyncStorage.setItem(user + 'privkey', priv)
-                    let test1 = await AsyncStorage.getItem(user + 'privkey')
+                    // let test1 = await AsyncStorage.getItem(user + 'privkey')
                     // alert!({ type: 'open', message: (JSON.stringify(user) + " privkey set to: " + JSON.stringify(test1)), alertType: 'success' })
                 }
             } else {

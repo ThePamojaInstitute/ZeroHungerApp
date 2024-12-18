@@ -28,7 +28,7 @@ export const PermissionsScreen = ({ navigation }) => {
             currentTime += increment;
             if (totalTime >= currentTime)
             {
-            waitForUser(totalTime, increment, currentTime)
+                waitForUser(totalTime, increment, currentTime)
             }
             else
             {

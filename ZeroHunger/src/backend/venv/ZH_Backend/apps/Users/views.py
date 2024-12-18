@@ -124,6 +124,7 @@ class logIn(APIView):
         if (serializer.is_valid()):
             try:
                 user = BasicUser.objects.get(username=request.data['username'])
+                print(f"USER IS HERE: {user.id}")
                 platform = request.data['Platform']
                 if(platform != 'web'):
                     user.set_expo_push_token(request.data['expo_push_token'])
@@ -363,9 +364,9 @@ class addPublicKey(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         else:
-            print(serializer.is_valid())
-            print(serializer.errors)
-            return Response(serializer.errors, status=401)
+            # print(serializer.is_valid())
+            # print(serializer.errors)
+            return Response("Error with keys", status=400)
 
 class getPublicKeys(APIView):
     def get(self, request, format=JSONParser):

@@ -406,6 +406,8 @@ const HomeStackNavigator = ({ navigation }) => {
                             <ChatCustomHeader
                                 navigation={navigation}
                                 username={"user"}
+                                sender={console.log()}
+                                muteValue={"Mute"}
                             />
                         )
                     }}
@@ -556,6 +558,14 @@ const ChatStackNavigator = () => {
                         headerStyle: {
                             backgroundColor: Colors.offWhite,
                         },
+                        // header: ({ navigation }) => (
+                        //     <ChatCustomMobileHeader
+                        //         navigation={navigation}
+                        //         username={"user"}
+                        //         sender={console.log}
+                        //         muteValue={"Mute"}
+                        //     />
+                        // )
                     }}
                 /> :
                 <Stack.Screen
@@ -566,6 +576,8 @@ const ChatStackNavigator = () => {
                             <ChatCustomHeader
                                 navigation={navigation}
                                 username={"user"}
+                                sender={console.log()}
+                                muteValue={"Mute"}
                             />
                         )
                     }}

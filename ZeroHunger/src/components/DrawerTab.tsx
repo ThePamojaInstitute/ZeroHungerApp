@@ -97,6 +97,12 @@ const CustomDrawer = (props: DrawerContentComponentProps) => {
                 icon={() => <Image source={require('../../assets/Privacy.png')} style={styles.Img} />}
                 onPress={() => { }}
             />
+            <DrawerItem
+                testID="Drawer.helpBtn"
+                label={() => <Text style={globalStyles.Body}>{t("menu.side.help.label")}</Text>}
+                icon={() => <Image source={require('../../assets/Help.png')} style={styles.Img} />}
+                onPress={() => { alert({ type: 'open', message: 'Contact Help at: admin@pamoja.org', alertType: '' }) }}
+            />
 
             <TouchableOpacity
                 testID="Drawer.logOutBtn"

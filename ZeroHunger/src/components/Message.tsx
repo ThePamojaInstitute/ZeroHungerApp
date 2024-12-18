@@ -7,10 +7,9 @@ import { AuthContext } from "../context/AuthContext";
 import { decryptMessage1 } from "../controllers/message";
 
 
-export const Message = ({ message, showTimeStamp, otherKey }: {
+export const Message = ({ message, showTimeStamp }: {
     message: MessageModel,
     showTimeStamp: boolean,
-    otherKey: string
 }) => {
     const { user, privateKey } = useContext(AuthContext);
 
@@ -43,7 +42,7 @@ export const Message = ({ message, showTimeStamp, otherKey }: {
                             ? Colors.dark : Colors.white,
                         marginBottom: showTimeStamp ? 15 : 0
                     }
-                    ]}>{ decryptMessage1(privateKey, otherKey, message.content)/*message.content*/}</Text>
+                    ]}>{ message.content/*decryptMessage1(privateKey, otherKey, message.content)/*message.content*/}</Text>
                     {showTimeStamp &&
                         <Text
                             testID="Message.timestamp"

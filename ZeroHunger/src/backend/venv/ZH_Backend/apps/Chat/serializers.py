@@ -36,10 +36,12 @@ class MessageSerializer(serializers.ModelSerializer):
 class ConversationSerializer(serializers.ModelSerializer):
     other_user = serializers.SerializerMethodField()
     last_message = serializers.SerializerMethodField()
+    self_muted = serializers.SerializerMethodField()
+    # other_muted = serializers.SerializerMethodField()
 
     class Meta:
         model = Conversation
-        fields = ("id", "name", "other_user", "last_message")
+        fields = ("id", "name", "other_user", "last_message", "self_muted")
 
     def get_last_message(self, obj):
         messages = obj.messages.all().order_by("-timestamp")
@@ -63,3 +65,16 @@ class ConversationSerializer(serializers.ModelSerializer):
                 except Exception as e:
                     print(e)
                     return None
+    
+    def get_self_muted(self, obj):
+        usernames = obj.name.split("__")
+        
+        context = {}
+        try:
+            if usernames[0] == self.context["user"].username:
+                return obj.user1Muted
+            elif usernames[1] == self.context["user"].username:
+                return obj.user2Muted
+        except Exception as e:
+            print(e)
+            return None

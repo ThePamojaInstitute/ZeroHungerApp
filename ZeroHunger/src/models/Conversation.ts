@@ -6,4 +6,5 @@ export interface ConversationModel {
     name: string;
     last_message: MessageModel | null;
     other_user: UserModel;
+    self_muted: boolean;
 }

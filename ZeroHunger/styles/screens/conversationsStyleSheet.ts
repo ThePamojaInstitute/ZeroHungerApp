@@ -152,5 +152,11 @@ export default StyleSheet.create({
         fontSize: 20,
         alignSelf: 'center',
         marginTop: 10
+    }, 
+    mute: {
+        alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
+        width: "100%"
     }
 })

@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ZeroHunger",
-    "slug": "zerohunger",
+    "slug": "ZeroHunger",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -32,9 +32,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "89764e21-a896-4bf8-ae3e-8158a6aca290"
+        "projectId": "9a256bfa-fa6b-46dc-8bd0-b8952a213cd7"
       }
     },
-    "owner": "nickpamoja"
+    "owner": "thepamojainstitute"
   }
 }

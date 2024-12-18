@@ -13,8 +13,10 @@ import {
   Keyboard,
   Platform,
   ActivityIndicator,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Dimensions
 } from "react-native";
+import Modal from "react-native-modal"
 import styles from "../../styles/screens/loginStyleSheet"
 import { useFocusEffect } from '@react-navigation/native';
 import { logInUser } from "../controllers/auth";
@@ -29,6 +31,7 @@ import { useTranslation } from "react-i18next";
 import { Controller, useForm } from "react-hook-form";
 import { LoginUserFormData } from "../../types";
 import { getPrivateKey2, handleNewKeys } from "../controllers/publickey";
+import {default as modalStyle} from "../../styles/components/bottomTabStyleSheet"
 
 export const LoginScreen = ({ navigation }) => {
   const password_input = useRef<TextInput | null>(null)
@@ -55,6 +58,8 @@ export const LoginScreen = ({ navigation }) => {
   const [hidePass, setHidePass] = useState(true)
   const [errMsg, setErrMsg] = useState("")
   const [expoPushToken, setExpoPushToken] = useState("");
+  const [modalVisible, setModalVisible] = useState(false)
+  const [height, setHeight] = useState(0)
 
   const handleErrorMessage = (error: string) => {
     if (error.toLowerCase() === "invalid credentials") {
@@ -234,6 +239,52 @@ export const LoginScreen = ({ navigation }) => {
           }}>
             <Text testID="SignUp.ButtonLabel" style={globalStyles.outlineBtnLabel}> Sign up </Text>
           </TouchableOpacity>
+          <TouchableOpacity style={{ marginTop: 30 }} onPress={() => setModalVisible(!modalVisible)}>
+            <Text style={globalStyles.outlineBtnLabel}>Need Help?</Text>
+          </TouchableOpacity>
+          <Modal
+            isVisible={modalVisible}
+            animationIn="slideInUp"
+            backdropOpacity={0.5}
+            onBackButtonPress={() => setModalVisible(!modalVisible)}
+            onBackdropPress={() => setModalVisible(!modalVisible)}
+            onSwipeComplete={() => setModalVisible(!modalVisible)}
+            swipeDirection={['down']}
+            style={[modalStyle.modal, Platform.OS === 'web' ? modalStyle.modalAlignWidth : {},
+            height ? { marginTop: Dimensions.get('window').height - (height + 20) }
+                : {}]}
+          >
+            <View
+              onLayout={(event) => {
+                const height = event.nativeEvent.layout.height*2;
+                setHeight(height)
+              }}
+            >
+              {/* <View> */}
+                {/* <TouchableOpacity style={modalStyle.modalClose} onPress={() => setModalVisible(!modalVisible)}>
+                  <Ionicons
+                    name="close"
+                    size={28}
+                    style={{ marginTop: -2 }}
+                  />
+                </TouchableOpacity> */}
+
+                <View style={modalStyle.modalContent}>
+                <TouchableOpacity style={modalStyle.modalClose} onPress={() => setModalVisible(!modalVisible)}>
+                    <Ionicons
+                      name="close"
+                      size={28}
+                      style={{ marginTop: -2 }}
+                    />
+                  </TouchableOpacity>
+                  <Text style={[globalStyles.H3, { alignSelf: 'center' }]}>Need Help with ZeroHunger?</Text>
+                  <Text style={[globalStyles.H4, { alignSelf: 'center', paddingTop: 10 }]}>
+                    Contact support by emailing: <Text style={{ textDecorationLine: 'underline' }}>admin@pamoja.org</Text>
+                  </Text>
+                </View>
+              {/* </View> */}
+            </View>
+          </Modal>
           {/* <TouchableOpacity testID="RequestFromNav.Button" style={globalStyles.secondaryBtn} onPress={() => navigation.navigate("RequestFormScreen")}>
             <Text style={globalStyles.secondaryBtnLabel}>Add a Request</Text>
           </TouchableOpacity>

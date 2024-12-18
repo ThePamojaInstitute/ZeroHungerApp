@@ -12,6 +12,12 @@ class Conversation(models.Model):
     user2 = models.ForeignKey(
         BasicUser, on_delete=models.CASCADE, related_name="user2", blank=True, null=True
     )
+    sentPhoneNum = models.BooleanField(default = False)
+    sentEmail = models.BooleanField(default = False)
+    user1Muted = models.BooleanField(default = False)
+    user2Muted = models.BooleanField(default = False)
+    user1SentOwnEmail = models.BooleanField(default = False)
+    user2SentOwnEmail = models.BooleanField(default = False)
 
     def __str__(self):
         return f"{self.name}"

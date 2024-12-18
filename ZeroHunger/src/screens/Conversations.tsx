@@ -1,10 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import {
     View, Text, Dimensions, Image,
-    TouchableHighlight, RefreshControl, ActivityIndicator, Pressable
+    TouchableHighlight, RefreshControl, ActivityIndicator, Pressable,
+    TouchableOpacity
 } from "react-native";
 import { useIsFocused } from '@react-navigation/native';
 import styles from "../../styles/screens/conversationsStyleSheet"
+import { default as buttonStyles } from "../../styles/components/chatStyleSheet"
 import { Colors, globalStyles } from "../../styles/globalStyleSheet";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/ChatNotificationContext";
@@ -17,6 +19,8 @@ import { useTranslation } from "react-i18next";
 import { Platform } from "expo-modules-core";
 import { PublicKeyModel } from "../models/PublicKey";
 import { decryptMessage1 } from "../controllers/message";
+import { debounce } from "lodash"
+import { updateMuteStatus } from "../controllers/flags";
 
 const NoMessages = ({ navigate }) => (
     <View style={{
@@ -51,6 +55,7 @@ export const Conversations = ({ navigation }) => {
 
     const [conversations, setActiveConversations] = useState<ConversationModel[]>([]);
     const [publickeys, setPublicKeys] = useState<PublicKeyModel[]>([]);
+    // const [mutedState, setMutedState] = useState<SelfMuteModel[]>([]);
     const [empty, setEmpty] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
     const [firstLoad, setFirstLoad] = useState(true)
@@ -87,6 +92,7 @@ export const Conversations = ({ navigation }) => {
                     })
 
                     setPublicKeys(keyres.data)
+                    // console.log(`CONVERSATIONS ARE HERE ${JSON.stringify(orderedConversations[0])}`)
 
                 } catch (error) {
                     console.log(`Encountered an error trying to get public keys: ${error}`)
@@ -129,6 +135,18 @@ export const Conversations = ({ navigation }) => {
         getConversations()
     }
 
+    // useEffect(() => {
+    //     if (conversations) 
+    //         console.log(`CONVERSATIONS: ${JSON.stringify(conversations)}`)
+    // }, [conversations])
+
+    const handleMute = (conversation, other_username) => {
+        updateMuteStatus(conversation)
+        setActiveConversations(conversations.map(convo => ({...convo, self_muted: (other_username == convo.other_user.username) ? !convo.self_muted : convo.self_muted})))
+    }
+
+    const debouncedMute = debounce(handleMute, 250)
+
     const renderItem = ({ item }) => {
         let namesAlph: string[]
         try {
@@ -138,7 +156,7 @@ export const Conversations = ({ navigation }) => {
             return
         }
 
-        let otherPub
+        let otherPub: string
         try {
             otherPub = findArrayByUser(publickeys, item.other_user.username)['publickey']
 
@@ -181,49 +199,88 @@ export const Conversations = ({ navigation }) => {
             }
         }
 
+        // item.self_muted.setState(!item.self_muted)
+        // console.log(item.state)
+
         const isUnread = unreadFromUsers.includes(item.other_user.username)
+        // const [muteStatus, updateMuteStatus] = useState((item.self_muted) ? "Unmute" : "Mute")
+
+        // console.log(`HERE IS EACH CONVERSATION: ${JSON.stringify(item)}`)
+        // let usernames = orderedConversations.map(a => a.other_user.username)
+
+        // setMessageHistory( data.messages.map(mes => ({
+        //     ...mes,
+        //     content: decryptMessage1(privateKey, route.params.otherPub, mes.content)
+        // })) )
 
         return (
-            <TouchableHighlight
-                onPress={() => navigateToChat(namesAlph[0], namesAlph[1], otherPub)}
-                testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}`}
-            >
-                <View
-                    testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}Cont`}
-                    key={item.other_user.username}
-                    style={styles.conversation}
+            <View style={{display: "flex", flexDirection: "row"}}>
+
+
+                <View style={[ buttonStyles.chatBar, {marginLeft: 5, width: "18%", alignItems: "flex-end", alignSelf: "center" }]}>
+                    <Pressable style={[ buttonStyles.muteBtn, { width: "100%", borderColor: item.self_muted ? Colors.alert2 : Colors.offWhite, backgroundColor: item.self_muted ? Colors.offWhite : Colors.alert2}]}
+                    onPress={() => { debouncedMute(`${namesAlph[0]}__${namesAlph[1]}`, item.other_user.username); }}>
+                        <Text style={[ globalStyles.Button, buttonStyles.convMuteBtnText, {color: item.self_muted ? Colors.alert2 : Colors.offWhite } ]}>
+                            {(item.self_muted) ? "Unmute" : "Mute"}
+                        </Text>
+                    </Pressable>
+                </View>
+
+                {/* <View style={[styles.chatBar, {maxWidth: "12%", width: "12%", marginRight: 20, paddingRight: 10, alignItems: "flex-end"}]}>
+                <Pressable style={[ styles.muteBtn, { backgroundColor: Colors.alert, width: "100%"} ]} onPress={() => sender()}>
+                    <Text style={[ globalStyles.Button, { marginHorizontal: 10, marginVertical: 8, color: Colors.offWhite }]}>{muteValue}</Text>
+                </Pressable>
+                </View> */}
+                {/* <Text style={styles.mute} 
+                onPress={() => {handleMute(`${namesAlph[0]}__${namesAlph[1]}`); 
+                                setActiveConversations(conversations.map(convo => ({...convo, self_muted: (item.other_user.username == convo.other_user.username) ? !convo.self_muted : convo.self_muted} )))}} >
+                    {(item.self_muted) ? "Unmute" : "Mute"}
+                </Text> */}
+                <TouchableHighlight
+                    onPress={() => navigateToChat(namesAlph[0], namesAlph[1], otherPub)}
+                    testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}`}
+                    style={{width: '82%'}}
                 >
-                    <View testID="Conversation.info" style={styles.info}>
-                        <Image
-                            testID="Conversation.profileImg"
-                            style={styles.profileImg}
-                            source={require('../../assets/Profile.png')}
-                        />
-                        <View testID="Conversation.content" style={styles.content}>
+                    <View
+                        testID={`Conversation.${namesAlph[0]}__${namesAlph[1]}Cont`}
+                        key={item.other_user.username}
+                        style={styles.conversation}
+                    >
+                        <View testID="Conversation.info" style={styles.info}>
+                            <Image
+                                testID="Conversation.profileImg"
+                                style={styles.profileImg}
+                                source={require('../../assets/Profile.png')}
+                            />
+                            <View testID="Conversation.content" style={styles.content}>
+                                <Text
+                                    testID="Conversation.username"
+                                    style={isUnread ? styles.usernameUnread : styles.username}
+                                >{item.other_user.username}</Text>
+                                <Text
+                                    testID="Conversation.lastMsg"
+                                    ellipsizeMode="tail"
+                                    numberOfLines={2}
+                                    style={isUnread ? styles.lastMessageUnread : styles.lastMessage}
+                                >{(otherPub == "undefined") ? "[Message]" :
+                                ((item.last_message.content.startsWith('{'))? "[Post]" : decryptMessage1(privateKey, otherPub, item.last_message.content))}</Text>
+
+                                {/* // >{(otherPub == "undefined") ? item?.last_message?.content : decryptMessage1(privateKey, otherPub, item.last_message.content)}</Text> */}
+                            </View>
+                        </View>
+                        <View>
+                            {isUnread &&
+                                <View testID="Conversation.ellipseFrame" style={styles.ellipseFrame}>
+                                    <View testID="Conversation.ellipse" style={styles.ellipse}></View>
+                                </View>}
                             <Text
-                                testID="Conversation.username"
-                                style={isUnread ? styles.usernameUnread : styles.username}
-                            >{item.other_user.username}</Text>
-                            <Text
-                                testID="Conversation.lastMsg"
-                                ellipsizeMode="tail"
-                                numberOfLines={2}
-                                style={isUnread ? styles.lastMessageUnread : styles.lastMessage}
-                            >{(otherPub == "undefined") ? item?.last_message?.content : decryptMessage1(privateKey, otherPub, item.last_message.content)}</Text>
+                                testID="Conversation.timestamp"
+                                style={styles.timestamp}
+                            >{timestamp ? timestamp : ''}</Text>
                         </View>
                     </View>
-                    <View>
-                        {isUnread &&
-                            <View testID="Conversation.ellipseFrame" style={styles.ellipseFrame}>
-                                <View testID="Conversation.ellipse" style={styles.ellipse}></View>
-                            </View>}
-                        <Text
-                            testID="Conversation.timestamp"
-                            style={styles.timestamp}
-                        >{timestamp ? timestamp : ''}</Text>
-                    </View>
-                </View>
-            </TouchableHighlight>
+                </TouchableHighlight>
+            </View>
         )
     };
     const { t, i18n } = useTranslation();

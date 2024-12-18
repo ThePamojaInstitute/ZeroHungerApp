@@ -3,6 +3,7 @@ import { Text, View, TextInput, Image, TouchableOpacity, ActivityIndicator, Pres
 import styles from "../../styles/components/chatStyleSheet"
 import { Colors, globalStyles } from '../../styles/globalStyleSheet';
 import { AuthContext } from '../context/AuthContext';
+import { useAlert } from "../context/Alert";
 import { NotificationContext } from '../context/ChatNotificationContext';
 import { Message } from './Message';
 import useWebSocket, { ReadyState } from "react-use-websocket";
@@ -13,11 +14,13 @@ import { WSBaseURL, storage } from '../../config';
 import { handleExpiryDate } from '../controllers/post';
 import { ENV } from '../../env';
 import { ChatCustomHeader } from './headers/ChatCustomHeader';
-import { encryptMessage1 } from '../controllers/message';
+import { ChatCustomHeaderButton } from './headers/ChatCustomHeaderButton';
+import { checkForEmail, checkforPhone, decryptMessage1, encryptMessage1, updateConvEmailFlag, updateConvPhoneFlag } from '../controllers/message';
 
 export const Chat = ({ navigation, route }) => {
     const { user, accessToken, privateKey } = React.useContext(AuthContext)
     const { setChatIsOpen } = useContext(NotificationContext);
+    const { dispatch: alert } = useAlert()
 
     useEffect(() => {
         if (!user) {
@@ -34,6 +37,7 @@ export const Chat = ({ navigation, route }) => {
 
     const [message, setMessage] = React.useState("");
     const [messageHistory, setMessageHistory] = React.useState<object[]>([]);
+    const [selfEmail, setSelfEmail] = useState("")
     const [start, setStart] = useState(20)
     const [end, setEnd] = useState(30)
     const [empty, setEmpty] = useState(false)
@@ -43,43 +47,135 @@ export const Chat = ({ navigation, route }) => {
     const [initiated, setInitiated] = useState(false)
     const [initiatedTimeStampForMe, setInitiatedTimeStampForMe] = useState(false)
     const [initiatedTimeStampForOther, setInitiatedTimeStampForOther] = useState(false)
+    const [hasSentPhone, setHasSentPhone] = useState(false)
+    const [hasSentEmail, setHasSentEmail] = useState(false)
+    const [hasSentSelfEmail, setHasSentSelfEmail] = useState(false)
+    const [selfMuted, setSelfMuted] = useState(false)
+    const [receiverMuted, setReceiverMuted] = useState(false)
 
     let lastFromMeRendered = false
     let lastFromOtherRendered = false
 
     const namesAlph = [route.params.user1, route.params.user2].sort();
     const conversationName = `${namesAlph[0]}__${namesAlph[1]}`
-    const reciever = namesAlph[0] === user['username'] ?
+    const receiver = namesAlph[0] === user['username'] ?
         namesAlph[1] : namesAlph[0]
 
+    const muteOrUnmute = (muted: boolean) => {
+        // console.log(`Mute or unmute function called`)
+        if (muted) {
+            return "Unmute"
+        } else {
+            return "Mute"
+        }
+    }
     useEffect(() => {
         if (Platform.OS === 'web') {
             navigation.setOptions({
                 header: ({ navigation }) => (
                     <ChatCustomHeader
                         navigation={navigation}
-                        username={reciever}
+                        username={receiver}
+                        sender={sendMute}
+                        muteValue={selfMuted}
                     />
                 )
             })
         } else {
             navigation.setOptions({
-                title: reciever,
+                title: receiver,
+                headerRight: () => (
+                    <ChatCustomHeaderButton
+                        sender={sendMute}
+                        muteValue={selfMuted}
+                    />
+                )
             })
         }
-    }, [])
+        // alert!({ type: 'open', message: 'You currently have the conversation muted', alertType: 'error' })
+    }, [selfMuted])
 
+    useEffect(() => {
+        if (selfEmail) {
+            console.log(`Self email changed to ${selfEmail}`)
+        }
+    }, [selfEmail])
+
+    // navigation.setOptions({
+    //     headerRight: () => (
+    //         <HomeCustomHeaderRight
+    //             navigation={navigation}
+    //             expiringPosts={expiringPosts}
+    //             setExpiringPosts={setExpiringPosts}
+    //         />
+    //     )
+    // })
+
+    // postalCode = string
+    // const canadianPostalCodeRegex = /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i
+
+    // if (postalCode.length > 0 && !postalCode.match(canadianPostalCodeRegex)) {
+    //     return { msg: "failure", res: "Please enter a valid postal code" }
+    // }
+    // /\d{3}[-.]?\d{3}[-.]?\d{4}/
+    // /\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/
     const handleSend = () => {
         if (message) {
+            let originalMessage = message
             let encryptedmessage = encryptMessage1(privateKey, route.params.otherPub, message) //message,
             if (encryptedmessage) {
-                sendJsonMessage({
-                    type: "chat_message",
-                    message: encryptedmessage,
-                    name: user['username']
-                });
-                setMessage("");
-                setInputHeight(30)
+                if (selfMuted == false) {
+                    if (receiverMuted == false) {
+                        sendJsonMessage({
+                            type: "chat_message",
+                            message: encryptedmessage,
+                            name: user['username']
+                        });
+                        setMessage("");
+                        setInputHeight(30)
+
+                        if (checkforPhone(originalMessage) && !hasSentPhone) {
+                            updateConvPhoneFlag(conversationName)
+                        }
+                        if (checkForEmail(originalMessage) && !hasSentEmail) {
+                            updateConvEmailFlag(conversationName)
+                        }
+                        if (selfEmail) {
+                            if (originalMessage.includes(selfEmail)) {
+                                sendJsonMessage({
+                                    type: "sent_own_email"
+                                })
+                                // console.log(`sent own email`)
+                            }
+                        }
+                    } else {
+                        alert!({ type: 'open', message: 'Receiver has muted this conversation', alertType: 'error' })
+                    }
+                } else {
+                    alert!({ type: 'open', message: 'You currently have the conversation muted', alertType: 'error' })
+                }
+                // sendJsonMessage({
+                //     type: "chat_message",
+                //     message: encryptedmessage,
+                //     name: user['username']
+                // });
+                // setMessage("");
+                // setInputHeight(30)
+
+                // if (checkforPhone(originalMessage) && !hasSentPhone) {
+                //     updateConvPhoneFlag(conversationName)
+                // }
+                // if (checkForEmail(originalMessage) && !hasSentEmail) {
+                //     updateConvEmailFlag(conversationName)
+                // }
+                // if (selfEmail) {
+                //     if (originalMessage.includes(selfEmail)) {
+                //         sendJsonMessage({
+                //             type: "sent_own_email"
+                //         })
+                //         console.log(`sent own email`)
+                //     }
+                // }
             } else {
                 alert!({ type: 'open', message: 'Error trying to send message, try relogging', alertType: 'error' })
             }
@@ -107,6 +203,16 @@ export const Chat = ({ navigation, route }) => {
         } else console.log("end!!");
     }
 
+    const sendMute = () => {
+        console.log(`Send mute function called`)
+        sendJsonMessage({
+            type: "mute_message"
+        })
+        // sendJsonMessage({
+        //     type: "mute_message"
+        // })
+    }
+
     const { readyState, sendJsonMessage } = useWebSocket(user ? `${WSBaseURL}chats/${conversationName}/` : null, {
         queryParams: {
             token: user ?
@@ -123,24 +229,57 @@ export const Chat = ({ navigation, route }) => {
             const data = JSON.parse(e.data);
             switch (data.type) {
                 case 'chat_message_echo':
+                    // setMessageHistory([data.message, ...messageHistory]);
+                    data.message.content = decryptMessage1(privateKey, route.params.otherPub, data.message.content);
                     setMessageHistory([data.message, ...messageHistory]);
+                    // setMessageHistory( [data.message.map(mes => ({...mes, content: decryptMessage1(privateKey, route.params.otherPub, mes.content)})), ...messageHistory])
                     sendJsonMessage({ type: "read_messages" });
                     break;
                 case "last_30_messages":
                     setInitiated(true)
+                    console.log(`${data.self_email}`)
+                    if (selfEmail) {
+                        console.log(`self email condition works!`)
+                    } else {
+                        console.log(`self email is empty!`)
+                    }
+                    setSelfEmail(data.self_email)
+                    // console.log(`Received messages from server: ${JSON.stringify(data)}`)
                     if (data.messages.length === 0) {
                         setEmpty(true)
-                    } else setMessageHistory(data.messages);
-                    break
+                    } else {
+                        // setMessageHistory(data.messages)
+                        // let copy = data
+                        data.messages.forEach(function(item, i) {
+                            data.messages[i].content = decryptMessage1(privateKey, route.params.otherPub, item.content)
+                        })
+                        setMessageHistory(data.messages)
+                        // console.log(`PRINTING MESSAGE COPIES: ${JSON.stringify(data)}`)
+                        // setMessageHistory( data.messages.map(mes => ({
+                        //     ...mes,
+                        //     content: decryptMessage1(privateKey, route.params.otherPub, mes.content)
+                        // })) )
+                    }
+                    setSelfMuted(data.self_muted)
+                    // sendJsonMessage({
+                    //     type: "mute_message"
+                    // })
+                    // sendJsonMessage({
+                    //     type: "chat_message",
+                    //     message: route.params.post,
+                    //     name: user['username']
+                    // });
+                    break;
                 case "render_x_to_y_messages":
+                    data.messages.forEach(function(item, i) {
+                        data.messages[i].content = decryptMessage1(privateKey, route.params.otherPub, item.content)
+                    })
                     setMessageHistory([...messageHistory, ...data.messages]);
+                    // setMessageHistory([ ...messageHistory, data.messages.map(mes => ({
+                    //     ...mes,
+                    //     content: decryptMessage1(privateKey, route.params.otherPub, mes.content)
+                    // })) ]);
                     setLoading(false)
-                    // try {
-                    //     let test = nacl.box.keyPair.fromSecretKey(nacl.randomBytes(nacl.box.secretKeyLength))
-                    //     alert!({ type: 'open', message: 'cond1: ' + JSON.stringify(test), alertType: 'success' })
-                    // } catch {
-                    //     alert!({ type: 'open', message: 'cond2 occurred', alertType: 'error' })
-                    // }
                     break
                 case "limit_reached":
                     setLoading(false)
@@ -149,6 +288,15 @@ export const Chat = ({ navigation, route }) => {
                         setEndReached(true)
                     }
                     break
+                case "mute_message_echo":
+                    console.log(`Mute message received from server:\n${JSON.stringify(data)}`)
+                    if (data.user == user['username']) {
+                        setSelfMuted(data.mute_status)
+                    } else if (data.user == receiver) {
+                        setReceiverMuted(data.mute_status)
+                    }
+                    console.log(`HELLO WE ARE CHECKING MUTE STATUS HERE: ${data.mute_status}`)
+                    break;
                 default:
                     console.error("Unknown message type!");
                     break;
@@ -182,11 +330,23 @@ export const Chat = ({ navigation, route }) => {
             }
 
             const msg = route.params.msg
-            sendJsonMessage({
-                type: "chat_message",
-                message: encryptMessage1(privateKey, route.params.otherPub, msg),//msg, 
-                name: user['username']
-            });
+            // let encryptedmessage = encryptMessage1(privateKey, route.params.otherPub, message) //message,
+            // if (encryptedmessage) {
+            const encryptedmessage = encryptMessage1(privateKey, route.params.otherPub, route.params.msg)
+            if (encryptedmessage) {
+                sendJsonMessage({
+                    type: "chat_message",
+                    message: encryptedmessage,//msg, 
+                    name: user['username']
+                });
+            } else {
+                alert!({ type: 'open', message: 'Error sending message', alertType: 'error' })
+            }
+            // sendJsonMessage({
+            //     type: "chat_message",
+            //     message: encryptMessage1(privateKey, route.params.otherPub, msg),//msg, 
+            //     name: user['username']
+            // });
             route.params.msg = ''
         }
     }, [connectionStatus, sendJsonMessage]);
@@ -194,6 +354,13 @@ export const Chat = ({ navigation, route }) => {
     useEffect(() => {
         if (messageHistory.length > 0) setEmpty(false)
     }, [messageHistory])
+
+    useEffect(() => {
+        if(hasSentEmail) console.log(`sent email is true!!!`);
+
+        if(hasSentPhone) console.log(`sent phone is true!!!`);
+
+    }, [hasSentEmail, hasSentPhone])
 
     const handlePress = (
         title: string,
@@ -344,11 +511,38 @@ export const Chat = ({ navigation, route }) => {
             showTimeStamp = true
         }
 
+        if (checkForEmail(item.content) && !hasSentEmail) {
+            setHasSentEmail(true)
+        }
+        if (checkforPhone(item.content) && !hasSentPhone) {
+            setHasSentPhone(true)
+        }
+
+        if (selfEmail) {
+            if (item.content.includes(selfEmail) && !hasSentSelfEmail) {
+                setHasSentSelfEmail(true)
+                // console.log(`Successfully sent own email`)
+            }
+        }
+
+        // try {
+        //     let decrypted = decryptMessage1(privateKey, route.params.otherPub, item.content)
+
+            // if (checkForEmail(decrypted) && !hasSentEmail) {
+        //         setHasSentEmail(true)
+        //     }
+        //     if (checkforPhone(decrypted) && !hasSentPhone) {
+        //         setHasSentPhone(true)
+        //     }
+            
+        // } catch (error) {
+        //     console.log(`encountered error: ${error}`)
+        // }
+
         return <Message
             key={item.id}
             message={item}
             showTimeStamp={showTimeStamp}
-            otherKey = {route.params.otherPub}
         />
     }
 

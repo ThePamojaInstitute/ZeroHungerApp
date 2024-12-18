@@ -157,5 +157,23 @@ export default StyleSheet.create({
         borderLeftWidth: 0,
         borderTopRightRadius: 10,
         borderBottomRightRadius: 10,
+    },
+    muteBtn: {
+        backgroundColor: Colors.alert2,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: Colors.midLight,
+        borderTopLeftRadius: 10,
+        borderBottomLeftRadius: 10,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+    },
+    convMuteBtnText: {
+        fontSize: 14, 
+        marginHorizontal: 6, 
+        marginVertical: 8,
     }
+
 })
